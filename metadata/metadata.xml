@@ -2,8 +2,71 @@
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
 	<type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
+			<attribute-definition attribute-id="KlarnaPaymentsEndpointProdEurope">
+                <display-name xml:lang="x-default">Klarna Payments API endpont for the European PRODUCTION environment</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://api.klarna.com/</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="KlarnaPaymentsEndpointProdUS">
+                <display-name xml:lang="x-default">Klarna Payments API endpont for the U.S. PRODUCTION environment</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://api-na.klarna.com/</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="KlarnaPaymentsEndpointTESTEurope">
+                <display-name xml:lang="x-default">Klarna Payments API endpont for the European TEST environment</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://api.playground.klarna.com/</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="KlarnaPaymentsEndpointTESTUS">
+                <display-name xml:lang="x-default">Klarna Payments API endpont for the U.S. TEST environment</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://api-na.playground.klarna.com/</default-value>
+            </attribute-definition>
 		</custom-attribute-definitions>				
 		<group-definitions>
+			<attribute-group group-id="Klarna_Payments">
+                <display-name xml:lang="x-default">Klarna Payments</display-name>
+                <attribute attribute-id="KlarnaPaymentsEndpointProdUS"/>
+                <attribute attribute-id="KlarnaPaymentsEndpointTESTUS"/>
+                <attribute attribute-id="KlarnaPaymentsEndpointProdEurope"/>
+                <attribute attribute-id="KlarnaPaymentsEndpointTESTEurope"/>
+            </attribute-group>
         </group-definitions>
 	</type-extension>
+	
+	<custom-type type-id="klarna_payments_countries">
+        <description xml:lang="x-default">Custom object used to map Klarna Payments API endpoint and country</description>
+        <staging-mode>source-to-target</staging-mode>
+        <storage-scope>organization</storage-scope>
+        <key-definition attribute-id="country">
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="enabled">
+                <description xml:lang="x-default">If true the given country is enabled for Klarna Payments otherwise country is not enabled</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+			 <attribute-definition attribute-id="region">
+                <description xml:lang="x-default">Klarna region - currently only EUROPE or US</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </attribute-definitions>
+    </custom-type>
 </metadata>

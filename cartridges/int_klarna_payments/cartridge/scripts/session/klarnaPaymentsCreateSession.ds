@@ -1,0 +1,80 @@
+/**
+* klarnaPaymentsCreateSession.ds
+*
+* Klarna Create session API call 
+*
+* @input Basket : dw.order.Basket The basket
+* @output session_id : String
+* @output client_token : String
+*/
+
+// import packages
+let SVC = require( 'dw/svc' );
+let Net = require( 'dw/net' );
+let Logger = require( 'dw/system/Logger' );
+
+//script include
+let log = Logger.getLogger( 'klarnaPaymentsCreateSession.ds' );
+let helpers = {
+	klarnaPayments : require( '~/cartridge/scripts/util/klarnaPaymentsHelper' )(),	
+};
+
+function execute( args : PipelineDictionary ) : Number
+{
+	let service = null;
+	let response = null;
+	let endpointParam = {};
+	let requestDetails = {};
+
+	// verify that we have a basket
+	if( args.Basket === null )	
+	{
+		log.error( 'Shopping Cart is empty' );
+		return PIPELET_ERROR;
+	}
+	
+	try
+	{
+		requestDetails = helpers.klarnaPayments.generateCreateSessionRequestDetails( args.Basket );
+		log.debug( 'Create Session Request generated: {0}', JSON.stringify( requestDetails ) );
+	}
+	catch ( err )
+	{
+		log.error( 'Unable to generate create session request details. Error: {0}', err.message );
+		return PIPELET_ERROR;
+	}
+	
+	try
+	{	
+		service =  SVC.ServiceRegistry.get("KlarnaPaymentsCreateSessionService");
+		endpointParam = {
+			"endpoint": requestDetails.endpoint,
+			"payload": requestDetails.payload
+		};
+		response  = service.call( endpointParam );
+	
+		if ( response == null || service == null || response.error )
+		{
+		    log.error( "Send to {0} failed with error message: {1} and msg: {2} and error code: {3}", requestDetails.endpoint, response.errorMessage, response.msg, response.error );
+		    return PIPELET_ERROR;
+		}
+		log.debug( 'Successfuly send {0}, response: {1}', JSON.stringify( requestDetails ), JSON.stringify( response ) );
+		
+		//do something with the response session_id below
+	}
+	catch(e)
+	{
+		log.error("Could not create session exception: {1}\nResponse: {2}", e.message, response.errorMessage);
+		return PIPELET_ERROR;
+	}
+	
+
+	args.session_id = 'session_id';
+	args.client_token = 'client_token';
+
+	return PIPELET_NEXT;
+}
+
+module.exports = {
+	'execute': execute
+}

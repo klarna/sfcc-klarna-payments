@@ -1,0 +1,35 @@
+/**
+ * Initialize HTTP services for Klarna Payments
+ */
+importPackage( dw.svc );
+importPackage( dw.net );
+
+let Logger = require( 'dw/system/Logger' );
+let log = Logger.getLogger( 'klarnaPaymentsCreateSessionServiceInit.ds' );
+   
+ServiceRegistry.configure("KlarnaPaymentsCreateSessionService", {
+	createRequest: function( service: HTTPService, params: Object )
+	{
+		service.client.setTimeout( service.configuration.profile.timeoutMillis );
+		service.URL = params.endpoint + 'credit/v1/sessions';
+		//service.URL = "http://requestb.in/xwsnr9xw";
+		service.client.setRequestHeader('Content-Type', 'application/json');
+			
+		service.client.open( "POST", service.URL, service.configuration.credential.user, service.configuration.credential.password );
+		service.client.send( JSON.stringify( params.payload ) );
+
+		return service;
+	},	
+	parseResponse: function( service:HTTPService, client:HTTPClient )
+	{
+		return client;
+	},
+	mockCall: function( service: HTTPService, client: HTTPClient )
+	{
+		return {
+			statusCode: 200,
+			statusMessage: "Success",
+			text: "MOCK RESPONSE (" + svc.url + ")"
+		};
+	}
+});

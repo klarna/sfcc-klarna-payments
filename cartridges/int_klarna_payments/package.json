@@ -1,3 +1,3 @@
 {
-    "init": ["./cartridge/scripts/init/klarnaPaymentsCreateSessionServiceInit.ds"]
+    "init": ["./cartridge/scripts/init/klarnaPaymentsSessionServiceInit.ds"]
 }

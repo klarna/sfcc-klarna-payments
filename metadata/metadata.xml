@@ -34,6 +34,13 @@
                 <min-length>0</min-length>
                 <default-value>https://api-na.playground.klarna.com/</default-value>
             </attribute-definition>
+			<attribute-definition attribute-id="sendProductAndImageURLs">
+                <display-name xml:lang="x-default">Send product_url and image_url</display-name>
+                <description xml:lang="x-default">If set to true product_url and image_url fields in Klarna Payments create session call will be included in API call, otherwise product_url and image_url fields will not be populated</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
 		</custom-attribute-definitions>				
 		<group-definitions>
 			<attribute-group group-id="Klarna_Payments">
@@ -42,6 +49,7 @@
                 <attribute attribute-id="KlarnaPaymentsEndpointTESTUS"/>
                 <attribute attribute-id="KlarnaPaymentsEndpointProdEurope"/>
                 <attribute attribute-id="KlarnaPaymentsEndpointTESTEurope"/>
+				<attribute attribute-id="sendProductAndImageURLs"/>
             </attribute-group>
         </group-definitions>
 	</type-extension>

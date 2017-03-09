@@ -16,7 +16,7 @@
         <cb-millis>0</cb-millis>
     </service-profile>
 
-    <service service-id="KlarnaPaymentsCreateSessionService">
+    <service service-id="KlarnaPaymentsSessionService">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
         <log-prefix/>

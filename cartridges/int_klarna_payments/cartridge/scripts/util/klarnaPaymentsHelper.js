@@ -19,7 +19,7 @@ function klarnaPaymentsHelper()
 	let log = Logger.getLogger( 'klarnaPaymentsHelper.js' );
 	
 	return {
-		generateCreateSessionRequestDetails : generateCreateSessionRequestDetails,
+		generateSessionRequestDetails : generateSessionRequestDetails,
 	};
 
 	/**
@@ -29,40 +29,41 @@ function klarnaPaymentsHelper()
 	 * 
 	 * @return {CreateSessionRequest}       CreateSessionRequest Object.
 	 */
-	function generateCreateSessionRequestDetails( basket )
+	function generateSessionRequestDetails( basket )
 	{
 		let returnObject = {};
 		let payload = new Object();
 		
-		returnObject.endpoint = _getKlarnaPaymentsEndpoint();
-		payload.purchase_country = basket.getBillingAddress() ? basket.getBillingAddress().getCountryCode() : request.locale.split("_").pop();
-		payload.purchase_currency = basket.currencyCode;
-		payload.locale = request.locale.replace('_', '-');
-		payload.billing_address = _getKlarnaPaymentsBillingAddressObj( empty( basket.getBillingAddress() ) ? basket.getShipments().iterator().next().getShippingAddress() : basket.getBillingAddress() );
-		payload.order_amount = basket.getTotalGrossPrice().getValue() * 100; //Amounts should be in minor units according to the ISO 4217 standard.
-		payload.order_tax_amount = basket.getTotalTax().getValue() * 100;
-		payload.order_lines = _getKlarnaPaymentsOrderLinesObj( basket );		
+		returnObject.url 			= _getKlarnaPaymentsURL();
+		
+		payload.purchase_country 	= basket.getBillingAddress() ? basket.getBillingAddress().getCountryCode().toString().toUpperCase() : request.locale.split("_").pop().toUpperCase();
+		payload.purchase_currency 	= basket.currencyCode;
+		payload.locale 				= request.locale.replace('_', '-');
+		payload.billing_address 	= _getKlarnaPaymentsBillingAddressObj( empty( basket.getBillingAddress() ) ? basket.getShipments().iterator().next().getShippingAddress() : basket.getBillingAddress() );
+		payload.order_amount 		= basket.totalGrossPrice.available ? basket.totalGrossPrice.getValue() * 100 : basket.getAdjustedMerchandizeTotalPrice(true).add(LineItemCtnr.giftCertificateTotalPrice).getValue() * 100; //Amounts should be in minor units according to the ISO 4217 standard.
+		payload.order_tax_amount 	= basket.totalTax.available ? basket.getTotalTax().getValue() * 100 : 0;
+		payload.order_lines 		= _getKlarnaPaymentsOrderLinesObj( basket );		
 		
 		returnObject.payload = payload;
 				
 		/**
 		 * @typedef {Object}  CreateSessionRequest
-		 * @property {string} endpoint Klarna Payments endpoint
+		 * @property {string} url Klarna Payments URL
 		 * @property {string} payload request payload
 		 */
 		return returnObject;
 	}
 	
 	/**
-	 * Get the Klarna Payments Endoint corresponding to the current locale.
+	 * Get the Klarna Payments URL corresponding to the current locale.
 	 * Searches for the current locale in klarna_payments_countries custom object
 	 * 
 	 * @private
-	 * @return {String}       Klarna Endpoint corresponding to the current locale.
+	 * @return {String} Klarna URL corresponding to the current locale.
 	 */
-	function _getKlarnaPaymentsEndpoint()
+	function _getKlarnaPaymentsURL()
 	{
-		let endpoint;
+		let url;
 		let countryCode = request.locale.split("_").pop();
 		let countryObject = CustomObjectMgr.queryCustomObject( "klarna_payments_countries",	"custom.country = {1}", true, countryCode); 
 		
@@ -82,13 +83,13 @@ function klarnaPaymentsHelper()
 			switch( countryObject.custom.region )
 			{
 			case 'USA' :
-				endpoint = Site.getCurrent().getCustomPreferenceValue( 'KlarnaPaymentsEndpointProdUS' );
+				url = Site.getCurrent().getCustomPreferenceValue( 'KlarnaPaymentsEndpointProdUS' );
 				break;
 			case 'EUROPE' :
-				endpoint = Site.getCurrent().getCustomPreferenceValue( 'KlarnaPaymentsEndpointProdEurope' );
+				url = Site.getCurrent().getCustomPreferenceValue( 'KlarnaPaymentsEndpointProdEurope' );
 				break;
 			default:
-				log.warn( 'No endpoint for this region {0}', countryObject.custom.region );
+				log.warn( 'No URL for this region {0}', countryObject.custom.region );
 			}		
 		}
 		else
@@ -96,18 +97,18 @@ function klarnaPaymentsHelper()
 			switch( countryObject.custom.region )
 			{
 			case 'USA' :
-				endpoint = Site.getCurrent().getCustomPreferenceValue( 'KlarnaPaymentsEndpointTESTUS' );
+				url = Site.getCurrent().getCustomPreferenceValue( 'KlarnaPaymentsEndpointTESTUS' );
 				break;
 			case 'EUROPE' :
-				endpoint = Site.getCurrent().getCustomPreferenceValue( 'KlarnaPaymentsEndpointTESTEurope' );
+				url = Site.getCurrent().getCustomPreferenceValue( 'KlarnaPaymentsEndpointTESTEurope' );
 				break;
 			default:
-				log.warn( 'No endpoint for this region {0}', countryObject.custom.region );
+				log.warn( 'No URL for this region {0}', countryObject.custom.region );
 			}		
 		}
-		log.debug( 'Set Klarna API endpoint to: {0}', endpoint );
+		log.debug( 'Set Klarna API URL to: {0}', url );
 		
-		return endpoint;
+		return url;
 	}
 	
 	
@@ -130,16 +131,16 @@ function klarnaPaymentsHelper()
 		}
 		try
 		{
-			billingAddressObj.given_name = billingAddress.getFirstName();
-			billingAddressObj.family_name = billingAddress.getLastName();
-			billingAddressObj.title = !empty( billingAddress.getTitle() ) ? billingAddress.getTitle() : "";
-			billingAddressObj.street_address = billingAddress.getAddress1();
-			billingAddressObj.street_address2 = !empty( billingAddress.getAddress2() ) ? billingAddress.getAddress2() : "";
-			billingAddressObj.postal_code = billingAddress.getPostalCode();
-			billingAddressObj.city = billingAddress.getCity();
-			billingAddressObj.region = billingAddress.getStateCode();
-			billingAddressObj.phone = billingAddress.getPhone();
-			billingAddressObj.country = billingAddress.getCountryCode().toString();
+			billingAddressObj.given_name 		= billingAddress.getFirstName();
+			billingAddressObj.family_name 		= billingAddress.getLastName();
+			billingAddressObj.title 			= !empty( billingAddress.getTitle() ) ? billingAddress.getTitle() : "";
+			billingAddressObj.street_address 	= billingAddress.getAddress1();
+			billingAddressObj.street_address2 	= !empty( billingAddress.getAddress2() ) ? billingAddress.getAddress2() : "";
+			billingAddressObj.postal_code 		= billingAddress.getPostalCode();
+			billingAddressObj.city 				= billingAddress.getCity();
+			billingAddressObj.region 			= billingAddress.getStateCode();
+			billingAddressObj.phone 			= billingAddress.getPhone();
+			billingAddressObj.country 			= billingAddress.getCountryCode().toString();
 		}
 		catch( err )
 		{
@@ -148,7 +149,7 @@ function klarnaPaymentsHelper()
 		log.debug ('Constructed Klarna payments billing address object as follows: {0}', JSON.stringify( billingAddressObj ) );
 		
 		/**
-		 * @typedef {Object}  KlarnaPaymentsBillingAddressObj
+		 * @typedef  {Object} KlarnaPaymentsBillingAddressObj
 		 * @property {string} given_name Given name
 		 * @property {string} family_name Family name.
 		 * @property {string} title Title.
@@ -175,6 +176,7 @@ function klarnaPaymentsHelper()
 		let orderLinesArrayObj = new Array();
 		let productLineItems = [];
 		
+		
 		try 
 		{
 			productLineItems = basket.getAllProductLineItems();
@@ -184,6 +186,18 @@ function klarnaPaymentsHelper()
 				let orderLinesObj = _getKlarnaPaymentsOrderLineObj( item );
 							
 				orderLinesArrayObj.push( orderLinesObj );
+			}
+			
+			//add shipping information as a separate Klarna Payments Order Line Object
+			if( basket.shippingTotalPrice.available )
+			{
+				orderLinesArrayObj.push( _getKlarnaPaymentsShippingOrderLineObj( basket ) );
+			}
+			
+			//add tax information as a separate Klarna Payments Order Line Object
+			if( basket.totalTax.available )
+			{
+				//orderLinesArrayObj.push( _getKlarnaPaymentsTaxOrderLineObj( basket ) );
 			}
 		}
 		catch( err )
@@ -209,13 +223,16 @@ function klarnaPaymentsHelper()
 		
 		try
 		{
-			orderLineObj.name = productLineItem.getProductName();
-			orderLineObj.quantity = productLineItem.getQuantity().getValue();
-			orderLineObj.unit_price = productLineItem.getAdjustedGrossPrice().getValue() * 100;
-			orderLineObj.total_amount = productLineItem.getAdjustedGrossPrice().getValue() * orderLineObj.quantity * 100;
+			orderLineObj.name 			= productLineItem.getProductName();
+			orderLineObj.quantity 		= productLineItem.getQuantity().getValue();
+			orderLineObj.unit_price 	= productLineItem.getAdjustedGrossPrice().getValue() * 100;
+			orderLineObj.total_amount 	= productLineItem.getAdjustedGrossPrice().getValue() * orderLineObj.quantity * 100;
 			
-			orderLineObj.product_url = ( !empty( productLineItem.getProduct()) && productLineItem.getProduct().getPageURL() !== null ) ? productLineItem.getProduct().getPageURL() : "";
-			orderLineObj.image_url = !empty( productLineItem.getProduct() ) ? productLineItem.getProduct().getImage('small', 0).getImageURL({}).toString() : "";
+			if( Site.getCurrent().getCustomPreferenceValue( 'sendProductAndImageURLs' ) )
+			{
+				orderLineObj.product_url= ( !empty( productLineItem.getProduct() ) && productLineItem.getProduct().getPageURL() !== null ) ? productLineItem.getProduct().getPageURL() : "";
+				orderLineObj.image_url 	= !empty( productLineItem.getProduct() ) ? productLineItem.getProduct().getImage('small', 0).getImageURL({}).toString() : "";
+			}			
 		}
 		catch( err )
 		{
@@ -233,6 +250,66 @@ function klarnaPaymentsHelper()
 		 * @property {string} product_url URL to an image that can be later embedded in communications between Klarna and the customer. (max 1024 characters).
 		 * @property {string} image_url URL to an image that can be later embedded in communications between Klarna and the customer. (max 1024 characters).
 		 */
+		return orderLineObj;	
+	}
+	
+	/**
+	 * Get the Klarna Payments Order Line object from the Salesforce commerce cloud (SCC) shipping information
+	 * @param  {dw.order.Basket} basket SCC basket
+	 * 
+	 * @private
+	 * @return {KlarnaPaymentsOrderLineObj} orderLinesObj Klarna Payments Order Lines Object containing the shipping information.
+	 */
+	function _getKlarnaPaymentsShippingOrderLineObj( basket )
+	{
+		let orderLineObj = new Object();
+		let shipment = basket.shipments.iterator().next();
+		
+		try
+		{
+			orderLineObj.type 			= "shipping_fee";
+			orderLineObj.name 			= ( !empty( shipment ) && !empty( shipment.shippingMethod ) ) ? shipment.shippingMethod.displayName : "";
+			orderLineObj.quantity 		= 1;
+			orderLineObj.unit_price 	= basket.getShippingTotalGrossPrice().getValue() * 100;
+			orderLineObj.total_amount 	= basket.getShippingTotalGrossPrice().getValue() * 100;
+		}
+		catch( err )
+		{
+			throw new Error( 'Failed to construct Klarna Payments order line object with SCC shipping information. Exception: {0}', err.message );
+		}
+		
+		log.debug ('Constructed Klarna payments order line object containing SCC shipping infromation as follows: {0}', JSON.stringify( orderLineObj ) );
+
+		return orderLineObj;	
+	}
+	
+	/**
+	 * Get the Klarna Payments Order Line object from the Salesforce commerce cloud (SCC) tax information
+	 * @param  {dw.order.Basket} basket SCC basket
+	 * 
+	 * @private
+	 * @return {KlarnaPaymentsOrderLineObj} orderLinesObj Klarna Payments Order Lines Object containing the shipping information.
+	 */
+	function _getKlarnaPaymentsTaxOrderLineObj( basket )
+	{
+		let orderLineObj = new Object();
+		let shipment = basket.shipments.iterator().next();
+		
+		try
+		{
+			orderLineObj.type 			= "sales_tax";
+			orderLineObj.name 			= "Sales Tax";
+			orderLineObj.quantity 		= 1;
+			orderLineObj.unit_price 	= basket.getTotalTax().getValue() * 100;
+			orderLineObj.total_amount 	= basket.getTotalTax().getValue() * 100;
+		}
+		catch( err )
+		{
+			throw new Error( 'Failed to construct Klarna Payments order line object with SCC tax information. Exception: {0}', err.message );
+		}
+		
+		log.debug ('Constructed Klarna payments order line object containing SCC tax infromation as follows: {0}', JSON.stringify( orderLineObj ) );
+
 		return orderLineObj;	
 	}
 }

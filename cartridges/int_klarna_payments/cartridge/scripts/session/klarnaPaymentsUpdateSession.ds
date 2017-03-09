@@ -1,11 +1,11 @@
 /**
-* klarnaPaymentsCreateSession.ds
+* klarnaPaymentsUpdateSession.ds
 *
-* Klarna Create session API call 
+* Klarna Uodate session API call 
 *
 * @input Basket : dw.order.Basket The basket
-* @output session_id : String
-* @output client_token : String
+* @input session_id : String Klarna Session ID
+* @output isSessionUpdated : Boolean true if klarna session has been updated
 */
 
 // import packages
@@ -14,7 +14,7 @@ let Net = require( 'dw/net' );
 let Logger = require( 'dw/system/Logger' );
 
 //script include
-let log = Logger.getLogger( 'klarnaPaymentsCreateSession.ds' );
+let log = Logger.getLogger( 'klarnaPaymentsUpdateSession.ds' );
 let helpers = {
 	klarnaPayments : require( '~/cartridge/scripts/util/klarnaPaymentsHelper' )(),	
 };
@@ -24,6 +24,7 @@ function execute( args : PipelineDictionary ) : Number
 	let service = null;
 	let response = null;
 	let endpointParam = {};
+	let isSessionUpdated = false;
 
 	// verify that we have a basket
 	if( basket === null )	
@@ -34,7 +35,7 @@ function execute( args : PipelineDictionary ) : Number
 	
 	try
 	{
-		let requestDetails = helpers.klarnaPayments.generateCreateSessionRequestDetails( args.Basket );
+		let requestDetails = helpers.klarnaPayments.generateSessionRequestDetails( args.Basket );
 		log.debug( 'Create Session Request generated: {0}', JSON.stringify( requestDetails ) );
 	}
 	catch ( err )
@@ -47,29 +48,27 @@ function execute( args : PipelineDictionary ) : Number
 	{	
 		service =  SVC.ServiceRegistry.get("KlarnaPaymentsCreateSessionService");
 		endpointParam = {
-			"endpoint": requestDetails.endpoint,
+			"url": requestDetails.url,
+			"endpoint": 'credit/v1/sessions' + args.session_id,
 			"payload": requestDetails.payload
 		};
 		response  = service.call( endpointParam );
 	
 		if ( response == null || service == null || response.error )
 		{
-		    log.error( "Send to {0} failed with error message: {1}", requestDetails.endpoint, response.errorMessage );
+		    log.error( "POST to {0} failed with error message: {1}", requestDetails.endpoint, response.errorMessage );
 		    return PIPELET_ERROR;
 		}
-		log.debug( 'Successfuly send {0}, response: {1}', JSON.stringify( requestDetails ), JSON.stringify( response ) );
-		
-		//do something with the response session_id below
+		isSessionUpdated = true;
+		log.debug( 'Successfuly made a POST request {0}, response: {1}', JSON.stringify( requestDetails ), JSON.stringify( response ) );
 	}
 	catch(e)
 	{
-		log.error("Could not create session exception: {1}\nResponse: {2}", e.message, response.errorMessage);
+		log.error("Could not update session exception: {1}\nResponse: {2}", e.message, response.errorMessage);
 		return PIPELET_ERROR;
 	}
 	
-
-	args.session_id = ;
-	args.client_token = ;
+	args.isSessionUpdated = isSessionUpdated;
 
 	return PIPELET_NEXT;
 }

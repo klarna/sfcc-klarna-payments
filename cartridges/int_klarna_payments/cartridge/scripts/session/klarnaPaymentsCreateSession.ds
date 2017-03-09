@@ -35,7 +35,7 @@ function execute( args : PipelineDictionary ) : Number
 	
 	try
 	{
-		requestDetails = helpers.klarnaPayments.generateCreateSessionRequestDetails( args.Basket );
+		requestDetails = helpers.klarnaPayments.generateSessionRequestDetails( args.Basket );
 		log.debug( 'Create Session Request generated: {0}', JSON.stringify( requestDetails ) );
 	}
 	catch ( err )
@@ -46,16 +46,17 @@ function execute( args : PipelineDictionary ) : Number
 	
 	try
 	{	
-		service =  SVC.ServiceRegistry.get("KlarnaPaymentsCreateSessionService");
+		service =  SVC.ServiceRegistry.get("KlarnaPaymentsSessionService");
 		endpointParam = {
-			"endpoint": requestDetails.endpoint,
+			"url": requestDetails.url,
+			"endpoint": 'credit/v1/sessions',
 			"payload": requestDetails.payload
 		};
 		response  = service.call( endpointParam );
 	
 		if ( response == null || service == null || response.error )
 		{
-		    log.error( "Send to {0} failed with error message: {1} and msg: {2} and error code: {3}", requestDetails.endpoint, response.errorMessage, response.msg, response.error );
+		    log.error( "Send to {0} failed with error message: {1} and msg: {2} and error code: {3}", requestDetails.url, response.errorMessage, response.msg, response.error );
 		    return PIPELET_ERROR;
 		}
 		log.debug( 'Successfuly send {0}, response: {1}', JSON.stringify( requestDetails ), JSON.stringify( response ) );
@@ -68,9 +69,9 @@ function execute( args : PipelineDictionary ) : Number
 		return PIPELET_ERROR;
 	}
 	
-
-	args.session_id = 'session_id';
-	args.client_token = 'client_token';
+	//TODO parse the response
+	args.session_id = '0b1d9815-165e-42e2-8867-35bc03789e00';
+	args.client_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJzZXNzaW9uX2lkIiA6ICIw';
 
 	return PIPELET_NEXT;
 }

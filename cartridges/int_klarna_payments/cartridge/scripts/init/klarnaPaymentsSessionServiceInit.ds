@@ -10,8 +10,8 @@ let log = Logger.getLogger( 'klarnaPaymentsSessionServiceInit.ds' );
 SVC.ServiceRegistry.configure("KlarnaPaymentsSessionService", {
 	createRequest: function( service: HTTPService, params: Object )
 	{
-		//service.URL = params.url + params.endpoint;
-		service.URL = "https://requestb.in/xwsnr9xw";
+		service.URL = params.url + params.endpoint;
+		//service.URL = "http://requestb.in/196cokb1";
 		service.client.setRequestHeader('Content-Type', 'application/json');
 
 		return JSON.stringify( params.payload );

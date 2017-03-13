@@ -70,8 +70,8 @@ function execute( args : PipelineDictionary ) : Number
 	}
 	
 	//TODO parse the response
-	args.session_id = '0b1d9815-165e-42e2-8867-35bc03789e00';
-	args.client_token = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.ewogICJzZXNzaW9uX2lkIiA6ICIw';
+	args.session_id = response.object.session_id;
+	args.client_token = response.object.client_token;
 
 	return PIPELET_NEXT;
 }

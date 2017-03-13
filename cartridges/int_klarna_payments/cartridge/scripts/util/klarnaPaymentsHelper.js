@@ -41,8 +41,22 @@ function klarnaPaymentsHelper()
 		payload.locale 				= request.locale.replace('_', '-');
 		payload.billing_address 	= _getKlarnaPaymentsBillingAddressObj( empty( basket.getBillingAddress() ) ? basket.getShipments().iterator().next().getShippingAddress() : basket.getBillingAddress() );
 		payload.order_amount 		= basket.totalGrossPrice.available ? basket.totalGrossPrice.getValue() * 100 : basket.getAdjustedMerchandizeTotalPrice(true).add(LineItemCtnr.giftCertificateTotalPrice).getValue() * 100; //Amounts should be in minor units according to the ISO 4217 standard.
-		payload.order_tax_amount 	= basket.totalTax.available ? basket.getTotalTax().getValue() * 100 : 0;
-		payload.order_lines 		= _getKlarnaPaymentsOrderLinesObj( basket );		
+		payload.order_tax_amount 	= 0;//basket.totalTax.available ? basket.getTotalTax().getValue() * 100 : 0;
+		payload.order_lines 		= _getKlarnaPaymentsOrderLinesObj( basket );	
+		
+		if( Site.getCurrent().getCustomPreferenceValue( 'MerchantReference2MappedTo' ) && basket.getOrderBeingEdited() )
+		{
+			try
+			{
+				payload.merchant_reference2 = basket.getOrderBeingEdited()[Site.getCurrent().getCustomPreferenceValue( 'MerchantReference2MappedTo' ).toString()];
+			}
+			catch( err )
+			{
+				log.error("merchant_reference2 was not set. Error: {0} ", err.message);
+			}
+			
+		}
+		 
 		
 		returnObject.payload = payload;
 				

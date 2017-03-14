@@ -147,6 +147,7 @@ function klarnaPaymentsHelper()
 		{
 			billingAddressObj.given_name 		= billingAddress.getFirstName();
 			billingAddressObj.family_name 		= billingAddress.getLastName();
+			billingAddressObj.email				= "";
 			billingAddressObj.title 			= !empty( billingAddress.getTitle() ) ? billingAddress.getTitle() : "";
 			billingAddressObj.street_address 	= billingAddress.getAddress1();
 			billingAddressObj.street_address2 	= !empty( billingAddress.getAddress2() ) ? billingAddress.getAddress2() : "";

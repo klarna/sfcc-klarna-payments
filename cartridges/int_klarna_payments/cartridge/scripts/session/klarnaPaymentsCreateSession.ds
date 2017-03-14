@@ -70,8 +70,8 @@ function execute( args : PipelineDictionary ) : Number
 	}
 	
 	//TODO parse the response
-	args.session_id = response.object.session_id;
-	args.client_token = response.object.client_token;
+	args.session_id = JSON.parse(response.object.text).session_id;
+	args.client_token = JSON.parse(response.object.text).client_token;
 
 	return PIPELET_NEXT;
 }

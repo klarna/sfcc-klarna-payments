@@ -1,0 +1,20 @@
+<iscontent type="text/javascript" charset="UTF-8" compact="true"/>
+
+<isscript>
+	var URLUtils = require('dw/web/URLUtils');
+	
+	// klarna payments urls
+	var KPurls =  {
+        createSession		: URLUtils.https('KLARNA_PAYMENTS-CreateSession').toString()				
+	};
+	
+	//klarna payments objects
+	var KPObjects = {
+		sessionID			: pdict.KlarnaPaymentsSessionID.toString(),
+		clientToken			: pdict.KlarnaPaymentsClientToken.toString()
+	};
+</isscript>
+(function(app){
+	window.KlarnaPaymentsUrls = <isprint value="${JSON.stringify(KPurls)}" encoding="off"/>;
+	window.KlarnaPaymentsObjects = <isprint value="${JSON.stringify(KPObjects)}" encoding="off"/>;
+}(window.app = window.app || {}));

@@ -4,17 +4,19 @@
 	var klarnaPaymentsObjects = window.KlarnaPaymentsObjects;
 	
 	//billing address form required fields
-	var $firstName 		= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_firstName"]')[0];
-	var $lastName 		= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_lastName"]')[0];
-	var $address1 		= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_address1"]')[0];
-	var $city 			= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_city"]')[0];
-	var $postal 		= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_postal"]')[0];
-	var $country 		= document.querySelectorAll('select[name="dwfrm_billing_billingAddress_addressFields_country"]')[0];
-	var $state 			= document.querySelectorAll('select[name="dwfrm_billing_billingAddress_addressFields_states_state"]')[0];
-	var $phone 			= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_phone"]')[0];
-	var $emailAddress 	= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_email_emailAddress"]')[0];
+	var $firstName 			= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_firstName"]')[0];
+	var $lastName 			= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_lastName"]')[0];
+	var $address1 			= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_address1"]')[0];
+	var $city 				= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_city"]')[0];
+	var $postal 			= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_postal"]')[0];
+	var $country 			= document.querySelectorAll('select[name="dwfrm_billing_billingAddress_addressFields_country"]')[0];
+	var $state 				= document.querySelectorAll('select[name="dwfrm_billing_billingAddress_addressFields_states_state"]')[0];
+	var $phone 				= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_phone"]')[0];
+	var $emailAddress 		= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_email_emailAddress"]')[0];
+	var $billingAddressForm = document.querySelectorAll('#dwfrm_billing > fieldset')[0];	
+	var $authorizationToken	= document.querySelectorAll('input[name="klarna_payments_authorization_token"]')[0];
+	var $klarnaPI			= document.getElementById('is-Klarna');
 	
-	var $billingAddressForm = document.querySelectorAll('#dwfrm_billing > fieldset');
 	
 	window.klarnaAsyncCallback = function ()
 	{
@@ -31,8 +33,8 @@
 		})
 
 	};
-	$billingAddressForm[0].addEventListener( "change", function () {
-		var elements = $billingAddressForm[0].elements;
+	$klarnaPI.addEventListener( "click", function () {
+		var elements = $billingAddressForm.elements;
 		var formValid = true;
 		for (i=0; i<elements.length; i++)
 		{
@@ -44,8 +46,8 @@
 		}
 		if(formValid)
 		{
-			updateBillingAddress();
-		}			
+			updateBillingAddress();			
+		}		
 	})
 	
 	/**
@@ -75,7 +77,20 @@
 		}, 
 		function(res)
 		{
-			console.debug(res);
+			authorize();
+		})
+	}
+	
+	/**
+	 * @function
+	 * @description authorize the order at Klarna
+	 */
+	function authorize()
+	{
+		Klarna.Credit.authorize({}, 
+		function(res)
+		{
+			$authorizationToken.value = res.authorization_token;
 		})
 	}
 	

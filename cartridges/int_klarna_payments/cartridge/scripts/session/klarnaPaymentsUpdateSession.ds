@@ -1,76 +1,53 @@
 /**
-* klarnaPaymentsUpdateSession.ds
+* klarnaPaymentsCreateSession.ds
 *
-* Klarna Uodate session API call 
+* API call to create new Klarna Payments session
 *
-* @input Basket : dw.order.Basket The basket
-* @input session_id : String Klarna Session ID
-* @output isSessionUpdated : Boolean true if klarna session has been updated
+* @input KlarnaPaymentsSessionID : String
+* @input Basket : dw.order.Basket
+* @input LocaleObject : dw.object.CustomObject
 */
 
 // import packages
-let SVC = require( 'dw/svc' );
-let Net = require( 'dw/net' );
-let Logger = require( 'dw/system/Logger' );
-
-//script include
-let log = Logger.getLogger( 'klarnaPaymentsUpdateSession.ds' );
-let helpers = {
-	klarnaPayments : require( '~/cartridge/scripts/util/klarnaPaymentsHelper' )(),	
+var Logger = require( 'dw/system/Logger' );
+var logger = Logger.getLogger( 'klarnaPaymentsCreateSession.ds' );
+var KlarnaPayments = {
+	httpService 			: require('~/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
+	apiContext 				: require('~/cartridge/scripts/common/KlarnaPaymentsApiContext'),
+	sessionRequestBuilder 	: require('~/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder')
 };
 
 function execute( args : PipelineDictionary ) : Number
 {
-	let service = null;
-	let response = null;
-	let endpointParam = {};
-	let isSessionUpdated = false;
+	var localeObject = args.LocaleObject;
+	var klarnaSessionID = args.KlarnaPaymentsSessionID;
+	
+	try {
+		var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+        var klarnaApiContext = new KlarnaPayments.apiContext();
+        var requestBody = _getRequestBody(args.Basket, localeObject);
+        var requestUrl = klarnaApiContext.getFlowApiUrls().get('updateSession', klarnaSessionID);
+        
+		var response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
 
-	// verify that we have a basket
-	if( basket === null )	
-	{
-		log.error( 'Shopping Cart is empty' );
-		return PIPELET_ERROR;
-	}
-	
-	try
-	{
-		let requestDetails = helpers.klarnaPayments.generateSessionRequestDetails( args.Basket );
-		log.debug( 'Create Session Request generated: {0}', JSON.stringify( requestDetails ) );
-	}
-	catch ( err )
-	{
-		log.error( 'Unable to generate create session request details. Error: {0}', err.message );
-		return PIPELET_ERROR;
-	}
-	
-	try
-	{	
-		service =  SVC.ServiceRegistry.get("KlarnaPaymentsCreateSessionService");
-		endpointParam = {
-			"url": requestDetails.url,
-			"endpoint": 'credit/v1/sessions' + args.session_id,
-			"payload": requestDetails.payload
-		};
-		response  = service.call( endpointParam );
-	
-		if ( response == null || service == null || response.error )
-		{
-		    log.error( "POST to {0} failed with error message: {1}", requestDetails.endpoint, response.errorMessage );
-		    return PIPELET_ERROR;
-		}
-		isSessionUpdated = true;
-		log.debug( 'Successfuly made a POST request {0}, response: {1}', JSON.stringify( requestDetails ), JSON.stringify( response ) );
-	}
-	catch(e)
-	{
-		log.error("Could not update session exception: {1}\nResponse: {2}", e.message, response.errorMessage);
-		return PIPELET_ERROR;
-	}
-	
-	args.isSessionUpdated = isSessionUpdated;
+		args.session_id = response.session_id;
+		args.client_token = response.client_token;
 
-	return PIPELET_NEXT;
+	} catch (e) {
+		logger.error(e);
+		return PIPELET_ERROR;
+	}
+    
+    return PIPELET_NEXT;	
+}
+
+function _getRequestBody(basket, localeObject) {
+	var orderRequestBuilder = new KlarnaPayments.sessionRequestBuilder();
+	
+	return orderRequestBuilder.buildRequest({
+	    basket: basket,
+	    localeObject: localeObject
+	}).get();
 }
 
 module.exports = {

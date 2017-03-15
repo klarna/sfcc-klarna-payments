@@ -36,7 +36,7 @@
       </simple-transition>
       <node>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="false"/>
+          <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
           <config-property key="ScriptFile" value="int_klarna_payments:klarnaRemovePreviousPI.ds"/>
           <key-binding alias="ScriptLog" key="ScriptLog"/>
@@ -58,7 +58,7 @@
       </simple-transition>
       <node>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="false"/>
+          <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
           <config-property key="ScriptFile" value="int_klarna_payments:createKlarnaPaymentInstrument.ds"/>
           <key-binding alias="ScriptLog" key="ScriptLog"/>
@@ -100,7 +100,7 @@
     <segment>
       <node>
         <text-node>
-          <description>Authorizes a payment using a credit card. The payment is authorized by using the BASIC_CREDIT processor only and setting the Klarna order ID as the transaction ID. Customizations may use other processors and custom logic to authorize credit card payment.</description>
+          <description>Authorizes a payment using a KLARNA_PAYMENTS processor.</description>
         </text-node>
         <node-display width="2" x="5" y="2"/>
       </node>
@@ -115,7 +115,7 @@
       <simple-transition/>
       <node>
         <pipelet-node pipelet-name="GetPaymentProcessor" pipelet-set-identifier="bc_api">
-          <key-binding alias="&quot;Klarna&quot;" key="ID"/>
+          <key-binding alias="&quot;KLARNA_PAYMENTS&quot;" key="ID"/>
           <key-binding alias="PaymentProcessor" key="PaymentProcessor"/>
         </pipelet-node>
         <node-display x="0" y="1"/>

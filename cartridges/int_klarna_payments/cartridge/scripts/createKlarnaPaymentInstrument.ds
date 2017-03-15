@@ -13,7 +13,7 @@ importPackage( dw.util );
 importPackage( dw.value );
 importPackage( dw.web );
 
-importScript( dw.web.Resource.msg('demandware.core.cartridge', 'int_klarna', 'app_storefront_core') + ':checkout/Utils.ds' );
+importScript("checkout/Utils.ds");
 
 function execute( args : PipelineDictionary ) : Number
 {

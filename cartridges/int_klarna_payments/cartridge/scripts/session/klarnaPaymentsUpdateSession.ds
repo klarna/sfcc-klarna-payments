@@ -10,7 +10,7 @@
 
 // import packages
 var Logger = require( 'dw/system/Logger' );
-var logger = Logger.getLogger( 'klarnaPaymentsCreateSession.ds' );
+var logger = Logger.getLogger( 'klarnaPaymentsUpdateSession.ds' );
 var KlarnaPayments = {
 	httpService 			: require('~/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
 	apiContext 				: require('~/cartridge/scripts/common/KlarnaPaymentsApiContext'),
@@ -26,12 +26,9 @@ function execute( args : PipelineDictionary ) : Number
 		var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody(args.Basket, localeObject);
-        var requestUrl = klarnaApiContext.getFlowApiUrls().get('updateSession', klarnaSessionID);
+        var requestUrl = dw.util.StringUtils.format(klarnaApiContext.getFlowApiUrls().get('updateSession'), klarnaSessionID);
         
 		var response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-
-		args.session_id = response.session_id;
-		args.client_token = response.client_token;
 
 	} catch (e) {
 		logger.error(e);

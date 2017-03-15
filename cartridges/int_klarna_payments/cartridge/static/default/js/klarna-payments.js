@@ -33,6 +33,22 @@
 		})
 
 	};
+	$billingAddressForm.addEventListener( "click", function () {
+		var elements = $billingAddressForm.elements;
+		var formValid = true;
+		for (i=0; i<elements.length; i++)
+		{
+			if( elements[i].getAttribute('aria-invalid')=='true' || (elements[i].getAttribute('aria-required')=='true' && elements[i].value.length == 0 ) )
+			{
+				formValid = false;
+				break;
+			}
+		}
+		if(formValid)
+		{
+			updateBillingAddress();			
+		}		
+	})
 	$klarnaPI.addEventListener( "click", function () {
 		var elements = $billingAddressForm.elements;
 		var formValid = true;

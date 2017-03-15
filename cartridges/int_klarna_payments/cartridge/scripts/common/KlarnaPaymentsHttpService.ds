@@ -1,0 +1,143 @@
+var Class = require('~/cartridge/scripts/util/Class').Class;
+var Logger = require('dw/system/Logger');
+var ServiceRegistry = require('dw/svc/ServiceRegistry');
+var StringUtils = require('dw/util/StringUtils');
+var Site = require('dw/system/Site');
+
+var KlarnaPaymentsHttpService = Class.extend({
+    _logger : null,
+
+    init : function() {
+        this._logger = Logger.getLogger('RequestTrace');
+    },
+
+    call : function(urlPath: String, httpVerb : String, credentialID : String, requestBody: Object) {
+
+        var serviceID : String = Site.getCurrent().getCustomPreferenceValue('kpServiceName');
+        ServiceRegistry.configure(serviceID, {
+			createRequest: function(svc, requestBody) {
+				return JSON.stringify(requestBody);
+			},
+			parseResponse : function(svc, client) {
+				return client;
+     		}
+ 		});
+ 		
+ 		var service : Service = ServiceRegistry.get(serviceID);
+ 		service.setCredentialID(credentialID);
+        service.URL += urlPath;
+        service.addHeader('Content-Type', 'application/json');
+        service.addHeader('Accept', 'application/json');
+        
+        if (!empty(httpVerb) && this.isValidHttpVerb(httpVerb)) {
+        	service.setRequestMethod(httpVerb);
+        }
+
+        var result : Result;
+        try {
+            if (empty(requestBody)) {
+                result = service.call();
+            } else {
+                result = service.call(requestBody);
+            }
+
+        } catch (ex) {
+            var exception = ex;
+            this._logger.error(exception.message);
+        }
+        
+        this.logResponseData(urlPath, httpVerb, requestBody, result);
+        this.detectErrorResponse(result, httpVerb, service.URL, requestBody);
+
+		if (!empty(result.object.text)) {
+			var jsonResponse = result.object.text.replace(/\r?\n|\r/g, ' ');
+			return JSON.parse(jsonResponse)
+		}
+
+        return result.status;
+    },
+
+    isValidHttpVerb : function(httpVerb) {
+    	var validHttpVerbs = ['GET', 'PUT', 'POST',  'DELETE', 'PATCH'];
+    	
+    	if (validHttpVerbs.indexOf(httpVerb) !== -1) {
+    		return true;
+    	}
+    	throw new Error('Not valid HTTP verb defined - ' + httpVerb);
+    },
+
+    detectErrorResponse : function(result : Object, httpVerb : String, requestUrl : String, requestBody : Object) {
+        if (empty(result)) {
+            this._logger.error('result was empty');
+            throw new Error(this.getErrorResponse('default'));
+        }
+        else if (result.error != 0 || result.status == 'ERROR') {
+            this.logErrorResponse(result, requestUrl, requestBody);
+            throw new Error(result.errorMessage);
+        }
+    },
+
+    getErrorResponse : function(errorCode : String) {
+
+        var errorResource = 'apierror.flow.' + errorCode;
+        var defaultMessage = Resource.msg('apierror.flow.default', 'klarna', null);
+        var errorMessage = Resource.msg(errorResource, 'klarna', defaultMessage);
+
+        if (!empty(errorMessage)) {
+            return errorMessage;
+        }
+        else {
+            return defaultMessage;
+        }
+    },
+
+    logErrorResponse : function(result : Object, requestUrl : String, requestBody : Object) {
+
+        var content: String = 'result.error=[' + result.error;
+        content += '], result.status=[' + result.status;
+        content += '], result.errorMessage=[' + result.errorMessage + ']';
+
+        if (!empty(result.object) && !empty(result.object.text)) {
+            content += '], result.object.text=[' + result.object.text + ']';
+        }
+
+        if (!empty(requestUrl)) {
+            content += ', requestUrl=[' + requestUrl + ']';
+        }
+
+        if (!empty(requestBody)) {
+            content += ', requestBody=[' + JSON.stringify(requestBody) + ']';
+        }
+
+        this._logger.error(content);
+    },
+
+    logResponseData : function(urlPath: String, httpVerb : String, requestBody: Object, result : Object) {
+
+        try {
+            var message = '';
+            var requestBodyJson = JSON.stringify(requestBody);
+
+            if (!empty(result.object) && !empty(result.object.text)) {
+                message = StringUtils.format('Response for request urlPath={0}, httpVerb={1}, requestBody=[{2}], responseBody=[{3}]',
+                            urlPath,
+                            httpVerb,
+                            requestBodyJson,
+                            result.object.text);
+            } else {
+                message = StringUtils.format('Response for EMPTY request urlPath={0}, httpVerb={1}, requestBody=[{2}]',
+                            urlPath,
+                            httpVerb,
+                            requestBodyJson);
+            }
+
+        	this._logger.info(message);
+
+        } catch (e) {
+            var exception = e;
+            this._logger.error(exception);
+        }
+    }
+});
+
+module.exports = KlarnaPaymentsHttpService;

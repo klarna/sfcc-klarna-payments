@@ -1,0 +1,55 @@
+/**
+* klarnaPaymentsCreateSession.ds
+*
+* API call to create new Klarna Payments session
+*
+* @input Basket : dw.order.Basket The basket
+* @input LocaleObject : dw.object.CustomObject
+* @output session_id : String
+* @output client_token : String
+*/
+
+// import packages
+var Logger = require( 'dw/system/Logger' );
+var logger = Logger.getLogger( 'klarnaPaymentsCreateSession.ds' );
+var KlarnaPayments = {
+	httpService 			: require('~/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
+	apiContext 				: require('~/cartridge/scripts/common/KlarnaPaymentsApiContext'),
+	sessionRequestBuilder 	: require('~/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder')
+};
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var localeObject = args.LocaleObject;
+	
+	try {
+		var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+        var klarnaApiContext = new KlarnaPayments.apiContext();
+        var requestBody = _getRequestBody(args.Basket, localeObject);
+        var requestUrl = klarnaApiContext.getFlowApiUrls().get('createSession');
+        
+		var response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
+
+		args.session_id = response.session_id;
+		args.client_token = response.client_token;
+
+	} catch (e) {
+		logger.error(e);
+		return PIPELET_ERROR;
+	}
+    
+    return PIPELET_NEXT;	
+}
+
+function _getRequestBody(basket, localeObject) {
+	var orderRequestBuilder = new KlarnaPayments.sessionRequestBuilder();
+	
+	return orderRequestBuilder.buildRequest({
+	    basket: basket,
+	    localeObject: localeObject
+	}).get();
+}
+
+module.exports = {
+	'execute': execute
+}

@@ -1,0 +1,28 @@
+/**
+* Returns country code based on site current locale
+*
+* @input CurrentRequest : dw.system.Request
+* @output CurrentCountry : String
+*
+*/
+var Countries = require('int_klarna_payments/cartridge/scripts/util/Countries');
+var Logger = require('dw/system/Logger');
+
+function execute( args : PipelineDictionary ) : Number
+{
+	try {
+	    var countryCode : String = Countries.getCurrent({CurrentRequest: args.CurrentRequest}).countryCode;
+
+	    if (empty(countryCode)) {
+			throw new Error('Could not get country code from the current request');
+		}
+
+		args.CurrentCountry = countryCode;
+
+	} catch (e) {
+		Logger.error(e);
+		return PIPELET_ERROR;
+	}
+
+    return PIPELET_NEXT;
+}

@@ -18,9 +18,9 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
-			<attribute-definition attribute-id="MerchantReference2MappedTo">
-                <display-name xml:lang="x-default">MerchantReference2 mapping</display-name>
-                <description xml:lang="x-default">The field from SCC order object that is mapped to merchant_reference2 field from klarna API request</description>
+			<attribute-definition attribute-id="merchant_reference2_mapping">
+                <display-name xml:lang="x-default">merchant_reference2 mapping</display-name>
+                <description xml:lang="x-default">The field from SCC order (basket) object that is mapped to merchant_reference2 field from klarna API request</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -30,12 +30,8 @@
 		<group-definitions>
 			<attribute-group group-id="Klarna_Payments">
                 <display-name xml:lang="x-default">Klarna Payments</display-name>
-                <attribute attribute-id="KlarnaPaymentsEndpointProdUS"/>
-                <attribute attribute-id="KlarnaPaymentsEndpointTESTUS"/>
-                <attribute attribute-id="KlarnaPaymentsEndpointProdEurope"/>
-                <attribute attribute-id="KlarnaPaymentsEndpointTESTEurope"/>
 				<attribute attribute-id="sendProductAndImageURLs"/>
-				<attribute attribute-id="MerchantReference2MappedTo"/>
+				<attribute attribute-id="merchant_reference2_mapping"/>
             </attribute-group>
         </group-definitions>
 	</type-extension>

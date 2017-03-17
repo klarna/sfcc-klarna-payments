@@ -56,11 +56,11 @@
     KlarnaPaymentsSessionRequestBuilder.prototype.setMerchantReference = function (basket) {
     	this.context.merchant_reference2="";
     	
-    	if( Site.getCurrent().getCustomPreferenceValue( 'MerchantReference2MappedTo' ) && basket.getOrderBeingEdited() )
+    	if( Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' ) )
 		{
 			try
 			{
-				this.context.merchant_reference2 = basket.getOrderBeingEdited()[Site.getCurrent().getCustomPreferenceValue( 'MerchantReference2MappedTo' ).toString()];
+				this.context.merchant_reference2 = basket[Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' )].toString();
 			}
 			catch( err )
 			{

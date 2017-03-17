@@ -203,7 +203,7 @@
 			
 			if( Site.getCurrent().getCustomPreferenceValue( 'sendProductAndImageURLs' ) )
 			{
-				item.product_url= ( !empty( li.getProduct() ) && li.getProduct().getPageURL() !== null ) ? li.getProduct().getPageURL() : "";
+				item.product_url= !empty( li.productID ) ? URLUtils.http( 'Product-Show', 'pid', li.productID ).toString() : "";
 				item.image_url 	= !empty( li.getProduct() ) ? li.getProduct().getImage('small', 0).getImageURL({}).toString() : "";
 			}	
 

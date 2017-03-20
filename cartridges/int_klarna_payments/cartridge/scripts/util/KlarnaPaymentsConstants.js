@@ -16,6 +16,9 @@ var ORDER_LINE_TYPE = 	{
 	SURCHARGE : 'surcharge'
 }
 
+var CONTENT_TYPE = 'application/vnd.klarna.internal.emd-v2+json';
+
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.PAYMENT_METHOD = PAYMENT_METHOD;
 module.exports.ORDER_LINE_TYPE = ORDER_LINE_TYPE;
+module.exports.CONTENT_TYPE = CONTENT_TYPE;

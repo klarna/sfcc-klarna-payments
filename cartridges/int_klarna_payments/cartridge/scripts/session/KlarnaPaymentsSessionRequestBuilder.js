@@ -42,7 +42,8 @@
             .buildBilling(basket)
             .buildOrderLines(basket, localeObject)
             .buildTotalAmount(basket, localeObject)
-            .buildTotalTax(basket, localeObject);        
+            .buildTotalTax(basket, localeObject)
+        	.buildAdditionalCustomerInfo(basket, localeObject);
 
         return requestBodyObject;
     };
@@ -163,6 +164,31 @@
 
         return this;
     };   
+    
+    KlarnaPaymentsSessionRequestBuilder.prototype.buildAdditionalCustomerInfo = function (basket, localeObject) {
+    	var country = localeObject.country;
+    	var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
+    	var customer = basket.getCustomer();
+    	
+    	if( !empty(preAssessmentCountries) && (preAssessmentCountries.indexOf( country ) !== -1) && customer.registered )
+		{
+    		this.context.attachment.content_type = 'application/json';
+    		
+    		this.context.attachment.body.customer_account_info.unique_account_identifier = customer.ID;
+        	this.context.attachment.body.customer_account_info.account_registration_date = !empty(customer.profile.creationDate) ? customer.profile.creationDate.toISOString() : '';
+        	this.context.attachment.body.customer_account_info.account_last_modified = !empty(customer.profile.lastModified) ? customer.profile.lastModified.toISOString() : '';
+        	
+        	this.context.attachment.body.purchase_history_full.unique_account_identifier = customer.ID;
+        	if (customer.getActiveData())
+    		{
+        		this.context.attachment.body.purchase_history_full.number_paid_purchases = !empty(customer.activeData.orders) ? customer.activeData.orders : 0;
+        		this.context.attachment.body.purchase_history_full.total_amount_paid_purchases = !empty(customer.activeData.orderValue) ? customer.activeData.orderValue : 0;
+        		this.context.attachment.body.purchase_history_full.date_of_last_paid_purchase = !empty(customer.activeData.lastOrderDate) ? customer.activeData.lastOrderDate.toISOString() : '';  
+    		}
+    	}
+    	
+    	return this;
+    };
 
    function buildItems(items, country, context) {
     	var itemPrice = 0,

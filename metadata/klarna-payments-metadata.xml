@@ -36,6 +36,114 @@ For example the following flue “UK, CN, AU” would mean the pre-assessment is
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+			  <attribute-definition attribute-id="kpColorBorder">
+                <display-name xml:lang="x-default">Border Color Preference</display-name>
+                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>#CBCBCD</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpColorBorderSelected">
+                <display-name xml:lang="x-default">Border Selected Color Preference</display-name>
+                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>#0074C8</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpColorButton">
+                <display-name xml:lang="x-default">Button Color Preference</display-name>
+                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>#0074C8</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpColorButtonText">
+                <display-name xml:lang="x-default">Button Text Color Preference</display-name>
+                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>#FFFFFF</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpColorCheckbox">
+                <display-name xml:lang="x-default">Checkbox Color Preference</display-name>
+                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>#0074C8</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpColorCheckboxCheckmark">
+                <display-name xml:lang="x-default">Checkbox checkmark color preference</display-name>
+                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>#FFFFFF</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpColorDetails">
+                <display-name xml:lang="x-default">Details Color Preference</display-name>
+                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>#0074C8</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpColorHeader">
+                <display-name xml:lang="x-default">Header Color Preference</display-name>
+                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>#0074C8</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpColorLink">
+                <display-name xml:lang="x-default">Link Color Preference</display-name>
+                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>#0074C8</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpColorText">
+                <display-name xml:lang="x-default">Text Color Preference</display-name>
+                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>#3C3C3E</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpColorTextSecondary">
+                <display-name xml:lang="x-default">Secondary Text Color Preference</display-name>
+                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>#9E9EA0</default-value>
+            </attribute-definition>
+			<attribute-definition attribute-id="kpRadiusBorder">
+                <display-name xml:lang="x-default">Border Radius Preference</display-name>
+                <description xml:lang="x-default">Size (in pixels) of the border radius to be used in Klarna Payments iFrame</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>5px</default-value>
+            </attribute-definition>
 		</custom-attribute-definitions>				
 		<group-definitions>
 			<attribute-group group-id="Klarna_Payments">
@@ -43,6 +151,18 @@ For example the following flue “UK, CN, AU” would mean the pre-assessment is
 				<attribute attribute-id="sendProductAndImageURLs"/>
 				<attribute attribute-id="merchant_reference2_mapping"/>
 				<attribute attribute-id="kpPreAssessment"/>
+				<attribute attribute-id="kpColorDetails"/>
+				<attribute attribute-id="kpColorButton"/>
+				<attribute attribute-id="kpColorButtonText"/>
+				<attribute attribute-id="kpColorCheckbox"/>
+				<attribute attribute-id="kpColorCheckboxCheckmark"/>
+				<attribute attribute-id="kpColorHeader"/>
+				<attribute attribute-id="kpColorLink"/>
+				<attribute attribute-id="kpColorBorder"/>
+				<attribute attribute-id="kpColorBorderSelected"/>
+				<attribute attribute-id="kpColorText"/>
+				<attribute attribute-id="kpColorTextSecondary"/>
+				<attribute attribute-id="kpRadiusBorder"/>
             </attribute-group>
         </group-definitions>
 	</type-extension>

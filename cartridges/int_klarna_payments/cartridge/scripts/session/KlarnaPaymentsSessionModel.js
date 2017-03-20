@@ -10,6 +10,7 @@
         this.order_tax_amount = 0;
         this.order_lines = [];
         this.merchant_reference2 = '';  
+        this.options = new Options();
     }
 
     function BillingAddress() {
@@ -40,6 +41,20 @@
         this.product_url = '';
         this.image_url = '';
     } 
+    function Options() {
+        this.color_details = '#0074C8';
+        this.color_button = '#0074C8';
+        this.color_button_text = '#FFFFFF';
+        this.color_checkbox = '#0074C8';
+        this.color_checkbox_checkmark = '#FFFFFF';
+        this.color_header = '#0074C8';
+        this.color_link = '#0074C8';
+        this.color_border = '#CBCBCD';
+        this.color_border_selected = '#0074C8';
+        this.color_text = '#3C3C3E';
+        this.color_text_secondary = '#9E9EA0';
+        this.radius_border = '5px';
+    }
     
     module.exports.KlarnaPaymentsSessionModel = KlarnaPaymentsSessionModel;
     module.exports.LineItem = LineItem;

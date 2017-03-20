@@ -44,7 +44,8 @@
             .buildOrderLines(basket, localeObject)
             .buildTotalAmount(basket, localeObject)
             .buildTotalTax(basket, localeObject)
-            .buildAdditionalCustomerInfo(basket, localeObject);
+            .buildAdditionalCustomerInfo(basket, localeObject)
+            .buildOptions();
 
         return requestBodyObject;
     };
@@ -181,6 +182,23 @@
     	
     	return this;
     };
+    
+    KlarnaPaymentsSessionRequestBuilder.prototype.buildOptions = function () {
+    	this.context.options.color_details 				= Site.getCurrent().getCustomPreferenceValue('kpColorDetails');
+		this.context.options.color_button 				= Site.getCurrent().getCustomPreferenceValue('kpColorButton');
+		this.context.options.color_button_text 			= Site.getCurrent().getCustomPreferenceValue('kpColorButtonText');
+		this.context.options.color_checkbox 			= Site.getCurrent().getCustomPreferenceValue('kpColorCheckbox');
+		this.context.options.color_checkbox_checkmark 	= Site.getCurrent().getCustomPreferenceValue('kpColorCheckboxCheckmark');
+		this.context.options.color_header 				= Site.getCurrent().getCustomPreferenceValue('kpColorHeader');
+		this.context.options.color_link 				= Site.getCurrent().getCustomPreferenceValue('kpColorLink');
+		this.context.options.color_border 				= Site.getCurrent().getCustomPreferenceValue('kpColorBorder');
+    	this.context.options.color_border_selected 		= Site.getCurrent().getCustomPreferenceValue('kpColorBorderSelected');
+    	this.context.options.color_text 				= Site.getCurrent().getCustomPreferenceValue('kpColorText');
+    	this.context.options.color_text_secondary 		= Site.getCurrent().getCustomPreferenceValue('kpColorTextSecondary');
+    	this.context.options.radius_border 				= Site.getCurrent().getCustomPreferenceValue('kpRadiusBorder'); 
+   	
+   	return this;
+   };
 
    function buildItems(items, country, context) {
     	var itemPrice = 0,

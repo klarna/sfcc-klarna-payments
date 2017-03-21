@@ -10,59 +10,60 @@
     var Builder = require('../util/Builder');
     var ORDER_LINE_TYPE = require('../util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
     var CONTENT_TYPE = require('../util/KlarnaPaymentsConstants.js').CONTENT_TYPE;
-    var KlarnaPaymentsSessionModel = require('./KlarnaPaymentsSessionModel').KlarnaPaymentsSessionModel;
-    var LineItem = require('./KlarnaPaymentsSessionModel').LineItem;   
-   	var log = Logger.getLogger( 'KlarnaPaymentsSessionRequestBuilder.js' );
+    var KlarnaPaymentsOrderModel = require('./KlarnaPaymentsOrderModel').KlarnaPaymentsOrderModel;
+    var LineItem = require('./KlarnaPaymentsOrderModel').LineItem;   
+   	var log = Logger.getLogger( 'KlarnaPaymentsOrderRequestBuilder.js' );
 
-    function KlarnaPaymentsSessionRequestBuilder() {
+    function KlarnaPaymentsOrderRequestBuilder() {
         this.context = null;
     }
 
-    KlarnaPaymentsSessionRequestBuilder.prototype = new Builder();
-    KlarnaPaymentsSessionRequestBuilder.prototype.get = function () {
+    KlarnaPaymentsOrderRequestBuilder.prototype = new Builder();
+    KlarnaPaymentsOrderRequestBuilder.prototype.get = function () {
         return this.context;
     };
 
     /*
         Build request here
     */
-    KlarnaPaymentsSessionRequestBuilder.prototype.buildRequest = function (params) {
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildRequest = function (params) {
         try {
             handleRequire(params);
         } catch (e) {
             throw new Error(e);
         }
 
-        var basket = params.basket;
+        var order = params.order;
         var localeObject = params.localeObject.custom;
 
         var requestBodyObject = this.init()
-        	.setMerchantReference(basket)
-        	.buildLocale(basket, localeObject)
-            .buildBilling(basket)
-            .buildOrderLines(basket, localeObject)
-            .buildTotalAmount(basket, localeObject)
-            .buildTotalTax(basket, localeObject)
-            .buildAdditionalCustomerInfo(basket, localeObject)
+        	.setMerchantReference(order)
+        	.buildLocale(order, localeObject)
+            .buildBilling(order)
+            .buildOrderLines(order, localeObject)
+            .buildTotalAmount(order, localeObject)
+            .buildTotalTax(order, localeObject)
+            .buildAdditionalCustomerInfo(order, localeObject)
             .buildOptions();
 
         return requestBodyObject;
     };
 
-    KlarnaPaymentsSessionRequestBuilder.prototype.init = function () {
-        this.context = new KlarnaPaymentsSessionModel();
+    KlarnaPaymentsOrderRequestBuilder.prototype.init = function () {
+        this.context = new KlarnaPaymentsOrderModel();
     	
         return this;
     };
     
-    KlarnaPaymentsSessionRequestBuilder.prototype.setMerchantReference = function (basket) {
+    KlarnaPaymentsOrderRequestBuilder.prototype.setMerchantReference = function (order) {
+    	this.context.merchant_reference1 = order.orderNo;
     	this.context.merchant_reference2="";
     	
     	if( Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' ) )
 		{
 			try
 			{
-				this.context.merchant_reference2 = basket[Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' )].toString();
+				this.context.merchant_reference2 = order[Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' )].toString();
 			}
 			catch( err )
 			{
@@ -73,44 +74,20 @@
     	return this;
     };
 
-    KlarnaPaymentsSessionRequestBuilder.prototype.buildBilling = function (basket) {
-    	var currentCustomer = basket.getCustomer();
-    	
-    	this.context.billing_address.email = basket.customerEmail || '';
-
-    	if ( empty(currentCustomer) || empty(currentCustomer.profile)) {
-    		let billingAddress = basket.getShipments().iterator().next().getShippingAddress();
-    		
-    		this.context.billing_address.given_name 		= billingAddress.getFirstName();
-    		this.context.billing_address.family_name 		= billingAddress.getLastName();
-    		this.context.billing_address.email				= "";
-    		this.context.billing_address.title 				= !empty( billingAddress.getTitle() ) ? billingAddress.getTitle() : "";
-    		this.context.billing_address.street_address 	= billingAddress.getAddress1();
-    		this.context.billing_address.street_address2 	= !empty( billingAddress.getAddress2() ) ? billingAddress.getAddress2() : "";
-    		this.context.billing_address.postal_code 		= billingAddress.getPostalCode();
-    		this.context.billing_address.city 				= billingAddress.getCity();
-    		this.context.billing_address.region 			= billingAddress.getStateCode();
-    		this.context.billing_address.phone 				= billingAddress.getPhone();
-    		this.context.billing_address.country 			= billingAddress.getCountryCode().toString();
-    		
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildBilling = function (order) {
+    	var billingAddress = order.getBillingAddress();
+    	if(billingAddress === null)
+		{
     		return this;
-        }
-    	
-    	this.context.billing_address.email = currentCustomer.profile.email;
-        this.context.billing_address.phone = currentCustomer.profile.phoneMobile;
-        this.context.billing_address.given_name = currentCustomer.profile.firstName;
-        this.context.billing_address.family_name = currentCustomer.profile.lastName;
-
-        var customerPreferredAddress = currentCustomer.addressBook.preferredAddress;
-    	if (!empty(customerPreferredAddress)) {
-        	buildAddress.bind(this)(customerPreferredAddress);
-        }
-
+		}
+    	buildAddress.bind(this)(billingAddress);    	    	
+    	this.context.billing_address.email = order.customerEmail || '';
+    	    	
         return this;
     };
 
-    KlarnaPaymentsSessionRequestBuilder.prototype.buildLocale = function (basket, localeObject) {
-        var currency = basket.getCurrencyCode();        
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildLocale = function (order, localeObject) {
+        var currency = order.getCurrencyCode();        
 
         this.context.purchase_country = localeObject.country;
         this.context.purchase_currency = currency;
@@ -119,9 +96,9 @@
         return this;
     };
 
-    KlarnaPaymentsSessionRequestBuilder.prototype.buildOrderLines = function (basket, localeObject) {
-        var lineItems = basket.getAllProductLineItems().toArray();
-        var shipments = basket.shipments;
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildOrderLines = function (order, localeObject) {
+        var lineItems = order.getAllProductLineItems().toArray();
+        var shipments = order.shipments;
         var country = localeObject.country
 
         buildItems(lineItems, country, this.context);
@@ -130,26 +107,26 @@
         return this;
     };   
     
-    KlarnaPaymentsSessionRequestBuilder.prototype.buildTotalAmount = function (basket, localeObject) {
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildTotalAmount = function (order, localeObject) {
     	var country = localeObject.country;
-    	var orderAmount = (basket.totalGrossPrice.available ? basket.totalGrossPrice.value : basket.totalNetPrice.value)*100;
+    	var orderAmount = (order.totalGrossPrice.available ? order.totalGrossPrice.value : order.totalNetPrice.value)*100;
 
     	this.context.order_amount = Math.round(orderAmount);
 
     	// Set order discount line items
-		addPriceAdjustments(basket.priceAdjustments, null, null, country, this.context);
+		addPriceAdjustments(order.priceAdjustments, null, null, country, this.context);
 
         return this;
     };
 
-    KlarnaPaymentsSessionRequestBuilder.prototype.buildTotalTax = function (basket, localeObject) {
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildTotalTax = function (order, localeObject) {
     	var country = localeObject.country;
-        var totalTax = basket.totalTax.value*100;
+        var totalTax = order.totalTax.value*100;
         
         this.context.order_tax_amount = Math.round(totalTax);
 
         if (country === 'US') {
-			var usTotalTax : Number = (basket.totalTax.available) ? basket.totalTax.value*100 : 0;
+			var usTotalTax : Number = (order.totalTax.available) ? order.totalTax.value*100 : 0;
         	var salesTaxItem = new LineItem();
         	salesTaxItem.quantity = 1;
         	salesTaxItem.type = ORDER_LINE_TYPE.SALES_TAX;
@@ -166,10 +143,10 @@
         return this;
     };   
     
-    KlarnaPaymentsSessionRequestBuilder.prototype.buildAdditionalCustomerInfo = function (basket, localeObject) {
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildAdditionalCustomerInfo = function (order, localeObject) {
     	var country = localeObject.country;
     	var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
-    	var customer = basket.getCustomer();
+    	var customer = order.getCustomer();
     	
     	if( !empty(preAssessmentCountries) && (preAssessmentCountries.indexOf( country ) !== -1) && customer.registered )
 		{
@@ -182,7 +159,7 @@
     	return this;
     };
     
-    KlarnaPaymentsSessionRequestBuilder.prototype.buildOptions = function () {
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildOptions = function () {
     	this.context.options.color_details 				= Site.getCurrent().getCustomPreferenceValue('kpColorDetails');
 		this.context.options.color_button 				= Site.getCurrent().getCustomPreferenceValue('kpColorButton');
 		this.context.options.color_button_text 			= Site.getCurrent().getCustomPreferenceValue('kpColorButtonText');
@@ -326,11 +303,11 @@
 
     function handleRequire(params) {
         if (empty(params) ||
-                empty(params.basket) ||               
+                empty(params.order) ||               
                 empty(params.localeObject) ||
                 empty(params.localeObject.custom.country) ||
                 empty(params.localeObject.custom.klarnaLocale)) {
-            throw new Error('Error when generating KlarnaPaymentsSessionRequestBuilder. Not valid params.');
+            throw new Error('Error when generating KlarnaPaymentsOrderRequestBuilder. Not valid params.');
         }
     }
     
@@ -357,5 +334,5 @@
     	return JSON.stringify(body);
     }
 
-    module.exports = KlarnaPaymentsSessionRequestBuilder;
+    module.exports = KlarnaPaymentsOrderRequestBuilder;
 }());

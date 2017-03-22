@@ -12,6 +12,7 @@
         this.merchant_reference1 = '';
         this.merchant_reference2 = '';  
         this.options = new Options();
+        this.merchant_urls = new MerchantUrls();
     }
 
     function BillingAddress() {
@@ -55,6 +56,13 @@
         this.color_text = '#3C3C3E';
         this.color_text_secondary = '#9E9EA0';
         this.radius_border = '5px';
+    }
+    
+    function MerchantUrls() {
+        //this.status_update = '';
+        //this.confirmation = '';
+        this.notfication = '';
+        //this.push = '';        
     }
     
     module.exports.KlarnaPaymentsOrderModel = KlarnaPaymentsOrderModel;

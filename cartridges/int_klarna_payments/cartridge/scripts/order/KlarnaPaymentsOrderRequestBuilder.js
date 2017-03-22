@@ -44,7 +44,8 @@
             .buildTotalAmount(order, localeObject)
             .buildTotalTax(order, localeObject)
             .buildAdditionalCustomerInfo(order, localeObject)
-            .buildOptions();
+            .buildOptions()
+            .buildMerchantInformation(order, localeObject);
 
         return requestBodyObject;
     };
@@ -174,6 +175,15 @@
     	this.context.options.radius_border 				= Site.getCurrent().getCustomPreferenceValue('kpRadiusBorder'); 
    	
    	return this;
+   };
+   
+   KlarnaPaymentsOrderRequestBuilder.prototype.buildMerchantInformation = function (order, localeObject) {
+   	var country = localeObject.country;   	
+   	
+   	this.context.merchant_urls.confirmation = URLUtils.https('KLARNA_PAYMENTS-Confirmation', 'klarna_country', country).toString();
+   	this.context.merchant_urls.notification = URLUtils.https('KLARNA_PAYMENTS-Notification', 'klarna_country', country).toString();
+    
+   	return this;    
    };
 
    function buildItems(items, country, context) {

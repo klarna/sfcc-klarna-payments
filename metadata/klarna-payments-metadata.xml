@@ -167,6 +167,19 @@ For example the following flue “UK, CN, AU” would mean the pre-assessment is
         </group-definitions>
 	</type-extension>
 	
+	<type-extension type-id="Order">
+		<custom-attribute-definitions>
+            <attribute-definition attribute-id="kpOrderID">
+                <display-name xml:lang="x-default">Klarna Payments Order ID</display-name>
+                <description xml:lang="x-default">Klarna Payments Order ID</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+	</type-extension>
+	
 	<custom-type type-id="klarna_payments_countries">
         <description xml:lang="x-default">Custom object used to map Klarna Payments API endpoint and country</description>
         <staging-mode>source-to-target</staging-mode>

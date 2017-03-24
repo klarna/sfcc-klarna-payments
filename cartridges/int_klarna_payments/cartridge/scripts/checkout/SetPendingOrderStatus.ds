@@ -1,0 +1,26 @@
+/**
+* SetPendingOrderStatus.ds
+* Set the order export status to EXPORT_STATUS_NOTEXPORTED
+* confirmation status to NOTCONFIRMED
+* payment status to NOT PAID
+*
+* @input Order : dw.order.Order The order.
+*/
+importPackage( dw.order );
+
+function execute( pdict : PipelineDictionary ) : Number
+{
+    // read pipeline dictionary input parameter
+    var order : Order = pdict.Order;
+
+	// set the export status to EXPORT_STATUS_NOTEXPORTED  
+	order.setExportStatus(Order.EXPORT_STATUS_NOTEXPORTED  );
+	
+	// set the confirmation status to not confirmed
+   	order.setConfirmationStatus(Order.CONFIRMATION_STATUS_NOTCONFIRMED);
+   	
+   	// set the payment status to NOT PAID
+   	order.setPaymentStatus(Order.PAYMENT_STATUS_NOTPAID);
+   
+   	return PIPELET_NEXT;
+}

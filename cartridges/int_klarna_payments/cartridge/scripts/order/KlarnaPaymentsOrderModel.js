@@ -59,10 +59,8 @@
     }
     
     function MerchantUrls() {
-        //this.status_update = '';
-        //this.confirmation = '';
-        this.notfication = '';
-        //this.push = '';        
+        this.confirmation = '';
+        this.notification = '';
     }
     
     module.exports.KlarnaPaymentsOrderModel = KlarnaPaymentsOrderModel;

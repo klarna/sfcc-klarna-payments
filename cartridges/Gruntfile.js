@@ -12,9 +12,9 @@ module.exports = initSrc;
 function initSrc( grunt )
 {
 	'use strict';
-	var jsdocPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules'];
-	var jscsPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules'];
-	var eslintPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules'];
+	var jsdocPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules', '!**/cartridge/scripts/util/Class.js'];
+	var jscsPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules', '!**/cartridge/scripts/util/Class.js'];
+	var eslintPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules', '!**/cartridge/scripts/util/Class.js'];
 
 	grunt.loadNpmTasks( 'grunt-jsdoc' );
 	grunt.loadNpmTasks( 'grunt-jscs' );

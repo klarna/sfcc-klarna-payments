@@ -199,6 +199,57 @@
           <transition target-connector="in"/>
           <segment>
             <node>
+              <decision-node condition-key="KlarnaPaymentsFraudStatus === 'ACCEPTED'" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                      <config-property key="Transactional" value="false"/>
+                      <config-property key="OnError" value="PIPELET_ERROR"/>
+                      <config-property key="ScriptFile" value="int_klarna_payments:order/KlarnaPaymentsAcknowledgeOrder.ds"/>
+                      <key-binding alias="null" key="ScriptLog"/>
+                      <key-binding alias="KlarnaPaymentsOrderID" key="KlarnaOrderID"/>
+                      <key-binding alias="LocaleObject" key="LocaleObject"/>
+                    </pipelet-node>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="error">
+                      <transition target-connector="in2" target-path="../+1"/>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="../+2"/>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="2" y="0"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="1" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="./+1">
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="2"/>
+              </transition-display>
+            </transition>
+          </segment>
+          <segment>
+            <node>
+              <join-node/>
+              <node-display x="-1" y="1"/>
+            </node>
+            <simple-transition/>
+            <node>
               <pipelet-node custom-name="Just set transaction ID and processor" pipelet-name="Assign" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <key-binding alias="null" key="From_3"/>
@@ -520,13 +571,23 @@ a Klarna payments session through Klarna API</description>
     <segment>
       <node>
         <text-node>
+          <description>If for some reason order is not acknowledge with Klarna this is not a reason to fail the order.</description>
+        </text-node>
+        <node-display x="4" y="9"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_13">
+    <segment>
+      <node>
+        <text-node>
           <description>Entry point for showing confirmation page after Klarna redirect</description>
         </text-node>
         <node-display width="2" x="8" y="10"/>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_13">
+  <branch basename="_ANONYMOUS_BRANCH_14">
     <segment>
       <node>
         <text-node>
@@ -685,7 +746,7 @@ a Klarna payments session through Klarna API</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_16">
+  <branch basename="_ANONYMOUS_BRANCH_17">
     <segment>
       <node>
         <text-node>
@@ -763,7 +824,7 @@ a Klarna payments session through Klarna API</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_18">
+  <branch basename="_ANONYMOUS_BRANCH_19">
     <segment>
       <node>
         <text-node>
@@ -773,7 +834,7 @@ a Klarna payments session through Klarna API</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_19">
+  <branch basename="_ANONYMOUS_BRANCH_20">
     <segment>
       <node>
         <text-node>
@@ -783,7 +844,7 @@ a Klarna payments session through Klarna API</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_20">
+  <branch basename="_ANONYMOUS_BRANCH_21">
     <segment>
       <node>
         <text-node>
@@ -905,18 +966,41 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
           </segment>
         </branch>
       </node>
-      <simple-transition transaction-control="commit">
-        <transition-display>
-          <bend-point relative-to="target" x="0" y="-1"/>
-        </transition-display>
-      </simple-transition>
+      <simple-transition transaction-control="commit"/>
+      <node>
+        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="false"/>
+          <config-property key="OnError" value="PIPELET_ERROR"/>
+          <config-property key="ScriptFile" value="int_klarna_payments:order/KlarnaPaymentsAcknowledgeOrder.ds"/>
+          <key-binding alias="null" key="ScriptLog"/>
+          <key-binding alias="KlarnaPaymentsOrderID" key="KlarnaOrderID"/>
+          <key-binding alias="LocaleObject" key="LocaleObject"/>
+        </pipelet-node>
+        <node-display x="0" y="2"/>
+        <branch basename="b4" source-connector="error">
+          <transition target-connector="in2" target-path="./+1">
+            <transition-display>
+              <bend-point relative-to="source" x="2" y="0"/>
+              <bend-point relative-to="target" x="2" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
       <node>
         <end-node/>
-        <node-display x="0" y="2"/>
+        <node-display x="0" y="1"/>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_23">
+  <branch basename="_ANONYMOUS_BRANCH_24">
     <segment>
       <node>
         <text-node>
@@ -965,13 +1049,23 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_25">
+  <branch basename="_ANONYMOUS_BRANCH_26">
     <segment>
       <node>
         <text-node>
           <description>Mark order as EXPORT_STATUS_READY and CONFIRMATION_STATUS_CONFIRMED</description>
         </text-node>
         <node-display x="10" y="26"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_27">
+    <segment>
+      <node>
+        <text-node>
+          <description>Intentionally left outside transaction. If for some reason order is not acknowledge with Klarna this is not a reason to fail the order.</description>
+        </text-node>
+        <node-display x="10" y="28"/>
       </node>
     </segment>
   </branch>

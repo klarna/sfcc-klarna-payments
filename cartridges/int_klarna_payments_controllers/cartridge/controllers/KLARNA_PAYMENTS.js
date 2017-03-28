@@ -1,0 +1,351 @@
+'use strict';
+
+/**
+ * Controller for all Klarna Payments related functions.
+ *
+ * @module controllers/KLARNA_PAYMENTS
+ */
+
+/* API Includes */
+var PaymentMgr = require( 'dw/order/PaymentMgr' );
+var Transaction = require( 'dw/system/Transaction' );
+var Logger = require( 'dw/system/Logger' );
+var CustomObjectMgr = require( 'dw/object/CustomObjectMgr' );
+var BasketMgr = require( 'dw/order/BasketMgr' );
+var OrderMgr = require( 'dw/order/OrderMgr' );
+var StringUtils = require( 'dw/util/StringUtils' );
+
+var COSummary = require( 'sitegenesis_storefront_controllers/cartridge/controllers/COSummary.js' );
+
+/* Script Modules */
+var log = Logger.getLogger( 'KLARNA_PAYMENTS.js' );
+var guard = require( '~/cartridge/scripts/guard' );
+var Countries = require( 'int_klarna_payments/cartridge/scripts/util/Countries' );
+var KlarnaPayments = {
+		httpService 			: require('int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
+		apiContext 				: require('int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsApiContext'),
+		sessionRequestBuilder 	: require('int_klarna_payments/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder'), 
+		orderRequestBuilder 	: require('int_klarna_payments/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder')
+	};
+var Utils = require( 'int_klarna_payments/cartridge/scripts/checkout/Utils.ds' );
+
+
+/**
+ * Creates a Klarna payment instrument for the given basket
+ */
+function handle( args )
+{
+	var basket = args.Basket;
+	var ccPaymentInstrs = [];
+	var iter = {};
+	var existingPI = {};
+	
+	Transaction.wrap( function()
+	{
+		session.custom.KlarnaPaymentsAuthorizationToken = request.httpParameterMap.klarna_payments_authorization_token.value;
+	} );
+	
+	Transaction.wrap( function()
+	{
+		if( basket === null )	
+		{
+			return { error: true };
+		}
+		
+		// get all credit card payment instruments
+		ccPaymentInstrs = basket.getPaymentInstruments();
+		iter = ccPaymentInstrs.iterator();
+		existingPI = null;
+
+		// remove all credit card payment instruments
+		while( iter.hasNext() )
+		{
+			existingPI = iter.next();
+			basket.removePaymentInstrument( existingPI );
+		}
+		
+		// calculate the amount to be charged for the credit card
+		var amount = Utils.calculateNonGiftCertificateAmount( basket );
+		
+		// create a payment instrument for this payment method
+		basket.createPaymentInstrument( "Klarna", amount );
+		
+	} );
+
+	return {
+		success: true
+	};
+}
+
+/**
+ * Authorizes a payment using a KLARNA_PAYMENTS processor.
+ */
+function authorize( args )
+{
+	var orderNo = args.OrderNo;
+	var paymentInstrument = args.PaymentInstrument;
+	var paymentProcessor = PaymentMgr.getPaymentMethod( paymentInstrument.getPaymentMethod() ).getPaymentProcessor();
+	var localeObject = getLocale();
+	
+	var klarnaOrderCreated = _createOrder( args.order, localeObject );
+
+	if( !klarnaOrderCreated || session.custom.KlarnaPaymentsFraudStatus === 'REJECTED')
+	{
+		return { error: true };
+	}
+	if( session.custom.KlarnaPaymentsFraudStatus === 'ACCEPTED' )
+	{
+		_acknowledgeOrder( session.custom.KlarnaPaymentsOrderID, localeObject );
+	}
+	
+	Transaction.wrap( function()
+	{
+		paymentInstrument.paymentTransaction.transactionID = session.custom.KlarnaPaymentsOrderID;
+		paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+		session.custom.OrderNo = orderNo;
+		order.custom.kpOrderID = session.custom.KlarnaPaymentsOrderID;		
+	} );	
+	
+	return { authorized: true };
+}
+
+/**
+ * Creates a Klarna order through Klarna API
+ */
+function _createOrder( order, localeObject )
+{
+	var klarnaPaymentsHttpService = {};
+	var klarnaApiContext = {};
+	var requestBody = {};
+	var requestUrl = '';
+	var response = {};
+	var klarnaAuthorizationToken = session.custom.KlarnaPaymentsAuthorizationToken;
+	
+	try {
+		klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+        klarnaApiContext = new KlarnaPayments.apiContext();
+        requestBody = _getOrderRequestBody( order, localeObject );
+        requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get('createOrder'), klarnaAuthorizationToken );
+        
+		response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+		
+		Transaction.wrap( function()
+		{
+			session.custom.KlarnaPaymentsOrderID = response.order_id;
+			session.custom.KlarnaPaymentsRedirectURL = response.redirect_url;
+			session.custom.KlarnaPaymentsFraudStatus = response.fraud_status;
+		} );
+	} catch (e) 
+	{
+		log.error( 'Error in creating Klarna Payments Order: {0}', e );
+		return false;
+	}  
+	return true;
+}
+
+/**
+ * Gets Klarna Payments Locale object
+ */
+function getLocale( currentCountry ) {
+	var localeObject = {};
+	var countryCode = '';
+	if ( empty( currentCountry ) )
+	{
+		currentCountry = Countries.getCurrent({CurrentRequest: request}).countryCode;
+	}   
+
+	localeObject = CustomObjectMgr.getCustomObject('KlarnaCountries', currentCountry);
+	
+	return localeObject;
+}
+
+/**
+ * Creates a Klarna payments session through Klarna API
+ */
+function createSession() {
+	var localeObject = getLocale();
+	var klarnaPaymentsHttpService = {};
+	var klarnaApiContext = {};
+	var requestBody = {};
+	var requestUrl = '';
+	var response = {};
+	
+	if( !empty( session.custom.KlarnaPaymentsSessionID ) )
+	{
+		updateSession();
+	}
+	try {
+		klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+        klarnaApiContext = new KlarnaPayments.apiContext();
+        requestBody = _getSessionRequestBody( BasketMgr.getCurrentBasket(), localeObject );
+        requestUrl = klarnaApiContext.getFlowApiUrls().get('createSession');
+        
+		response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
+
+		Transaction.wrap( function()
+		{
+			session.custom.KlarnaPaymentsSessionID = response.session_id;
+			session.custom.KlarnaPaymentsClientToken = response.client_token;
+		} );
+	} catch (e) 
+	{
+		log.error( 'Error in creating Klarna Payments Session: {0}', e );
+	}   	
+}
+
+/**
+ * Creates a Klarna payments session through Klarna API
+ * @private
+ */
+function _getSessionRequestBody( basket, localeObject )
+{
+	var orderRequestBuilder = new KlarnaPayments.sessionRequestBuilder();
+	
+	return orderRequestBuilder.buildRequest({
+	    basket: basket,
+	    localeObject: localeObject
+	}).get();
+}
+
+/**
+ * Creates a Klarna payments order through Klarna API
+ * @private
+ */
+function _getOrderRequestBody( order, localeObject )
+{
+	var orderRequestBuilder = new KlarnaPayments.orderRequestBuilder();
+	
+	return orderRequestBuilder.buildRequest({
+	    order: order,
+	    localeObject: localeObject
+	}).get();
+}
+
+/**
+ * Updates a Klarna payments session through Klarna API
+ */
+function updateSession() {
+	var localeObject = getLocale();
+	var klarnaPaymentsHttpService = {};
+	var klarnaApiContext = {};
+	var requestBody = {};
+	var requestUrl = '';
+	var response = {};
+	
+	try {
+		klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+        klarnaApiContext = new KlarnaPayments.apiContext();
+        requestBody = _getSessionRequestBody( BasketMgr.getCurrentBasket(), localeObject );
+        requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get('updateSession'), session.custom.KlarnaPaymentsSessionID );
+        
+		response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
+
+	} catch (e)
+	{
+		log.error( 'Error in updating Klarna Payments Session: {0}', e );
+	}  
+}
+
+/**
+ * Entry point for showing confirmation page after Klarna redirect
+ */
+function confirmation() {
+	var order = OrderMgr.getOrder( session.custom.OrderNo);
+	
+	return COSummary.ShowConfirmation( order );
+}
+
+/**
+ * Entry point for notifications on pending orders
+ */
+function notification() {
+	var klarnaPaymentsFraudDecisionObject = JSON.parse( request.httpParameterMap.requestBodyAsString );
+	var klarnaPaymentsOrderID = klarnaPaymentsFraudDecisionObject.order_id;
+	var klarnaPaymentsFraudDecision = klarnaPaymentsFraudDecisionObject.event_type;
+	var currentCountry = request.httpParameterMap.klarna_country.value;
+	var localeObject = getLocale( currentCountry );
+	var order = OrderMgr.queryOrder( "custom.kpOrderID ={0}", klarnaPaymentsOrderID );
+	
+	if( empty( order ) )
+	{
+		return response.setStatus( 200 );
+	}
+	if( klarnaPaymentsFraudDecision === 'ORDER_ACCEPTED' )
+	{
+		placeOrder( order, klarnaPaymentsOrderID, localeObject );
+		
+	} else
+	{
+		OrderMgr.failOrder( order );
+	}	
+	return response.setStatus( 200 );
+}
+
+/**
+ * Place an order using OrderMgr. If order is placed successfully,
+ * its status will be set as confirmed, and export status set to ready. Acknowledge order with Klarna Payments
+ * @param {dw.order.Order} order
+ */
+function placeOrder( order, klarnaPaymentsOrderID, localeObject )
+{
+	Transaction.wrap( function()
+	{
+		var placeOrderStatus = OrderMgr.placeOrder(order);
+	    if (placeOrderStatus === Status.ERROR) {
+	        OrderMgr.failOrder(order);
+	        throw new Error('Failed to place order.');
+	    }
+	    order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+	    order.setExportStatus(Order.EXPORT_STATUS_READY);
+	} );
+    
+    _acknowledgeOrder( klarnaPaymentsOrderID, localeObject );
+}
+
+/**
+ * Call Klarna Payments API to acknowledge the order
+ * @private
+ * @param {dw.order.Order} order
+ */
+function _acknowledgeOrder( klarnaPaymentsOrderID, localeObject )
+{
+	var klarnaHttpService = {};
+	var klarnaApiContext = {};
+	var klarnaOrderID = klarnaPaymentsOrderID; 
+	var requestUrl = '';
+	var response = {};
+
+	try {
+		klarnaHttpService = new KlarnaPayments.httpService();
+        klarnaApiContext = new KlarnaPayments.apiContext();
+    	requestUrl = StringUtils.format(klarnaApiContext.getFlowApiUrls().get('acknowledgeOrder'), klarnaOrderID);		
+
+		response = klarnaHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID);
+
+	} catch (e) {
+		log.error( 'Error in updating Klarna Payments Session: {0}', e );
+	}
+}
+
+/*
+ * Module exports
+ */
+
+/* Web exposed methods */
+
+/** Creates a Klarna payments session through Klarna API */
+exports.CreateSession = guard.ensure(['https'], createSession);
+/** Updates a Klarna payments session through Klarna API */
+exports.UpdateSession = guard.ensure(['get', 'https'], updateSession);
+/** Entry point for showing confirmation page after Klarna redirect */
+exports.Confirmation = guard.ensure(['get', 'https'], confirmation);
+/** Entry point for notifications on pending orders */
+exports.Notification = guard.ensure(['post', 'https'], notification);
+
+/*
+ * Local methods
+ */
+exports.Handle = handle;
+exports.Authorize = authorize;
+exports.GetLocale = getLocale;
+exports.CreateSession = createSession;

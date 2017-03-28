@@ -3,35 +3,32 @@
 *
 * API call to create new Klarna Payments session
 *
-* @input Basket : dw.order.Basket The basket
+* @input KlarnaPaymentsSessionID : String
+* @input Basket : dw.order.Basket
 * @input LocaleObject : dw.object.CustomObject
-* @output session_id : String
-* @output client_token : String
 */
 
 // import packages
 var Logger = require( 'dw/system/Logger' );
-var logger = Logger.getLogger( 'klarnaPaymentsCreateSession.ds' );
+var logger = Logger.getLogger( 'klarnaPaymentsUpdateSession.ds' );
 var KlarnaPayments = {
-	httpService 			: require('~/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
-	apiContext 				: require('~/cartridge/scripts/common/KlarnaPaymentsApiContext'),
-	sessionRequestBuilder 	: require('~/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder')
+	httpService 			: require('int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
+	apiContext 				: require('int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsApiContext'),
+	sessionRequestBuilder 	: require('int_klarna_payments/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder')
 };
 
 function execute( args : PipelineDictionary ) : Number
 {
 	var localeObject = args.LocaleObject;
+	var klarnaSessionID = args.KlarnaPaymentsSessionID;
 	
 	try {
 		var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody(args.Basket, localeObject);
-        var requestUrl = klarnaApiContext.getFlowApiUrls().get('createSession');
+        var requestUrl = dw.util.StringUtils.format(klarnaApiContext.getFlowApiUrls().get('updateSession'), klarnaSessionID);
         
 		var response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-
-		args.session_id = response.session_id;
-		args.client_token = response.client_token;
 
 	} catch (e) {
 		logger.error(e);
@@ -48,8 +45,4 @@ function _getRequestBody(basket, localeObject) {
 	    basket: basket,
 	    localeObject: localeObject
 	}).get();
-}
-
-module.exports = {
-	'execute': execute
 }

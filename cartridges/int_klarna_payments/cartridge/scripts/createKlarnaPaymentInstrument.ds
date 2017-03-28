@@ -34,16 +34,11 @@ function create( basket : dw.order.Basket ) : Number
 		return PIPELET_ERROR;
 	}
 	
-	// calculate the amount to be charged for the credit card
+	// calculate the amount to be charged
 	var amount = calculateNonGiftCertificateAmount( basket );
 	
-	// create a payment instrument for this credit card
+	// create a payment instrument for this payment instrument
 	var paymentInstr : PaymentInstrument = basket.createPaymentInstrument( "Klarna", amount );
 
     return paymentInstr;
-}
-
-module.exports = {
-	'execute': execute,
-	'create': create
 }

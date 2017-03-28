@@ -1,17 +1,15 @@
 <iscontent type="text/javascript" charset="UTF-8" compact="true"/>
 
-<isscript>
-	var URLUtils = require('dw/web/URLUtils');
-	
+<isscript>	
 	// klarna payments urls
 	var KPurls =  {
         createSession		: URLUtils.https('KLARNA_PAYMENTS-CreateSession').toString()				
 	};
 	
-	//klarna payments objects
+	//klarna payments objects 
 	var KPObjects = {
-		sessionID			: pdict.KlarnaPaymentsSessionID.toString(),
-		clientToken			: pdict.KlarnaPaymentsClientToken.toString()
+		sessionID			: pdict.CurrentSession.custom.KlarnaPaymentsSessionID.toString(),
+		clientToken			: pdict.CurrentSession.custom.KlarnaPaymentsClientToken.toString()
 	};
 </isscript>
 (function(app){

@@ -365,7 +365,7 @@ a Klarna payments session through Klarna API</description>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="false"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="int_klarna_payments:session/KlarnaPaymentsCreateSession.ds"/>
+                <config-property key="ScriptFile" value="session/KlarnaPaymentsCreateSession.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
                 <key-binding alias="Basket" key="Basket"/>
                 <key-binding alias="KlarnaPaymentsClientToken" key="client_token"/>
@@ -430,12 +430,12 @@ a Klarna payments session through Klarna API</description>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="int_klarna_payments:session/klarnaPaymentsUpdateSession.ds"/>
+          <config-property key="ScriptFile" value="session/klarnaPaymentsUpdateSession.ds"/>
           <key-binding alias="null" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="KlarnaPaymentsSessionID" key="session_id"/>
           <key-binding alias="IsKlarnaPaymentsSessionUpdated" key="isSessionUpdated"/>
-          <key-binding alias="KlarnaPaymentsSessionID" key="KlarnaPaymentsSessionID"/>
+          <key-binding alias="CurrentSession.custom.KlarnaPaymentsSessionID" key="KlarnaPaymentsSessionID"/>
           <key-binding alias="LocaleObject" key="LocaleObject"/>
         </pipelet-node>
         <node-display x="0" y="2"/>
@@ -828,23 +828,13 @@ a Klarna payments session through Klarna API</description>
     <segment>
       <node>
         <text-node>
-          <description>Mark order as EXPORT_STATUS_NOTEXPORTED and NOTCONFIRMED and NOTPAID</description>
-        </text-node>
-        <node-display width="2" x="6" y="22"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="_ANONYMOUS_BRANCH_20">
-    <segment>
-      <node>
-        <text-node>
           <description>Place order with KlarnaPaymentsFraudStatus === 'PENDING'</description>
         </text-node>
         <node-display width="2" x="8" y="22"/>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_21">
+  <branch basename="_ANONYMOUS_BRANCH_20">
     <segment>
       <node>
         <text-node>
@@ -1000,7 +990,7 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_24">
+  <branch basename="_ANONYMOUS_BRANCH_23">
     <segment>
       <node>
         <text-node>
@@ -1046,6 +1036,16 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
       <node>
         <end-node/>
         <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_25">
+    <segment>
+      <node>
+        <text-node>
+          <description>Mark order as EXPORT_STATUS_NOTEXPORTED and NOTCONFIRMED and NOTPAID</description>
+        </text-node>
+        <node-display width="2" x="6" y="25"/>
       </node>
     </segment>
   </branch>

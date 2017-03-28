@@ -15,6 +15,7 @@
 		this.merchant_reference2 = '';
 		this.options = new Options();
 		this.merchant_urls = new MerchantUrls();
+		this.merchant_data = null;
 	}
 
 	function BillingAddress()
@@ -44,8 +45,8 @@
 		this.total_amount = 0;
 		this.total_tax_amount = 0;
 		this.total_discount_amount = 0;
-		this.product_url = '';
-		this.image_url = '';
+		this.product_url = null;
+		this.image_url = null;
 	}
 
 	function Options()

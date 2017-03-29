@@ -14,6 +14,7 @@ var CustomObjectMgr = require( 'dw/object/CustomObjectMgr' );
 var BasketMgr = require( 'dw/order/BasketMgr' );
 var OrderMgr = require( 'dw/order/OrderMgr' );
 var StringUtils = require( 'dw/util/StringUtils' );
+var Status = require( 'dw/system/Status' );
 
 var COSummary = require( 'sitegenesis_storefront_controllers/cartridge/controllers/COSummary.js' );
 
@@ -300,7 +301,10 @@ function notification()
 		
 	} else
 	{
-		OrderMgr.failOrder( order );
+		Transaction.wrap( function()
+		{
+			OrderMgr.failOrder( order );
+		} );
 	}	
 	return response.setStatus( 200 );
 }
@@ -325,8 +329,8 @@ function placeOrder( order, klarnaPaymentsOrderID, localeObject )
 			OrderMgr.failOrder( order );
 			throw new Error( 'Failed to place order.' );
 		}
-		order.setConfirmationStatus( Order.CONFIRMATION_STATUS_CONFIRMED );
-		order.setExportStatus( Order.EXPORT_STATUS_READY );
+		order.setConfirmationStatus( order.CONFIRMATION_STATUS_CONFIRMED );
+		order.setExportStatus( order.EXPORT_STATUS_READY );
 	} );
 	
 	_acknowledgeOrder( klarnaPaymentsOrderID, localeObject );
@@ -360,6 +364,34 @@ function _acknowledgeOrder( klarnaPaymentsOrderID, localeObject )
 	}
 }
 
+/**
+ * Redirect the customer to the Klrana Payments redirect_url.
+ * The reason for this redirect is to allow Klarna to recognize the customer's device in future interactions.
+ * 
+ * @return {void}
+ */
+function redirect()
+{
+	if( !empty( session.custom.KlarnaPaymentsRedirectURL ) )
+	{
+		response.redirect( session.custom.KlarnaPaymentsRedirectURL );
+	}
+}
+
+/**
+ * Place order with KlarnaPaymentsFraudStatus === 'PENDING'
+ * set the export status to EXPORT_STATUS_NOTEXPORTED, set the confirmation status to NOTCONFIRMED, set the payment status to NOT PAID
+ * @param {dw.order.Order} 			order 					SCC order object
+ * 
+ * @return {void}
+ */
+function pendingOrder( order )
+{
+	order.setExportStatus( order.EXPORT_STATUS_NOTEXPORTED );
+	order.setConfirmationStatus( order.CONFIRMATION_STATUS_NOTCONFIRMED );
+	order.setPaymentStatus( order.PAYMENT_STATUS_NOTPAID );
+}
+
 /*
  * Module exports
  */
@@ -382,3 +414,5 @@ exports.Handle = handle;
 exports.Authorize = authorize;
 exports.GetLocale = getLocale;
 exports.CreateSession = createSession;
+exports.Redirect = redirect;
+exports.PendingOrder = pendingOrder;

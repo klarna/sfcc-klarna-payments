@@ -12,9 +12,9 @@ module.exports = initSrc;
 function initSrc( grunt )
 {
 	'use strict';
-	var jsdocPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules', '!**/cartridge/scripts/util/Class.js'];
-	var jscsPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules', '!**/cartridge/scripts/util/Class.js'];
-	var eslintPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules', '!**/cartridge/scripts/util/Class.js'];
+	var jsdocPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules', '!**/cartridge/scripts/util/Class.js', '!**/cartridge/scripts/util/Browsing.js', '!**/cartridge/scripts/guard.js', '!**/cartridge/scripts/app.js'];
+	var jscsPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules', '!**/cartridge/scripts/util/Class.js', '!**/cartridge/scripts/util/Browsing.js', '!**/cartridge/scripts/guard.js', '!**/cartridge/scripts/app.js'];
+	var eslintPath = ['**/cartridge/scripts/**/*.js', '**/cartridge/controllers/*.js', '!/node_modules', '!**/cartridge/scripts/util/Class.js', '!**/cartridge/scripts/util/Browsing.js', '!**/cartridge/scripts/guard.js', '!**/cartridge/scripts/app.js'];
 
 	grunt.loadNpmTasks( 'grunt-jsdoc' );
 	grunt.loadNpmTasks( 'grunt-jscs' );

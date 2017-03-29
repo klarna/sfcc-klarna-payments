@@ -54,7 +54,3 @@ function _getRequestBody(order, localeObject) {
 	    localeObject: localeObject
 	}).get();
 }
-
-module.exports = {
-	'execute': execute
-}

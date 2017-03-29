@@ -365,7 +365,7 @@ a Klarna payments session through Klarna API</description>
               <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="false"/>
                 <config-property key="OnError" value="PIPELET_ERROR"/>
-                <config-property key="ScriptFile" value="session/KlarnaPaymentsCreateSession.ds"/>
+                <config-property key="ScriptFile" value="int_klarna_payments:session/KlarnaPaymentsCreateSession.ds"/>
                 <key-binding alias="null" key="ScriptLog"/>
                 <key-binding alias="Basket" key="Basket"/>
                 <key-binding alias="KlarnaPaymentsClientToken" key="client_token"/>
@@ -430,7 +430,7 @@ a Klarna payments session through Klarna API</description>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="session/klarnaPaymentsUpdateSession.ds"/>
+          <config-property key="ScriptFile" value="int_klarna_payments:session/klarnaPaymentsUpdateSession.ds"/>
           <key-binding alias="null" key="ScriptLog"/>
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="KlarnaPaymentsSessionID" key="session_id"/>

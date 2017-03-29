@@ -3,14 +3,14 @@
 *
 * API call to create new Klarna Payments session
 *
-* @input Basket : dw.order.Basket The basket
+* @input KlarnaPaymentsSessionID : String
+* @input Basket : dw.order.Basket
 * @input LocaleObject : dw.object.CustomObject
 */
 
 // import packages
 var Logger = require( 'dw/system/Logger' );
-var Transaction = require('dw/system/Transaction');
-var logger = Logger.getLogger( 'klarnaPaymentsCreateSession.ds' );
+var logger = Logger.getLogger( 'klarnaPaymentsUpdateSession.ds' );
 var KlarnaPayments = {
 	httpService 			: require('int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
 	apiContext 				: require('int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsApiContext'),
@@ -20,20 +20,15 @@ var KlarnaPayments = {
 function execute( args : PipelineDictionary ) : Number
 {
 	var localeObject = args.LocaleObject;
+	var klarnaSessionID = args.KlarnaPaymentsSessionID;
 	
 	try {
 		var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody(args.Basket, localeObject);
-        var requestUrl = klarnaApiContext.getFlowApiUrls().get('createSession');
+        var requestUrl = dw.util.StringUtils.format(klarnaApiContext.getFlowApiUrls().get('updateSession'), klarnaSessionID);
         
 		var response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-
-		Transaction.wrap( function()
-		{
-			session.custom.KlarnaPaymentsSessionID = response.session_id;
-			session.custom.KlarnaPaymentsClientToken = response.client_token;
-		} );
 
 	} catch (e) {
 		logger.error(e);
@@ -44,9 +39,9 @@ function execute( args : PipelineDictionary ) : Number
 }
 
 function _getRequestBody(basket, localeObject) {
-	var orderRequestBuilder = new KlarnaPayments.sessionRequestBuilder();
+	var sessionRequestBuilder = new KlarnaPayments.sessionRequestBuilder();
 	
-	return orderRequestBuilder.buildRequest({
+	return sessionRequestBuilder.buildRequest({
 	    basket: basket,
 	    localeObject: localeObject
 	}).get();

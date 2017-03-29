@@ -285,10 +285,12 @@
 	{
 		var shipment_unit_price = 0;
 		var shipment_tax_rate = 0;
+		var shipment = {};
+		var shippingLineItem = {};
 
-		for ( var i = 0; i < shipments.length; i++ )
+		for ( let i = 0; i < shipments.length; i++ )
 		{
-			var shipment = shipments[i];
+			shipment = shipments[i];
 			shipment_unit_price = ( shipment.shippingTotalGrossPrice.available && country !== 'US' ? shipment.shippingTotalGrossPrice.value : shipment.shippingTotalNetPrice.value ) * 100;
 			shipment_tax_rate = 0;
 
@@ -299,7 +301,7 @@
 
 			if ( !empty( shipment.shippingMethod ) )
 			{
-				var shippingLineItem = new LineItem();
+				shippingLineItem = new LineItem();
 				shippingLineItem.quantity = 1;
 				shippingLineItem.type = ORDER_LINE_TYPE.SHIPPING_FEE;
 				shippingLineItem.name = shipment.shippingMethod.displayName.replace( /[^\x00-\x7F]/g, "" );
@@ -324,7 +326,7 @@
 		var adj = {};
 		var adjustment = {};
 
-		for ( var i = 0; i < adjusments.length; i++ )
+		for ( let i = 0; i < adjusments.length; i++ )
 		{
 			adj = adjusments[i];
 			adjustment = new LineItem();

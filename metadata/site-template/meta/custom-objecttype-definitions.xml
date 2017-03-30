@@ -1,0 +1,748 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <custom-type type-id="KlarnaCountries">
+        <display-name xml:lang="x-default">Klarna Countries</display-name>
+        <staging-mode>source-to-target</staging-mode>
+        <storage-scope>site</storage-scope>
+        <key-definition attribute-id="country">
+            <display-name xml:lang="x-default">Country Code</display-name>
+            <type>string</type>
+            <min-length>0</min-length>
+            <field-length>0</field-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="klarnaLocale">
+                <display-name xml:lang="x-default">Klarna Locale</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="credentialID">
+                <display-name xml:lang="x-default">Service Credential ID</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="showShippingOptions">
+                <display-name xml:lang="x-default">Show Shipping Options</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="showShippingCountries">
+                <display-name xml:lang="x-default">Show Shipping Countries</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="shippingCountries">
+                <display-name xml:lang="x-default">Shipping countries</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Afghanistan</display>
+                        <value>AF</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Åland Islands</display>
+                        <value>AX</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Albania</display>
+                        <value>AL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Algeria</display>
+                        <value>DZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">American Samoa</display>
+                        <value>AS</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Andorra</display>
+                        <value>AD</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Anguilla</display>
+                        <value>AI</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Argentina</display>
+                        <value>AR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Armenia</display>
+                        <value>AM</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Australia</display>
+                        <value>AU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Austria</display>
+                        <value>AT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Azerbaijan</display>
+                        <value>AZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Bahrain</display>
+                        <value>BH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Bangladesh</display>
+                        <value>BD</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Barbados</display>
+                        <value>BB</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Belgium</display>
+                        <value>BE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Bermuda</display>
+                        <value>BM</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Bhutan</display>
+                        <value>BT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Bolivia</display>
+                        <value>BO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Bosnia and Herzegovina</display>
+                        <value>BA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Brazil</display>
+                        <value>BR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">British Indian Ocean Territory</display>
+                        <value>IO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">British Virgin Islands</display>
+                        <value>VG</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Brunei</display>
+                        <value>BN</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Bulgaria</display>
+                        <value>BG</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Cambodia</display>
+                        <value>KH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Canada</display>
+                        <value>CA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Cape Verde</display>
+                        <value>CV</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Cayman Islands</display>
+                        <value>KY</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Chad</display>
+                        <value>TD</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Chile</display>
+                        <value>CL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">China</display>
+                        <value>CN</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Christmas Island</display>
+                        <value>CX</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Cocos [Keeling] Islands</display>
+                        <value>CC</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Colombia</display>
+                        <value>CO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Costa Rica</display>
+                        <value>CR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Croatia</display>
+                        <value>HR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Cyprus</display>
+                        <value>CY</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Czech Republic</display>
+                        <value>CZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Denmark</display>
+                        <value>DK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dominican Republic</display>
+                        <value>DO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Ecuador</display>
+                        <value>EC</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Egypt</display>
+                        <value>EG</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">El Salvador</display>
+                        <value>SV</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Estonia</display>
+                        <value>EE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Ethiopia</display>
+                        <value>ET</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Falkland Islands</display>
+                        <value>FK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Faroe Islands</display>
+                        <value>FO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Finland</display>
+                        <value>FI</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">France</display>
+                        <value>FR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">French Guiana</display>
+                        <value>GF</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">French Polynesia</display>
+                        <value>PF</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Gabon</display>
+                        <value>GA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Georgia</display>
+                        <value>GE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Germany</display>
+                        <value>DE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Gibraltar</display>
+                        <value>GI</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Greece</display>
+                        <value>GR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Greenland</display>
+                        <value>GL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Guadeloupe</display>
+                        <value>GP</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Guam</display>
+                        <value>GU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Guatemala</display>
+                        <value>GT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Guernsey</display>
+                        <value>GG</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Guinea-Bissau</display>
+                        <value>GW</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Haiti</display>
+                        <value>HT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Heard Island and McDonald Islands</display>
+                        <value>HM</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Honduras</display>
+                        <value>HN</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Hungary</display>
+                        <value>HU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Iceland</display>
+                        <value>IS</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">India</display>
+                        <value>IN</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Indonesia</display>
+                        <value>ID</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Isle of Man</display>
+                        <value>IM</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Israel</display>
+                        <value>IL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Italy</display>
+                        <value>IT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Jamaica</display>
+                        <value>JM</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Japan</display>
+                        <value>JP</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Jersey</display>
+                        <value>JE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Jordan</display>
+                        <value>JO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Kazakhstan</display>
+                        <value>KZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Kenya</display>
+                        <value>KE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Kuwait</display>
+                        <value>KW</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Kyrgyzstan</display>
+                        <value>KG</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Laos</display>
+                        <value>LA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Latvia</display>
+                        <value>LV</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Lesotho</display>
+                        <value>LS</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Liechtenstein</display>
+                        <value>LI</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Lithuania</display>
+                        <value>LT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Luxembourg</display>
+                        <value>LU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Macedonia</display>
+                        <value>MK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Madagascar</display>
+                        <value>MG</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Malaysia</display>
+                        <value>MY</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Maldives</display>
+                        <value>MV</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Malta</display>
+                        <value>MT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Marshall Islands</display>
+                        <value>MH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Martinique</display>
+                        <value>MQ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Mauritius</display>
+                        <value>MU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Mayotte</display>
+                        <value>YT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Mexico</display>
+                        <value>MX</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Micronesia</display>
+                        <value>FM</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Moldova</display>
+                        <value>MD</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Monaco</display>
+                        <value>MC</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Mongolia</display>
+                        <value>MN</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Montenegro</display>
+                        <value>ME</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Montserrat</display>
+                        <value>MS</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Morocco</display>
+                        <value>MA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Mozambique</display>
+                        <value>MZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Namibia</display>
+                        <value>NA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Nepal</display>
+                        <value>NP</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Netherlands</display>
+                        <value>NL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">New Caledonia</display>
+                        <value>NC</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">New Zealand</display>
+                        <value>NZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Nicaragua</display>
+                        <value>NI</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Niger</display>
+                        <value>NE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Nigeria</display>
+                        <value>NG</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Norfolk Island</display>
+                        <value>NF</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Northern Mariana Islands</display>
+                        <value>MP</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Norway</display>
+                        <value>NO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Oman</display>
+                        <value>OM</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Pakistan</display>
+                        <value>PK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Palau</display>
+                        <value>PW</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Palestinian Territories</display>
+                        <value>PS</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Panama</display>
+                        <value>PA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Papua New Guinea</display>
+                        <value>PG</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Paraguay</display>
+                        <value>PY</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Peru</display>
+                        <value>PE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Philippines</display>
+                        <value>PH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Pitcairn Islands</display>
+                        <value>PN</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Poland</display>
+                        <value>PL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Portugal</display>
+                        <value>PT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Puerto Rico</display>
+                        <value>PR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Réunion</display>
+                        <value>RE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Romania</display>
+                        <value>RO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Russia</display>
+                        <value>RU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Saint Barthélemy</display>
+                        <value>BL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Saint Helena</display>
+                        <value>SH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Saint Martin</display>
+                        <value>MF</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Saint Pierre and Miquelon</display>
+                        <value>PM</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Saint Vincent and the Grenadines</display>
+                        <value>VC</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">San Marino</display>
+                        <value>SM</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Saudi Arabia</display>
+                        <value>SA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Senegal</display>
+                        <value>SN</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Serbia</display>
+                        <value>RS</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Singapore</display>
+                        <value>SG</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Slovakia</display>
+                        <value>SK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Slovenia</display>
+                        <value>SI</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">South Africa</display>
+                        <value>ZA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">South Georgia and the South Sandwich Islands</display>
+                        <value>GS</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">South Korea</display>
+                        <value>KR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Spain</display>
+                        <value>ES</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Sri Lanka</display>
+                        <value>LK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Svalbard and Jan Mayen</display>
+                        <value>SJ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Swaziland</display>
+                        <value>SZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Sweden</display>
+                        <value>SE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Switzerland</display>
+                        <value>CH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Taiwan</display>
+                        <value>TW</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Tajikistan</display>
+                        <value>TJ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Thailand</display>
+                        <value>TH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Trinidad and Tobago</display>
+                        <value>TT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Tunisia</display>
+                        <value>TN</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Turkey</display>
+                        <value>TR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Turkmenistan</display>
+                        <value>TM</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Turks and Caicos Islands</display>
+                        <value>TC</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">United Kingdom</display>
+                        <value>GB</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">United States</display>
+                        <value>US</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Uruguay</display>
+                        <value>UY</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">U.S. Virgin Islands</display>
+                        <value>VI</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Uzbekistan</display>
+                        <value>UZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Vatican City</display>
+                        <value>VA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Venezuela</display>
+                        <value>VE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Vietnam</display>
+                        <value>VN</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Wallis and Futuna</display>
+                        <value>WF</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Zambia</display>
+                        <value>ZM</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="custom">
+                <display-name xml:lang="x-default">custom</display-name>
+                <attribute attribute-id="country"/>
+                <attribute attribute-id="klarnaLocale"/>
+                <attribute attribute-id="credentialID"/>
+                <attribute attribute-id="shippingCountries"/>
+                <attribute attribute-id="showShippingOptions"/>
+                <attribute attribute-id="showShippingCountries"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+</metadata>

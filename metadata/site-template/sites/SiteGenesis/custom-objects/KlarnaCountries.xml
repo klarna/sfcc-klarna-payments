@@ -1,33 +1,33 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <custom-objects xmlns="http://www.demandware.com/xml/impex/customobject/2006-10-31">
     <custom-object type-id="KlarnaCountries" object-id="DE">
-        <object-attribute attribute-id="klarnaLocale">de-de</object-attribute>
         <object-attribute attribute-id="credentialID">klarna.http.decredentials</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">de-de</object-attribute>
     </custom-object>
 
     <custom-object type-id="KlarnaCountries" object-id="FI">
-        <object-attribute attribute-id="klarnaLocale">fi-fi</object-attribute>
         <object-attribute attribute-id="credentialID">klarna.http.ficredentials</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">fi-fi</object-attribute>
+    </custom-object>
+
+    <custom-object type-id="KlarnaCountries" object-id="GB">
+        <object-attribute attribute-id="credentialID">klarna.http.gbcredentials</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">en-gb</object-attribute>
     </custom-object>
 
     <custom-object type-id="KlarnaCountries" object-id="NO">
-        <object-attribute attribute-id="klarnaLocale">nb-no</object-attribute>
         <object-attribute attribute-id="credentialID">klarna.http.nocredentials</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">nb-no</object-attribute>
     </custom-object>
 
     <custom-object type-id="KlarnaCountries" object-id="SE">
-        <object-attribute attribute-id="klarnaLocale">sv-se</object-attribute>
         <object-attribute attribute-id="credentialID">klarna.http.secredentials</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">sv-se</object-attribute>
     </custom-object>
-    
-    <custom-object type-id="KlarnaCountries" object-id="GB">
-        <object-attribute attribute-id="klarnaLocale">en-gb</object-attribute>
-        <object-attribute attribute-id="credentialID">klarna.http.gbcredentials</object-attribute>
-    </custom-object>
-    
-	<custom-object type-id="KlarnaCountries" object-id="US">
-        <object-attribute attribute-id="klarnaLocale">en-US</object-attribute>
+
+    <custom-object type-id="KlarnaCountries" object-id="US">
         <object-attribute attribute-id="credentialID">klarna.http.uscredentials</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">en-US</object-attribute>
     </custom-object>
 
 </custom-objects>

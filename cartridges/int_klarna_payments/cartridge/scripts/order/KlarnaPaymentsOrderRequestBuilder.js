@@ -83,7 +83,6 @@
 			{
 				log.error( "merchant_reference2 was not set. Error: {0} ", err.message );
 			}
-
 		}
 		return this;
 	};

@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<preferences xmlns="http://www.demandware.com/xml/impex/preferences/2007-03-31">
+    <custom-preferences>
+        <all-instances/>
+        <development>
+            <preference preference-id="AdyenCseEnabled">true</preference>
+            <preference preference-id="AdyenCseJsPublicKey">10001|C845F051414906292D40EAA5FD476B50C1A146CC6C516FBE94AA922B62ACC38072272AD9BBCA045E919C471D2C43BA0150652A7AE9057263A4597C008B961B5E99451DD897D29B7F68CD65DCA04A72FC71AA306E8AD09583E5C65334629039E57CEE9A1E62DDF11B23D0F4D0D772488821B9225F16A59753F0D85E09244009D6352CAD212F8854887D6F12C9DDC3C84B77A62A4B99D1A4E2BF995AF7210A19A970C2654FFB0DB55B8BB8773213CD4EF08ABE8216F341B3DA4F1F4FEE43B7742D761F46F02CF9F88118483CA083D761F2203C823C7D7689EDA67140D9B2D48D3576BE0DBF7CB7573669E6E6D0C51A6A5D8B57C82A2510D6FDECC05266E8BA12FF</preference>
+            <preference preference-id="AdyenCseTestJsURL">https://test.adyen.com/hpp/cse/js/7514767238422058.shtml</preference>
+            <preference preference-id="AdyenNotificationDelayMinutes">1</preference>
+            <preference preference-id="AdyenPaymentMethodsServicePrefix">adyen.http.payment.methods</preference>
+            <preference preference-id="AdyenPaymentSecureServicePrefix">adyen.http.payment.3dsecure</preference>
+            <preference preference-id="AdyenPaymentSendServicePrefix">adyen.http.payment.send</preference>
+            <preference preference-id="Adyen_Debug">true</preference>
+            <preference preference-id="Adyen_HMACkey"></preference>
+            <preference preference-id="Adyen_Mode">TEST</preference>
+            <preference preference-id="Adyen_PaymentSelection">one</preference>
+            <preference preference-id="Adyen_allowedMethods">mc,visa,amex,maestrouk,solo,ideal,elv,paypal,sepadirectdebit,bankTransfer_IBAN</preference>
+            <preference preference-id="Adyen_directoryLookup">true</preference>
+            <preference preference-id="Adyen_enableAVS">false</preference>
+            <preference preference-id="Adyen_merchantCode">LyonsCOM</preference>
+            <preference preference-id="Adyen_recurringType">ONECLICK</preference>
+            <preference preference-id="Adyen_skinCode"></preference>
+            <preference preference-id="AydenNotificationDelayMinutes">5</preference>
+            <preference preference-id="AydenPaymentMethodsServicePrefix">adyen.http.payment.methods</preference>
+            <preference preference-id="AydenPaymentSendServicePrefix">adyen.http.payment.send</preference>
+            <preference preference-id="adyen_notification_password">tester</preference>
+            <preference preference-id="adyen_notification_user">tester</preference>
+        </development>
+        <staging/>
+        <production/>
+    </custom-preferences>
+</preferences>
+

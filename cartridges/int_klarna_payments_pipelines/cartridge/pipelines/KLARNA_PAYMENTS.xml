@@ -686,7 +686,7 @@ a Klarna payments session through Klarna API</description>
           <transition target-connector="in"/>
           <segment>
             <node>
-              <decision-node condition-key="KlarnaPaymentsFraudDecision === 'ORDER_ACCEPTED'" condition-operator="expr"/>
+              <decision-node condition-key="KlarnaPaymentsFraudDecision === 'FRAUD_RISK_ACCEPTED'" condition-operator="expr"/>
               <node-display x="0" y="1"/>
               <branch basename="b2" source-connector="yes">
                 <transition target-connector="in"/>

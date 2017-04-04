@@ -295,7 +295,7 @@ function notification()
 	{
 		return response.setStatus( 200 );
 	}
-	if( klarnaPaymentsFraudDecision === 'ORDER_ACCEPTED' )
+	if( klarnaPaymentsFraudDecision === 'FRAUD_RISK_ACCEPTED' )
 	{
 		placeOrder( order, klarnaPaymentsOrderID, localeObject );
 		

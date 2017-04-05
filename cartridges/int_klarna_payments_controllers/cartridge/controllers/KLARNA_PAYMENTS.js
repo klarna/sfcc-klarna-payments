@@ -192,7 +192,14 @@ function createSession() {
 		requestUrl = klarnaApiContext.getFlowApiUrls().get( 'createSession' );
 		
 		response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
-		
+		if( response!=='OK' )
+		{
+			Transaction.wrap( function()
+			{
+				session.custom.KlarnaPaymentsSessionID = null;
+				session.custom.KlarnaPaymentsClientToken = null;
+			} );			
+		}
 		Transaction.wrap( function()
 		{
 			session.custom.KlarnaPaymentsSessionID = response.session_id;
@@ -201,6 +208,11 @@ function createSession() {
 	} catch( e ) 
 	{
 		log.error( 'Error in creating Klarna Payments Session: {0}', e );
+		Transaction.wrap( function()
+		{
+			session.custom.KlarnaPaymentsSessionID = null;
+			session.custom.KlarnaPaymentsClientToken = null;
+		} );
 	}   	
 }
 
@@ -260,9 +272,22 @@ function updateSession() {
 		requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'updateSession' ), session.custom.KlarnaPaymentsSessionID );
 		
 		response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+		if( response!=='OK' )
+		{
+			Transaction.wrap( function()
+			{
+				session.custom.KlarnaPaymentsSessionID = null;
+				session.custom.KlarnaPaymentsClientToken = null;
+			} );			
+		}
 	} catch( e )
 	{
 		log.error( 'Error in updating Klarna Payments Session: {0}', e );
+		Transaction.wrap( function()
+		{
+			session.custom.KlarnaPaymentsSessionID = null;
+			session.custom.KlarnaPaymentsClientToken = null;
+		} );
 	}  
 }
 

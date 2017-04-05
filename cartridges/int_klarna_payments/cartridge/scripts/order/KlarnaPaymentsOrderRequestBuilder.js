@@ -183,7 +183,6 @@
 			this.context.attachment = new Object();
 			this.context.attachment.content_type = CONTENT_TYPE;
 			this.context.attachment.body = buildAttachementBody( customer );
-
 		}
 
 		return this;

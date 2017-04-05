@@ -28,9 +28,7 @@
             </attribute-definition>
 			<attribute-definition attribute-id="kpPreAssessment">
                 <display-name xml:lang="x-default">Pre-Assesement is on for:</display-name>
-                <description xml:lang="x-default">Pre-assessment flag. Comma separated string values with country codes, which should have the pre-assessment flag ON.&#13;
-For example the following flue “UK, CN, AU” would mean the pre-assessment is on for United Kingdom, China and Australia&#13;
-				</description>
+                <description xml:lang="x-default">Pre-assessment flag. Comma separated string values with country codes, which should have the pre-assessment flag ON. For example the following string “UK, CN, AU” would mean the pre-assessment is ON only for United Kingdom, China and Australia.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

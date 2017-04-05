@@ -10,7 +10,7 @@
 	var $city 				= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_city"]')[0];
 	var $postal 			= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_postal"]')[0];
 	var $country 			= document.querySelectorAll('select[name="dwfrm_billing_billingAddress_addressFields_country"]')[0];
-	var $state 				= document.querySelectorAll('select[name="dwfrm_billing_billingAddress_addressFields_states_state"]')[0];
+	var $state 				= document.getElementsByName('dwfrm_billing_billingAddress_addressFields_states_state')[0];
 	var $phone 				= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_addressFields_phone"]')[0];
 	var $emailAddress 		= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_email_emailAddress"]')[0];
 	var $billingAddressForm = document.querySelectorAll('#dwfrm_billing > fieldset')[0];	
@@ -93,7 +93,9 @@
 		}, 
 		function(res)
 		{
-			authorize();
+			if( res.show_form ) {
+				authorize();
+			}			
 		})
 	}
 	

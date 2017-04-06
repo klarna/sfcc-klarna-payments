@@ -390,9 +390,12 @@
 		var body = new Object();
 
 		body.customer_account_info = new Array( new Object() );
-		body.customer_account_info[0].unique_account_identifier = customer.profile.customerNo;
-		body.customer_account_info[0].account_registration_date = !empty( customer.profile.creationDate ) ? customer.profile.creationDate.toISOString().slice( 0, -5 ) + 'Z' : '';
-		body.customer_account_info[0].account_last_modified = !empty( customer.profile.lastModified ) ? customer.profile.lastModified.toISOString().slice( 0, -5 ) + 'Z' : '';
+		if( customer.registered )
+		{
+			body.customer_account_info[0].unique_account_identifier = customer.profile.customerNo;
+			body.customer_account_info[0].account_registration_date = !empty( customer.profile.creationDate ) ? customer.profile.creationDate.toISOString().slice( 0, -5 ) + 'Z' : '';
+			body.customer_account_info[0].account_last_modified = !empty( customer.profile.lastModified ) ? customer.profile.lastModified.toISOString().slice( 0, -5 ) + 'Z' : '';
+		}
 
 		body.purchase_history_full = new Array( new Object() );
 		body.purchase_history_full[0].unique_account_identifier = customer.ID;

@@ -174,16 +174,11 @@
 
 	KlarnaPaymentsOrderRequestBuilder.prototype.buildAdditionalCustomerInfo = function( order, localeObject )
 	{
-		var country = localeObject.country;
-		var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
 		var customer = order.getCustomer();
-
-		if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && customer.registered )
-		{
-			this.context.attachment = new Object();
-			this.context.attachment.content_type = CONTENT_TYPE;
-			this.context.attachment.body = buildAttachementBody( customer );
-		}
+		
+		this.context.attachment = new Object();
+		this.context.attachment.content_type = CONTENT_TYPE;
+		this.context.attachment.body = buildAttachementBody( customer );
 
 		return this;
 	};
@@ -377,10 +372,13 @@
 		var body = new Object();
 
 		body.customer_account_info = new Array( new Object() );
-		body.customer_account_info[0].unique_account_identifier = customer.profile.customerNo;
-		body.customer_account_info[0].account_registration_date = !empty( customer.profile.creationDate ) ? customer.profile.creationDate.toISOString().slice( 0, -5 ) + 'Z' : '';
-		body.customer_account_info[0].account_last_modified = !empty( customer.profile.lastModified ) ? customer.profile.lastModified.toISOString().slice( 0, -5 ) + 'Z' : '';
-
+		if( customer.registered )
+			{
+				body.customer_account_info[0].unique_account_identifier = customer.profile.customerNo;
+				body.customer_account_info[0].account_registration_date = !empty( customer.profile.creationDate ) ? customer.profile.creationDate.toISOString().slice( 0, -5 ) + 'Z' : '';
+				body.customer_account_info[0].account_last_modified = !empty( customer.profile.lastModified ) ? customer.profile.lastModified.toISOString().slice( 0, -5 ) + 'Z' : '';
+			}
+		
 		body.purchase_history_full = new Array( new Object() );
 		body.purchase_history_full[0].unique_account_identifier = customer.ID;
 		body.purchase_history_full[0].payment_option = "other";

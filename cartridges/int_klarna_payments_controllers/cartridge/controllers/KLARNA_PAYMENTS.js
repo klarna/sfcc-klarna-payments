@@ -397,6 +397,12 @@ function _acknowledgeOrder( klarnaPaymentsOrderID, localeObject )
  */
 function redirect()
 {
+	Transaction.wrap( function()
+	{
+		session.custom.KlarnaPaymentsSessionID = null;
+		session.custom.KlarnaPaymentsClientToken = null;
+	} );
+	
 	if( !empty( session.custom.KlarnaPaymentsRedirectURL ) )
 	{
 		response.redirect( session.custom.KlarnaPaymentsRedirectURL );
@@ -417,6 +423,19 @@ function pendingOrder( order )
 	order.setPaymentStatus( order.PAYMENT_STATUS_NOTPAID );
 }
 
+/**
+ * Clear Klarna Payments session and token from current session
+ * 
+ * @return {void}
+ */
+function clearSession()
+{
+	Transaction.wrap( function()
+	{
+		session.custom.KlarnaPaymentsSessionID = null;
+		session.custom.KlarnaPaymentsClientToken = null;
+	} ); 
+}
 /*
  * Module exports
  */
@@ -431,6 +450,8 @@ exports.UpdateSession = guard.ensure( ['get', 'https'], updateSession );
 exports.Confirmation = guard.ensure( ['get', 'https'], confirmation );
 /** Entry point for notifications on pending orders */
 exports.Notification = guard.ensure( ['post', 'https'], notification );
+/** Entry point for notifications on pending orders */
+exports.ClearSession = guard.ensure( ['get'], clearSession );
 
 /*
  * Local methods

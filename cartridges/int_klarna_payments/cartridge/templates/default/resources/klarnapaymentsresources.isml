@@ -3,7 +3,8 @@
 <isscript>	
 	// klarna payments urls
 	var KPurls =  {
-        createSession		: URLUtils.https('KLARNA_PAYMENTS-CreateSession').toString()				
+        createSession		: URLUtils.https('KLARNA_PAYMENTS-CreateSession').toString(), 
+        clearSession		: URLUtils.https('KLARNA_PAYMENTS-ClearSession').toString()			
 	};
 	
 	//klarna payments objects 

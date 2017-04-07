@@ -29,7 +29,14 @@ function execute( args : PipelineDictionary ) : Number
         var requestUrl = dw.util.StringUtils.format(klarnaApiContext.getFlowApiUrls().get('updateSession'), klarnaSessionID);
         
 		var response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-
+		if( response !== 'OK' )
+		{
+			Transaction.wrap( function()
+			{
+				session.custom.KlarnaPaymentsSessionID = null;
+				session.custom.KlarnaPaymentsClientToken = null;
+			} );			
+		}
 	} catch (e) {
 		logger.error(e);
 		return PIPELET_ERROR;

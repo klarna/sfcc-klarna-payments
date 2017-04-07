@@ -16,6 +16,7 @@
 	var $billingAddressForm = document.querySelectorAll('#dwfrm_billing > fieldset')[0];	
 	var $authorizationToken	= document.querySelectorAll('input[name="klarna_payments_authorization_token"]')[0];
 	var $klarnaPI			= document.getElementById('is-Klarna');
+	var $continueBtn		= document.getElementsByName('dwfrm_billing_save')[1];
 	
 	
 	window.klarnaAsyncCallback = function ()
@@ -95,7 +96,9 @@
 		{
 			if( res.show_form ) {
 				authorize();
-			}			
+			} else {
+				$continueBtn.disabled = true;
+			}		
 		})
 	}
 	
@@ -108,8 +111,18 @@
 		Klarna.Credit.authorize({}, 
 		function(res)
 		{
-			$authorizationToken.value = res.authorization_token;
+			if (!res.approved) {	
+				var xhr = new XMLHttpRequest();
+				xhr.open('GET', klarnaPaymentsUrls.clearSession, true);
+				xhr.send(null);
+				
+				$continueBtn.disabled = true;
+				
+			} else{
+				$authorizationToken.value = res.authorization_token;
+			}
+			
 		})
-	}
+	}	
 	
 }());

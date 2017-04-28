@@ -196,12 +196,11 @@
 		var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
 		var customer = basket.getCustomer();
 
-		if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && customer.registered )
+		if ( Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' ) && customer.registered )
 		{
 			this.context.attachment = new Object();
 			this.context.attachment.content_type = CONTENT_TYPE;
 			this.context.attachment.body = buildAttachementBody( customer );
-
 		}
 
 		return this;

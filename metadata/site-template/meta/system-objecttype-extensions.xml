@@ -142,6 +142,14 @@
                 <min-length>0</min-length>
                 <default-value>5px</default-value>
             </attribute-definition>
+			<attribute-definition attribute-id="kpAttachments">
+                <display-name xml:lang="x-default">Attachments</display-name>
+                <description xml:lang="x-default">Flag to swicth on/off the using of attachments when creating a session</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
+            </attribute-definition>
 		</custom-attribute-definitions>				
 		<group-definitions>
 			<attribute-group group-id="Klarna_Payments">
@@ -161,6 +169,7 @@
 				<attribute attribute-id="kpColorText"/>
 				<attribute attribute-id="kpColorTextSecondary"/>
 				<attribute attribute-id="kpRadiusBorder"/>
+				<attribute attribute-id="kpAttachments"/>				
             </attribute-group>
         </group-definitions>
 	</type-extension>

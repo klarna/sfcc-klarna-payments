@@ -19,7 +19,7 @@
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
 			<attribute-definition attribute-id="merchant_reference2_mapping">
-                <display-name xml:lang="x-default">merchant_reference2 mapping</display-name>
+                <display-name xml:lang="x-default">Merchant Reference 2 Mapping</display-name>
                 <description xml:lang="x-default">The field from SCC order (basket) object that is mapped to merchant_reference2 field from klarna API request. Has to be a string corresponding to one of SCC LineItemCtnr class attributes. Note that for complex data structures result may not always be as expected.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
@@ -80,7 +80,7 @@
                 <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorCheckboxCheckmark">
-                <display-name xml:lang="x-default">Checkbox checkmark color preference</display-name>
+                <display-name xml:lang="x-default">Checkbox Checkmark Color Preference</display-name>
                 <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>

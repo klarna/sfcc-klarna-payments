@@ -47,11 +47,6 @@ function handle( args )
 	
 	Transaction.wrap( function()
 	{
-		session.custom.KlarnaPaymentsAuthorizationToken = request.httpParameterMap.klarna_payments_authorization_token.value;
-	} );
-	
-	Transaction.wrap( function()
-	{
 		if( basket === null )	
 		{
 			return { error: true };
@@ -436,6 +431,19 @@ function clearSession()
 		session.custom.KlarnaPaymentsClientToken = null;
 	} ); 
 }
+
+/**
+ * Saves/Updates Klarna Payments authorization token in the current session
+ * 
+ * @return {void}
+ */
+function saveAuth()
+{
+	Transaction.wrap( function()
+	{
+		session.custom.KlarnaPaymentsAuthorizationToken = request.httpHeaders['x-auth'];
+	} ); 
+}
 /*
  * Module exports
  */
@@ -450,8 +458,10 @@ exports.UpdateSession = guard.ensure( ['get', 'https'], updateSession );
 exports.Confirmation = guard.ensure( ['get', 'https'], confirmation );
 /** Entry point for notifications on pending orders */
 exports.Notification = guard.ensure( ['post', 'https'], notification );
-/** Entry point for notifications on pending orders */
+/** Clear Klarna Payments session and token from current session */
 exports.ClearSession = guard.ensure( ['get'], clearSession );
+/** Saves/Updates Klarna Payments authorization token in the current session */
+exports.SaveAuth = guard.ensure( ['get'], saveAuth );
 
 /*
  * Local methods

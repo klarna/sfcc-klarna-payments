@@ -4,7 +4,8 @@
 	// klarna payments urls
 	var KPurls =  {
         createSession		: URLUtils.https('KLARNA_PAYMENTS-CreateSession').toString(), 
-        clearSession		: URLUtils.https('KLARNA_PAYMENTS-ClearSession').toString()			
+        clearSession		: URLUtils.https('KLARNA_PAYMENTS-ClearSession').toString(),
+        saveAuth			: URLUtils.https('KLARNA_PAYMENTS-SaveAuth').toString()			
 	};
 	
 	//klarna payments objects 

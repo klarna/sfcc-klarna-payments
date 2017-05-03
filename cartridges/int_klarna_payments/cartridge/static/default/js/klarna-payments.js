@@ -68,6 +68,10 @@
 		}		
 	})
 	
+	$continueBtn.addEventListener( "click", function () {
+		authorize();		
+	})
+	
 	/**
 	 * @function
 	 * @description updates the billing address with the billing address form
@@ -95,9 +99,7 @@
 		}, 
 		function(res)
 		{
-			if( res.show_form ) {
-				authorize();
-			} else {
+			if( !res.show_form ) {
 				$continueBtn.disabled = true;
 			}		
 		})
@@ -120,7 +122,15 @@
 				$continueBtn.disabled = true;
 				
 			} else{
-				$authorizationToken.value = res.authorization_token;
+				var http = new XMLHttpRequest();
+				http.open("GET", klarnaPaymentsUrls.saveAuth, true);
+
+				http.setRequestHeader("Content-type", "application/json; charset=utf-8");
+				http.setRequestHeader("X-Auth", res.authorization_token);
+
+				http.send();
+
+				//$authorizationToken.value = res.authorization_token;
 			}
 			
 		})

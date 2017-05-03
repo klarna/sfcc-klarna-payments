@@ -259,8 +259,16 @@
 
 			if ( Site.getCurrent().getCustomPreferenceValue( 'sendProductAndImageURLs' ) )
 			{
-				item.product_url = !empty( li.productID ) ? URLUtils.http( 'Product-Show', 'pid', li.productID ).toString() : "";
-				item.image_url = !empty( li.getProduct() ) ? li.getProduct().getImage( 'small', 0 ).getImageURL( {} ).toString() : "";
+				if ( li.optionProductLineItem )
+				{
+					item.product_url = !empty( li.parent.productID ) ? URLUtils.http( 'Product-Show', 'pid', li.parent.productID ).toString() : null;
+					item.image_url = !empty( li.parent.getProduct() ) ? li.parent.getProduct().getImage( 'small', 0 ).getImageURL( {} ).toString() : null;
+				} 
+				else
+				{
+					item.product_url = !empty( li.productID ) ? URLUtils.http( 'Product-Show', 'pid', li.productID ).toString() : null;
+					item.image_url = !empty( li.getProduct() ) ? li.getProduct().getImage( 'small', 0 ).getImageURL( {} ).toString() : null;
+				}
 			}
 
 			context.order_lines.push( item );

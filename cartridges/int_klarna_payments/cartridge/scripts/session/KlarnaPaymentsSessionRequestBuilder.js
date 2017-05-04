@@ -275,12 +275,12 @@
 				if ( li.optionProductLineItem )
 				{
 					item.product_url = !empty( li.parent.productID ) ? URLUtils.http( 'Product-Show', 'pid', li.parent.productID ).toString() : null;
-					item.image_url = !empty( li.parent.getProduct() ) ? li.parent.getProduct().getImage( 'small', 0 ).getImageURL( {} ).toString() : null;
+					item.image_url = !empty( li.parent.getProduct().getImage( 'small', 0 ) ) ? li.parent.getProduct().getImage( 'small', 0 ).getImageURL( {} ).toString() : null;
 				} 
 				else
 				{
 					item.product_url = !empty( li.productID ) ? URLUtils.http( 'Product-Show', 'pid', li.productID ).toString() : null;
-					item.image_url = !empty( li.getProduct() ) ? li.getProduct().getImage( 'small', 0 ).getImageURL( {} ).toString() : null;
+					item.image_url = !empty( li.getProduct().getImage( 'small', 0 ) ) ? li.getProduct().getImage( 'small', 0 ).getImageURL( {} ).toString() : null;
 				}
 				
 			}

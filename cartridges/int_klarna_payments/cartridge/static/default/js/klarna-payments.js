@@ -64,12 +64,40 @@
 		}
 		if(formValid)
 		{
+			$continueBtn.disabled = false;
 			updateBillingAddress();			
 		}		
 	})
 	
-	$continueBtn.addEventListener( "click", function () {
-		authorize();		
+	$continueBtn.addEventListener( "click", function (event) {
+		event.preventDefault(); //prevent form submission until authorize call is done
+		
+		Klarna.Credit.authorize({}, 
+			function(res)
+			{
+				if (!res.approved) {	
+					
+					//var xhr = new XMLHttpRequest();
+					//xhr.open('GET', klarnaPaymentsUrls.clearSession, true);
+					//xhr.send(null);
+					
+					$continueBtn.disabled = true;
+					
+				} 
+				else
+				{
+					
+					var http = new XMLHttpRequest();
+					http.open("GET", klarnaPaymentsUrls.saveAuth, true);
+
+					http.setRequestHeader("Content-type", "application/json; charset=utf-8");
+					http.setRequestHeader("X-Auth", res.authorization_token);
+
+					http.send();	
+					//submit billing form when Klarna Payments authorization is successfully finished
+					document.querySelectorAll('#dwfrm_billing')[0].submit(); 
+				}				
+			})		
 	})
 	
 	/**
@@ -103,37 +131,5 @@
 				$continueBtn.disabled = true;
 			}		
 		})
-	}
-	
-	/**
-	 * @function
-	 * @description authorize the order at Klarna
-	 */
-	function authorize()
-	{
-		Klarna.Credit.authorize({}, 
-		function(res)
-		{
-			if (!res.approved) {	
-				var xhr = new XMLHttpRequest();
-				xhr.open('GET', klarnaPaymentsUrls.clearSession, true);
-				xhr.send(null);
-				
-				$continueBtn.disabled = true;
-				
-			} else{
-				var http = new XMLHttpRequest();
-				http.open("GET", klarnaPaymentsUrls.saveAuth, true);
-
-				http.setRequestHeader("Content-type", "application/json; charset=utf-8");
-				http.setRequestHeader("X-Auth", res.authorization_token);
-
-				http.send();
-
-				//$authorizationToken.value = res.authorization_token;
-			}
-			
-		})
 	}	
-	
 }());

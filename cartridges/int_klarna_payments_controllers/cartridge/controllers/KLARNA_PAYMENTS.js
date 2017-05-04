@@ -443,6 +443,8 @@ function saveAuth()
 	{
 		session.custom.KlarnaPaymentsAuthorizationToken = request.httpHeaders['x-auth'];
 	} ); 
+	
+	response.setStatus( 200 );
 }
 /*
  * Module exports

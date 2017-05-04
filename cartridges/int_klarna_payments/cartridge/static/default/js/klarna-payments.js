@@ -15,7 +15,6 @@
 	var $emailAddress 				= document.querySelectorAll('input[name="dwfrm_billing_billingAddress_email_emailAddress"]')[0];
 	var $billingAddressFormElements = document.querySelectorAll('input[name*=dwfrm_billing_billingAddress], select[name*=dwfrm_billing_billingAddress]');
 	var $billingAddressForm 		= document.querySelectorAll('#dwfrm_billing > fieldset')[0];	
-	var $authorizationToken			= document.querySelectorAll('input[name="klarna_payments_authorization_token"]')[0];
 	var $klarnaPI					= document.getElementById('is-Klarna');
 	var $continueBtn				= document.getElementsByName('dwfrm_billing_save')[1];
 	
@@ -71,31 +70,26 @@
 	
 	$continueBtn.addEventListener( "click", function (event) {
 		event.preventDefault(); //prevent form submission until authorize call is done
+		$continueBtn.disabled = true;
 		
 		Klarna.Credit.authorize({}, 
 			function(res)
 			{
-				if (!res.approved) {	
-					
-					//var xhr = new XMLHttpRequest();
-					//xhr.open('GET', klarnaPaymentsUrls.clearSession, true);
-					//xhr.send(null);
-					
-					$continueBtn.disabled = true;
-					
-				} 
-				else
-				{
-					
-					var http = new XMLHttpRequest();
-					http.open("GET", klarnaPaymentsUrls.saveAuth, true);
+				if (res.approved)
+				{					
+					var xhr = new XMLHttpRequest();
+					xhr.open("GET", klarnaPaymentsUrls.saveAuth, true);
 
-					http.setRequestHeader("Content-type", "application/json; charset=utf-8");
-					http.setRequestHeader("X-Auth", res.authorization_token);
+					xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+					xhr.setRequestHeader("X-Auth", res.authorization_token);
 
-					http.send();	
-					//submit billing form when Klarna Payments authorization is successfully finished
-					document.querySelectorAll('#dwfrm_billing')[0].submit(); 
+					xhr.onreadystatechange = function () {
+				        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+				        	//submit billing form when Klarna Payments authorization is successfully finished
+							document.querySelectorAll('#dwfrm_billing')[0].submit(); 
+				        }				        
+				    };
+				    xhr.send();					
 				}				
 			})		
 	})

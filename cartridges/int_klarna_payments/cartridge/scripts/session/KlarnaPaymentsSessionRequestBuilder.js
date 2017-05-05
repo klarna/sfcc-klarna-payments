@@ -50,7 +50,7 @@
 		requestBodyObject = this.init()
 			.setMerchantReference( basket )
 			.buildLocale( basket, localeObject )
-			.buildBilling( basket )
+			.buildBilling( basket, localeObject )
 			.buildOrderLines( basket, localeObject )
 			.buildTotalAmount( basket, localeObject )
 			.buildTotalTax( basket, localeObject )
@@ -86,42 +86,48 @@
 		return this;
 	};
 
-	KlarnaPaymentsSessionRequestBuilder.prototype.buildBilling = function( basket )
+	KlarnaPaymentsSessionRequestBuilder.prototype.buildBilling = function( basket, localeObject )
 	{
-		var currentCustomer = basket.getCustomer();
-		var customerPreferredAddress = {};
+		var country = localeObject.country;
+		var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
 		
-		this.context.billing_address.email = basket.customerEmail || '';
-
-		if ( empty( currentCustomer ) || empty( currentCustomer.profile ) )
+		if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && !isCountryInEU( country ) )
 		{
-			let billingAddress = basket.getShipments().iterator().next().getShippingAddress();
+			var currentCustomer = basket.getCustomer();
+			var customerPreferredAddress = {};
+			
+			this.context.billing_address.email = basket.customerEmail || '';
 
-			this.context.billing_address.given_name = billingAddress.getFirstName();
-			this.context.billing_address.family_name = billingAddress.getLastName();
-			this.context.billing_address.email = "";
-			this.context.billing_address.title = !empty( billingAddress.getTitle() ) ? billingAddress.getTitle() : "";
-			this.context.billing_address.street_address = billingAddress.getAddress1();
-			this.context.billing_address.street_address2 = !empty( billingAddress.getAddress2() ) ? billingAddress.getAddress2() : "";
-			this.context.billing_address.postal_code = billingAddress.getPostalCode();
-			this.context.billing_address.city = billingAddress.getCity();
-			this.context.billing_address.region = billingAddress.getStateCode();
-			this.context.billing_address.phone = billingAddress.getPhone();
-			this.context.billing_address.country = billingAddress.getCountryCode().toString();
+			if ( empty( currentCustomer ) || empty( currentCustomer.profile ) )
+			{
+				let billingAddress = basket.getShipments().iterator().next().getShippingAddress();
 
-			return this;
-		}
+				this.context.billing_address.given_name = billingAddress.getFirstName();
+				this.context.billing_address.family_name = billingAddress.getLastName();
+				this.context.billing_address.email = "";
+				this.context.billing_address.title = !empty( billingAddress.getTitle() ) ? billingAddress.getTitle() : "";
+				this.context.billing_address.street_address = billingAddress.getAddress1();
+				this.context.billing_address.street_address2 = !empty( billingAddress.getAddress2() ) ? billingAddress.getAddress2() : "";
+				this.context.billing_address.postal_code = billingAddress.getPostalCode();
+				this.context.billing_address.city = billingAddress.getCity();
+				this.context.billing_address.region = billingAddress.getStateCode();
+				this.context.billing_address.phone = billingAddress.getPhone();
+				this.context.billing_address.country = billingAddress.getCountryCode().toString();
 
-		this.context.billing_address.email = currentCustomer.profile.email;
-		this.context.billing_address.phone = currentCustomer.profile.phoneMobile;
-		this.context.billing_address.given_name = currentCustomer.profile.firstName;
-		this.context.billing_address.family_name = currentCustomer.profile.lastName;
+				return this;
+			}
 
-		customerPreferredAddress = currentCustomer.addressBook.preferredAddress;
-		if ( !empty( customerPreferredAddress ) )
-		{
-			buildAddress.bind( this )( customerPreferredAddress );
-		}
+			this.context.billing_address.email = currentCustomer.profile.email;
+			this.context.billing_address.phone = currentCustomer.profile.phoneMobile;
+			this.context.billing_address.given_name = currentCustomer.profile.firstName;
+			this.context.billing_address.family_name = currentCustomer.profile.lastName;
+
+			customerPreferredAddress = currentCustomer.addressBook.preferredAddress;
+			if ( !empty( customerPreferredAddress ) )
+			{
+				buildAddress.bind( this )( customerPreferredAddress );
+			}
+		}		
 
 		return this;
 	};
@@ -418,6 +424,20 @@
 
 		return JSON.stringify( body );
 	}
+	
+	function isCountryInEU( country )
+	{
+
+		var isInEU = true;
+		var EUCountries = "BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK";
+		
+		if( EUCountries.indexOf( country ) === -1)
+		{
+			isInEU = false;
+		}
+
+		return isInEU;
+	}	
 
 	module.exports = KlarnaPaymentsSessionRequestBuilder;
 }() );

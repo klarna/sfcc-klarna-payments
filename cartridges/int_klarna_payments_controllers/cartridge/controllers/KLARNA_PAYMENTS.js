@@ -180,34 +180,38 @@ function createSession() {
 	{
 		updateSession();
 	}
-	try {
-		klarnaPaymentsHttpService = new KlarnaPayments.httpService();
-		klarnaApiContext = new KlarnaPayments.apiContext();
-		requestBody = _getSessionRequestBody( BasketMgr.getCurrentBasket(), localeObject );
-		requestUrl = klarnaApiContext.getFlowApiUrls().get( 'createSession' );
-		
-		response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
-		if( response!=='OK' )
+	else
+	{
+		try {
+			klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+			klarnaApiContext = new KlarnaPayments.apiContext();
+			requestBody = _getSessionRequestBody( BasketMgr.getCurrentBasket(), localeObject );
+			requestUrl = klarnaApiContext.getFlowApiUrls().get( 'createSession' );
+			
+			response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+			if( response!=='OK' )
+			{
+				Transaction.wrap( function()
+				{
+					session.custom.KlarnaPaymentsSessionID = null;
+					session.custom.KlarnaPaymentsClientToken = null;
+				} );			
+			}
+			Transaction.wrap( function()
+			{
+				session.custom.KlarnaPaymentsSessionID = response.session_id;
+				session.custom.KlarnaPaymentsClientToken = response.client_token;
+			} );
+		} catch( e ) 
 		{
+			log.error( 'Error in creating Klarna Payments Session: {0}', e );
 			Transaction.wrap( function()
 			{
 				session.custom.KlarnaPaymentsSessionID = null;
 				session.custom.KlarnaPaymentsClientToken = null;
-			} );			
+			} );
 		}
-		Transaction.wrap( function()
-		{
-			session.custom.KlarnaPaymentsSessionID = response.session_id;
-			session.custom.KlarnaPaymentsClientToken = response.client_token;
-		} );
-	} catch( e ) 
-	{
-		log.error( 'Error in creating Klarna Payments Session: {0}', e );
-		Transaction.wrap( function()
-		{
-			session.custom.KlarnaPaymentsSessionID = null;
-			session.custom.KlarnaPaymentsClientToken = null;
-		} );
+	
 	}   	
 }
 

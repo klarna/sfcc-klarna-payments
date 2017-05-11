@@ -492,10 +492,10 @@
 }, {
 	"countryCode": "NL",
 	"name": {
-		"en_NL": "Netherlands"
+		"nl_NL": "Netherlands"
 	},
 	"continent": "europe",
-	"locales": ["en_NL"],
+	"locales": ["nl_NL"],
 	"currencyCode": "EUR",
 	"taxation": {
 		"type": "gross",
@@ -573,10 +573,10 @@
 }, {
 	"countryCode": "AT",
 	"name": {
-		"en_AT": "Austria"
+		"de_AT": "Austria"
 	},
 	"continent": "europe",
-	"locales": ["en_AT"],
+	"locales": ["de_AT"],
 	"currencyCode": "EUR",
 	"taxation": {
 		"type": "gross",
@@ -654,10 +654,10 @@
 }, {
 	"countryCode": "DE",
 	"name": {
-		"en_DE": "Germany"
+		"de_DE": "Germany"
 	},
 	"continent": "europe",
-	"locales": ["en_DE"],
+	"locales": ["de_DE"],
 	"currencyCode": "EUR",
 	"taxation": {
 		"type": "gross",
@@ -735,10 +735,10 @@
 }, {
 	"countryCode": "DK",
 	"name": {
-		"en_DK": "Denmark"
+		"da_DK": "Denmark"
 	},
 	"continent": "europe",
-	"locales": ["en_DK"],
+	"locales": ["da_DK"],
 	"currencyCode": "EUR",
 	"taxation": {
 		"type": "gross",
@@ -816,10 +816,10 @@
 }, {
 	"countryCode": "FI",
 	"name": {
-		"en_FI": "Finland"
+		"fi_FI": "Finland"
 	},
 	"continent": "europe",
-	"locales": ["en_FI"],
+	"locales": ["fi_FI"],
 	"currencyCode": "EUR",
 	"taxation": {
 		"type": "gross",
@@ -897,10 +897,10 @@
 }, {
 	"countryCode": "NO",
 	"name": {
-		"en_NO": "Norway"
+		"nb_NO": "Norway"
 	},
 	"continent": "europe",
-	"locales": ["en_NO"],
+	"locales": ["nb_NO"],
 	"currencyCode": "EUR",
 	"taxation": {
 		"type": "gross",
@@ -978,10 +978,10 @@
 }, {
 	"countryCode": "SE",
 	"name": {
-		"en_SE": "Sweden"
+		"sv_SE": "Sweden"
 	},
 	"continent": "europe",
-	"locales": ["en_SE"],
+	"locales": ["sv_SE"],
 	"currencyCode": "EUR",
 	"taxation": {
 		"type": "gross",

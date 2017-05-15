@@ -739,14 +739,14 @@
 	},
 	"continent": "europe",
 	"locales": ["da_DK"],
-	"currencyCode": "EUR",
+	"currencyCode": "DKK",
 	"taxation": {
 		"type": "gross",
 		"rate": 0.22
 	},
 	"priceBooks" : [
-		"eur-list-prices",
-		"eur-sale-prices"
+		"DKK-list-prices",
+		"DKK-sale-prices"
 	],
 	"dynamicForms": {
 		"addressDetails": {
@@ -836,8 +836,7 @@
 			},
 			"states": [{
 				"fieldName": "state",
-				"type": "select",
-				"required": true
+				"type": "select"
 			}],
 			"phone": {
 				"help": {
@@ -901,14 +900,14 @@
 	},
 	"continent": "europe",
 	"locales": ["nb_NO"],
-	"currencyCode": "EUR",
+	"currencyCode": "NOK",
 	"taxation": {
 		"type": "gross",
 		"rate": 0.22
 	},
 	"priceBooks" : [
-		"eur-list-prices",
-		"eur-sale-prices"
+		"NOK-list-prices",
+		"NOK-sale-prices"
 	],
 	"dynamicForms": {
 		"addressDetails": {
@@ -982,14 +981,14 @@
 	},
 	"continent": "europe",
 	"locales": ["sv_SE"],
-	"currencyCode": "EUR",
+	"currencyCode": "SEK",
 	"taxation": {
 		"type": "gross",
 		"rate": 0.22
 	},
 	"priceBooks" : [
-		"eur-list-prices",
-		"eur-sale-prices"
+		"SEK-list-prices",
+		"SEK-sale-prices"
 	],
 	"dynamicForms": {
 		"addressDetails": {

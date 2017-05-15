@@ -69,71 +69,74 @@
 	})
 	
 	$continueBtn.addEventListener( "click", function (event) {
-		event.preventDefault(); //prevent form submission until authorize call is done
-		$continueBtn.disabled = true;
-		
-		//update address
-		Klarna.Credit.load(
-			{
-				container: "#klarna_payments_container"				
-			},
-			{
-				"billing_address": {
-				"given_name": $firstName.value,
-				"family_name": $lastName.value,
-				"email": $emailAddress.value,
-				"title": "",
-				"street_address": $address1.value,
-				"street_address2": "",
-				"postal_code": $postal.value,
-				"city": $city.value,
-				"region": $state.value,
-				"phone": $phone.value,
-				"country": $country.value
-				}
-			}, 
-			function(res)
-			{
-				if( !res.show_form ) {
-					$continueBtn.disabled = true;
-				} else
+		if( document.getElementById('klarna_payments_container').parentElement.className.indexOf('expanded') !== -1 )
+		{
+			event.preventDefault(); //prevent form submission until authorize call is done
+			$continueBtn.disabled = true;
+			
+			//update address
+			Klarna.Credit.load(
 				{
-					Klarna.Credit.authorize({
-						"billing_address": {
-							"given_name": $firstName.value,
-							"family_name": $lastName.value,
-							"email": $emailAddress.value,
-							"title": "",
-							"street_address": $address1.value,
-							"street_address2": "",
-							"postal_code": $postal.value,
-							"city": $city.value,
-							"region": $state.value,
-							"phone": $phone.value,
-							"country": $country.value
-							}
-					}, 
-						function(res)
-						{
-							if (res.approved)
-							{					
-								var xhr = new XMLHttpRequest();
-								xhr.open("GET", klarnaPaymentsUrls.saveAuth, true);
+					container: "#klarna_payments_container"				
+				},
+				{
+					"billing_address": {
+					"given_name": $firstName.value,
+					"family_name": $lastName.value,
+					"email": $emailAddress.value,
+					"title": "",
+					"street_address": $address1.value,
+					"street_address2": "",
+					"postal_code": $postal.value,
+					"city": $city.value,
+					"region": $state.value,
+					"phone": $phone.value,
+					"country": $country.value
+					}
+				}, 
+				function(res)
+				{
+					if( !res.show_form ) {
+						$continueBtn.disabled = true;
+					} else
+					{
+						Klarna.Credit.authorize({
+							"billing_address": {
+								"given_name": $firstName.value,
+								"family_name": $lastName.value,
+								"email": $emailAddress.value,
+								"title": "",
+								"street_address": $address1.value,
+								"street_address2": "",
+								"postal_code": $postal.value,
+								"city": $city.value,
+								"region": $state.value,
+								"phone": $phone.value,
+								"country": $country.value
+								}
+						}, 
+							function(res)
+							{
+								if (res.approved)
+								{					
+									var xhr = new XMLHttpRequest();
+									xhr.open("GET", klarnaPaymentsUrls.saveAuth, true);
 
-								xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-								xhr.setRequestHeader("X-Auth", res.authorization_token);
+									xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+									xhr.setRequestHeader("X-Auth", res.authorization_token);
 
-								xhr.onreadystatechange = function () {
-							        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-							        	//submit billing form when Klarna Payments authorization is successfully finished
-										document.querySelectorAll('#dwfrm_billing')[0].submit(); 
-							        }				        
-							    };
-							    xhr.send();					
-							}				
-						})
-				}
-			})				
+									xhr.onreadystatechange = function () {
+								        if(xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+								        	//submit billing form when Klarna Payments authorization is successfully finished
+											document.querySelectorAll('#dwfrm_billing')[0].submit(); 
+								        }				        
+								    };
+								    xhr.send();					
+								}				
+							})
+					}
+				})
+		}						
 	})
 	
 	/**

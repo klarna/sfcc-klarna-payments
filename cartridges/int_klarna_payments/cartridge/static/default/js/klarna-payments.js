@@ -98,7 +98,21 @@
 					$continueBtn.disabled = true;
 				} else
 				{
-					Klarna.Credit.authorize({}, 
+					Klarna.Credit.authorize({
+						"billing_address": {
+							"given_name": $firstName.value,
+							"family_name": $lastName.value,
+							"email": $emailAddress.value,
+							"title": "",
+							"street_address": $address1.value,
+							"street_address2": "",
+							"postal_code": $postal.value,
+							"city": $city.value,
+							"region": $state.value,
+							"phone": $phone.value,
+							"country": $country.value
+							}
+					}, 
 						function(res)
 						{
 							if (res.approved)

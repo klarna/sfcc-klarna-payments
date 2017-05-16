@@ -7,6 +7,7 @@
 	var URLUtils = require( 'dw/web/URLUtils' );
 	var Site = require( 'dw/system/Site' );
 	var Logger = require( 'dw/system/Logger' );
+	var TaxMgr = require( 'dw/order/TaxMgr' );
 
 	var Builder = require( '../util/Builder' );
 	var ORDER_LINE_TYPE = require( '../util/KlarnaPaymentsConstants.js' ).ORDER_LINE_TYPE;
@@ -286,9 +287,9 @@
 			shipment_unit_price = ( shipment.shippingTotalGrossPrice.available && country !== 'US' ? shipment.shippingTotalGrossPrice.value : shipment.shippingTotalNetPrice.value ) * 100;
 			shipment_tax_rate = 0;
 
-			if ( shipment.shippingTotalTax.available && shipment.shippingTotalNetPrice.available && shipment.shippingTotalTax.value > 0 && shipment.shippingTotalNetPrice.value > 0 )
+			if ( !empty( shipment.shippingMethod.taxClassID ) && !empty( shipment.shippingAddress ) )
 			{
-				shipment_tax_rate = ( country === 'US' ) ? 0 : ( shipment.shippingTotalTax.value / shipment.shippingTotalNetPrice.value ) * 10000;
+				shipment_tax_rate = ( country === 'US' ) ? 0 : ( TaxMgr.getTaxRate( shipment.shippingMethod.taxClassID, TaxMgr.getTaxJurisdictionID( new dw.order.ShippingLocation( shipment.shippingAddress ) ) ) ) * 10000;
 			}
 
 			if ( !empty( shipment.shippingMethod ) )

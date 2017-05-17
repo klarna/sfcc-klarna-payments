@@ -112,7 +112,7 @@
 			return this;
 		}
 		buildShippingAddress.bind( this )( shippingAddress );
-		this.context.shipping_address.email = 'not_available@example.com';
+		this.context.shipping_address.email = "";
 
 		return this;
 	};

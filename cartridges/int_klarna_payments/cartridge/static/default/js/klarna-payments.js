@@ -16,8 +16,7 @@
 	var $billingAddressFormElements = document.querySelectorAll('input[name*=dwfrm_billing_billingAddress], select[name*=dwfrm_billing_billingAddress]');
 	var $billingAddressForm 		= document.querySelectorAll('#dwfrm_billing > fieldset')[0];	
 	var $klarnaPI					= document.getElementById('is-Klarna');
-	var $continueBtn				= document.getElementsByName('dwfrm_billing_save')[1];
-	
+	var $continueBtn				= document.getElementsByName('dwfrm_billing_save')[1];	
 	
 	window.klarnaAsyncCallback = function ()
 	{
@@ -113,6 +112,19 @@
 								"region": $state.value,
 								"phone": $phone.value,
 								"country": $country.value.toUpperCase()
+								},
+							"shipping_address": {
+								"given_name": document.querySelectorAll('#shipping_address_firstName')[0].value,
+								"family_name": document.querySelectorAll('#shipping_address_lastName')[0].value,								
+								"title": "",
+								"street_address": document.querySelectorAll('#shipping_address_address1')[0].value,
+								"street_address2": "",
+								"postal_code": document.querySelectorAll('#shipping_address_postalCode')[0].value,
+								"city": document.querySelectorAll('#shipping_address_city')[0].value,
+								"region": document.querySelectorAll('#shipping_address_stateCode')[0].value,
+								"phone": document.querySelectorAll('#shipping_address_phone')[0].value,
+								"country": document.querySelectorAll('#shipping_address_countryCode')[0].value, 
+								"email": "not_available@example.com"
 								}
 						}, 
 							function(res)

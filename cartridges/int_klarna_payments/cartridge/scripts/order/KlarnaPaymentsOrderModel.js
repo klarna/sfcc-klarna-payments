@@ -39,7 +39,7 @@
 		this.title = '';
 		this.given_name = '';
 		this.family_name = '';
-		this.email = '';
+		this.email = 'not_available@example.com';
 		this.phone = '';
 		this.street_address = '';
 		this.street_address2 = '';

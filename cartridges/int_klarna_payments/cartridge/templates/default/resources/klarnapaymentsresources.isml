@@ -5,7 +5,8 @@
 	var KPurls =  {
         createSession		: URLUtils.https('KLARNA_PAYMENTS-CreateSession').toString(), 
         clearSession		: URLUtils.https('KLARNA_PAYMENTS-ClearSession').toString(),
-        saveAuth			: URLUtils.https('KLARNA_PAYMENTS-SaveAuth').toString()			
+        saveAuth			: URLUtils.https('KLARNA_PAYMENTS-SaveAuth').toString(), 
+        updateSession		: URLUtils.https('KLARNA_PAYMENTS-UpdateSession').toString()
 	};
 	
 	//klarna payments objects 

@@ -47,12 +47,20 @@
 
 		basket = params.basket;
 		localeObject = params.localeObject.custom;
+		
+		var country = localeObject.country;
+		var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
+		var preAssement = false;
+		if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && !isCountryInEU( country ) )
+		{
+			preAssement = true;
+		}
 
-		requestBodyObject = this.init()
+		requestBodyObject = this.init( preAssement )
 			.setMerchantReference( basket )
 			.buildLocale( basket, localeObject )
-			.buildBilling( basket, localeObject )
-			.buildShipping( basket, localeObject )
+			.buildBilling( basket, localeObject, preAssement )
+			.buildShipping( basket, localeObject, preAssement )
 			.buildOrderLines( basket, localeObject )
 			.buildTotalAmount( basket, localeObject )
 			.buildTotalTax( basket, localeObject )
@@ -62,9 +70,9 @@
 		return requestBodyObject;
 	};
 
-	KlarnaPaymentsSessionRequestBuilder.prototype.init = function()
-	{
-		this.context = new KlarnaPaymentsSessionModel();
+	KlarnaPaymentsSessionRequestBuilder.prototype.init = function( preAssement )
+	{		
+		this.context = new KlarnaPaymentsSessionModel( preAssement );
 
 		return this;
 	};
@@ -88,12 +96,9 @@
 		return this;
 	};
 
-	KlarnaPaymentsSessionRequestBuilder.prototype.buildBilling = function( basket, localeObject )
+	KlarnaPaymentsSessionRequestBuilder.prototype.buildBilling = function( basket, localeObject, preAssement )
 	{
-		var country = localeObject.country;
-		var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
-		
-		if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && !isCountryInEU( country ) )
+		if ( preAssement )
 		{
 			var currentCustomer = basket.getCustomer();
 			var customerPreferredAddress = {};
@@ -134,12 +139,9 @@
 		return this;
 	};
 	
-	KlarnaPaymentsSessionRequestBuilder.prototype.buildShipping = function( basket, localeObject )
+	KlarnaPaymentsSessionRequestBuilder.prototype.buildShipping = function( basket, localeObject, preAssement )
 	{
-		var country = localeObject.country;
-		var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
-		
-		if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && !isCountryInEU( country ) )
+		if ( preAssement )
 		{
 			var currentCustomer = basket.getCustomer();
 			var customerPreferredAddress = {};

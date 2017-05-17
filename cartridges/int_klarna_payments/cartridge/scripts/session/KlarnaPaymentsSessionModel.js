@@ -2,19 +2,23 @@
 {
 	'use strict';
 
-	function KlarnaPaymentsSessionModel()
+	function KlarnaPaymentsSessionModel( preAssement )
 	{
 		this.purchase_country = '';
 		this.purchase_currency = '';
 		this.locale = '';
 		this.billing_address = new BillingAddress();
-		this.shipping_address = new ShippingAddress();
+		
+		if ( preAssement )
+		{
+			this.shipping_address = new ShippingAddress();
+		}		
 		this.order_amount = 0;
 		this.order_tax_amount = 0;
 		this.order_lines = [];
 		this.merchant_reference2 = '';
 		this.options = new Options();
-		this.merchant_data = null;
+		this.merchant_data = null;		
 	}
 
 	function BillingAddress()
@@ -37,7 +41,7 @@
 		this.title = '';
 		this.given_name = '';
 		this.family_name = '';
-		this.email = '';
+		this.email = 'not_available@example.com';
 		this.phone = '';
 		this.street_address = '';
 		this.street_address2 = '';
@@ -77,7 +81,7 @@
 		this.color_text = '#3C3C3E';
 		this.color_text_secondary = '#9E9EA0';
 		this.radius_border = '5px';
-	}
+	}	
 
 	module.exports.KlarnaPaymentsSessionModel = KlarnaPaymentsSessionModel;
 	module.exports.LineItem = LineItem;

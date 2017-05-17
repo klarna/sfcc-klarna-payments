@@ -8,6 +8,7 @@
 		this.purchase_currency = '';
 		this.locale = '';
 		this.billing_address = new BillingAddress();
+		this.shipping_address = new ShippingAddress();
 		this.order_amount = 0;
 		this.order_tax_amount = 0;
 		this.order_lines = [];
@@ -19,6 +20,21 @@
 	}
 
 	function BillingAddress()
+	{
+		this.title = '';
+		this.given_name = '';
+		this.family_name = '';
+		this.email = '';
+		this.phone = '';
+		this.street_address = '';
+		this.street_address2 = '';
+		this.postal_code = '';
+		this.city = '';
+		this.region = '';
+		this.country = '';
+	}
+	
+	function ShippingAddress()
 	{
 		this.title = '';
 		this.given_name = '';

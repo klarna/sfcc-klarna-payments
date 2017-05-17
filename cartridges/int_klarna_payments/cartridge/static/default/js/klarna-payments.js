@@ -91,7 +91,7 @@
 					"city": $city.value,
 					"region": $state.value,
 					"phone": $phone.value,
-					"country": $country.value
+					"country": $country.value.toUpperCase()
 					}
 				}, 
 				function(res)
@@ -112,7 +112,7 @@
 								"city": $city.value,
 								"region": $state.value,
 								"phone": $phone.value,
-								"country": $country.value
+								"country": $country.value.toUpperCase()
 								}
 						}, 
 							function(res)
@@ -161,7 +161,7 @@
 			"city": $city.value,
 			"region": $state.value,
 			"phone": $phone.value,
-			"country": $country.value
+			"country": $country.value.toUpperCase()
 			}
 		}, 
 		function(res)

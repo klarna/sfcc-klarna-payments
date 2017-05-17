@@ -52,6 +52,7 @@
 			.setMerchantReference( basket )
 			.buildLocale( basket, localeObject )
 			.buildBilling( basket, localeObject )
+			.buildShipping( basket, localeObject )
 			.buildOrderLines( basket, localeObject )
 			.buildTotalAmount( basket, localeObject )
 			.buildTotalTax( basket, localeObject )
@@ -126,7 +127,54 @@
 			customerPreferredAddress = currentCustomer.addressBook.preferredAddress;
 			if ( !empty( customerPreferredAddress ) )
 			{
-				buildAddress.bind( this )( customerPreferredAddress );
+				buildBillingAddress.bind( this )( customerPreferredAddress );
+			}
+		}		
+
+		return this;
+	};
+	
+	KlarnaPaymentsSessionRequestBuilder.prototype.buildShipping = function( basket, localeObject )
+	{
+		var country = localeObject.country;
+		var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
+		
+		if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && !isCountryInEU( country ) )
+		{
+			var currentCustomer = basket.getCustomer();
+			var customerPreferredAddress = {};
+			
+			this.context.shipping_address.email = basket.customerEmail || '';
+
+			if ( empty( currentCustomer ) || empty( currentCustomer.profile ) )
+			{
+				// get default shipment shipping address
+				let shippingAddress = basket.getShipments().iterator().next().getShippingAddress();
+
+				this.context.shipping_address.given_name = shippingAddress.getFirstName();
+				this.context.shipping_address.family_name = shippingAddress.getLastName();
+				this.context.shipping_address.email = "not_available@example.com";
+				this.context.shipping_address.title = !empty( shippingAddress.getTitle() ) ? shippingAddress.getTitle() : "";
+				this.context.shipping_address.street_address = shippingAddress.getAddress1();
+				this.context.shipping_address.street_address2 = !empty( shippingAddress.getAddress2() ) ? shippingAddress.getAddress2() : "";
+				this.context.shipping_address.postal_code = shippingAddress.getPostalCode();
+				this.context.shipping_address.city = shippingAddress.getCity();
+				this.context.shipping_address.region = shippingAddress.getStateCode();
+				this.context.shipping_address.phone = shippingAddress.getPhone();
+				this.context.shipping_address.country = shippingAddress.getCountryCode().toString();
+
+				return this;
+			}
+
+			this.context.shipping_address.email = "not_available@example.com";
+			this.context.shipping_address.phone = currentCustomer.profile.phoneMobile;
+			this.context.shipping_address.given_name = currentCustomer.profile.firstName;
+			this.context.shipping_address.family_name = currentCustomer.profile.lastName;
+
+			customerPreferredAddress = currentCustomer.addressBook.preferredAddress;
+			if ( !empty( customerPreferredAddress ) )
+			{
+				buildShippingAddress.bind( this )( customerPreferredAddress );
 			}
 		}		
 
@@ -374,7 +422,7 @@
 		}
 	}
 
-	function buildAddress( address )
+	function buildBillingAddress( address )
 	{
 		this.context.billing_address.phone = address.phone;
 		this.context.billing_address.given_name = address.firstName;
@@ -385,6 +433,19 @@
 		this.context.billing_address.city = address.city || '';
 		this.context.billing_address.region = address.stateCode || '';
 		this.context.billing_address.country = address.countryCode.value || '';
+	}
+	
+	function buildShippingAddress( address )
+	{
+		this.context.shipping_address.phone = address.phone;
+		this.context.shipping_address.given_name = address.firstName;
+		this.context.shipping_address.family_name = address.lastName;
+		this.context.shipping_address.street_address = address.address1 || '';
+		this.context.shipping_address.street_address2 = address.address2 || '';
+		this.context.shipping_address.postal_code = address.postalCode || '';
+		this.context.shipping_address.city = address.city || '';
+		this.context.shipping_address.region = address.stateCode || '';
+		this.context.shipping_address.country = address.countryCode.value || '';
 	}
 
 	function handleRequire( params )

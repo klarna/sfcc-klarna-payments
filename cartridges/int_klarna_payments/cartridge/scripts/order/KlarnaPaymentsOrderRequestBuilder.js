@@ -52,6 +52,7 @@
 			.setMerchantReference( order )
 			.buildLocale( order, localeObject )
 			.buildBilling( order )
+			.buildShipping( order )
 			.buildOrderLines( order, localeObject )
 			.buildTotalAmount( order, localeObject )
 			.buildTotalTax( order, localeObject )
@@ -95,8 +96,23 @@
 		{
 			return this;
 		}
-		buildAddress.bind( this )( billingAddress );
+		buildBillingAddress.bind( this )( billingAddress );
 		this.context.billing_address.email = order.customerEmail || '';
+
+		return this;
+	};
+	
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildShipping = function( order )
+	{
+		// get default shipment shipping address
+		var shippingAddress = order.getShipments().iterator().next().getShippingAddress(); 
+		
+		if ( shippingAddress === null )
+		{
+			return this;
+		}
+		buildShippingAddress.bind( this )( shippingAddress );
+		this.context.shipping_address.email = 'not_available@example.com';
 
 		return this;
 	};
@@ -350,7 +366,7 @@
 		}
 	}
 
-	function buildAddress( address )
+	function buildBillingAddress( address )
 	{
 		this.context.billing_address.phone = address.phone;
 		this.context.billing_address.given_name = address.firstName;
@@ -361,6 +377,19 @@
 		this.context.billing_address.city = address.city || '';
 		this.context.billing_address.region = address.stateCode || '';
 		this.context.billing_address.country = address.countryCode.value || '';
+	}
+	
+	function buildShippingAddress( address )
+	{
+		this.context.shipping_address.phone = address.phone;
+		this.context.shipping_address.given_name = address.firstName;
+		this.context.shipping_address.family_name = address.lastName;
+		this.context.shipping_address.street_address = address.address1 || '';
+		this.context.shipping_address.street_address2 = address.address2 || '';
+		this.context.shipping_address.postal_code = address.postalCode || '';
+		this.context.shipping_address.city = address.city || '';
+		this.context.shipping_address.region = address.stateCode || '';
+		this.context.shipping_address.country = address.countryCode.value || '';
 	}
 
 	function handleRequire( params )

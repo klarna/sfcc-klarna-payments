@@ -32,17 +32,17 @@
 	
 	<custom-object type-id="KlarnaCountries" object-id="NL">
         <object-attribute attribute-id="credentialID">klarna.http.nlcredentials</object-attribute>
-        <object-attribute attribute-id="klarnaLocale">en-NL</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">nl-NL</object-attribute>
     </custom-object>
 	
 	<custom-object type-id="KlarnaCountries" object-id="AT">
         <object-attribute attribute-id="credentialID">klarna.http.atcredentials</object-attribute>
-        <object-attribute attribute-id="klarnaLocale">en-AT</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">de-AT</object-attribute>
     </custom-object>
 	
 	<custom-object type-id="KlarnaCountries" object-id="DK">
         <object-attribute attribute-id="credentialID">klarna.http.dkcredentials</object-attribute>
-        <object-attribute attribute-id="klarnaLocale">en-DK</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">da-DK</object-attribute>
     </custom-object>
 	
 </custom-objects>

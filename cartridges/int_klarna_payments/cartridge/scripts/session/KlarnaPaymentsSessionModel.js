@@ -6,11 +6,10 @@
 	{
 		this.purchase_country = '';
 		this.purchase_currency = '';
-		this.locale = '';
-		this.billing_address = new BillingAddress();
-		
+		this.locale = '';		
 		if ( preAssement )
 		{
+			this.billing_address = new BillingAddress();
 			this.shipping_address = new ShippingAddress();
 		}		
 		this.order_amount = 0;

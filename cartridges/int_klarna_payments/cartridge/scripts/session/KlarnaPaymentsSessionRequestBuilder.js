@@ -155,7 +155,7 @@
 
 				this.context.shipping_address.given_name = shippingAddress.getFirstName();
 				this.context.shipping_address.family_name = shippingAddress.getLastName();
-				this.context.shipping_address.email = "not_available@example.com";
+				this.context.shipping_address.email = "";
 				this.context.shipping_address.title = !empty( shippingAddress.getTitle() ) ? shippingAddress.getTitle() : "";
 				this.context.shipping_address.street_address = shippingAddress.getAddress1();
 				this.context.shipping_address.street_address2 = !empty( shippingAddress.getAddress2() ) ? shippingAddress.getAddress2() : "";
@@ -168,7 +168,7 @@
 				return this;
 			}
 
-			this.context.shipping_address.email = "not_available@example.com";
+			this.context.shipping_address.email = "";
 			this.context.shipping_address.phone = currentCustomer.profile.phoneMobile;
 			this.context.shipping_address.given_name = currentCustomer.profile.firstName;
 			this.context.shipping_address.family_name = currentCustomer.profile.lastName;

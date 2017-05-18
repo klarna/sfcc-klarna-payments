@@ -168,7 +168,23 @@
 		var usTotalTax = 0;
 		var salesTaxItem = {};
 
-		this.context.order_tax_amount = Math.round( totalTax );		
+		this.context.order_tax_amount = Math.round( totalTax );
+
+		if( country === 'US' )
+		{
+			usTotalTax = ( order.totalTax.available ) ? order.totalTax.value * 100 : 0;
+			salesTaxItem = new LineItem();
+			salesTaxItem.quantity = 1;
+			salesTaxItem.type = ORDER_LINE_TYPE.SALES_TAX;
+			salesTaxItem.name = 'Sales Tax';
+			salesTaxItem.reference = 'Sales Tax';
+			salesTaxItem.unit_price = usTotalTax;
+			salesTaxItem.tax_rate = 0;
+			salesTaxItem.total_amount = usTotalTax;
+			salesTaxItem.total_tax_amount = 0;
+
+			this.context.order_lines.push( salesTaxItem );
+		}
 
 		return this;
 	};
@@ -235,7 +251,7 @@
 				itemID = li.productID;
 			}
 
-			itemPrice = ( li.grossPrice.available ? li.grossPrice.value : li.netPrice.value ) * 100;
+			itemPrice = ( li.grossPrice.available && country !== 'US' ? li.grossPrice.value : li.netPrice.value ) * 100;
 
 			item = new LineItem();
 			item.quantity = li.quantityValue;
@@ -243,9 +259,9 @@
 			item.name = li.productName.replace( /[^\x00-\x7F]/g, "" );
 			item.reference = itemID;
 			item.unit_price = Math.round( itemPrice / li.quantityValue );
-			item.tax_rate = Math.round( li.taxRate * 10000 );
+			item.tax_rate = ( country === 'US' ) ? 0 : Math.round( li.taxRate * 10000 );
 			item.total_amount = Math.round( itemPrice );
-			item.total_tax_amount = Math.round( li.tax.value * 100 );
+			item.total_tax_amount = ( country === 'US' ) ? 0 : Math.round( li.tax.value * 100 );
 
 			// Add product-specific shipping line adjustments
 			if ( !empty( li.shippingLineItem ) )
@@ -284,12 +300,12 @@
 		for ( var i = 0; i < shipments.length; i++ )
 		{
 			var shipment = shipments[i];
-			shipment_unit_price = ( shipment.shippingTotalGrossPrice.available ? shipment.shippingTotalGrossPrice.value : shipment.shippingTotalNetPrice.value ) * 100;
+			shipment_unit_price = ( shipment.shippingTotalGrossPrice.available && country !== 'US' ? shipment.shippingTotalGrossPrice.value : shipment.shippingTotalNetPrice.value ) * 100;
 			shipment_tax_rate = 0;
 
 			if ( !empty( shipment.shippingMethod.taxClassID ) && !empty( shipment.shippingAddress ) )
 			{
-				shipment_tax_rate = ( TaxMgr.getTaxRate( shipment.shippingMethod.taxClassID, TaxMgr.getTaxJurisdictionID( new dw.order.ShippingLocation( shipment.shippingAddress ) ) ) ) * 10000;
+				shipment_tax_rate = ( country === 'US' ) ? 0 : ( TaxMgr.getTaxRate( shipment.shippingMethod.taxClassID, TaxMgr.getTaxJurisdictionID( new dw.order.ShippingLocation( shipment.shippingAddress ) ) ) ) * 10000;
 			}
 
 			if ( !empty( shipment.shippingMethod ) )
@@ -302,7 +318,7 @@
 				shippingLineItem.unit_price = Math.round( shipment_unit_price );
 				shippingLineItem.tax_rate = Math.round( shipment_tax_rate );
 				shippingLineItem.total_amount = shippingLineItem.unit_price;
-				shippingLineItem.total_tax_amount = Math.round( shipment.shippingTotalTax.value * 100 );
+				shippingLineItem.total_tax_amount = ( country === 'US' ) ? 0 : Math.round( shipment.shippingTotalTax.value * 100 );
 
 				addPriceAdjustments( shipment.shippingPriceAdjustments.toArray(), null, null, country, context );
 
@@ -321,7 +337,7 @@
 		{
 			var adj = adjusments[i];
 			var adjustment = new LineItem();
-			adjusmentPrice = ( adj.grossPrice.available ? adj.grossPrice.value : adj.netPrice.value ) * 100;
+			adjusmentPrice = ( adj.grossPrice.available && country !== 'US' ? adj.grossPrice.value : adj.netPrice.value ) * 100;
 			promoName = !empty( adj.promotion ) && !empty( adj.promotion.name ) ? adj.promotion.name : ORDER_LINE_TYPE.DISCOUNT;
 			promoId = adj.promotionID;
 
@@ -342,9 +358,9 @@
 			adjustment.reference = promoId;
 			adjustment.unit_price = Math.round( adjusmentPrice );
 			adjustment.merchant_data = adj.couponLineItem ? adj.couponLineItem.couponCode : '';
-			adjustment.tax_rate = Math.round( adj.taxRate * 10000 );
+			adjustment.tax_rate = ( country === 'US' ) ? 0 : Math.round( adj.taxRate * 10000 );
 			adjustment.total_amount = adjustment.unit_price
-			adjustment.total_tax_amount = Math.round( adj.tax.value * 100 );
+			adjustment.total_tax_amount = ( country === 'US' ) ? 0 : Math.round( adj.tax.value * 100 );
 
 			context.order_lines.push( adjustment );
 		}

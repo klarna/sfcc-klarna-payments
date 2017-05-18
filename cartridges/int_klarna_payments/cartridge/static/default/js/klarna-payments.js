@@ -124,6 +124,10 @@
 				        }				        
 				    };
 				    xhr.send();					
+				}
+				else
+				{
+					$continueBtn.disabled = false;
 				}				
 			})
 		}

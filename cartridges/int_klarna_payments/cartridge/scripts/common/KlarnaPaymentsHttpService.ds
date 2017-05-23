@@ -78,17 +78,7 @@ var KlarnaPaymentsHttpService = Class.extend({
     },
 
     getErrorResponse : function(errorCode : String) {
-
-        var errorResource = 'apierror.flow.' + errorCode;
-        var defaultMessage = Resource.msg('apierror.flow.default', 'klarna', null);
-        var errorMessage = Resource.msg(errorResource, 'klarna', defaultMessage);
-
-        if (!empty(errorMessage)) {
-            return errorMessage;
-        }
-        else {
-            return defaultMessage;
-        }
+		return Resource.msg('apierror.flow.default', 'klarnapayments', null);
     },
 
     logErrorResponse : function(result : Object, requestUrl : String, requestBody : Object) {

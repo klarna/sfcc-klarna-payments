@@ -150,6 +150,17 @@
                 <externally-managed-flag>false</externally-managed-flag>
 				<default-value>false</default-value>
             </attribute-definition>
+			<attribute-definition attribute-id="kpNotAvailableMessage">
+                <display-name xml:lang="x-default">Not available message on billing page</display-name>
+                <description xml:lang="x-default">The Klarna Payments not available message on billing page. JSON string holding country code and corresponding message string. For example:&#13;
+{  &#13;
+   "GB":"Klarna Payment not available",&#13;
+   "default":"Klarna Payment not available"&#13;
+}</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
 			<attribute-definition attribute-id="kpPaymentMethodTitle">
                 <display-name xml:lang="x-default">Payment Method Title on Billing Page</display-name>
                 <description xml:lang="x-default">The Klarna Payment method title on billing page. JSON string holding country code and corresponding title string. For example:&#13;
@@ -181,7 +192,8 @@
 				<attribute attribute-id="kpColorText"/>
 				<attribute attribute-id="kpColorTextSecondary"/>
 				<attribute attribute-id="kpRadiusBorder"/>
-				<attribute attribute-id="kpAttachments"/>			
+				<attribute attribute-id="kpAttachments"/>	
+				<attribute attribute-id="kpNotAvailableMessage"/>				
 				<attribute attribute-id="kpPaymentMethodTitle"/>					
             </attribute-group>
         </group-definitions>

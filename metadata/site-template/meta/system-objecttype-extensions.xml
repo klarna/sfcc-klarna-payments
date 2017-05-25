@@ -28,7 +28,7 @@
             </attribute-definition>
 			<attribute-definition attribute-id="kpPreAssessment">
                 <display-name xml:lang="x-default">Pre-Assessment is on for:</display-name>
-                <description xml:lang="x-default">Pre-assessment flag. Comma separated string values with country codes, which should have the pre-assessment flag ON. For example the following string “CN, AU” would mean the pre-assessment is ON only for China and Australia. Note: Even if on for an EU memeber country, consumer information will not be sent to Klarna until the authorize step.</description>
+                <description xml:lang="x-default">Pre-assessment flag. Comma separated string values with country codes, which should have the pre-assessment flag ON. For example the following string “CN, AU” would mean the pre-assessment is ON only for China and Australia. Note: Even if ON for an EU member country, consumer information will not be sent to Klarna until the authorize step.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

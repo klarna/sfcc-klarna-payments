@@ -160,19 +160,7 @@
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-			<attribute-definition attribute-id="kpPaymentMethodTitle">
-                <display-name xml:lang="x-default">Payment Method Title on Billing Page</display-name>
-                <description xml:lang="x-default">The Klarna Payment method title on billing page. JSON string holding country code and corresponding title string. For example:&#13;
-{&#13;
-"UK":"Buy Now, Pay Later",&#13;
-"SE":"PIX",&#13;
-"default":"Klarna"&#13;
-}</description>
-                <type>text</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
+            </attribute-definition>			
 		</custom-attribute-definitions>				
 		<group-definitions>
 			<attribute-group group-id="Klarna_Payments">
@@ -194,7 +182,6 @@
 				<attribute attribute-id="kpRadiusBorder"/>
 				<attribute attribute-id="kpAttachments"/>	
 				<attribute attribute-id="kpNotAvailableMessage"/>				
-				<attribute attribute-id="kpPaymentMethodTitle"/>					
             </attribute-group>
         </group-definitions>
 	</type-extension>

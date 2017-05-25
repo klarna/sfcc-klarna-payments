@@ -3,22 +3,8 @@
 <isscript>
 	var Countries = require('int_klarna_payments/cartridge/scripts/util/Countries');
 	var countryCode = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
-	
-	var KlarnaPaymentMethodTitle = "Klarna";
+		
 	var KlarnaPaymentNotAvailable = "Klarna Payment not available";
-	
-	if( !empty( dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpPaymentMethodTitle' ) ) )
-	{
-		var kpPaymentMethodTitleJSON = JSON.parse( dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpPaymentMethodTitle' ) );
-		if( kpPaymentMethodTitleJSON.hasOwnProperty( countryCode ) )
-		{
-			KlarnaPaymentMethodTitle = kpPaymentMethodTitleJSON[countryCode.toString()];
-		}	
-		else
-		{
-			KlarnaPaymentMethodTitle = kpPaymentMethodTitleJSON.default;
-		}			
-	}
 	
 	if( !empty( dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpNotAvailableMessage' ) ) )
 	{

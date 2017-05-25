@@ -111,7 +111,7 @@
 
 				this.context.billing_address.given_name = billingAddress.getFirstName();
 				this.context.billing_address.family_name = billingAddress.getLastName();
-				this.context.billing_address.email = "";
+				this.context.billing_address.email = !empty( basket.getCustomerEmail() ) ?  basket.getCustomerEmail() : "";
 				this.context.billing_address.title = !empty( billingAddress.getTitle() ) ? billingAddress.getTitle() : "";
 				this.context.billing_address.street_address = billingAddress.getAddress1();
 				this.context.billing_address.street_address2 = !empty( billingAddress.getAddress2() ) ? billingAddress.getAddress2() : "";
@@ -155,7 +155,7 @@
 
 				this.context.shipping_address.given_name = shippingAddress.getFirstName();
 				this.context.shipping_address.family_name = shippingAddress.getLastName();
-				this.context.shipping_address.email = "";
+				this.context.shipping_address.email = !empty( basket.getCustomerEmail() ) ?  basket.getCustomerEmail() : "";
 				this.context.shipping_address.title = !empty( shippingAddress.getTitle() ) ? shippingAddress.getTitle() : "";
 				this.context.shipping_address.street_address = shippingAddress.getAddress1();
 				this.context.shipping_address.street_address2 = !empty( shippingAddress.getAddress2() ) ? shippingAddress.getAddress2() : "";

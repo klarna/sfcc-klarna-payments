@@ -13,7 +13,8 @@ var ORDER_LINE_TYPE = 	{
 	SHIPPING_FEE : 'shipping_fee',
 	SALES_TAX : 'sales_tax',
 	PHYSICAL : 'physical',
-	SURCHARGE : 'surcharge'
+	SURCHARGE : 'surcharge',
+	GIFT_CERTIFICATE : 'gift_card'
 }
 
 var CONTENT_TYPE = 'application/vnd.klarna.internal.emd-v2+json';

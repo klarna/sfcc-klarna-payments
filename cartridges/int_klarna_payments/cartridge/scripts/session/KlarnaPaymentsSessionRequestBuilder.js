@@ -108,7 +108,10 @@
 			if ( empty( currentCustomer ) || empty( currentCustomer.profile ) )
 			{
 				let billingAddress = basket.getShipments().iterator().next().getShippingAddress();
-
+				if ( empty( billingAddress ) ) 
+				{
+					return this;
+				}		
 				this.context.billing_address.given_name = billingAddress.getFirstName();
 				this.context.billing_address.family_name = billingAddress.getLastName();
 				this.context.billing_address.email = !empty( basket.getCustomerEmail() ) ?  basket.getCustomerEmail() : "";
@@ -152,7 +155,11 @@
 			{
 				// get default shipment shipping address
 				let shippingAddress = basket.getShipments().iterator().next().getShippingAddress();
-
+				if ( empty( shippingAddress ) ) 
+				{
+					delete this.context.shipping_address;
+					return this;
+				}
 				this.context.shipping_address.given_name = shippingAddress.getFirstName();
 				this.context.shipping_address.family_name = shippingAddress.getLastName();
 				this.context.shipping_address.email = !empty( basket.getCustomerEmail() ) ?  basket.getCustomerEmail() : "";
@@ -197,10 +204,16 @@
 	KlarnaPaymentsSessionRequestBuilder.prototype.buildOrderLines = function( basket, localeObject )
 	{
 		var lineItems = basket.getAllProductLineItems().toArray();
+		var giftCertificates = basket.getGiftCertificateLineItems().toArray();
 		var shipments = basket.shipments;
 		var country = localeObject.country
 
 		buildItems( lineItems, country, this.context );
+		if ( giftCertificates.length > 0 )
+		{
+			buildItems( giftCertificates, country, this.context );
+		}
+		
 		buildShipments( shipments, country, this.context );
 
 		return this;
@@ -286,48 +299,59 @@
 		var itemPrice = 0;
 		var	itemID = '';
 		var	itemType = '';
-		var li = {};
+		var li = [];
 		var item = {};
+		var quantity = 0;
 
 		for ( var i = 0; i < items.length; i++ )
 		{
 			li = items[i];
-
-			if ( li.optionProductLineItem )
+			var isGiftCertificate = ( li.describe().getSystemAttributeDefinition('recipientEmail') && !empty( li.recipientEmail ) ) ? true : false;
+			
+			if ( isGiftCertificate )
 			{
-				itemType = ORDER_LINE_TYPE.SURCHARGE;
-				itemID = li.parent.productID + '_' + li.optionID + '_' + li.optionValueID;
+				itemType = ORDER_LINE_TYPE.GIFT_CERTIFICATE;
+				itemID = li.getGiftCertificateID();
 			}
 			else
 			{
-				itemType = ORDER_LINE_TYPE.PHYSICAL;
-				itemID = li.productID;
+				if ( li.hasOwnProperty('optionProductLineItem') && li.optionProductLineItem )
+				{
+					itemType = ORDER_LINE_TYPE.SURCHARGE;
+					itemID = li.parent.productID + '_' + li.optionID + '_' + li.optionValueID;
+				}			
+				else
+				{
+					itemType = ORDER_LINE_TYPE.PHYSICAL;
+					itemID = li.productID;
+				}
 			}
-
+			
+			quantity = isGiftCertificate ? 1 : li.quantityValue;
 			itemPrice = ( li.grossPrice.available && country !== 'US' ? li.grossPrice.value : li.netPrice.value ) * 100;
 
 			item = new LineItem();
-			item.quantity = li.quantityValue;
+			item.quantity = quantity;
 			item.type = itemType;
-			item.name = li.productName.replace( /[^\x00-\x7F]/g, "" );
+			item.name = isGiftCertificate ? 'Gift Certificate' : li.productName.replace( /[^\x00-\x7F]/g, "" );
 			item.reference = itemID;
-			item.unit_price = Math.round( itemPrice / li.quantityValue );
+			item.unit_price = Math.round( itemPrice / quantity );
 			item.tax_rate = ( country === 'US' ) ? 0 : Math.round( li.taxRate * 10000 );
 			item.total_amount = Math.round( itemPrice );
 			item.total_tax_amount = ( country === 'US' ) ? 0 : Math.round( li.tax.value * 100 );
 
 			// Add product-specific shipping line adjustments
-			if ( !empty( li.shippingLineItem ) )
+			if ( !isGiftCertificate && !empty( li.shippingLineItem ) )
 			{
 				addPriceAdjustments( li.shippingLineItem.priceAdjustments.toArray(), li.productID, null, country, context );
 			}
 
-			if ( !empty( li.priceAdjustments ) && li.priceAdjustments.length > 0 )
+			if ( !isGiftCertificate && !empty( li.priceAdjustments ) && li.priceAdjustments.length > 0 )
 			{
 				addPriceAdjustments( li.priceAdjustments.toArray(), li.productID, li.optionID, country, context );
 			}
 
-			if ( Site.getCurrent().getCustomPreferenceValue( 'sendProductAndImageURLs' ) )
+			if ( Site.getCurrent().getCustomPreferenceValue( 'sendProductAndImageURLs' ) && !isGiftCertificate )
 			{
 				if ( li.optionProductLineItem )
 				{
@@ -359,7 +383,7 @@
 			shipment_unit_price = ( shipment.shippingTotalGrossPrice.available && country !== 'US' ? shipment.shippingTotalGrossPrice.value : shipment.shippingTotalNetPrice.value ) * 100;
 			shipment_tax_rate = 0;
 
-			if ( !empty( shipment.shippingMethod.taxClassID ) && !empty( shipment.shippingAddress ) )
+			if ( !empty( shipment.shippingMethod ) && !empty( shipment.shippingMethod.taxClassID ) && !empty( shipment.shippingAddress ) )
 			{
 				shipment_tax_rate = ( country === 'US' ) ? 0 : ( TaxMgr.getTaxRate( shipment.shippingMethod.taxClassID, TaxMgr.getTaxJurisdictionID( new dw.order.ShippingLocation( shipment.shippingAddress ) ) ) ) * 10000;
 			}			

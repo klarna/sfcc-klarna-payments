@@ -161,6 +161,14 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>			
+			<attribute-definition attribute-id="kpVCNEnabled">
+                <display-name xml:lang="x-default">Virtual Card Network Enabled</display-name>
+                <description xml:lang="x-default">If set to true SFCC will create Virtual Card Network settlement from every Klarna order. Default is false</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
 		</custom-attribute-definitions>				
 		<group-definitions>
 			<attribute-group group-id="Klarna_Payments">
@@ -181,7 +189,8 @@
 				<attribute attribute-id="kpColorTextSecondary"/>
 				<attribute attribute-id="kpRadiusBorder"/>
 				<attribute attribute-id="kpAttachments"/>	
-				<attribute attribute-id="kpNotAvailableMessage"/>				
+				<attribute attribute-id="kpNotAvailableMessage"/>	
+				<attribute attribute-id="kpVCNEnabled"/>				
             </attribute-group>
         </group-definitions>
 	</type-extension>
@@ -196,7 +205,74 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+			 <attribute-definition attribute-id="kpIsVCN">
+                <display-name xml:lang="x-default">Is VCN Used</display-name>
+                <description xml:lang="x-default">True if VCN is used for payment of the order, otherwise false</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNBrand">
+                <display-name xml:lang="x-default">VCN Brand</display-name>
+                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Network card Brand</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNCSC">
+                <display-name xml:lang="x-default">VCN CSC</display-name>
+                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Network card csc</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNExpirationMonth">
+                <display-name xml:lang="x-default">VCN Expiration Month</display-name>
+                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Network card expiration month</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNExpirationYear">
+                <display-name xml:lang="x-default">VCN Expiration Year</display-name>
+                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Network card expiration year</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNHolder">
+                <display-name xml:lang="x-default">VCN Holder</display-name>
+                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Network card holder name</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNPAN">
+                <display-name xml:lang="x-default">VCN PAN</display-name>
+                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Network card pan</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
+		<group-definitions>
+            <attribute-group group-id="Klarna_Payments">
+                <attribute attribute-id="kpOrderID"/>
+                <attribute attribute-id="kpIsVCN"/>
+                <attribute attribute-id="kpVCNHolder"/>
+                <attribute attribute-id="kpVCNPAN"/>
+                <attribute attribute-id="kpVCNExpirationYear"/>
+                <attribute attribute-id="kpVCNCSC"/>
+                <attribute attribute-id="kpVCNBrand"/>
+                <attribute attribute-id="kpVCNExpirationMonth"/>
+            </attribute-group>
+        </group-definitions>
 	</type-extension>
 
 </metadata>

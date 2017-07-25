@@ -133,13 +133,18 @@
 	{
 		var lineItems = order.getAllProductLineItems().toArray();
 		var giftCertificates = order.getGiftCertificateLineItems().toArray();
+		var giftCertificatePIs = order.getGiftCertificatePaymentInstruments().toArray();
 		var shipments = order.shipments;
-		var country = localeObject.country
+		var country = localeObject.country;
 
 		buildItems( lineItems, country, this.context );
 		if ( giftCertificates.length > 0 )
 		{
 			buildItems( giftCertificates, country, this.context );
+		}
+		if ( giftCertificatePIs.length > 0 )
+		{
+			buildItemsGiftCertificatePIs( giftCertificatePIs, country, this.context );
 		}
 		buildShipments( shipments, country, this.context );
 
@@ -150,6 +155,7 @@
 	{
 		var country = localeObject.country;
 		var orderAmount = 0;
+		var gcTotalAmount = getGCtotalAmount(order);
 		if( order.totalGrossPrice.available )
 		{
 			orderAmount = order.totalGrossPrice.value * 100;
@@ -159,7 +165,7 @@
 			orderAmount = order.totalNetPrice.value * 100;
 		}
 
-		this.context.order_amount = Math.round( orderAmount );
+		this.context.order_amount = Math.round( orderAmount - gcTotalAmount);
 
 		// Set order discount line items
 		addPriceAdjustments( order.priceAdjustments, null, null, country, this.context );
@@ -307,6 +313,45 @@
 
 			context.order_lines.push( item );
 		}
+	}
+	
+	function buildItemsGiftCertificatePIs(items, country, context)
+	{
+		var li = [];
+		var item = {};
+
+		for ( var i = 0; i < items.length; i++ )
+		{
+			li = items[i];
+			var paymentTransaction  = li.getPaymentTransaction();
+
+			item = new LineItem();
+			item.quantity = 1;
+			item.type = ORDER_LINE_TYPE.GIFT_CERTIFICATE_PI;
+			item.name = 'Gift Certificate';
+			item.reference = li.getMaskedGiftCertificateCode();
+			item.unit_price = paymentTransaction.getAmount() * 100 * (-1);
+			item.tax_rate = 0;
+			item.total_amount =  paymentTransaction.getAmount() * 100 * (-1);
+			item.total_tax_amount = 0;
+
+			context.order_lines.push( item );
+		}
+	}
+	
+	function getGCtotalAmount(order)
+	{
+		var giftCertificatePIs = order.getGiftCertificatePaymentInstruments().toArray();
+		var gcTotalAmount = 0;
+		if ( giftCertificatePIs.length > 0 )
+		{			
+			for ( var i = 0; i < giftCertificatePIs.length; i++ )
+			{
+				gcTotalAmount += giftCertificatePIs[i].getPaymentTransaction().getAmount() * 100;
+				
+			}
+		} 
+		return gcTotalAmount;
 	}
 
 	function buildShipments( shipments, country, context )

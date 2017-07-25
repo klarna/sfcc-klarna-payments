@@ -14,7 +14,8 @@ var ORDER_LINE_TYPE = 	{
 	SALES_TAX : 'sales_tax',
 	PHYSICAL : 'physical',
 	SURCHARGE : 'surcharge',
-	GIFT_CERTIFICATE : 'gift_card'
+	GIFT_CERTIFICATE : 'gift_card',
+	GIFT_CERTIFICATE_PI : 'store_credit'
 }
 
 var CONTENT_TYPE = 'application/vnd.klarna.internal.emd-v2+json';

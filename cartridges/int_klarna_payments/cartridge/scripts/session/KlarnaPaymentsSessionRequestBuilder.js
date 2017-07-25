@@ -205,13 +205,18 @@
 	{
 		var lineItems = basket.getAllProductLineItems().toArray();
 		var giftCertificates = basket.getGiftCertificateLineItems().toArray();
+		var giftCertificatePIs = basket.getGiftCertificatePaymentInstruments().toArray();
 		var shipments = basket.shipments;
-		var country = localeObject.country
+		var country = localeObject.country;
 
 		buildItems( lineItems, country, this.context );
 		if ( giftCertificates.length > 0 )
 		{
 			buildItems( giftCertificates, country, this.context );
+		}
+		if ( giftCertificatePIs.length > 0 )
+		{
+			buildItemsGiftCertificatePIs( giftCertificatePIs, country, this.context );
 		}
 		
 		buildShipments( shipments, country, this.context );
@@ -222,7 +227,8 @@
 	KlarnaPaymentsSessionRequestBuilder.prototype.buildTotalAmount = function( basket, localeObject )
 	{
 		var country = localeObject.country;
-		var orderAmount = ( basket.totalGrossPrice.available ? basket.totalGrossPrice.value : basket.totalNetPrice.value ) * 100;
+		var gcTotalAmount = getGCtotalAmount(basket);
+		var orderAmount = ( basket.totalGrossPrice.available ? basket.totalGrossPrice.value : basket.totalNetPrice.value ) * 100 - gcTotalAmount;
 
 		this.context.order_amount = Math.round( orderAmount );
 
@@ -368,6 +374,45 @@
 
 			context.order_lines.push( item );
 		}
+	}
+	
+	function buildItemsGiftCertificatePIs(items, country, context)
+	{
+		var li = [];
+		var item = {};
+
+		for ( var i = 0; i < items.length; i++ )
+		{
+			li = items[i];
+			var paymentTransaction  = li.getPaymentTransaction();
+
+			item = new LineItem();
+			item.quantity = 1;
+			item.type = ORDER_LINE_TYPE.GIFT_CERTIFICATE_PI;
+			item.name = 'Gift Certificate';
+			item.reference = li.getMaskedGiftCertificateCode();
+			item.unit_price = paymentTransaction.getAmount() * 100 * (-1);
+			item.tax_rate = 0;
+			item.total_amount =  paymentTransaction.getAmount() * 100 * (-1);
+			item.total_tax_amount = 0;
+
+			context.order_lines.push( item );
+		}
+	}
+	
+	function getGCtotalAmount(basket)
+	{
+		var giftCertificatePIs = basket.getGiftCertificatePaymentInstruments().toArray();
+		var gcTotalAmount = 0;
+		if ( giftCertificatePIs.length > 0 )
+		{			
+			for ( var i = 0; i < giftCertificatePIs.length; i++ )
+			{
+				gcTotalAmount += giftCertificatePIs[i].getPaymentTransaction().getAmount() * 100;
+				
+			}
+		} 
+		return gcTotalAmount;
 	}
 
 	function buildShipments( shipments, country, context )

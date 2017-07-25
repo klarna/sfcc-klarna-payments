@@ -15,6 +15,7 @@ var BasketMgr = require( 'dw/order/BasketMgr' );
 var OrderMgr = require( 'dw/order/OrderMgr' );
 var StringUtils = require( 'dw/util/StringUtils' );
 var Status = require( 'dw/system/Status' );
+var PaymentInstrument = ( 'dw/order/PaymentInstrument' );
 
 var COSummary = require( 'sitegenesis_storefront_controllers/cartridge/controllers/COSummary.js' );
 
@@ -56,11 +57,16 @@ function handle( args )
 		iter = paymentInstrs.iterator();
 		existingPI = null;
 
+		// remove all PI except gift certificates
 		while( iter.hasNext() )
 		{
 			existingPI = iter.next();
-			basket.removePaymentInstrument( existingPI );
-		}		
+			if ( !PaymentInstrument.METHOD_GIFT_CERTIFICATE.equals( existingPI.paymentMethod ) ) 
+			{
+				args.Basket.removePaymentInstrument( existingPI );
+			}		
+		}	
+		
 		amount = Utils.calculateNonGiftCertificateAmount( basket );
 		basket.createPaymentInstrument( "Klarna", amount );		
 	} );

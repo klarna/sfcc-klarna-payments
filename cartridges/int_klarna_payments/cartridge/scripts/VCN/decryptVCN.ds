@@ -1,0 +1,35 @@
+/**
+* decryptVCN.ds
+*
+* Decrypts VCN card number and csc
+*
+* @input vcnObject : Object
+*/
+
+// import packages
+var Logger = require( 'dw/system/Logger' );
+var logger = Logger.getLogger( 'decryptVCN.ds' );
+var Site = require( 'dw/system/Site' );
+var Cypher = require( 'dw/crypto/Cipher' );
+
+
+function execute( args : PipelineDictionary ) : Number
+{	
+	var VCNPrivateKey = Site.getCurrent().getCustomPreferenceValue( 'vcnPrivateKey' );
+	var cypher = new Cypher();
+	try {
+		var panEncrypted = args.vcnObject.csc;
+		var cscEncrypted = args.vcnObject.pan;
+		var panDecrypted = cypher.decrypt(panEncrypted, VCNPrivateKey, "RSA/ECB/PKCS1PADDING", null, 0);
+		var cscDecrypted = cypher.decrypt(cscEncrypted, VCNPrivateKey, "RSA/ECB/PKCS1PADDING", null, 0);
+		
+		args.vcnObject.pan = panDecrypted;
+		args.vcnObject.csc = cscDecrypted;
+		
+	} catch (e) {
+		logger.error(e);
+		return PIPELET_ERROR;
+	}
+    
+    return PIPELET_NEXT;	
+}

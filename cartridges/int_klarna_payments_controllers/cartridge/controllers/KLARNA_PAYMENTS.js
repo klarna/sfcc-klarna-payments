@@ -330,6 +330,10 @@ function notification()
 	{
 		return response.setStatus( 200 );
 	}
+	Transaction.wrap( function()
+	{
+		order.getPaymentInstruments("Klarna")[0].paymentTransaction.custom.kpFraudStatus = klarnaPaymentsFraudDecision;
+	} );
 	if( klarnaPaymentsFraudDecision === 'FRAUD_RISK_ACCEPTED' )
 	{
 		placeOrder( order, klarnaPaymentsOrderID, localeObject );

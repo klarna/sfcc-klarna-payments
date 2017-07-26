@@ -33,8 +33,8 @@ function execute( args : PipelineDictionary ) : Number
 		{
 			Transaction.wrap( function()
 			{
-				session.custom.KlarnaPaymentsSessionID = null;
-				session.custom.KlarnaPaymentsClientToken = null;
+				session.privacy.KlarnaPaymentsSessionID = null;
+				session.privacy.KlarnaPaymentsClientToken = null;
 			} );			
 		}
 	} catch (e) {

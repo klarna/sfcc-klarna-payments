@@ -138,7 +138,7 @@
           <config-property key="ScriptFile" value="int_klarna_payments:order/KlarnaPaymentsCreateOrder.ds"/>
           <key-binding alias="null" key="ScriptLog"/>
           <key-binding alias="Order" key="Basket"/>
-          <key-binding alias="CurrentSession.custom.KlarnaPaymentsAuthorizationToken" key="KlarnaAuthorizationToken"/>
+          <key-binding alias="CurrentSession.privacy.KlarnaPaymentsAuthorizationToken" key="KlarnaAuthorizationToken"/>
           <key-binding alias="LocaleObject" key="LocaleObject"/>
           <key-binding alias="KlarnaPaymentsFraudStatus" key="fraud_status"/>
           <key-binding alias="KlarnaPaymentsOrderID" key="order_id"/>
@@ -160,11 +160,34 @@
           </segment>
         </branch>
       </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
+      <simple-transition/>
+      <node>
+        <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+          <config-property key="Transactional" value="true"/>
+          <key-binding alias="KlarnaPaymentsFraudStatus" key="From_0"/>
+          <key-binding alias="PaymentInstrument.paymentTransaction.custom.kpFraudStatus" key="To_0"/>
+          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="null" key="To_1"/>
+          <key-binding alias="null" key="From_2"/>
+          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="null" key="From_3"/>
+          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="null" key="From_4"/>
+          <key-binding alias="null" key="To_4"/>
+          <key-binding alias="null" key="From_5"/>
+          <key-binding alias="null" key="To_5"/>
+          <key-binding alias="null" key="From_6"/>
+          <key-binding alias="null" key="To_6"/>
+          <key-binding alias="null" key="From_7"/>
+          <key-binding alias="null" key="To_7"/>
+          <key-binding alias="null" key="From_8"/>
+          <key-binding alias="null" key="To_8"/>
+          <key-binding alias="null" key="From_9"/>
+          <key-binding alias="null" key="To_9"/>
+        </pipelet-node>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
       <node>
         <decision-node condition-key="KlarnaPaymentsFraudStatus !== 'REJECTED'" condition-operator="expr"/>
         <node-display x="0" y="1"/>
@@ -251,9 +274,9 @@
               <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <key-binding alias="Order.orderNo" key="From_0"/>
-                <key-binding alias="CurrentSession.custom.OrderNo" key="To_0"/>
+                <key-binding alias="CurrentSession.privacy.OrderNo" key="To_0"/>
                 <key-binding alias="KlarnaPaymentsRedirectURL" key="From_1"/>
-                <key-binding alias="CurrentSession.custom.KlarnaPaymentsRedirectURL" key="To_1"/>
+                <key-binding alias="CurrentSession.privacy.KlarnaPaymentsRedirectURL" key="To_1"/>
                 <key-binding alias="Order.custom.kpOrderID" key="To_2"/>
                 <key-binding alias="false" key="From_3"/>
                 <key-binding alias="Order.custom.kpIsVCN" key="To_3"/>
@@ -423,7 +446,7 @@ a Klarna payments session through Klarna API</description>
       </node>
       <simple-transition/>
       <node>
-        <decision-node condition-key="empty(CurrentSession.custom.KlarnaPaymentsSessionID)" condition-operator="expr"/>
+        <decision-node condition-key="empty(CurrentSession.privacy.KlarnaPaymentsSessionID)" condition-operator="expr"/>
         <node-display x="0" y="2"/>
         <branch basename="b2" source-connector="yes">
           <transition target-connector="in"/>
@@ -464,9 +487,9 @@ a Klarna payments session through Klarna API</description>
                     <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="true"/>
                       <key-binding alias="null" key="From_0"/>
-                      <key-binding alias="CurrentSession.custom.KlarnaPaymentsSessionID" key="To_0"/>
+                      <key-binding alias="CurrentSession.privacy.KlarnaPaymentsSessionID" key="To_0"/>
                       <key-binding alias="null" key="From_1"/>
-                      <key-binding alias="CurrentSession.custom.KlarnaPaymentsClientToken" key="To_1"/>
+                      <key-binding alias="CurrentSession.privacy.KlarnaPaymentsClientToken" key="To_1"/>
                       <key-binding alias="null" key="From_2"/>
                       <key-binding alias="null" key="To_2"/>
                       <key-binding alias="null" key="From_3"/>
@@ -545,7 +568,7 @@ a Klarna payments session through Klarna API</description>
           <key-binding alias="Basket" key="Basket"/>
           <key-binding alias="KlarnaPaymentsSessionID" key="session_id"/>
           <key-binding alias="IsKlarnaPaymentsSessionUpdated" key="isSessionUpdated"/>
-          <key-binding alias="CurrentSession.custom.KlarnaPaymentsSessionID" key="KlarnaPaymentsSessionID"/>
+          <key-binding alias="CurrentSession.privacy.KlarnaPaymentsSessionID" key="KlarnaPaymentsSessionID"/>
           <key-binding alias="LocaleObject" key="LocaleObject"/>
         </pipelet-node>
         <node-display x="0" y="2"/>
@@ -561,9 +584,9 @@ a Klarna payments session through Klarna API</description>
               <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
                 <config-property key="Transactional" value="true"/>
                 <key-binding alias="null" key="From_0"/>
-                <key-binding alias="CurrentSession.custom.KlarnaPaymentsSessionID" key="To_0"/>
+                <key-binding alias="CurrentSession.privacy.KlarnaPaymentsSessionID" key="To_0"/>
                 <key-binding alias="null" key="From_1"/>
-                <key-binding alias="CurrentSession.custom.KlarnaPaymentsClientToken" key="To_1"/>
+                <key-binding alias="CurrentSession.privacy.KlarnaPaymentsClientToken" key="To_1"/>
                 <key-binding alias="null" key="From_2"/>
                 <key-binding alias="null" key="To_2"/>
                 <key-binding alias="null" key="From_3"/>
@@ -710,7 +733,7 @@ a Klarna payments session through Klarna API</description>
         <text-node>
           <description>If for some reason order is not acknowledge with Klarna this is not a reason to fail the order.</description>
         </text-node>
-        <node-display x="4" y="9"/>
+        <node-display x="4" y="10"/>
       </node>
     </segment>
   </branch>
@@ -720,7 +743,7 @@ a Klarna payments session through Klarna API</description>
         <text-node>
           <description>If VCN is enabled as a payment option create the virtual card and save it in custom properies on Order level</description>
         </text-node>
-        <node-display x="4" y="13"/>
+        <node-display x="4" y="14"/>
       </node>
     </segment>
   </branch>
@@ -757,7 +780,7 @@ a Klarna payments session through Klarna API</description>
       </simple-transition>
       <node>
         <pipelet-node pipelet-name="GetOrder" pipelet-set-identifier="bc_api">
-          <key-binding alias="CurrentSession.custom.OrderNo" key="OrderNo"/>
+          <key-binding alias="CurrentSession.privacy.OrderNo" key="OrderNo"/>
           <key-binding alias="Order" key="Order"/>
         </pipelet-node>
         <node-display x="0" y="2"/>
@@ -914,9 +937,9 @@ a Klarna payments session through Klarna API</description>
         <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <key-binding alias="null" key="From_0"/>
-          <key-binding alias="CurrentSession.custom.KlarnaPaymentsSessionID" key="To_0"/>
+          <key-binding alias="CurrentSession.privacy.KlarnaPaymentsSessionID" key="To_0"/>
           <key-binding alias="null" key="From_1"/>
-          <key-binding alias="CurrentSession.custom.KlarnaPaymentsClientToken" key="To_1"/>
+          <key-binding alias="CurrentSession.privacy.KlarnaPaymentsClientToken" key="To_1"/>
           <key-binding alias="null" key="From_2"/>
           <key-binding alias="null" key="To_2"/>
           <key-binding alias="null" key="From_3"/>
@@ -938,7 +961,7 @@ a Klarna payments session through Klarna API</description>
       </node>
       <simple-transition/>
       <node>
-        <decision-node condition-key="empty(CurrentSession.custom.KlarnaPaymentsRedirectURL)" condition-operator="expr"/>
+        <decision-node condition-key="empty(CurrentSession.privacy.KlarnaPaymentsRedirectURL)" condition-operator="expr"/>
         <node-display x="0" y="1"/>
         <branch basename="b2" source-connector="yes">
           <transition target-connector="in">
@@ -958,7 +981,7 @@ a Klarna payments session through Klarna API</description>
       <node>
         <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="false"/>
-          <key-binding alias="CurrentSession.custom.KlarnaPaymentsRedirectURL" key="From_0"/>
+          <key-binding alias="CurrentSession.privacy.KlarnaPaymentsRedirectURL" key="From_0"/>
           <key-binding alias="Location" key="To_0"/>
           <key-binding alias="null" key="From_1"/>
           <key-binding alias="null" key="To_1"/>
@@ -1302,9 +1325,9 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
         <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <key-binding alias="null" key="From_0"/>
-          <key-binding alias="CurrentSession.custom.KlarnaPaymentsSessionID" key="To_0"/>
+          <key-binding alias="CurrentSession.privacy.KlarnaPaymentsSessionID" key="To_0"/>
           <key-binding alias="null" key="From_1"/>
-          <key-binding alias="CurrentSession.custom.KlarnaPaymentsClientToken" key="To_1"/>
+          <key-binding alias="CurrentSession.privacy.KlarnaPaymentsClientToken" key="To_1"/>
           <key-binding alias="null" key="From_2"/>
           <key-binding alias="null" key="To_2"/>
           <key-binding alias="null" key="From_3"/>
@@ -1352,7 +1375,7 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
         <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <key-binding alias="CurrentRequest.httpHeaders['x-auth']" key="From_0"/>
-          <key-binding alias="CurrentSession.custom.KlarnaPaymentsAuthorizationToken" key="To_0"/>
+          <key-binding alias="CurrentSession.privacy.KlarnaPaymentsAuthorizationToken" key="To_0"/>
           <key-binding alias="null" key="From_1"/>
           <key-binding alias="null" key="From_2"/>
           <key-binding alias="null" key="To_2"/>

@@ -36,8 +36,8 @@
 	
 	//klarna payments objects 
 	var KPObjects = {
-		sessionID			: pdict.CurrentSession.custom.KlarnaPaymentsSessionID.toString(),
-		clientToken			: pdict.CurrentSession.custom.KlarnaPaymentsClientToken.toString(), 
+		sessionID			: pdict.CurrentSession.privacy.KlarnaPaymentsSessionID.toString(),
+		clientToken			: pdict.CurrentSession.privacy.KlarnaPaymentsClientToken.toString(), 
 		preassesment		: preAssement
 	};	
 </isscript>

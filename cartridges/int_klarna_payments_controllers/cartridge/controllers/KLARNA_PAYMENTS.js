@@ -90,22 +90,27 @@ function authorize( args )
 	var localeObject = getLocale();
 	
 	var klarnaOrderCreated = _createOrder( args.Order, localeObject );
+	
+	Transaction.wrap( function()
+	{
+		paymentInstrument.paymentTransaction.custom.kpFraudStatus = session.privacy.KlarnaPaymentsFraudStatus;	
+	} );
 
-	if( !klarnaOrderCreated || session.custom.KlarnaPaymentsFraudStatus === 'REJECTED' )
+	if( !klarnaOrderCreated || session.privacy.KlarnaPaymentsFraudStatus === 'REJECTED' )
 	{
 		return { error: true };
 	}
-	if( session.custom.KlarnaPaymentsFraudStatus === 'ACCEPTED' )
+	if( session.privacy.KlarnaPaymentsFraudStatus === 'ACCEPTED' )
 	{
-		_acknowledgeOrder( session.custom.KlarnaPaymentsOrderID, localeObject );
+		_acknowledgeOrder( session.privacy.KlarnaPaymentsOrderID, localeObject );
 	}
 	
 	Transaction.wrap( function()
 	{
-		paymentInstrument.paymentTransaction.transactionID = session.custom.KlarnaPaymentsOrderID;
+		paymentInstrument.paymentTransaction.transactionID = session.privacy.KlarnaPaymentsOrderID;
 		paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
-		session.custom.OrderNo = orderNo;
-		args.Order.custom.kpOrderID = session.custom.KlarnaPaymentsOrderID;		
+		session.privacy.OrderNo = orderNo;
+		args.Order.custom.kpOrderID = session.privacy.KlarnaPaymentsOrderID;		
 	} );	
 	
 	return { authorized: true };
@@ -125,7 +130,7 @@ function _createOrder( order, localeObject )
 	var requestBody = {};
 	var requestUrl = '';
 	var response = {};
-	var klarnaAuthorizationToken = session.custom.KlarnaPaymentsAuthorizationToken;
+	var klarnaAuthorizationToken = session.privacy.KlarnaPaymentsAuthorizationToken;
 	
 	try {
 		klarnaPaymentsHttpService = new KlarnaPayments.httpService();
@@ -137,9 +142,9 @@ function _createOrder( order, localeObject )
 		
 		Transaction.wrap( function()
 		{
-			session.custom.KlarnaPaymentsOrderID = response.order_id;
-			session.custom.KlarnaPaymentsRedirectURL = response.redirect_url;
-			session.custom.KlarnaPaymentsFraudStatus = response.fraud_status;
+			session.privacy.KlarnaPaymentsOrderID = response.order_id;
+			session.privacy.KlarnaPaymentsRedirectURL = response.redirect_url;
+			session.privacy.KlarnaPaymentsFraudStatus = response.fraud_status;
 		} );
 	} catch( e ) 
 	{
@@ -182,7 +187,7 @@ function createSession() {
 	var requestUrl = '';
 	var response = {};
 	
-	if( !empty( session.custom.KlarnaPaymentsSessionID ) )
+	if( !empty( session.privacy.KlarnaPaymentsSessionID ) )
 	{
 		updateSession();
 	}
@@ -199,22 +204,22 @@ function createSession() {
 			{
 				Transaction.wrap( function()
 				{
-					session.custom.KlarnaPaymentsSessionID = null;
-					session.custom.KlarnaPaymentsClientToken = null;
+					session.privacy.KlarnaPaymentsSessionID = null;
+					session.privacy.KlarnaPaymentsClientToken = null;
 				} );			
 			}
 			Transaction.wrap( function()
 			{
-				session.custom.KlarnaPaymentsSessionID = response.session_id;
-				session.custom.KlarnaPaymentsClientToken = response.client_token;
+				session.privacy.KlarnaPaymentsSessionID = response.session_id;
+				session.privacy.KlarnaPaymentsClientToken = response.client_token;
 			} );
 		} catch( e ) 
 		{
 			log.error( 'Error in creating Klarna Payments Session: {0}', e );
 			Transaction.wrap( function()
 			{
-				session.custom.KlarnaPaymentsSessionID = null;
-				session.custom.KlarnaPaymentsClientToken = null;
+				session.privacy.KlarnaPaymentsSessionID = null;
+				session.privacy.KlarnaPaymentsClientToken = null;
 			} );
 		}
 	
@@ -274,15 +279,15 @@ function updateSession() {
 		klarnaPaymentsHttpService = new KlarnaPayments.httpService();
 		klarnaApiContext = new KlarnaPayments.apiContext();
 		requestBody = _getSessionRequestBody( BasketMgr.getCurrentBasket(), localeObject );
-		requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'updateSession' ), session.custom.KlarnaPaymentsSessionID );
+		requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'updateSession' ), session.privacy.KlarnaPaymentsSessionID );
 		
 		response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
 		if( response!=='OK' )
 		{
 			Transaction.wrap( function()
 			{
-				session.custom.KlarnaPaymentsSessionID = null;
-				session.custom.KlarnaPaymentsClientToken = null;
+				session.privacy.KlarnaPaymentsSessionID = null;
+				session.privacy.KlarnaPaymentsClientToken = null;
 			} );			
 		}
 	} catch( e )
@@ -290,8 +295,8 @@ function updateSession() {
 		log.error( 'Error in updating Klarna Payments Session: {0}', e );
 		Transaction.wrap( function()
 		{
-			session.custom.KlarnaPaymentsSessionID = null;
-			session.custom.KlarnaPaymentsClientToken = null;
+			session.privacy.KlarnaPaymentsSessionID = null;
+			session.privacy.KlarnaPaymentsClientToken = null;
 		} );
 	}  
 }
@@ -302,7 +307,7 @@ function updateSession() {
  * @return {Object} call call COSummary to show confirmation
  */
 function confirmation() {
-	var order = OrderMgr.getOrder( session.custom.OrderNo );
+	var order = OrderMgr.getOrder( session.privacy.OrderNo );
 	
 	return COSummary.ShowConfirmation( order );
 }
@@ -404,13 +409,13 @@ function redirect()
 {
 	Transaction.wrap( function()
 	{
-		session.custom.KlarnaPaymentsSessionID = null;
-		session.custom.KlarnaPaymentsClientToken = null;
+		session.privacy.KlarnaPaymentsSessionID = null;
+		session.privacy.KlarnaPaymentsClientToken = null;
 	} );
 	
-	if( !empty( session.custom.KlarnaPaymentsRedirectURL ) )
+	if( !empty( session.privacy.KlarnaPaymentsRedirectURL ) )
 	{
-		response.redirect( session.custom.KlarnaPaymentsRedirectURL );
+		response.redirect( session.privacy.KlarnaPaymentsRedirectURL );
 	}
 }
 
@@ -437,8 +442,8 @@ function clearSession()
 {
 	Transaction.wrap( function()
 	{
-		session.custom.KlarnaPaymentsSessionID = null;
-		session.custom.KlarnaPaymentsClientToken = null;
+		session.privacy.KlarnaPaymentsSessionID = null;
+		session.privacy.KlarnaPaymentsClientToken = null;
 	} ); 
 }
 
@@ -451,7 +456,7 @@ function saveAuth()
 {
 	Transaction.wrap( function()
 	{
-		session.custom.KlarnaPaymentsAuthorizationToken = request.httpHeaders['x-auth'];
+		session.privacy.KlarnaPaymentsAuthorizationToken = request.httpHeaders['x-auth'];
 	} ); 
 	
 	response.setStatus( 200 );

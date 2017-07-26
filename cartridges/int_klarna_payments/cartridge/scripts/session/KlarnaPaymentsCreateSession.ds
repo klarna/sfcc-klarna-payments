@@ -31,8 +31,8 @@ function execute( args : PipelineDictionary ) : Number
 
 		Transaction.wrap( function()
 		{
-			session.custom.KlarnaPaymentsSessionID = response.session_id;
-			session.custom.KlarnaPaymentsClientToken = response.client_token;
+			session.privacy.KlarnaPaymentsSessionID = response.session_id;
+			session.privacy.KlarnaPaymentsClientToken = response.client_token;
 		} );
 
 	} catch (e) {

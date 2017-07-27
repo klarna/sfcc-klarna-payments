@@ -15,7 +15,9 @@ var BasketMgr = require( 'dw/order/BasketMgr' );
 var OrderMgr = require( 'dw/order/OrderMgr' );
 var StringUtils = require( 'dw/util/StringUtils' );
 var Status = require( 'dw/system/Status' );
-var PaymentInstrument = ( 'dw/order/PaymentInstrument' );
+var PaymentInstrument = require( 'dw/order/PaymentInstrument' );
+var Site = require( 'dw/system/Site' );
+var Cypher = require( 'dw/crypto/Cipher' );
 
 var COSummary = require( 'sitegenesis_storefront_controllers/cartridge/controllers/COSummary.js' );
 
@@ -100,7 +102,7 @@ function authorize( args )
 	{
 		return { error: true };
 	}
-	if( session.privacy.KlarnaPaymentsFraudStatus === 'ACCEPTED' )
+	if( session.privacy.KlarnaPaymentsFraudStatus === 'ACCEPTED' && !Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' ))
 	{
 		_acknowledgeOrder( session.privacy.KlarnaPaymentsOrderID, localeObject );
 	}
@@ -110,8 +112,31 @@ function authorize( args )
 		paymentInstrument.paymentTransaction.transactionID = session.privacy.KlarnaPaymentsOrderID;
 		paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
 		session.privacy.OrderNo = orderNo;
-		args.Order.custom.kpOrderID = session.privacy.KlarnaPaymentsOrderID;		
-	} );	
+		args.Order.custom.kpOrderID = session.privacy.KlarnaPaymentsOrderID;	
+		args.Order.custom.kpIsVCN = empty(Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' )) ? false : Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' );
+	} );
+
+	if (session.privacy.KlarnaPaymentsFraudStatus === 'PENDING')
+	{
+		return { authorized: true };
+	}
+	else
+	{
+		if (Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' ))
+		{
+			var isSettlementCreated = _createVCNSettlement(args.Order, session.privacy.KlarnaPaymentsOrderID);
+			if (isSettlementCreated) 
+			{
+				//Plug here your Credit Card Processor
+				return require('SiteGenesis_controllers/cartridge/scripts/payment/processor/BASIC_CREDIT').Authorize({'OrderNo':args.Order.getOrderNo(),'PaymentInstrument': args.Order.getPaymentInstruments("Klarna")[0]});
+			}
+			else 
+			{
+				_cancelOrder(args.Order,localeObject);
+				return { error: true };
+			}
+		}
+	}
 	
 	return { authorized: true };
 }
@@ -149,6 +174,90 @@ function _createOrder( order, localeObject )
 	} catch( e ) 
 	{
 		log.error( 'Error in creating Klarna Payments Order: {0}', e );
+		return false;
+	}  
+	return true;
+}
+
+/**
+ * Create VCN settlement
+ * @param {dw.order.Order} order SCC order object
+ * @param {string} klarnaPaymentsOrderID Klarna Payments order id
+ * 
+ * @return {Boolean} true if VCN settlement is created successfully, otherwise false 
+ */
+function _createVCNSettlement( order, klarnaPaymentsOrderID )
+{
+	var klarnaPaymentsHttpService = {};
+	var klarnaApiContext = {};
+	var requestBody = {};
+	var requestUrl = '';
+	var response = {};
+	var VCNPrivateKey = Site.getCurrent().getCustomPreferenceValue( 'vcnPrivateKey' );
+	var cypher = new Cypher();
+	
+	try {
+		klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+        klarnaApiContext = new KlarnaPayments.apiContext();
+        requestBody = {'order_id' : klarnaPaymentsOrderID};
+        requestUrl = klarnaApiContext.getFlowApiUrls().get('vcnSettlement');
+        
+		response = klarnaPaymentsHttpService.call(requestUrl, 'POST', 'klarna.http.vcncredentials', requestBody);	
+		if( empty(response.settlement_id) )
+		{
+			log.error( 'Error in creating Klarna Payments VCN Settlement: {0}', e );
+			return false;		
+		}
+		//var panEncrypted = response.cards[0].pan;
+		//var cscEncrypted = response.cards[0].csc;
+		
+		//mocking pan and csc
+		var panEncrypted = 'U50dpsYfr29a+kZta2A9pYdAPYvp1GnUYEt7BwFF2vWcD+31EHhzUuKHNnns61NQ+pjayXjHMll1v3lNLDehhAVj5/OuJCmAgk20Wx1SI/RYLtK5wA9Iv7ZOnGdwXOseTTUcXCgY1fjpBWtpqlgsBgqobZhaX3Q0KaBk89qwT2o21/Yo5HKiafxnZSAQ0x2lG5GBkRjy/UC/9nfkeCNZATxADQG2L3FnHrqXq/F6CLUmsxPIawWO5wmpYToa4/4UhAuQS/L/3lmvXoBd68gNSQsWSs+gjrNxMejmR5HJvzuwUj+htLZxvGds+FRSFFABZfbU+z1b9HjbzdxdkD55jtVHoWA1diTiFODSguScertk0oCwAFz6AKFC4P7NedfDuko3QFew2ab3CFO76DYQYXDE18itNHAG/PgpkYttS7sS1n1EJMBGh+18BbOmOutyuuAq0z7j3tiUfLl0aXCMs76VeoawGBKQhIY2k6fUTlaRjolSAwcwZbZV7dZZq5TcwIVzhiIBOtz/v3y0AhnEUua5kOeM6r1ulPqdPv2vHRIPPDHwQ6051GB68QpVnIRnvR63UVOqogsXyBduO281MNbXWRlO7c1UbjI3UlJiM0AVsZgZ0uWQxhbF+Xu48dkjhcjvbA4oi79RRtw4UfDHyEOOSX2zaOf/D5KY1GUPwAw=';
+		var cscEncrypted = 'P/jEMDJszBNpVdwNN/OCBHW+yuF3WcXGhX/vwVFjeGjp/YohO//6pHm9ggtY0m6inTzvfA849VZlJxeq8QVpo1p8dUUvC6L6CvmUEC8kUZBU77TkNChJCvzaGYr74pjsntu65A3nipraGCoCkAdYagtrJBZ0gl6jrv8jq2f+OfuH+YZoX0HMqvSh0v1+M+7sHLhxVDPs7Daqn8v6qyuZEajMYk4AZI4uKAu/X3TJTItC4hXa/epGIPDivyQ/EwDMK27P/I8rfw0bY6zxMw2+fYWlVjXbrUtl7Z/WiiUNC3cayrZtysAphD3RLt9re6dC6h1AzCIWBFZxHKCJB1MihDqgALOeLS6B4rxqljbb3bfWAkK6nkbnSEHwlvh628eNyIS9Ga/YWlriy4Z7kcCH7VuFcfKskGiDUE1qozeOmq58dMj6DRwsjgCshnWfd/HXcIdYuvEb0wn/mMygZa7MG2V7Sd2ROLtNpn6JhR0WScgJcwNWVN7sfhmElGy8bcmDYArusU0mDTUfamPmhVeRTbdiWE8xEqSqmIStUoPe1BvxHeKs+Gdw6iQKsxruwOJb+Tz5zzyfbsrVDp3wxsa3nb9nSJOZGTmi3ie7y02a/KuLGsypsIXZR2P1Jjofuh4mvT1nu4W2VJKNG9IuhxIAh8adCCxbZ0Cn70+8P3p42S4=';
+		
+		var panDecrypted = cypher.decrypt(panEncrypted, VCNPrivateKey, "RSA/ECB/PKCS1PADDING", null, 0);
+		var cscDecrypted = cypher.decrypt(cscEncrypted, VCNPrivateKey, "RSA/ECB/PKCS1PADDING", null, 0);
+		
+		Transaction.wrap( function()
+		{
+			order.custom.kpVCNBrand = response.cards[0].brand;
+			order.custom.kpVCNCSC = cscDecrypted;
+			order.custom.kpVCNExpirationMonth = response.cards[0].expiration_month;
+			order.custom.kpVCNExpirationYear = response.cards[0].expiration_year;
+			order.custom.kpVCNHolder = response.cards[0].holder;
+			order.custom.kpVCNPAN = panDecrypted;	
+			order.custom.kpIsVCN = true;		
+		} );
+	} catch( e ) 
+	{
+		log.error( 'Error in creating Klarna Payments VCN Settlement: {0}', e );
+		return false;
+	}
+	return true;
+}
+
+/**
+ * Cancels a Klarna order through Klarna API
+ * @param {dw.order.Order} order SCC order object
+ * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
+ * 
+ * @return {Boolean} true if order has been successfully cancelled, otherwise false
+ */
+function _cancelOrder( order, localeObject )
+{
+	var klarnaPaymentsHttpService = {};
+	var klarnaApiContext = {};
+	var requestUrl = '';
+	
+	try {
+		klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+        klarnaApiContext = new KlarnaPayments.apiContext();
+        requestUrl = StringUtils.format(klarnaApiContext.getFlowApiUrls().get('cancelOrder'), order.custom.kpOrderID);
+        
+		klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, null);
+	} catch( e ) 
+	{
+		log.error( 'Error in cancelling Klarna Payments Order: {0}', e );
 		return false;
 	}  
 	return true;
@@ -336,6 +445,32 @@ function notification()
 	} );
 	if( klarnaPaymentsFraudDecision === 'FRAUD_RISK_ACCEPTED' )
 	{
+		if (order.custom.kpIsVCN) 
+		{
+			var isSettlementCreated = _createVCNSettlement(order, klarnaPaymentsOrderID);
+			if (isSettlementCreated) 
+			{
+				//Plug here your Credit Card Processor
+				var authObj = require('SiteGenesis_controllers/cartridge/scripts/payment/processor/BASIC_CREDIT').Authorize({'OrderNo':order.getOrderNo(),'PaymentInstrument': order.getPaymentInstruments("Klarna")[0]});
+				if(authObj.error) 
+				{
+					Transaction.wrap( function()
+					{
+						OrderMgr.failOrder( order );
+					} );
+					return response.setStatus( 200 );
+				}
+			}
+			else 
+			{
+				_cancelOrder(order, localeObject);
+				Transaction.wrap( function()
+				{
+					OrderMgr.failOrder( order );
+				} );
+				return response.setStatus( 200 );
+			}
+		}
 		placeOrder( order, klarnaPaymentsOrderID, localeObject );
 		
 	} else

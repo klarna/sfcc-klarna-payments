@@ -278,7 +278,7 @@
                 <key-binding alias="KlarnaPaymentsRedirectURL" key="From_1"/>
                 <key-binding alias="CurrentSession.privacy.KlarnaPaymentsRedirectURL" key="To_1"/>
                 <key-binding alias="Order.custom.kpOrderID" key="To_2"/>
-                <key-binding alias="false" key="From_3"/>
+                <key-binding alias="empty(dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' )) ? false : dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' )" key="From_3"/>
                 <key-binding alias="Order.custom.kpIsVCN" key="To_3"/>
                 <key-binding alias="null" key="From_4"/>
                 <key-binding alias="null" key="To_4"/>
@@ -296,11 +296,39 @@
               </pipelet-node>
               <node-display x="0" y="1"/>
             </node>
-            <simple-transition/>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+                <bend-point relative-to="source" x="-1" y="1"/>
+                <bend-point relative-to="target" x="-1" y="0"/>
+              </transition-display>
+            </simple-transition>
             <node>
-              <decision-node condition-key="dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' ) &amp;&amp; KlarnaPaymentsFraudStatus !== 'PENDING'" condition-operator="expr"/>
-              <node-display x="0" y="1"/>
+              <decision-node condition-key="KlarnaPaymentsFraudStatus === 'PENDING'" condition-operator="expr"/>
+              <node-display orientation="horizontal" x="0" y="1"/>
               <branch basename="b2" source-connector="yes">
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="1" y="0"/>
+                  </transition-display>
+                </transition>
+                <segment>
+                  <node>
+                    <end-node name="authorized"/>
+                    <node-display orientation="horizontal" x="1" y="0"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="source" x="0" y="1"/>
+              </transition-display>
+            </simple-transition>
+            <node>
+              <decision-node condition-key="dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' )" condition-operator="expr"/>
+              <node-display x="0" y="1"/>
+              <branch basename="b3" source-connector="yes">
                 <transition target-connector="in">
                   <transition-display>
                     <bend-point relative-to="source" x="0" y="1"/>
@@ -321,7 +349,12 @@
                     </pipelet-node>
                     <node-display x="0" y="1"/>
                     <branch basename="b2" source-connector="error">
-                      <transition target-connector="in"/>
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="source" x="2" y="0"/>
+                          <bend-point relative-to="target" x="0" y="-1"/>
+                        </transition-display>
+                      </transition>
                       <segment>
                         <node>
                           <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
@@ -332,12 +365,12 @@
                             <key-binding alias="Order" key="Order"/>
                             <key-binding alias="LocaleObject" key="LocaleObject"/>
                           </pipelet-node>
-                          <node-display orientation="horizontal" x="1" y="0"/>
+                          <node-display x="1" y="1"/>
                           <branch basename="b2" source-connector="error">
                             <transition target-connector="in2" target-path="./+1">
                               <transition-display>
-                                <bend-point relative-to="source" x="0" y="1"/>
-                                <bend-point relative-to="source" x="1" y="1"/>
+                                <bend-point relative-to="source" x="1" y="0"/>
+                                <bend-point relative-to="target" x="1" y="0"/>
                               </transition-display>
                             </transition>
                           </branch>
@@ -347,13 +380,9 @@
                       <segment>
                         <node>
                           <join-node/>
-                          <node-display x="1" y="0"/>
+                          <node-display x="0" y="1"/>
                         </node>
-                        <simple-transition>
-                          <transition-display>
-                            <bend-point relative-to="source" x="0" y="1"/>
-                          </transition-display>
-                        </simple-transition>
+                        <simple-transition/>
                         <node>
                           <end-node name="error"/>
                           <node-display x="0" y="1"/>
@@ -363,12 +392,12 @@
                   </node>
                   <simple-transition>
                     <transition-display>
-                      <bend-point relative-to="source" x="0" y="1"/>
+                      <bend-point relative-to="target" x="0" y="-1"/>
                     </transition-display>
                   </simple-transition>
                   <node>
-                    <end-node name="authorized"/>
-                    <node-display x="0" y="1"/>
+                    <jump-node start-name-ref="BASIC_CREDIT-Authorize"/>
+                    <node-display x="0" y="2"/>
                   </node>
                 </segment>
               </branch>
@@ -743,7 +772,7 @@ a Klarna payments session through Klarna API</description>
         <text-node>
           <description>If VCN is enabled as a payment option create the virtual card and save it in custom properies on Order level</description>
         </text-node>
-        <node-display x="4" y="14"/>
+        <node-display x="4" y="15"/>
       </node>
     </segment>
   </branch>
@@ -775,7 +804,7 @@ a Klarna payments session through Klarna API</description>
       </node>
       <simple-transition>
         <transition-display>
-          <bend-point relative-to="target" x="0" y="-1"/>
+          <bend-point relative-to="source" x="0" y="1"/>
         </transition-display>
       </simple-transition>
       <node>
@@ -783,13 +812,24 @@ a Klarna payments session through Klarna API</description>
           <key-binding alias="CurrentSession.privacy.OrderNo" key="OrderNo"/>
           <key-binding alias="Order" key="Order"/>
         </pipelet-node>
-        <node-display x="0" y="2"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in2" target-path="./+1">
+            <transition-display>
+              <bend-point relative-to="source" x="1" y="0"/>
+              <bend-point relative-to="target" x="1" y="0"/>
+            </transition-display>
+          </transition>
+        </branch>
       </node>
-      <simple-transition>
-        <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
-        </transition-display>
-      </simple-transition>
+      <transition target-connector="in1" target-path="./+1"/>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="1"/>
+      </node>
+      <simple-transition/>
       <node>
         <jump-node start-name-ref="COSummary-ShowConfirmation"/>
         <node-display x="0" y="1"/>
@@ -885,8 +925,146 @@ a Klarna payments session through Klarna API</description>
               <decision-node condition-key="KlarnaPaymentsFraudDecision === 'FRAUD_RISK_ACCEPTED'" condition-operator="expr"/>
               <node-display x="0" y="1"/>
               <branch basename="b2" source-connector="yes">
-                <transition target-connector="in"/>
+                <transition target-connector="in">
+                  <transition-display>
+                    <bend-point relative-to="source" x="0" y="1"/>
+                    <bend-point relative-to="source" x="-1" y="1"/>
+                    <bend-point relative-to="target" x="-1" y="0"/>
+                  </transition-display>
+                </transition>
                 <segment>
+                  <node>
+                    <decision-node condition-key="Order.custom.kpIsVCN" condition-operator="expr"/>
+                    <node-display orientation="horizontal" x="0" y="1"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in">
+                        <transition-display>
+                          <bend-point relative-to="target" x="0" y="-2"/>
+                          <bend-point relative-to="target" x="0" y="-1"/>
+                        </transition-display>
+                      </transition>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                            <config-property key="Transactional" value="false"/>
+                            <config-property key="OnError" value="PIPELET_ERROR"/>
+                            <config-property key="ScriptFile" value="int_klarna_payments:VCN/klarnaPaymentsVCNSettlement.ds"/>
+                            <key-binding alias="null" key="ScriptLog"/>
+                            <key-binding alias="KlarnaPaymentsOrderID" key="KlarnaPaymentsOrderID"/>
+                            <key-binding alias="KlarnaPaymentsFraudDecisionObject.order_id" key="klarnaPaymentsOrderID"/>
+                            <key-binding alias="LocaleObject" key="LocaleObject"/>
+                            <key-binding alias="VCNObject" key="vcnObject"/>
+                            <key-binding alias="Order" key="Order"/>
+                          </pipelet-node>
+                          <node-display x="2" y="1"/>
+                          <branch basename="b2" source-connector="error">
+                            <transition target-connector="in">
+                              <transition-display>
+                                <bend-point relative-to="source" x="2" y="0"/>
+                              </transition-display>
+                            </transition>
+                            <segment>
+                              <node>
+                                <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                                  <config-property key="Transactional" value="false"/>
+                                  <config-property key="OnError" value="PIPELET_ERROR"/>
+                                  <config-property key="ScriptFile" value="int_klarna_payments:order/KlarnaPaymentsCancelOrder.ds"/>
+                                  <key-binding alias="null" key="ScriptLog"/>
+                                  <key-binding alias="Order" key="Order"/>
+                                  <key-binding alias="LocaleObject" key="LocaleObject"/>
+                                </pipelet-node>
+                                <node-display x="1" y="2"/>
+                                <branch basename="b2" source-connector="error">
+                                  <transition target-connector="in2" target-path="../b3.1">
+                                    <transition-display>
+                                      <bend-point relative-to="source" x="1" y="0"/>
+                                      <bend-point relative-to="target" x="1" y="0"/>
+                                    </transition-display>
+                                  </transition>
+                                </branch>
+                              </node>
+                              <transition target-connector="in1" target-path="../b3.1"/>
+                            </segment>
+                          </branch>
+                        </node>
+                        <simple-transition/>
+                        <node>
+                          <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                            <config-property key="Transactional" value="true"/>
+                            <key-binding alias="Order.getPaymentInstruments(&quot;Klarna&quot;)[0]" key="From_0"/>
+                            <key-binding alias="PaymentInstrument" key="To_0"/>
+                            <key-binding alias="null" key="From_1"/>
+                            <key-binding alias="null" key="From_2"/>
+                            <key-binding alias="null" key="To_2"/>
+                            <key-binding alias="null" key="From_3"/>
+                            <key-binding alias="null" key="To_3"/>
+                            <key-binding alias="null" key="From_4"/>
+                            <key-binding alias="null" key="To_4"/>
+                            <key-binding alias="null" key="From_5"/>
+                            <key-binding alias="null" key="To_5"/>
+                            <key-binding alias="null" key="From_6"/>
+                            <key-binding alias="null" key="To_6"/>
+                            <key-binding alias="null" key="From_7"/>
+                            <key-binding alias="null" key="To_7"/>
+                            <key-binding alias="null" key="From_8"/>
+                            <key-binding alias="null" key="To_8"/>
+                            <key-binding alias="null" key="From_9"/>
+                            <key-binding alias="null" key="To_9"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                        </node>
+                        <simple-transition/>
+                        <node>
+                          <call-node start-name-ref="BASIC_CREDIT-Authorize"/>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b3" source-connector="error">
+                            <transition target-connector="in1">
+                              <transition-display>
+                                <bend-point relative-to="target" x="-1" y="0"/>
+                              </transition-display>
+                            </transition>
+                            <segment>
+                              <node>
+                                <join-node/>
+                                <node-display x="1" y="1"/>
+                              </node>
+                              <simple-transition/>
+                              <node>
+                                <call-node start-name-ref="KLARNA_PAYMENTS-FailOrder"/>
+                                <node-display x="0" y="1"/>
+                              </node>
+                              <simple-transition>
+                                <transition-display>
+                                  <bend-point relative-to="source" x="0" y="1"/>
+                                </transition-display>
+                              </simple-transition>
+                              <node>
+                                <interaction-node transaction-required="false">
+                                  <template buffered="true" dynamic="false" name="klarnapayments/http_200"/>
+                                </interaction-node>
+                                <node-display x="0" y="1"/>
+                              </node>
+                            </segment>
+                          </branch>
+                          <branch basename="b4" source-connector="authorized">
+                            <transition target-connector="in3" target-path="../+1">
+                              <transition-display>
+                                <bend-point relative-to="source" x="0" y="2"/>
+                              </transition-display>
+                            </transition>
+                          </branch>
+                        </node>
+                      </segment>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1"/>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="4"/>
+                  </node>
+                  <simple-transition/>
                   <node>
                     <call-node start-name-ref="KLARNA_PAYMENTS-PlaceOrder"/>
                     <node-display x="0" y="1"/>
@@ -1046,28 +1224,10 @@ a Klarna payments session through Klarna API</description>
   <branch basename="_ANONYMOUS_BRANCH_20">
     <segment>
       <node>
-        <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
-          <config-property key="Transactional" value="true"/>
-          <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="int_klarna_payments:VCN/decryptVCN.ds"/>
-          <key-binding alias="null" key="ScriptLog"/>
-          <key-binding alias="PaymentInstrument" key="PaymentInstrument"/>
-          <key-binding alias="VCNObject" key="vcnObject"/>
-        </pipelet-node>
-        <node-display x="4" y="17"/>
-        <branch basename="b2" source-connector="error">
-          <transition target-connector="in">
-            <transition-display>
-              <bend-point relative-to="source" x="1" y="0"/>
-            </transition-display>
-          </transition>
-          <segment>
-            <node>
-              <end-node name="error"/>
-              <node-display orientation="horizontal" x="1" y="0"/>
-            </node>
-          </segment>
-        </branch>
+        <text-node>
+          <description>Plug here your Credit Card Processor</description>
+        </text-node>
+        <node-display x="4" y="18"/>
       </node>
     </segment>
   </branch>
@@ -1075,9 +1235,9 @@ a Klarna payments session through Klarna API</description>
     <segment>
       <node>
         <text-node>
-          <description>Mark order as EXPORT_STATUS_NOTEXPORTED and NOTCONFIRMED and NOTPAID</description>
+          <description>Plug here your Credit Card Processor</description>
         </text-node>
-        <node-display width="2" x="6" y="27"/>
+        <node-display x="12" y="23"/>
       </node>
     </segment>
   </branch>
@@ -1087,7 +1247,7 @@ a Klarna payments session through Klarna API</description>
         <text-node>
           <description>Place order with KlarnaPaymentsFraudStatus === 'PENDING'</description>
         </text-node>
-        <node-display width="2" x="8" y="24"/>
+        <node-display width="2" x="8" y="29"/>
       </node>
     </segment>
   </branch>
@@ -1095,11 +1255,9 @@ a Klarna payments session through Klarna API</description>
     <segment>
       <node>
         <text-node>
-          <description>Responsible for placing the order and set the order status to 'New'.
-
-No changes were made to this pipeline. It was copied over from Site Genesis to prevent complications with external cartridge references</description>
+          <description>Responsible for placing the order and set the order status to 'New'.</description>
         </text-node>
-        <node-display width="2" x="11" y="24"/>
+        <node-display width="2" x="11" y="29"/>
       </node>
     </segment>
   </branch>
@@ -1107,7 +1265,7 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
     <segment>
       <node>
         <start-node call-mode="private" name="PendingOrder" secure="false"/>
-        <node-display x="8" y="25"/>
+        <node-display x="8" y="30"/>
       </node>
       <simple-transition>
         <transition-display>
@@ -1169,7 +1327,7 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
     <segment>
       <node>
         <start-node call-mode="private" name="PlaceOrder" secure="false"/>
-        <node-display x="11" y="25"/>
+        <node-display x="11" y="30"/>
       </node>
       <simple-transition transaction-control="begin"/>
       <node>
@@ -1253,7 +1411,7 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
         <text-node>
           <description>Responsible for failing the order</description>
         </text-node>
-        <node-display width="2" x="14" y="24"/>
+        <node-display width="2" x="14" y="29"/>
       </node>
     </segment>
   </branch>
@@ -1261,7 +1419,7 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
     <segment>
       <node>
         <start-node call-mode="private" name="FailOrder" secure="false"/>
-        <node-display x="14" y="25"/>
+        <node-display x="14" y="30"/>
       </node>
       <simple-transition>
         <transition-display>
@@ -1300,9 +1458,9 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
     <segment>
       <node>
         <text-node>
-          <description>Mark order as EXPORT_STATUS_READY and CONFIRMATION_STATUS_CONFIRMED</description>
+          <description>Mark order as EXPORT_STATUS_NOTEXPORTED and NOTCONFIRMED and NOTPAID</description>
         </text-node>
-        <node-display x="10" y="28"/>
+        <node-display width="2" x="6" y="32"/>
       </node>
     </segment>
   </branch>
@@ -1310,9 +1468,9 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
     <segment>
       <node>
         <text-node>
-          <description>Intentionally left outside transaction. If for some reason order is not acknowledge with Klarna this is not a reason to fail the order.</description>
+          <description>Mark order as EXPORT_STATUS_READY and CONFIRMATION_STATUS_CONFIRMED</description>
         </text-node>
-        <node-display x="10" y="30"/>
+        <node-display x="10" y="33"/>
       </node>
     </segment>
   </branch>
@@ -1320,9 +1478,9 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
     <segment>
       <node>
         <text-node>
-          <description>Clear Klarna Payments session and token from current session</description>
+          <description>Intentionally left outside transaction. If for some reason order is not acknowledge with Klarna this is not a reason to fail the order.</description>
         </text-node>
-        <node-display width="2" x="8" y="33"/>
+        <node-display x="10" y="35"/>
       </node>
     </segment>
   </branch>
@@ -1330,9 +1488,19 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
     <segment>
       <node>
         <text-node>
+          <description>Clear Klarna Payments session and token from current session</description>
+        </text-node>
+        <node-display width="2" x="8" y="38"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_32">
+    <segment>
+      <node>
+        <text-node>
           <description>Saves/Updates Klarna Payments authorization token in the current session</description>
         </text-node>
-        <node-display width="2" x="11" y="33"/>
+        <node-display width="2" x="11" y="38"/>
       </node>
     </segment>
   </branch>
@@ -1340,7 +1508,7 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
     <segment>
       <node>
         <start-node name="ClearSession" secure="false"/>
-        <node-display x="8" y="34"/>
+        <node-display x="8" y="39"/>
       </node>
       <simple-transition>
         <transition-display>
@@ -1390,7 +1558,7 @@ No changes were made to this pipeline. It was copied over from Site Genesis to p
     <segment>
       <node>
         <start-node name="SaveAuth" secure="false"/>
-        <node-display x="11" y="34"/>
+        <node-display x="11" y="39"/>
       </node>
       <simple-transition>
         <transition-display>

@@ -8,6 +8,7 @@
 	var Site = require( 'dw/system/Site' );
 	var Logger = require( 'dw/system/Logger' );
 	var TaxMgr = require( 'dw/order/TaxMgr' );
+	var HookMgr = require( 'dw/system/HookMgr' );
 
 	var Builder = require( '../util/Builder' );
 	var ORDER_LINE_TYPE = require( '../util/KlarnaPaymentsConstants.js' ).ORDER_LINE_TYPE;
@@ -64,7 +65,7 @@
 			.buildOrderLines( basket, localeObject )
 			.buildTotalAmount( basket, localeObject )
 			.buildTotalTax( basket, localeObject )
-			.buildAdditionalCustomerInfo( basket, localeObject )
+			.buildAdditionalCustomerInfo( basket )
 			.buildOptions();
 
 		return requestBodyObject;
@@ -266,17 +267,15 @@
 		return this;
 	};
 
-	KlarnaPaymentsSessionRequestBuilder.prototype.buildAdditionalCustomerInfo = function( basket, localeObject )
+	KlarnaPaymentsSessionRequestBuilder.prototype.buildAdditionalCustomerInfo = function( basket )
 	{
-		var country = localeObject.country;
-		var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
-		var customer = basket.getCustomer();
-
-		if ( Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' ) && customer.registered )
-		{
+		if ( Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' ) && HookMgr.hasHook('extra.merchant.data') )
+		{			
 			this.context.attachment = new Object();
 			this.context.attachment.content_type = CONTENT_TYPE;
-			this.context.attachment.body = buildAttachementBody( customer );
+			this.context.attachment.body = 	HookMgr.callHook('extra.merchant.data', 'BuildEMD', {
+	            LineItemCtnr: basket
+	        });		
 		}
 
 		return this;
@@ -529,34 +528,7 @@
 		{
 			throw new Error( 'Error when generating KlarnaPaymentsSessionRequestBuilder. Not valid params.' );
 		}
-	}
-
-	function buildAttachementBody( customer )
-	{
-
-		var body = new Object();
-
-		body.customer_account_info = new Array( new Object() );
-		if( customer.registered )
-		{
-			body.customer_account_info[0].unique_account_identifier = customer.profile.customerNo;
-			body.customer_account_info[0].account_registration_date = !empty( customer.profile.creationDate ) ? customer.profile.creationDate.toISOString().slice( 0, -5 ) + 'Z' : '';
-			body.customer_account_info[0].account_last_modified = !empty( customer.profile.lastModified ) ? customer.profile.lastModified.toISOString().slice( 0, -5 ) + 'Z' : '';
-		}
-
-		body.purchase_history_full = new Array( new Object() );
-		body.purchase_history_full[0].unique_account_identifier = customer.ID;
-		body.purchase_history_full[0].payment_option = "other";
-		if( customer.getActiveData() )
-		{
-			body.purchase_history_full[0].number_paid_purchases = !empty( customer.activeData.orders ) ? customer.activeData.orders : 0;
-			body.purchase_history_full[0].total_amount_paid_purchases = !empty( customer.activeData.orderValue ) ? customer.activeData.orderValue : 0;
-			body.purchase_history_full[0].date_of_last_paid_purchase = !empty( customer.activeData.lastOrderDate ) ? customer.activeData.lastOrderDate.toISOString().slice( 0, -5 ) + 'Z' : '';
-			body.purchase_history_full[0].date_of_first_paid_purchase = "";
-		}
-
-		return JSON.stringify( body );
-	}
+	}	
 	
 	function isCountryInEU( country )
 	{

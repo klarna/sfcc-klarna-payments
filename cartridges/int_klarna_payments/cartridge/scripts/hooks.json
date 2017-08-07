@@ -1,0 +1,8 @@
+{
+	"hooks": [
+		{
+			"name": "extra.merchant.data",
+			"script": "./EMD/KlarnaPaymentsBuildEMD_hooks.js"
+		}
+	]
+}

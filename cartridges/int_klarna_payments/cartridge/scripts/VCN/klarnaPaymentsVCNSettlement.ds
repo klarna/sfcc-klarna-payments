@@ -5,6 +5,7 @@
 *
 * @input Order : dw.order.Order The SCC Order object
 * @input klarnaPaymentsOrderID : String
+* @input LocaleObject : dw.object.CustomObject
 */
 
 // import packages
@@ -20,13 +21,14 @@ var KlarnaPayments = {
 
 function execute( args : PipelineDictionary ) : Number
 {	
+	var localeObject = args.LocaleObject;
 	try {
 		var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = {'order_id' : args.klarnaPaymentsOrderID};
         var requestUrl = klarnaApiContext.getFlowApiUrls().get('vcnSettlement');
         
-		var response = klarnaPaymentsHttpService.call(requestUrl, 'POST', 'klarna.http.vcncredentials', requestBody);	
+		var response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);	
 		if( empty(response.settlement_id) )
 		{
 			return PIPELET_ERROR;		

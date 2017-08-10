@@ -36,12 +36,6 @@
         <user-id>your Merchant ID</user-id>
         <password encrypted="true" encryption-type="common.export"></password>
     </service-credential>
-	
-	<service-credential service-credential-id="klarna.http.vcncredentials">
-        <url>https://api.klarna.com/</url>
-        <user-id>your Merchant ID</user-id>
-        <password encrypted="true" encryption-type="common.export"></password>
-    </service-credential>
 
     <service-profile service-profile-id="klarna.http.service">
         <timeout-millis>20000</timeout-millis>

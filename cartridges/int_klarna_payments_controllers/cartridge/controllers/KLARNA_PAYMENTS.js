@@ -124,7 +124,7 @@ function authorize( args )
 	{
 		if (Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' ))
 		{
-			var isSettlementCreated = _createVCNSettlement(args.Order, session.privacy.KlarnaPaymentsOrderID);
+			var isSettlementCreated = _createVCNSettlement(args.Order, session.privacy.KlarnaPaymentsOrderID, localeObject);
 			if (isSettlementCreated) 
 			{
 				//Plug here your Credit Card Processor
@@ -183,10 +183,11 @@ function _createOrder( order, localeObject )
  * Create VCN settlement
  * @param {dw.order.Order} order SCC order object
  * @param {string} klarnaPaymentsOrderID Klarna Payments order id
+ * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
  * 
  * @return {Boolean} true if VCN settlement is created successfully, otherwise false 
  */
-function _createVCNSettlement( order, klarnaPaymentsOrderID )
+function _createVCNSettlement( order, klarnaPaymentsOrderID, localeObject )
 {
 	var klarnaPaymentsHttpService = {};
 	var klarnaApiContext = {};
@@ -202,7 +203,7 @@ function _createVCNSettlement( order, klarnaPaymentsOrderID )
         requestBody = {'order_id' : klarnaPaymentsOrderID};
         requestUrl = klarnaApiContext.getFlowApiUrls().get('vcnSettlement');
         
-		response = klarnaPaymentsHttpService.call(requestUrl, 'POST', 'klarna.http.vcncredentials', requestBody);	
+		response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);	
 		if( empty(response.settlement_id) )
 		{
 			log.error( 'Error in creating Klarna Payments VCN Settlement: {0}', e );

@@ -268,9 +268,9 @@
                 <attribute attribute-id="kpVCNHolder"/>
                 <attribute attribute-id="kpVCNPAN"/>
                 <attribute attribute-id="kpVCNExpirationYear"/>
+				<attribute attribute-id="kpVCNExpirationMonth"/>
                 <attribute attribute-id="kpVCNCSC"/>
-                <attribute attribute-id="kpVCNBrand"/>
-                <attribute attribute-id="kpVCNExpirationMonth"/>
+                <attribute attribute-id="kpVCNBrand"/>                
             </attribute-group>
         </group-definitions>
 	</type-extension>

@@ -9,6 +9,7 @@
 	var Logger = require( 'dw/system/Logger' );
 	var TaxMgr = require( 'dw/order/TaxMgr' );
 	var HookMgr = require( 'dw/system/HookMgr' );
+	var ArrayList = require( 'dw/util/ArrayList' );
 
 	var Builder = require( '../util/Builder' );
 	var ORDER_LINE_TYPE = require( '../util/KlarnaPaymentsConstants.js' ).ORDER_LINE_TYPE;
@@ -252,6 +253,8 @@
 		var li = [];
 		var item = {};
 		var quantity = 0;
+		var brand;
+		var categoryPath;
 
 		for ( var i = 0; i < items.length; i++ )
 		{
@@ -269,11 +272,15 @@
 				{
 					itemType = ORDER_LINE_TYPE.SURCHARGE;
 					itemID = li.parent.productID + '_' + li.optionID + '_' + li.optionValueID;
+					brand = !empty(li.parent.product) ? li.parent.product.brand : null;
+					categoryPath = !empty(li.parent.product) ? _getProductCategoryPath(li.parent.product) : null;
 				}			
 				else
 				{
 					itemType = ORDER_LINE_TYPE.PHYSICAL;
 					itemID = li.productID;
+					brand = !empty(li.product) ? li.product.brand : null;
+					categoryPath = !empty(li.product) ? _getProductCategoryPath(li.product) : null;
 				}
 			}
 			quantity = isGiftCertificate ? 1 : li.quantityValue;
@@ -288,6 +295,14 @@
 			item.tax_rate = ( country === 'US' ) ? 0 : Math.round( li.taxRate * 10000 );
 			item.total_amount = Math.round( itemPrice );
 			item.total_tax_amount = ( country === 'US' ) ? 0 : Math.round( li.tax.value * 100 );
+			if ( !empty( brand ) ) 
+			{
+				item.brand = brand;
+			}	
+			if ( !empty( categoryPath ) ) 
+			{
+				item.category_path = categoryPath;
+			}
 
 			// Add product-specific shipping line adjustments
 			if ( !isGiftCertificate && !empty( li.shippingLineItem ) )
@@ -317,6 +332,31 @@
 
 			context.order_lines.push( item );
 		}
+	}
+	
+	function _getProductCategoryPath (product)
+	{
+		var path;
+		// get category from products primary category
+		var category = product.primaryCategory;
+
+		// get category from product master if not set at variant
+		if( category === null && product.variant )
+		{
+			category = product.variationModel.master.primaryCategory;
+		}
+		if ( category !== null )
+		{
+			path = new ArrayList();
+			while( category.parent != null )
+			{
+				if( category.online ) path.addAt( 0, category.displayName );
+				category = category.parent;
+			}
+			path = path.join(' > ').substring( 0, 749 ); //Maximum 750 characters per Klarna's documentation
+		}		
+		
+		return path;		
 	}
 	
 	function buildItemsGiftCertificatePIs(items, country, context)

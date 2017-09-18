@@ -297,11 +297,13 @@
 			item.total_tax_amount = ( country === 'US' ) ? 0 : Math.round( li.tax.value * 100 );
 			if ( !empty( brand ) ) 
 			{
-				item.brand = brand;
+				item.product_identifiers = item.product_identifiers || {};
+				item.product_identifiers.brand = brand;
 			}	
 			if ( !empty( categoryPath ) ) 
 			{
-				item.category_path = categoryPath;
+				item.product_identifiers = item.product_identifiers || {};
+				item.product_identifiers.category_path = categoryPath;
 			}
 
 			// Add product-specific shipping line adjustments

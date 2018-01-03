@@ -23,15 +23,15 @@ var COSummary = require( 'sitegenesis_storefront_controllers/cartridge/controlle
 
 /* Script Modules */
 var log = Logger.getLogger( 'KLARNA_PAYMENTS.js' );
-var guard = require( '~/cartridge/scripts/guard' );
-var Countries = require( 'int_klarna_payments/cartridge/scripts/util/Countries' );
+var guard = require( 'app_storefront_controllers/cartridge/scripts/guard' );
+var Countries = require( 'app_storefront_core/cartridge/scripts/util/Countries' );
 var KlarnaPayments = {
 	httpService 			: require( 'int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsHttpService.ds' ),
 	apiContext 				: require( 'int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsApiContext' ),
 	sessionRequestBuilder 	: require( 'int_klarna_payments/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder' ), 
 	orderRequestBuilder 	: require( 'int_klarna_payments/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder' )
 };
-var Utils = require( 'int_klarna_payments/cartridge/scripts/checkout/Utils.ds' );
+var Utils = require( 'app_storefront_core/cartridge/scripts/checkout/Utils' );
 
 
 /**

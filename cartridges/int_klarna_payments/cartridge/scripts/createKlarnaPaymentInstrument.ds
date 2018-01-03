@@ -13,7 +13,7 @@ importPackage( dw.util );
 importPackage( dw.value );
 importPackage( dw.web );
 
-importScript("checkout/Utils.ds");
+importScript("app_storefront_core:checkout/Utils.ds");
 
 function execute( args : PipelineDictionary ) : Number
 {

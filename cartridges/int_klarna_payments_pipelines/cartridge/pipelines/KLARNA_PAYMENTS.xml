@@ -1215,7 +1215,7 @@ a Klarna payments session through Klarna API</description>
       </simple-transition>
       <node>
         <interaction-node transaction-required="false">
-          <template buffered="true" dynamic="false" name="util/redirect.isml"/>
+          <template buffered="true" dynamic="false" name="util/redirect"/>
         </interaction-node>
         <node-display orientation="horizontal" x="1" y="0"/>
       </node>
@@ -1348,7 +1348,7 @@ a Klarna payments session through Klarna API</description>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="int_klarna_payments:checkout/SetOrderStatus.ds"/>
+          <config-property key="ScriptFile" value="app_storefront_core/cartridge/scripts/checkout/SetOrderStatus"/>
           <key-binding alias="Order" key="Order"/>
         </pipelet-node>
         <node-display x="0" y="1"/>

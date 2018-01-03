@@ -2,7 +2,7 @@
 
 <isscript>	
 	//determine pre-assesment value
-	var Countries = require('int_klarna_payments/cartridge/scripts/util/Countries');
+	var Countries = require('app_storefront_core/cartridge/scripts/util/Countries');
 	var country = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
 	
 	var preAssessmentCountries = dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );

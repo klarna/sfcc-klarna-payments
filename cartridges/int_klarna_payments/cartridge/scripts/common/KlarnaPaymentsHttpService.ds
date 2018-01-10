@@ -1,4 +1,5 @@
-var Class = require('app_storefront_controllers/cartridge/scripts/util/Class').Class;
+var SG_CONTROLLERS = require( 'int_klarna_payments/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CONTROLLERS;
+var Class = require(SG_CONTROLLERS + '/cartridge/scripts/util/Class').Class;
 var Logger = require('dw/system/Logger');
 var ServiceRegistry = require('dw/svc/ServiceRegistry');
 var StringUtils = require('dw/util/StringUtils');

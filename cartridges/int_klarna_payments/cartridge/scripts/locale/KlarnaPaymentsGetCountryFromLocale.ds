@@ -5,7 +5,8 @@
 * @output CurrentCountry : String
 *
 */
-var Countries = require('app_storefront_core/cartridge/scripts/util/Countries');
+var SG_CORE = require( 'int_klarna_payments/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CORE;
+var Countries = require(SG_CORE + '/cartridge/scripts/util/Countries');
 var Logger = require('dw/system/Logger');
 
 function execute( args : PipelineDictionary ) : Number

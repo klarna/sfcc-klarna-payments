@@ -1348,7 +1348,7 @@ a Klarna payments session through Klarna API</description>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="app_storefront_core/cartridge/scripts/checkout/SetOrderStatus"/>
+          <config-property key="ScriptFile" value="require( 'int_klarna_payments/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CORE + '/cartridge/scripts/checkout/SetOrderStatus'"/>
           <key-binding alias="Order" key="Order"/>
         </pipelet-node>
         <node-display x="0" y="1"/>

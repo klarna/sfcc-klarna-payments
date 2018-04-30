@@ -512,7 +512,7 @@
 			},
 			"states": [{
 				"fieldName": "state",
-				"type": "select"
+				"type": "text"
 			}],
 			"phone": {
 				"help": {
@@ -593,7 +593,7 @@
 			},
 			"states": [{
 				"fieldName": "state",
-				"type": "select"
+				"type": "text"
 			}],
 			"phone": {
 				"help": {
@@ -674,7 +674,7 @@
 			},
 			"states": [{
 				"fieldName": "state",
-				"type": "select"
+				"type": "text"
 			}],
 			"phone": {
 				"help": {
@@ -755,7 +755,7 @@
 			},
 			"states": [{
 				"fieldName": "state",
-				"type": "select"
+				"type": "text"
 			}],
 			"phone": {
 				"help": {
@@ -836,7 +836,7 @@
 			},
 			"states": [{
 				"fieldName": "state",
-				"type": "select"
+				"type": "text"
 			}],
 			"phone": {
 				"help": {
@@ -916,17 +916,8 @@
 			},
 			"states": [{
 				"fieldName": "state",
-				"type": "select"
-			}],
-			"phone": {
-				"help": {
-					"cid": "help-telephone",
-					"label": {
-						"property": "singleshipping.phonerequired",
-						"file": "checkout"
-					}
-				}
-			}
+				"type": "text"
+			}]
 		},
 		"giftRegistryEvent" : {
 			"eventaddress": [{
@@ -997,7 +988,7 @@
 			},
 			"states": [{
 				"fieldName": "state",
-				"type": "select"
+				"type": "text"
 			}],
 			"phone": {
 				"help": {

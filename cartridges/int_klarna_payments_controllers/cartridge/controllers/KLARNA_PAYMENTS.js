@@ -302,6 +302,10 @@ function createSession() {
 	if( !empty( session.privacy.KlarnaPaymentsSessionID ) )
 	{
 		updateSession();
+		var currentCookies = request.getHttpCookies();
+		if (currentCookies.hasOwnProperty('selectedKlarnaPaymentCategory')) {
+			session.privacy.SelectedKlarnaPaymentMethod = currentCookies['selectedKlarnaPaymentCategory'].value;
+		}
 	}
 	else
 	{
@@ -310,20 +314,15 @@ function createSession() {
 			klarnaApiContext = new KlarnaPayments.apiContext();
 			requestBody = _getSessionRequestBody( BasketMgr.getCurrentBasket(), localeObject );
 			requestUrl = klarnaApiContext.getFlowApiUrls().get( 'createSession' );
-			
+
 			response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
-			if( response!=='OK' )
-			{
-				Transaction.wrap( function()
-				{
-					session.privacy.KlarnaPaymentsSessionID = null;
-					session.privacy.KlarnaPaymentsClientToken = null;
-				} );			
-			}
+
 			Transaction.wrap( function()
 			{
 				session.privacy.KlarnaPaymentsSessionID = response.session_id;
 				session.privacy.KlarnaPaymentsClientToken = response.client_token;
+				session.privacy.KlarnaPaymentMethods = response.payment_method_categories;
+				session.privacy.SelectedKlarnaPaymentMethod = null;
 			} );
 		} catch( e ) 
 		{
@@ -332,6 +331,8 @@ function createSession() {
 			{
 				session.privacy.KlarnaPaymentsSessionID = null;
 				session.privacy.KlarnaPaymentsClientToken = null;
+				session.privacy.KlarnaPaymentMethods = null;
+				session.privacy.SelectedKlarnaPaymentMethod = null;
 			} );
 		}
 	
@@ -392,16 +393,19 @@ function updateSession() {
 		klarnaApiContext = new KlarnaPayments.apiContext();
 		requestBody = _getSessionRequestBody( BasketMgr.getCurrentBasket(), localeObject );
 		requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'updateSession' ), session.privacy.KlarnaPaymentsSessionID );
-		
-		response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
-		if( response!=='OK' )
+
+		// Update session
+		klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+
+		// Read updated session
+		response = klarnaPaymentsHttpService.call( requestUrl, 'GET', localeObject.custom.credentialID );
+
+		Transaction.wrap( function()
 		{
-			Transaction.wrap( function()
-			{
-				session.privacy.KlarnaPaymentsSessionID = null;
-				session.privacy.KlarnaPaymentsClientToken = null;
-			} );			
-		}
+			session.privacy.KlarnaPaymentsClientToken = response.client_token;
+			session.privacy.KlarnaPaymentMethods = response.payment_method_categories;
+		} );
+
 	} catch( e )
 	{
 		log.error( 'Error in updating Klarna Payments Session: {0}', e );
@@ -409,6 +413,8 @@ function updateSession() {
 		{
 			session.privacy.KlarnaPaymentsSessionID = null;
 			session.privacy.KlarnaPaymentsClientToken = null;
+			session.privacy.KlarnaPaymentMethods = null;
+			session.privacy.SelectedKlarnaPaymentMethod = null;
 		} );
 	}  
 }
@@ -553,6 +559,8 @@ function redirect()
 	{
 		session.privacy.KlarnaPaymentsSessionID = null;
 		session.privacy.KlarnaPaymentsClientToken = null;
+		session.privacy.KlarnaPaymentMethods = null;
+		session.privacy.SelectedKlarnaPaymentMethod = null;
 	} );
 	
 	if( !empty( session.privacy.KlarnaPaymentsRedirectURL ) )
@@ -586,6 +594,8 @@ function clearSession()
 	{
 		session.privacy.KlarnaPaymentsSessionID = null;
 		session.privacy.KlarnaPaymentsClientToken = null;
+		session.privacy.KlarnaPaymentMethods = null;
+		session.privacy.SelectedKlarnaPaymentMethod = null;
 	} ); 
 }
 

@@ -14,23 +14,43 @@
 	var $emailAddress = document.querySelectorAll('input[name="dwfrm_billing_billingAddress_email_emailAddress"]')[0];
 	var $billingAddressFormElements = document.querySelectorAll('input[name*=dwfrm_billing_billingAddress], select[name*=dwfrm_billing_billingAddress]');
 	var $billingAddressForm = document.querySelectorAll('#dwfrm_billing > fieldset')[0];
-	var $klarnaPI = document.getElementById('is-Klarna');
+	var $klarnaPaymentCategories = document.querySelectorAll('.klarna-payment-categories');
+	var $selectPaymentMethod = document.querySelectorAll('.payment-method-options')[0];
 	var $continueBtn = document.getElementsByName('dwfrm_billing_save')[1];
 
 	window.klarnaAsyncCallback = function() {
-		Klarna.Credit.init({
+		Klarna.Payments.init({
 			client_token: klarnaPaymentsObjects.clientToken
-		})
-		Klarna.Credit.load({
-			container: "#klarna_payments_container"
-		}, function(res) {
-			console.debug(res);
-		})
+		});
 
+		var $selectedPaymentMethod = $selectPaymentMethod.querySelectorAll(':checked')[0];
+		for (var i = 0; i < $klarnaPaymentCategories.length; ++i) {
+			var $klarnaPaymentCategory = $klarnaPaymentCategories[i];
+
+			if ($selectedPaymentMethod.id === $klarnaPaymentCategory.id) {
+				updateBillingAddress($selectedPaymentMethod.id);
+			} else {
+				var containerName = '#klarna_payments_' + $klarnaPaymentCategory.id + '_container';
+				Klarna.Payments.load({
+					container: containerName,
+					payment_method_category: $klarnaPaymentCategory.id
+				}, function(res) {
+					console.debug(res);
+				});
+			}
+
+			if (klarnaPaymentsObjects.preassesment) {
+				$klarnaPaymentCategory.addEventListener("click", function() {
+					updateBillingAddress($klarnaPaymentCategory.id);
+				});
+			}
+		}
 	};
+
 	if (klarnaPaymentsObjects.preassesment) {
 		$billingAddressForm.addEventListener("change", function() {
 			var elements = $billingAddressFormElements;
+			var $selectedPaymentMethod = $selectPaymentMethod.querySelectorAll(':checked')[0];
 			var formValid = true;
 			for (var i = 0; i < elements.length; i++) {
 				if (elements[i].getAttribute('aria-invalid') == 'true' || (elements[i].getAttribute('aria-required') == 'true' && elements[i].value.length == 0)) {
@@ -38,37 +58,25 @@
 					break;
 				}
 			}
-			if (formValid) {
 
-				updateBillingAddress();
+			if (formValid && isKlarnaPaymentCategory($selectedPaymentMethod.id)) {
+				updateBillingAddress($selectedPaymentMethod.id);
 			}
 		})
-
-		$klarnaPI.addEventListener("click", function() {
-			var elements = $billingAddressFormElements;
-			var formValid = true;
-			for (var i = 0; i < elements.length; i++) {
-				if (elements[i].getAttribute('aria-invalid') == 'true' || (elements[i].getAttribute('aria-required') == 'true' && elements[i].value.length == 0)) {
-					formValid = false;
-					break;
-				}
-			}
-			if (formValid) {
-				$continueBtn.disabled = false;
-				updateBillingAddress();
-			}
-		})
-
 	}
 
 	$continueBtn.addEventListener("click", function(event) {
-		if (document.getElementById('klarna_payments_container').parentElement.className.indexOf('expanded') !== -1) {
+		var $selectedPaymentMethod = $selectPaymentMethod.querySelectorAll(':checked')[0];
+
+		if (isKlarnaPaymentCategory($selectedPaymentMethod.id)) {
 			event.preventDefault(); //prevent form submission until authorize call is done
 			$continueBtn.disabled = true;
 			var hasShippingAddress = document.querySelectorAll('#shipping_address_firstName')[0] ? true : false;
 
 			if (hasShippingAddress) {
-				Klarna.Credit.authorize({
+				Klarna.Payments.authorize({
+						payment_method_category: $selectedPaymentMethod.id
+				}, {
 						"billing_address": {
 							"given_name": $firstName.value,
 							"family_name": $lastName.value,
@@ -107,6 +115,9 @@
 
 							xhr.onreadystatechange = function() {
 								if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+									document.cookie = "selectedKlarnaPaymentCategory=" + $selectedPaymentMethod.id + "; path=/";
+									$selectedPaymentMethod.value = 'Klarna';
+
 									//submit billing form when Klarna Payments authorization is successfully finished
 									document.querySelectorAll('#dwfrm_billing')[0].submit();
 								}
@@ -117,7 +128,9 @@
 						}
 					})
 			} else {
-				Klarna.Credit.authorize({
+				Klarna.Payments.authorize({
+						payment_method_category: $selectedPaymentMethod.id
+				}, {
 						"billing_address": {
 							"given_name": $firstName.value,
 							"family_name": $lastName.value,
@@ -143,6 +156,9 @@
 
 							xhr.onreadystatechange = function() {
 								if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
+									document.cookie = "selectedKlarnaPaymentCategory=" + $selectedPaymentMethod.id + "; path=/";
+									$selectedPaymentMethod.value = 'Klarna';
+
 									//submit billing form when Klarna Payments authorization is successfully finished
 									document.querySelectorAll('#dwfrm_billing')[0].submit();
 								}
@@ -154,18 +170,36 @@
 					})
 			}
 		}
-	})
+	});
+	
+	/**
+	 * @function
+	 * @description checks if the given payment method ID is Klarna payment category.
+	 */
+	function isKlarnaPaymentCategory(paymentCategory) {
+		for (var i = 0; i < $klarnaPaymentCategories.length; ++i) {
+			var $klarnaPaymentCategory = $klarnaPaymentCategories[i];
+
+			if (paymentCategory === $klarnaPaymentCategory.id) {
+				return true;
+			}
+		}
+		return false;
+	};
 
 
 	/**
 	 * @function
 	 * @description updates the billing address with the billing address form
 	 */
-	function updateBillingAddress() {
+	function updateBillingAddress(paymentCategory) {
 		var hasShippingAddress = document.querySelectorAll('#shipping_address_firstName')[0] ? true : false;
+		var containerName = '#klarna_payments_' + paymentCategory + '_container';
+
 		if (hasShippingAddress) {
-			Klarna.Credit.load({
-					container: "#klarna_payments_container"
+			Klarna.Payments.load({
+					container: containerName,
+					payment_method_category: paymentCategory
 				}, {
 					"billing_address": {
 						"given_name": $firstName.value,
@@ -201,8 +235,9 @@
 					}
 				})
 		} else {
-			Klarna.Credit.load({
-					container: "#klarna_payments_container"
+			Klarna.Payments.load({
+					container: containerName,
+					payment_method_category: paymentCategory
 				}, {
 					"billing_address": {
 						"given_name": $firstName.value,

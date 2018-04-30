@@ -9,6 +9,7 @@
 */
 
 // import packages
+var Transaction = require( 'dw/system/Transaction' );
 var Logger = require( 'dw/system/Logger' );
 var logger = Logger.getLogger( 'klarnaPaymentsUpdateSession.ds' );
 var KlarnaPayments = {
@@ -21,22 +22,26 @@ function execute( args : PipelineDictionary ) : Number
 {
 	var localeObject = args.LocaleObject;
 	var klarnaSessionID = args.KlarnaPaymentsSessionID;
-	
+
 	try {
 		var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody(args.Basket, localeObject);
         var requestUrl = dw.util.StringUtils.format(klarnaApiContext.getFlowApiUrls().get('updateSession'), klarnaSessionID);
         
-		var response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-		if( response !== 'OK' )
+		// Update session
+		klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+
+		// Read updated session
+		var response = klarnaPaymentsHttpService.call( requestUrl, 'GET', localeObject.custom.credentialID );
+
+		Transaction.wrap( function()
 		{
-			Transaction.wrap( function()
-			{
-				session.privacy.KlarnaPaymentsSessionID = null;
-				session.privacy.KlarnaPaymentsClientToken = null;
-			} );			
-		}
+			session.privacy.KlarnaPaymentsClientToken = response.client_token;
+			session.privacy.KlarnaPaymentMethods = response.payment_method_categories;
+		} );
+
+
 	} catch (e) {
 		logger.error(e);
 		return PIPELET_ERROR;

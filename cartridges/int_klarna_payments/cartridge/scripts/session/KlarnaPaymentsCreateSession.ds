@@ -33,6 +33,8 @@ function execute( args : PipelineDictionary ) : Number
 		{
 			session.privacy.KlarnaPaymentsSessionID = response.session_id;
 			session.privacy.KlarnaPaymentsClientToken = response.client_token;
+			session.privacy.KlarnaPaymentMethods = response.payment_method_categories;
+			session.privacy.SelectedKlarnaPaymentMethod = null;
 		} );
 
 	} catch (e) {

@@ -520,9 +520,9 @@ a Klarna payments session through Klarna API</description>
                       <key-binding alias="null" key="From_1"/>
                       <key-binding alias="CurrentSession.privacy.KlarnaPaymentsClientToken" key="To_1"/>
                       <key-binding alias="null" key="From_2"/>
-                      <key-binding alias="null" key="To_2"/>
+                      <key-binding alias="CurrentSession.privacy.KlarnaPaymentMethods" key="To_2"/>
                       <key-binding alias="null" key="From_3"/>
-                      <key-binding alias="null" key="To_3"/>
+                      <key-binding alias="CurrentSession.privacy.SelectedKlarnaPaymentMethod" key="To_3"/>
                       <key-binding alias="null" key="From_4"/>
                       <key-binding alias="null" key="To_4"/>
                       <key-binding alias="null" key="From_5"/>
@@ -548,12 +548,12 @@ a Klarna payments session through Klarna API</description>
             </node>
             <simple-transition>
               <transition-display>
-                <bend-point relative-to="source" x="0" y="1"/>
+                <bend-point relative-to="target" x="0" y="-1"/>
               </transition-display>
             </simple-transition>
             <node>
               <end-node/>
-              <node-display x="0" y="1"/>
+              <node-display x="0" y="2"/>
             </node>
           </segment>
         </branch>
@@ -617,9 +617,9 @@ a Klarna payments session through Klarna API</description>
                 <key-binding alias="null" key="From_1"/>
                 <key-binding alias="CurrentSession.privacy.KlarnaPaymentsClientToken" key="To_1"/>
                 <key-binding alias="null" key="From_2"/>
-                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="CurrentSession.privacy.KlarnaPaymentMethods" key="To_2"/>
                 <key-binding alias="null" key="From_3"/>
-                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="CurrentSession.privacy.SelectedKlarnaPaymentMethod" key="To_3"/>
                 <key-binding alias="null" key="From_4"/>
                 <key-binding alias="null" key="To_4"/>
                 <key-binding alias="null" key="From_5"/>
@@ -635,19 +635,66 @@ a Klarna payments session through Klarna API</description>
               </pipelet-node>
               <node-display x="0" y="1"/>
             </node>
-            <simple-transition/>
+            <simple-transition>
+              <transition-display>
+                <bend-point relative-to="target" x="0" y="-1"/>
+              </transition-display>
+            </simple-transition>
             <node>
               <end-node name="error"/>
-              <node-display x="0" y="1"/>
+              <node-display x="0" y="3"/>
             </node>
           </segment>
         </branch>
       </node>
-      <simple-transition>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="CurrentRequest.httpCookies.hasOwnProperty('selectedKlarnaPaymentCategory')" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b4" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Assign" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <key-binding alias="CurrentRequest.httpCookies['selectedKlarnaPaymentCategory'].value" key="From_0"/>
+                <key-binding alias="null" key="To_1"/>
+                <key-binding alias="null" key="From_2"/>
+                <key-binding alias="null" key="To_2"/>
+                <key-binding alias="null" key="To_3"/>
+                <key-binding alias="null" key="From_4"/>
+                <key-binding alias="null" key="To_4"/>
+                <key-binding alias="null" key="From_5"/>
+                <key-binding alias="null" key="To_5"/>
+                <key-binding alias="null" key="From_6"/>
+                <key-binding alias="null" key="To_6"/>
+                <key-binding alias="null" key="From_7"/>
+                <key-binding alias="null" key="To_7"/>
+                <key-binding alias="null" key="From_8"/>
+                <key-binding alias="null" key="To_8"/>
+                <key-binding alias="null" key="From_9"/>
+                <key-binding alias="null" key="To_9"/>
+                <key-binding alias="CurrentSession.privacy.SelectedKlarnaPaymentMethod" key="To_0"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in2" target-path="./+1">
         <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
+          <bend-point relative-to="source" x="1" y="0"/>
+          <bend-point relative-to="target" x="1" y="0"/>
         </transition-display>
-      </simple-transition>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition/>
       <node>
         <end-node/>
         <node-display x="0" y="1"/>
@@ -1145,9 +1192,9 @@ a Klarna payments session through Klarna API</description>
           <key-binding alias="null" key="From_1"/>
           <key-binding alias="CurrentSession.privacy.KlarnaPaymentsClientToken" key="To_1"/>
           <key-binding alias="null" key="From_2"/>
-          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="CurrentSession.privacy.KlarnaPaymentMethods" key="To_2"/>
           <key-binding alias="null" key="From_3"/>
-          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="CurrentSession.privacy.SelectedKlarnaPaymentMethod" key="To_3"/>
           <key-binding alias="null" key="From_4"/>
           <key-binding alias="null" key="To_4"/>
           <key-binding alias="null" key="From_5"/>
@@ -1348,7 +1395,7 @@ a Klarna payments session through Klarna API</description>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
           <config-property key="OnError" value="PIPELET_ERROR"/>
-          <config-property key="ScriptFile" value="require( 'int_klarna_payments/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CORE + '/cartridge/scripts/checkout/SetOrderStatus'"/>
+          <config-property key="ScriptFile" value="int_klarna_payments:checkout/SetOrderStatus.ds"/>
           <key-binding alias="Order" key="Order"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
@@ -1494,16 +1541,6 @@ a Klarna payments session through Klarna API</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_32">
-    <segment>
-      <node>
-        <text-node>
-          <description>Saves/Updates Klarna Payments authorization token in the current session</description>
-        </text-node>
-        <node-display width="2" x="11" y="38"/>
-      </node>
-    </segment>
-  </branch>
   <branch basename="ClearSession">
     <segment>
       <node>
@@ -1523,9 +1560,9 @@ a Klarna payments session through Klarna API</description>
           <key-binding alias="null" key="From_1"/>
           <key-binding alias="CurrentSession.privacy.KlarnaPaymentsClientToken" key="To_1"/>
           <key-binding alias="null" key="From_2"/>
-          <key-binding alias="null" key="To_2"/>
+          <key-binding alias="CurrentSession.privacy.KlarnaPaymentMethods" key="To_2"/>
           <key-binding alias="null" key="From_3"/>
-          <key-binding alias="null" key="To_3"/>
+          <key-binding alias="CurrentSession.privacy.SelectedKlarnaPaymentMethod" key="To_3"/>
           <key-binding alias="null" key="From_4"/>
           <key-binding alias="null" key="To_4"/>
           <key-binding alias="null" key="From_5"/>
@@ -1554,11 +1591,21 @@ a Klarna payments session through Klarna API</description>
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_33">
+    <segment>
+      <node>
+        <text-node>
+          <description>Saves/Updates Klarna Payments authorization token in the current session</description>
+        </text-node>
+        <node-display width="2" x="11" y="39"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="SaveAuth">
     <segment>
       <node>
         <start-node name="SaveAuth" secure="false"/>
-        <node-display x="11" y="39"/>
+        <node-display x="11" y="40"/>
       </node>
       <simple-transition>
         <transition-display>

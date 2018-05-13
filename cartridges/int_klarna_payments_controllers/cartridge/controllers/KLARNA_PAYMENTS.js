@@ -321,7 +321,7 @@ function createSession() {
 			{
 				session.privacy.KlarnaPaymentsSessionID = response.session_id;
 				session.privacy.KlarnaPaymentsClientToken = response.client_token;
-				session.privacy.KlarnaPaymentMethods = response.payment_method_categories;
+				session.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
 				session.privacy.SelectedKlarnaPaymentMethod = null;
 			} );
 		} catch( e ) 
@@ -403,7 +403,7 @@ function updateSession() {
 		Transaction.wrap( function()
 		{
 			session.privacy.KlarnaPaymentsClientToken = response.client_token;
-			session.privacy.KlarnaPaymentMethods = response.payment_method_categories;
+			session.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
 		} );
 
 	} catch( e )

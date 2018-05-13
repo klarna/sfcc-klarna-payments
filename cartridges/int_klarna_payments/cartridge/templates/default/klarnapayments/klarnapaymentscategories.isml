@@ -1,6 +1,6 @@
 <iscontent type="text/html" charset="UTF-8" compact="true"/>
 
-<isif condition="${session.privacy.KlarnaPaymentMethods && pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.options['Klarna']}">
+<isif condition="${!empty(session.privacy.KlarnaPaymentMethods) && pdict.CurrentForms.billing.paymentMethods.selectedPaymentMethodID.options['Klarna']}">
 	<isloop items="${session.privacy.KlarnaPaymentMethods}" var="klarnaPaymentMethod">
 		<div class="form-row label-inline">
 			<div class="field-wrapper">

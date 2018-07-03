@@ -1046,4 +1046,85 @@
 			}
 		}
 	}
+}, {
+	"countryCode": "CH",
+	"name": {
+		"de_CH": "Switzerland"
+	},
+	"continent": "europe",
+	"locales": ["de_CH"],
+	"currencyCode": "CHF",
+	"taxation": {
+		"type": "gross",
+		"rate": 0.22
+	},
+	"priceBooks" : [
+		"CHF-list-prices",
+		"CHF-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "text"
+			}],
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
 }]

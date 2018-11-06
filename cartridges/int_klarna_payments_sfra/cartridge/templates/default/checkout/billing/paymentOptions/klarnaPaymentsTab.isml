@@ -1,0 +1,14 @@
+<isif condition="${!empty(session.privacy.KlarnaPaymentMethods)}">
+	<isloop items="${session.privacy.KlarnaPaymentMethods}" var="klarnaPaymentMethod">
+		<li class="nav-item klarna-payment-item" data-method-id="klarna_${klarnaPaymentMethod.identifier}">
+			<a class="nav-link klarna-payments-${klarnaPaymentMethod.identifier}-tab" data-toggle="tab" href="${'#klarna_payments_' + klarnaPaymentMethod.identifier}" role="tab">
+				<img class="credit-card-option"
+						src="${klarnaPaymentMethod.asset_urls.standard}"
+						height="32"
+						alt="${paymentOption.name}"
+						title="${paymentOption.name}"
+				>
+			</a>
+		</li>
+	</isloop>
+</isif>

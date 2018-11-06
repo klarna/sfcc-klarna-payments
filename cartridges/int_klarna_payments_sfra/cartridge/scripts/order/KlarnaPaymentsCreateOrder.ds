@@ -1,0 +1,56 @@
+/**
+* klarnaPaymentsCreateOrder.ds
+*
+* API call to create new Klarna Payments order
+*
+* @input Order : dw.order.Order The SCC Order object
+* @input LocaleObject : dw.object.CustomObject
+* @input KlarnaAuthorizationToken : String
+* 
+* @output order_id : String
+* @output redirect_url : String
+* @output fraud_status : String
+*/
+
+// import packages
+var Logger = require( 'dw/system/Logger' );
+var logger = Logger.getLogger( 'klarnaPaymentsCreateOrder.ds' );
+var KlarnaPayments = {
+	httpService 			: require('~/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
+	apiContext 				: require('~/cartridge/scripts/common/KlarnaPaymentsApiContext'),
+	orderRequestBuilder 	: require('~/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder')
+};
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var localeObject = args.LocaleObject;
+	var klarnaAuthorizationToken = args.KlarnaAuthorizationToken;
+	
+	try {
+		var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+        var klarnaApiContext = new KlarnaPayments.apiContext();
+        var requestBody = _getRequestBody(args.Order, localeObject);
+        var requestUrl = dw.util.StringUtils.format(klarnaApiContext.getFlowApiUrls().get('createOrder'), klarnaAuthorizationToken);
+        
+		var response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
+		
+		args.order_id = response.order_id;
+		args.redirect_url = response.redirect_url;
+		args.fraud_status = response.fraud_status;
+		
+	} catch (e) {
+		logger.error(e);
+		return PIPELET_ERROR;
+	}
+    
+    return PIPELET_NEXT;	
+}
+
+function _getRequestBody(order, localeObject) {
+	var orderRequestBuilder = new KlarnaPayments.orderRequestBuilder();
+	
+	return orderRequestBuilder.buildRequest({
+	    order: order,
+	    localeObject: localeObject
+	}).get();
+}

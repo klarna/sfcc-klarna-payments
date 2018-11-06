@@ -1,0 +1,34 @@
+<isscript>
+    var paymentInstrument = pdict.order.billing.payment.selectedPaymentInstruments[0];
+    var paymentMethodId = paymentInstrument.paymentMethod;
+    var paymentCategoryId = paymentInstrument.paymentCategory;
+</isscript>
+
+<div class="form-nav billing-nav payment-information"
+     data-payment-method-id="${paymentMethodId}" data-payment-category-id="${paymentCategoryId}"
+     data-is-new-payment="${pdict.customer.registeredUser && pdict.customer.customerPaymentInstruments.length ? false : true}"
+>
+    <isset name="klarnaForm" value="${pdict.klarnaForm}" scope="page"/>
+
+    <div class="form-group required	${klarnaForm.email.htmlName}">
+        <label class="form-control-label" for="email">${Resource.msg('field.customer.email','checkout',null)}</label>
+        <span class="info-icon">
+            <span class="icon">i</span>
+            <div class="tooltip">
+                ${Resource.msg('tooltip.email','creditCard',null)}
+            </div>
+        </span>
+        <input type="text" class="form-control klarna_email" id="${klarnaForm.email.htmlName}"
+            value="${pdict.order.orderEmail||''}" <isprint value=${klarnaForm.email.attributes} encoding="off"/> >
+        <div class="invalid-feedback"></div>
+    </div>
+
+    <ul class="nav nav-tabs nav-fill payment-options" role="tablist">
+        <isinclude template="checkout/billing/paymentOptions/paymentOptionsTabs" />
+    </ul>
+</div>
+<div class="credit-card-selection-new" >
+    <div class="tab-content">
+        <isinclude template="checkout/billing/paymentOptions/paymentOptionsContent" />
+    </div>
+</div>

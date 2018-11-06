@@ -1,0 +1,6 @@
+<div class="method-name">
+    ${payment.paymentMethod}
+</div>
+<div class="amount">
+    ${dw.util.StringUtils.formatMoney(new dw.value.Money(payment.amount, pdict.klarna.currency))}
+</div>

@@ -48,6 +48,7 @@ function getSelectedPaymentInstruments(selectedPaymentInstruments) {
             paymentMethod: paymentInstrument.paymentMethod,
             amount: paymentInstrument.paymentTransaction.amount.value
         };
+
         if (paymentInstrument.paymentMethod === 'CREDIT_CARD') {
             results.lastFour = paymentInstrument.creditCardNumberLastDigits;
             results.owner = paymentInstrument.creditCardHolder;

@@ -1,7 +1,12 @@
 <isscript>
+    var paymentMethodId = "CREDIT_CARD";
+    var paymentCategoryId = ""; // applicable only for klarna payment method
     var paymentInstrument = pdict.order.billing.payment.selectedPaymentInstruments[0];
-    var paymentMethodId = paymentInstrument.paymentMethod;
-    var paymentCategoryId = paymentInstrument.paymentCategory;
+
+    if (!empty(paymentInstrument)) {
+        var paymentMethodId = paymentInstrument.paymentMethod;
+        var paymentCategoryId = paymentInstrument.paymentCategory;
+    }
 </isscript>
 
 <div class="form-nav billing-nav payment-information"

@@ -1,8 +1,0 @@
-<iscontent type="text/html" charset="UTF-8" compact="true"/>
-<iscomment>
-	The locale-specific portion of the minibillinginfo.isml module
-</iscomment>
-<ismodule template="klarnapayments/shippingaddresshelper.isml"
-	name="kpaddresshelper"
-	attribute="p_address"
-/>

@@ -26,6 +26,14 @@ function KlarnaSessionManager(userSession, locale) {
 	this.currentLocale = locale;
 }
 
+KlarnaSessionManager.prototype.saveAuthorizationToken = function(token) {
+	Transaction.wrap( function(token) {
+		var _self = this;
+
+		this.userSession.privacy.KlarnaPaymentsAuthorizationToken = token;
+	}.bind(this, token) );
+}
+
 /**
  * Gets Klarna Payments Locale object
  * 

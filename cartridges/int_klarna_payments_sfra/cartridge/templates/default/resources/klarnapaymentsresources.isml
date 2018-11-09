@@ -14,8 +14,7 @@
 		preAssement = true;
 	}
 	
-	function isCountryInEU( country )
-	{
+	function isCountryInEU( country ) {
 
 		var isInEU = true;
 		var EUCountries = "BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB";
@@ -30,10 +29,7 @@
 
     // klarna payments urls
     var KPurls =  {
-        createSession		: URLUtils.https('KLARNA_PAYMENTS-CreateSession').toString(), 
-        clearSession		: URLUtils.https('KLARNA_PAYMENTS-ClearSession').toString(),
-        saveAuth			: URLUtils.https('KLARNA_PAYMENTS-SaveAuth').toString(), 
-        updateSession		: URLUtils.https('KLARNA_PAYMENTS-UpdateSession').toString()
+        saveAuth			: URLUtils.https('KLARNA_PAYMENTS-SaveAuth').toString()
 	};
 
 	//klarna payments objects 

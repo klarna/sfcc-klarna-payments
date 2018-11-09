@@ -1,7 +1,7 @@
 //Page.js
 var page = module.superModule; // require functionality from last controller in the chain with this name
 var server = require('server');
-var KlarnaSessionManager = require( '~/cartridge/scripts/services/KlarnaSessionManager' );
+var KlarnaSessionManager = require( '~/cartridge/scripts/common/KlarnaSessionManager' );
 var Transaction = require('dw/system/Transaction');
 var OrderMgr = require('dw/order/OrderMgr');
 

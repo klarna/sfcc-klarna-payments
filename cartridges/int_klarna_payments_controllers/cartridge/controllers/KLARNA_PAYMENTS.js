@@ -443,7 +443,7 @@ function notification()
 	var currentCountry = request.httpParameterMap.klarna_country.value;
 	var localeObject = getLocale( currentCountry );
 	var order = OrderMgr.queryOrder( "custom.kpOrderID ={0}", klarnaPaymentsOrderID );
-	
+
 	if( empty( order ) )
 	{
 		return response.setStatus( 200 );

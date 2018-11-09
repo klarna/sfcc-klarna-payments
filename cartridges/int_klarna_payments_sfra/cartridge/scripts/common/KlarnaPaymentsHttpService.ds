@@ -5,6 +5,11 @@ var Site = require('dw/system/Site');
 
 function KlarnaPaymentsHttpService() {
     this._logger = Logger.getLogger('RequestTrace');
+    this.lastStatusCode = 200;
+}
+
+KlarnaPaymentsHttpService.prototype.getLastStatusCode = function() {
+    return this.lastStatusCode;
 }
 
 KlarnaPaymentsHttpService.prototype.call = function(urlPath: String, httpVerb : String, credentialID : String, requestBody: Object) {
@@ -36,11 +41,12 @@ KlarnaPaymentsHttpService.prototype.call = function(urlPath: String, httpVerb : 
             result = service.call(requestBody);
         }
 
+        this.lastStatusCode = result.error;
     } catch (ex) {
         var exception = ex;
         this._logger.error(exception.message);
     }
-    
+
     this.logResponseData(urlPath, httpVerb, requestBody, result);
     this.detectErrorResponse(result, httpVerb, service.URL, requestBody);
 
@@ -66,8 +72,7 @@ KlarnaPaymentsHttpService.prototype.detectErrorResponse = function(result : Obje
     if (empty(result)) {
         this._logger.error('result was empty');
         throw new Error(this.getErrorResponse('default'));
-    }
-    else if (result.error != 0 || result.status == 'ERROR' || result.status == 'SERVICE_UNAVAILABLE') {
+    } else if (result.error != 0 || result.status == 'ERROR' || result.status == 'SERVICE_UNAVAILABLE') {
         this.logErrorResponse(result, requestUrl, requestBody);
         throw new Error(result.errorMessage);
     }

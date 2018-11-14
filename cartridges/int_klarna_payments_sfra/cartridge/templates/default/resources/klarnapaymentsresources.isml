@@ -1,46 +1,26 @@
 <iscontent type="text/javascript" charset="UTF-8" compact="true"/>
 
 <isscript>
-	var CurrentSession = pdict.CurrentSession;
-
-    //determine pre-assesment value
-	var Countries = require('~/cartridge/scripts/util/Countries');
-	var country = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
-
-	var preAssessmentCountries = dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
-	var preAssement = false;
-	if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && !isCountryInEU( country ) )
-	{
-		preAssement = true;
-	}
-	
-	function isCountryInEU( country ) {
-
-		var isInEU = true;
-		var EUCountries = "BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB";
-		
-		if( EUCountries.indexOf( country ) === -1)
-		{
-			isInEU = false;
-        }
-
-        return isInEU;
-    }	
+    var CurrentSession = pdict.CurrentSession;
+    var KlarnaUtils = require( '../util/KlarnaUtils' );
+    var Countries = require('~/cartridge/scripts/util/Countries');
+    var country = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
+    var preassess = KlarnaUtils.isEnabledPreassessmentForCountry( country );
 
     // klarna payments urls
     var KPurls =  {
         saveAuth			: URLUtils.https('KLARNA_PAYMENTS-SaveAuth').toString()
-	};
+    };
 
-	//klarna payments objects 
-	var KPObjects = {
-		sessionID			: CurrentSession.privacy.KlarnaPaymentsSessionID ? CurrentSession.privacy.KlarnaPaymentsSessionID.toString() : null,
-		clientToken			: CurrentSession.privacy.KlarnaPaymentsClientToken ? CurrentSession.privacy.KlarnaPaymentsClientToken.toString() : null,
-		preassesment		: preAssement
-	};
+    //klarna payments objects 
+    var KPObjects = {
+        sessionID			: CurrentSession.privacy.KlarnaPaymentsSessionID ? CurrentSession.privacy.KlarnaPaymentsSessionID.toString() : null,
+        clientToken			: CurrentSession.privacy.KlarnaPaymentsClientToken ? CurrentSession.privacy.KlarnaPaymentsClientToken.toString() : null,
+        preassesment		: preassess
+    };
 </isscript>
 
 (function(app){
-	window.KlarnaPaymentsUrls = <isprint value="${JSON.stringify(KPurls)}" encoding="on"/>;
-	window.KlarnaPaymentsObjects = <isprint value="${!empty(KPObjects) ? JSON.stringify(KPObjects) : '[]'}" encoding="on"/>;
+    window.KlarnaPaymentsUrls = <isprint value="${JSON.stringify(KPurls)}" encoding="on"/>;
+    window.KlarnaPaymentsObjects = <isprint value="${!empty(KPObjects) ? JSON.stringify(KPObjects) : '[]'}" encoding="on"/>;
 }(window.app = window.app || {}));

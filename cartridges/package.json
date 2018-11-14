@@ -16,9 +16,11 @@
     "test": "grunt test"
   },
   "author": "Alexander Gaydardzhiev",
-  "contributors": [{
-	"name": "Ivan Zanev",
-	"email": "Ivan.Zanev@tryzens.com"
-  }],
+  "contributors": [
+    {
+      "name": "Ivan Zanev",
+      "email": "Ivan.Zanev@tryzens.com"
+    }
+  ],
   "license": ""
 }

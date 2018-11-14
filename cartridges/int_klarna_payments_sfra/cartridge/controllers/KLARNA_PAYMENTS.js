@@ -9,15 +9,23 @@ var URLUtils = require('dw/web/URLUtils');
 var Logger = require( 'dw/system/Logger' );
 var log = Logger.getLogger( 'KlarnaPayments' );
 var ServiceRegistry = require('dw/svc/ServiceRegistry');
+var OrderMgr = require( 'dw/order/OrderMgr' );
 
 server.post(
 	'Notification',
 	function (req, res, next) {
 		var klarnaPaymentsFraudDecisionObject = JSON.parse( request.httpParameterMap.requestBodyAsString );
+		var kpOrderID = klarnaPaymentsFraudDecisionObject.order_id;
+		var kpEventType = klarnaPaymentsFraudDecisionObject.event_type;
 		var currentCountry = request.httpParameterMap.klarna_country.value;
+		var order = OrderMgr.queryOrder( "custom.kpOrderID = {0}", kpOrderID );
+
+		if ( !order ) {
+			res.setStatusCode( 200 );
+		}
 
 		try {
-			processor.notify(klarnaPaymentsFraudDecisionObject, currentCountry);
+			processor.notify( order, kpOrderID, kpEventType, currentCountry);
 
 			res.setStatusCode( 200 );
 		} catch (e) {
@@ -36,7 +44,7 @@ server.get(
 		};
 
 		try {
-			var service : Service = ServiceRegistry.get("klarna.http.defaultendpoint");
+			var service = ServiceRegistry.get("klarna.http.defaultendpoint");
 			service.setCredentialID("klarna.http.uscredentials");
 			service.URL = notificationUrl;
 			service.addHeader('Content-Type', 'application/json');

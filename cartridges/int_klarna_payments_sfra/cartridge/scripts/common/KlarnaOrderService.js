@@ -1,51 +1,51 @@
 /* eslint no-unused-expressions: 0 */
 /* globals session:false */
 
-var Logger = require('dw/system/Logger');
-var StringUtils = require('dw/util/StringUtils');
+var Logger = require( 'dw/system/Logger' );
+var StringUtils = require( 'dw/util/StringUtils' );
 
-var KlarnaHttpService = require('~/cartridge/scripts/common/KlarnaPaymentsHttpService');
-var KlarnaApiContext = require('~/cartridge/scripts/common/KlarnaPaymentsApiContext');
-var KlarnaOrderRequestBuilder = require('~/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder');
+var KlarnaHttpService = require( '~/cartridge/scripts/common/KlarnaPaymentsHttpService' );
+var KlarnaApiContext = require( '~/cartridge/scripts/common/KlarnaPaymentsApiContext' );
+var KlarnaOrderRequestBuilder = require( '~/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder' );
 
 /**
  * @constructor
  * @classdesc Klarna Checkout API service wrapper
  */
 function KlarnaOrderService() {
-    this.logger = Logger.getLogger('Klarna');
-    this.klarnaHttpService = new KlarnaHttpService();
-    this.klarnaApiContext = new KlarnaApiContext();
+	this.logger = Logger.getLogger( 'Klarna' );
+	this.klarnaHttpService = new KlarnaHttpService();
+	this.klarnaApiContext = new KlarnaApiContext();
 
-    /**
-     * API call to create Klarna order
-     *
-     * @param  {dw.order.Basket} basket - A CartModel wrapping the current Basket.
-     * @param  {dw.object.CustomObject} localeObject Klara region specific options
-     * @return {string} Html snippet used for rendering the Klarna checkout
-    */
-    this.createOrder = function (basket, localeObject) {
-        var orderRequestBuilder = new KlarnaOrderRequestBuilder();
-        var requestBody = orderRequestBuilder.buildRequest({
-            basket: basket,
-            localeObject: localeObject
-        }).get();
+	/**
+	 * API call to create Klarna order
+	 *
+	 * @param  {dw.order.Basket} basket - A CartModel wrapping the current Basket.
+	 * @param  {dw.object.CustomObject} localeObject Klara region specific options
+	 * @return {string} Html snippet used for rendering the Klarna checkout
+	*/
+	this.createOrder = function( basket, localeObject ) {
+		var orderRequestBuilder = new KlarnaOrderRequestBuilder();
+		var requestBody = orderRequestBuilder.buildRequest( {
+			basket: basket,
+			localeObject: localeObject
+		} ).get();
 
-        var requestUrl = this.klarnaApiContext.getFlowApiUrls().get('createOrder');
-        var response;
+		var requestUrl = this.klarnaApiContext.getFlowApiUrls().get( 'createOrder' );
+		var response = {};
 
-        try {
-            response = this.klarnaHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-        } catch (e) {
-            this.logger.error(e);
-            return null;
-        }
+		try {
+			response = this.klarnaHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+		} catch ( e ) {
+			this.logger.error( e );
+			return null;
+		}
 
-        session.privacy.klarnaCountry = localeObject.custom.country;
-        session.privacy.klarnaOrderID = response.order_id;
+		session.privacy.klarnaCountry = localeObject.custom.country;
+		session.privacy.klarnaOrderID = response.order_id;
 
-        return response.html_snippet;
-    };
+		return response.html_snippet;
+	};
 
     /**
      * API call to update Klarna order
@@ -55,25 +55,25 @@ function KlarnaOrderService() {
      * @param  {string} klarnaOrderID the ID of the Klarna order
      * @return {string} Html snippet used for rendering the Klarna checkout
     */
-    this.updateOrder = function (basket, localeObject, klarnaOrderID) {
-        var orderRequestBuilder = new KlarnaOrderRequestBuilder();
-        var requestBody = orderRequestBuilder.buildRequest({
-            basket: basket,
-            localeObject: localeObject
-        }).get();
+	this.updateOrder = function( basket, localeObject, klarnaOrderID ) {
+		var orderRequestBuilder = new KlarnaOrderRequestBuilder();
+		var requestBody = orderRequestBuilder.buildRequest( {
+			basket: basket,
+			localeObject: localeObject
+		} ).get();
 
-        var requestUrl = StringUtils.format(this.klarnaApiContext.getFlowApiUrls().get('updateOrder'), klarnaOrderID);
-        var response;
+		var requestUrl = StringUtils.format( this.klarnaApiContext.getFlowApiUrls().get( 'updateOrder' ), klarnaOrderID );
+		var response = {};
 
-        try {
-            response = this.klarnaHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-        } catch (e) {
-            this.logger.error(e);
-            return null;
-        }
+		try {
+			response = this.klarnaHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+		} catch ( e ) {
+			this.logger.error( e );
+			return null;
+		}
 
-        return response.html_snippet;
-    };
+		return response.html_snippet;
+	};
 
     /**
      * API call to read an order from Klarna
@@ -83,21 +83,21 @@ function KlarnaOrderService() {
      * @param  {boolean} isCompletedOrder whether the order is placed at Klarna end
      * @return {Object} Klarna Order Object
     */
-    this.getOrder = function (klarnaOrderID, localeObject, isCompletedOrder) {
-        var klarnaApiUrl = isCompletedOrder ? 'getCompletedOrder' : 'getOrder';
-        var klarnaApiContext = this.klarnaApiContext;
-        var requestUrl = StringUtils.format(klarnaApiContext.getFlowApiUrls().get(klarnaApiUrl), klarnaOrderID);
-        var response;
+	this.getOrder = function( klarnaOrderID, localeObject, isCompletedOrder ) {
+		var klarnaApiUrl = isCompletedOrder ? 'getCompletedOrder' : 'getOrder';
+		var klarnaApiContext = this.klarnaApiContext;
+		var requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( klarnaApiUrl ), klarnaOrderID );
+		var response = {};
 
-        try {
-            response = this.klarnaHttpService.call(requestUrl, 'GET', localeObject.custom.credentialID);
-        } catch (e) {
-            this.logger.error(e);
-            return null;
-        }
+		try {
+			response = this.klarnaHttpService.call( requestUrl, 'GET', localeObject.custom.credentialID );
+		} catch ( e ) {
+			this.logger.error( e );
+			return null;
+		}
 
-        return response;
-    };
+		return response;
+	};
 
     /**
      * API call to cancel an order in Klarna
@@ -106,15 +106,15 @@ function KlarnaOrderService() {
      * @param  {dw.object.CustomObject} localeObject Klara region specific options
      * @return {void}
     */
-    this.cancelOrder = function (klarnaOrderID, localeObject) {
-        var requestUrl = StringUtils.format(this.klarnaApiContext.getFlowApiUrls().get('cancelOrder'), klarnaOrderID);
+	this.cancelOrder = function( klarnaOrderID, localeObject ) {
+		var requestUrl = StringUtils.format( this.klarnaApiContext.getFlowApiUrls().get( 'cancelOrder' ), klarnaOrderID );
 
-        try {
-            this.klarnaHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID);
-        } catch (e) {
-            this.logger.error(e);
-        }
-    };
+		try {
+			this.klarnaHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID );
+		} catch ( e ) {
+			this.logger.error( e );
+		}
+	};
 
     /**
      * API call to acknowledge the order
@@ -123,14 +123,16 @@ function KlarnaOrderService() {
      * @param  {dw.object.CustomObject} localeObject Klara region specific options
      * @return {void}
     */
-    this.acknowledgeOrder = function (klarnaOrderID, localeObject) {
-        try {
-            var requestUrl = StringUtils.format(this.klarnaApiContext.getFlowApiUrls().get('acknowledgeOrder'), klarnaOrderID);
-            this.klarnaHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID);
-        } catch (e) {
-            this.logger.error(e);
-        }
-    };
+	this.acknowledgeOrder = function( klarnaOrderID, localeObject ) {
+		var requestUrl = {};
+
+		try {
+			requestUrl = StringUtils.format( this.klarnaApiContext.getFlowApiUrls().get( 'acknowledgeOrder' ), klarnaOrderID );
+			this.klarnaHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID );
+		} catch ( e ) {
+			this.logger.error( e );
+		}
+	};
 
     /**
      * API call to fully capture Klarna order
@@ -140,21 +142,21 @@ function KlarnaOrderService() {
      * @param  {dw.value.Money} amount the amount to be captured
      * @return {boolean} whether the capture was successful
     */
-    this.captureOrder = function (klarnaOrderID, localeObject, amount) {
-        var requestUrl = StringUtils.format(this.klarnaApiContext.getFlowApiUrls().get('captureOrder'), klarnaOrderID);
-        var requestBody = {};
+	this.captureOrder = function( klarnaOrderID, localeObject, amount ) {
+		var requestUrl = StringUtils.format( this.klarnaApiContext.getFlowApiUrls().get( 'captureOrder' ), klarnaOrderID );
+		var requestBody = {};
 
-        requestBody.captured_amount = Math.round(amount.value * 100);
+		requestBody.captured_amount = Math.round( amount.value * 100 );
 
-        try {
-            this.klarnaHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-        } catch (e) {
-            this.logger.error(e);
-            return false;
-        }
+		try {
+			this.klarnaHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+		} catch ( e ) {
+			this.logger.error( e );
+			return false;
+		}
 
-        return true;
-    };
+		return true;
+	};
 
     /**
      * API call to update Klarna Order Merchant References
@@ -163,20 +165,20 @@ function KlarnaOrderService() {
      * @param  {dw.object.CustomObject} localeObject Klara region specific options
      * @return {Object} the settlement
     */
-    this.createVCNSettlement = function (klarnaOrderID, localeObject) {
-        var requestUrl = this.klarnaApiContext.getFlowApiUrls().get('vcnSettlement');
-        var requestBody = { order_id: klarnaOrderID };
-        var response;
+	this.createVCNSettlement = function( klarnaOrderID, localeObject ) {
+		var requestUrl = this.klarnaApiContext.getFlowApiUrls().get( 'vcnSettlement' );
+		var requestBody = { order_id: klarnaOrderID };
+		var response = {};
 
-        try {
-            response = this.klarnaHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-        } catch (e) {
-            this.logger.error(e);
-            return null;
-        }
+		try {
+			response = this.klarnaHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+		} catch ( e ) {
+			this.logger.error( e );
+			return null;
+		}
 
-        return response;
-    };
+		return response;
+	};
 
     /**
      * API call to update Klarna Order Merchant References
@@ -186,21 +188,21 @@ function KlarnaOrderService() {
      * @param  {string} value the value which has to be set as merchant reference
      * @return {boolean} true if successful, false otherwise
     */
-    this.updateOrderMerchantReferences = function (klarnaOrderID, localeObject, value) {
-        var requestBodyObject = {};
+	this.updateOrderMerchantReferences = function( klarnaOrderID, localeObject, value ) {
+		var requestBodyObject = {};
+		var requestUrl = {};
 
-        requestBodyObject.merchant_reference1 = value;
+		requestBodyObject.merchant_reference1 = value;
+		requestUrl = StringUtils.format( this.klarnaApiContext.getFlowApiUrls().get( 'updateMerchantReferences' ), klarnaOrderID );
 
-        var requestUrl = StringUtils.format(this.klarnaApiContext.getFlowApiUrls().get('updateMerchantReferences'), klarnaOrderID);
+		try {
+			this.klarnaHttpService.call( requestUrl, 'PATCH', localeObject.custom.credentialID, requestBodyObject );
+		} catch ( e ) {
+			return false;
+		}
 
-        try {
-            this.klarnaHttpService.call(requestUrl, 'PATCH', localeObject.custom.credentialID, requestBodyObject);
-        } catch (e) {
-            return false;
-        }
-
-        return true;
-    };
+		return true;
+	};
 }
 
 module.exports = KlarnaOrderService;

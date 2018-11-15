@@ -4,6 +4,8 @@ var PaymentMgr = require( 'dw/order/PaymentMgr' );
 var PaymentInstrument = require( 'dw/order/PaymentInstrument' );
 var collections = require( '*/cartridge/scripts/util/collections' );
 
+var KLARNA_PAYMENT_METHOD = require( '~/cartridge/scripts/util/KlarnaPaymentsConstants' ).PAYMENT_METHOD;
+
 /**
  * Creates an array of objects containing applicable payment methods
  * @param {dw.util.ArrayList<dw.order.dw.order.PaymentMethod>} paymentMethods - An ArrayList of
@@ -59,7 +61,7 @@ function getSelectedPaymentInstruments( selectedPaymentInstruments ) {
 		} else if ( paymentInstrument.paymentMethod === 'GIFT_CERTIFICATE' ) {
 			results.giftCertificateCode = paymentInstrument.giftCertificateCode;
 			results.maskedGiftCertificateCode = paymentInstrument.maskedGiftCertificateCode;
-		} else if ( paymentInstrument.paymentMethod === "KLARNA_PAYMENTS" ) {
+		} else if ( paymentInstrument.paymentMethod === KLARNA_PAYMENT_METHOD ) {
 			results.paymentCategory = paymentInstrument.custom.klarnaPaymentCategoryID;
 		}
 

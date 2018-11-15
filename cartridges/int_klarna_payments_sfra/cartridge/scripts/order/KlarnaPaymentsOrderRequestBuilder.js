@@ -18,103 +18,106 @@
 	var LineItem = require( './KlarnaPaymentsOrderModel' ).LineItem;
 	var log = Logger.getLogger( 'KlarnaPaymentsOrderRequestBuilder.js' );
 
-	function KlarnaPaymentsOrderRequestBuilder()
-	{
+	function KlarnaPaymentsOrderRequestBuilder() {
 		this.context = null;
+		this.localeObject = null;
 	}
 
 	KlarnaPaymentsOrderRequestBuilder.prototype = new Builder();
-	KlarnaPaymentsOrderRequestBuilder.prototype.get = function()
-	{
+	KlarnaPaymentsOrderRequestBuilder.prototype.get = function() {
 		return this.context;
 	};
 
-	KlarnaPaymentsSessionRequestBuilder.prototype._buildRequest = function( params ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype._buildRequest = function( params ) {
 		var order = params.order;
-		var localeObject = params.localeObject.custom;
 
 		var requestBodyObject = this.init()
 			.setMerchantReference( order )
-			.buildLocale( order, localeObject )
+			.buildLocale( order )
 			.buildBilling( order )
 			.buildShipping( order )
-			.buildOrderLines( order, localeObject )
-			.buildTotalAmount( order, localeObject )
-			.buildTotalTax( order, localeObject )
+			.buildOrderLines( order )
+			.buildTotalAmount( order )
+			.buildTotalTax( order )
 			.buildAdditionalCustomerInfo( order )
 			.buildOptions()
-			.buildMerchantInformation( order, localeObject );
+			.buildMerchantInformation( order );
 
 		return requestBodyObject;
+	}
+
+	KlarnaPaymentsOrderRequestBuilder.prototype.setLocaleObject = function( localeObject ) {
+		this.localeObject = localeObject;
+	}
+
+	KlarnaPaymentsOrderRequestBuilder.prototype.getLocaleObject = function() {
+		return this.localeObject;
 	}
 
 	/*
 	    Build request here
 	*/
-	KlarnaPaymentsOrderRequestBuilder.prototype.buildRequest = function( params )
-	{
-		validateParams( params );
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildRequest = function( params ) {
+		this.validateParams( params );
+
+		this.setLocaleObject( params.localeObject.custom );
 
 		return this._buildRequest( params );
 	};
 
-	KlarnaPaymentsOrderRequestBuilder.prototype.init = function()
-	{
+	KlarnaPaymentsOrderRequestBuilder.prototype.init = function() {
 		this.context = new KlarnaPaymentsOrderModel();
 
 		return this;
 	};
 
-	KlarnaPaymentsOrderRequestBuilder.prototype.setMerchantReference = function( order )
-	{
+	KlarnaPaymentsOrderRequestBuilder.prototype.setMerchantReference = function( order ) {
 		this.context.merchant_reference1 = order.orderNo;
 		this.context.merchant_reference2 = "";
 
-		if ( Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' ) )
-		{
-			try
-			{
+		if ( Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' ) ) {
+			try {
 				this.context.merchant_reference2 = order[Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' )].toString();
-			}
-			catch( err )
-			{
+			} catch( err ) {
 				log.error( "merchant_reference2 was not set. Error: {0} ", err.message );
 			}
 		}
+
 		return this;
 	};
 
-	KlarnaPaymentsOrderRequestBuilder.prototype.buildBilling = function( order )
-	{
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildBilling = function( order ) {
 		var billingAddress = order.getBillingAddress();
-		if ( billingAddress === null )
-		{
+
+		if ( billingAddress === null ) {
 			return this;
 		}
-		buildBillingAddress.bind( this )( billingAddress );
+
+		this.buildBillingAddress.bind( this )( billingAddress );
+
 		this.context.billing_address.email = order.customerEmail || '';
 
 		return this;
 	};
 
-	KlarnaPaymentsOrderRequestBuilder.prototype.buildShipping = function( order )
-	{
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildShipping = function( order ) {
 		// get default shipment shipping address
 		var shippingAddress = order.getShipments().iterator().next().getShippingAddress(); 
 		
-		if ( shippingAddress === null || shippingAddress.address1 === null )
-		{
+		if ( shippingAddress === null || shippingAddress.address1 === null ) {
 			delete this.context.shipping_address;
 			return this;
 		}
-		buildShippingAddress.bind( this )( shippingAddress );
+
+		this.buildShippingAddress.bind( this )( shippingAddress );
+
 		this.context.shipping_address.email = order.customerEmail;
 
 		return this;
 	};
 
-	KlarnaPaymentsOrderRequestBuilder.prototype.buildLocale = function( order, localeObject )
-	{
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildLocale = function( order ) {
+		var localeObject = this.getLocaleObject();
 		var currency = order.getCurrencyCode();
 
 		this.context.purchase_country = localeObject.country;
@@ -124,61 +127,63 @@
 		return this;
 	};
 
-	KlarnaPaymentsOrderRequestBuilder.prototype.buildOrderLines = function( order, localeObject )
-	{
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildOrderLines = function( order ) {
 		var lineItems = order.getAllProductLineItems().toArray();
 		var giftCertificates = order.getGiftCertificateLineItems().toArray();
 		var giftCertificatePIs = order.getGiftCertificatePaymentInstruments().toArray();
 		var shipments = order.shipments;
-		var country = localeObject.country;
 
-		buildItems( lineItems, country, this.context );
-		if ( giftCertificates.length > 0 )
-		{
-			buildItems( giftCertificates, country, this.context );
+		this.buildItems( lineItems, this.context );
+
+		if ( giftCertificates.length > 0 ) {
+			this.buildItems( giftCertificates, this.context );
 		}
-		if ( giftCertificatePIs.length > 0 )
-		{
-			buildItemsGiftCertificatePIs( giftCertificatePIs, country, this.context );
+
+		if ( giftCertificatePIs.length > 0 ) {
+			this.buildItemsGiftCertificatePIs( giftCertificatePIs, this.context );
 		}
-		buildShipments( shipments, country, this.context );
+
+		this.buildShipments( shipments, this.context );
 
 		return this;
 	};
 
-	KlarnaPaymentsOrderRequestBuilder.prototype.buildTotalAmount = function( order, localeObject )
-	{
-		var country = localeObject.country;
+	KlarnaPaymentsOrderRequestBuilder.prototype.getOrderAmount = function( order ) {
 		var orderAmount = 0;
-		var gcTotalAmount = getGCtotalAmount( order );
-		if( order.totalGrossPrice.available )
-		{
+
+		if( order.totalGrossPrice.available ) {
 			orderAmount = order.totalGrossPrice.value * 100;
-		}
-		else
-		{
+		} else {
 			orderAmount = order.totalNetPrice.value * 100;
 		}
+
+		return orderAmount;
+	};
+
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildTotalAmount = function( order ) {
+		var orderAmount = this.getOrderAmount( order );
+		var gcTotalAmount = this.getGCtotalAmount( order );
 
 		this.context.order_amount = Math.round( orderAmount - gcTotalAmount );
 
 		// Set order discount line items
-		addPriceAdjustments( order.priceAdjustments, null, null, country, this.context );
+		this.addPriceAdjustments( order.priceAdjustments, null, null, this.context );
 
 		return this;
 	};
 
-	KlarnaPaymentsOrderRequestBuilder.prototype.buildTotalTax = function( order, localeObject )
-	{
-		var country = localeObject.country;
+	KlarnaPaymentsOrderRequestBuilder.prototype.isTaxationPolicyNet = function() {
+		return ( this.getLocaleObject().country === 'US' );
+	};
+
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildTotalTax = function( order ) {
 		var totalTax = order.totalTax.value * 100;
 		var usTotalTax = 0;
 		var salesTaxItem = {};
 
 		this.context.order_tax_amount = Math.round( totalTax );
 
-		if( country === 'US' )
-		{
+		if( this.isTaxationPolicyNet() ) {
 			usTotalTax = ( order.totalTax.available ) ? order.totalTax.value * 100 : 0;
 			salesTaxItem = new LineItem();
 			salesTaxItem.quantity = 1;
@@ -197,19 +202,18 @@
 	};
 
 	KlarnaPaymentsOrderRequestBuilder.prototype.buildAdditionalCustomerInfo = function( order ) {
-		if ( Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' ) && HookMgr.hasHook( 'extra.merchant.data' ) ) {			
+		if ( Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' ) && HookMgr.hasHook( 'extra.merchant.data' ) ) {
 			this.context.attachment = new Object();
 			this.context.attachment.content_type = CONTENT_TYPE;
 			this.context.attachment.body = 	HookMgr.callHook( 'extra.merchant.data', 'BuildEMD', {
 				LineItemCtnr: order
-			} );	
+			} );
 		}
 
 		return this;
 	};
 
-	KlarnaPaymentsOrderRequestBuilder.prototype.buildOptions = function()
-	{
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildOptions = function() {
 		this.context.options.color_details 					= Site.getCurrent().getCustomPreferenceValue( 'kpColorDetails' );
 		this.context.options.color_button 					= Site.getCurrent().getCustomPreferenceValue( 'kpColorButton' );
 		this.context.options.color_button_text 				= Site.getCurrent().getCustomPreferenceValue( 'kpColorButtonText' );
@@ -226,9 +230,9 @@
 		return this;
 	};
 
-	KlarnaPaymentsOrderRequestBuilder.prototype.buildMerchantInformation = function( order, localeObject )
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildMerchantInformation = function( order )
 	{
-		var country = localeObject.country;
+		var country = this.getLocaleObject().country;
 
 		this.context.merchant_urls.confirmation = URLUtils.https( 'KLARNA_PAYMENTS-Confirmation', 'klarna_country', country ).toString();
 		this.context.merchant_urls.notification = URLUtils.https( 'KLARNA_PAYMENTS-Notification', 'klarna_country', country ).toString();
@@ -237,19 +241,19 @@
 	};
 
 
-	function getItemPrice( li ) {
-		return ( li.grossPrice.available && country !== 'US' ? li.grossPrice.value : li.netPrice.value ) * 100;
+	KlarnaPaymentsOrderRequestBuilder.prototype.getItemPrice = function( li ) {
+		return ( li.grossPrice.available && !this.isTaxationPolicyNet() ? li.grossPrice.value : li.netPrice.value ) * 100;
 	}
 
-	function getItemTaxRate( li ) {
-		return ( country === 'US' ) ? 0 : Math.round( li.taxRate * 10000 );
+	KlarnaPaymentsOrderRequestBuilder.prototype.getItemTaxRate = function( li ) {
+		return ( this.isTaxationPolicyNet() ) ? 0 : Math.round( li.taxRate * 10000 );
 	}
 
-	function getItemTaxAmount( li ) {
-		return ( country === 'US' ) ? 0 : Math.round( li.tax.value * 100 );
+	KlarnaPaymentsOrderRequestBuilder.prototype.getItemTaxAmount = function( li ) {
+		return ( this.isTaxationPolicyNet() ) ? 0 : Math.round( li.tax.value * 100 );
 	}
 
-	function getItemType( li ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.getItemType = function( li ) {
 		var type = '';
 
 		if ( li.hasOwnProperty( 'optionProductLineItem' ) && li.optionProductLineItem ) {
@@ -261,7 +265,7 @@
 		return type;
 	}
 
-	function getItemId( li ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.getItemId = function( li ) {
 		var id = '';
 
 		if ( li.hasOwnProperty( 'optionProductLineItem' ) && li.optionProductLineItem ) {
@@ -273,7 +277,7 @@
 		return id;
 	}
 
-	function getItemBrand( li ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.getItemBrand = function( li ) {
 		var brand = '';
 
 		if ( li.hasOwnProperty( 'optionProductLineItem' ) && li.optionProductLineItem ) {
@@ -285,19 +289,19 @@
 		return brand;
 	}
 
-	function getItemCategoryPath( li ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.getItemCategoryPath = function( li ) {
 		var path = '';
 
 		if ( li.hasOwnProperty( 'optionProductLineItem' ) && li.optionProductLineItem ) {
-			path = ( !empty( li.parent.product ) ? _getProductCategoryPath( li.parent.product ) : null );
+			path = ( !empty( li.parent.product ) ? this._getProductCategoryPath( li.parent.product ) : null );
 		} else {
-			path = ( !empty( li.product ) ? _getProductCategoryPath( li.product ) : null );
+			path = ( !empty( li.product ) ? this._getProductCategoryPath( li.product ) : null );
 		}
 
 		return path;
 	}
 
-	function generateItemProductURL( li ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.generateItemProductURL = function( li ) {
 		var url = '';
 
 		if ( li.optionProductLineItem ) {
@@ -309,7 +313,7 @@
 		return url;
 	}
 
-	function generateItemImageURL( li ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.generateItemImageURL = function( li ) {
 		var url = '';
 
 		if ( li.optionProductLineItem ) {
@@ -321,31 +325,31 @@
 		return url;
 	}
 
-	function buildItemProductAndImageUrls( li, item ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildItemProductAndImageUrls = function( li, item ) {
 		if ( Site.getCurrent().getCustomPreferenceValue( 'sendProductAndImageURLs' ) ) {
-			item.product_url = !empty( li.parent.productID ) ? generateItemProductURL( li ) : null;
-			item.image_url = !empty( li.parent.getProduct().getImage( 'small', 0 ) ) ? generateItemImageURL( li ) : null;
+			item.product_url = this.generateItemProductURL( li );
+			item.image_url = this.generateItemImageURL( li );
 		}
 	}
 
-	function buildItem( li ) {
-		var itemPrice = getItemPrice( li );
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildItem = function( li ) {
+		var itemPrice = this.getItemPrice( li );
 		var	itemType = '';
 		var item = {};
 		var quantity = li.quantityValue;
-		var brand = getItemBrand( li );
-		var categoryPath = getCategoryPath( li );
+		var brand = this.getItemBrand( li );
+		var categoryPath = this.getItemCategoryPath( li );
 
 		item = new LineItem();
-		item.type = getItemType( li );
-		item.reference = getItemId( li );
+		item.type = this.getItemType( li );
+		item.reference = this.getItemId( li );
 		item.quantity = quantity;
 		item.type = itemType;
 		item.name = li.productName.replace( /[^\x00-\x7F]/g, "" );
 		item.unit_price = Math.round( itemPrice / quantity );
-		item.tax_rate = getItemTaxRate( li );
+		item.tax_rate = this.getItemTaxRate( li );
 		item.total_amount = Math.round( itemPrice );
-		item.total_tax_amount = getItemTaxAmount( li );
+		item.total_tax_amount = this.getItemTaxAmount( li );
 
 		if ( !empty( brand ) ) {
 			item.product_identifiers = item.product_identifiers || {};
@@ -357,34 +361,37 @@
 			item.product_identifiers.category_path = categoryPath;
 		}
 
-		buildItemProductAndImageUrls( li, item );
+		this.buildItemProductAndImageUrls( li, item );
 
 		return item;
 	}
 
-	function buildItems( items, country, context ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildItems = function( items, context ) {
 		var i = 0;
 		var li = {};
+		var item = {};
 
 		while ( i < items.length ) {
 			li = items[i];
 
 			// Add product-specific shipping line adjustments
 			if ( !empty( li.shippingLineItem ) ) {
-				addPriceAdjustments( li.shippingLineItem.priceAdjustments.toArray(), li.productID, null, country, context );
+				this.addPriceAdjustments( li.shippingLineItem.priceAdjustments.toArray(), li.productID, null, context );
 			}
 
 			if ( !empty( li.priceAdjustments ) && li.priceAdjustments.length > 0 ) {
-				addPriceAdjustments( li.priceAdjustments.toArray(), li.productID, li.optionID, country, context );
+				this.addPriceAdjustments( li.priceAdjustments.toArray(), li.productID, li.optionID, context );
 			}
 
-			context.order_lines.push( buildItem( li ) );
+			item = this.buildItem( li );
+
+			context.order_lines.push( item );
 
 			i += 1;
 		}
 	}
 	
-	function _getProductCategoryPath( product ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype._getProductCategoryPath = function( product ) {
 		var path = '';
 
 		// get category from products primary category
@@ -409,7 +416,7 @@
 		return path;		
 	}
 	
-	function buildItemsGiftCertificatePIs( items, country, context )
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildItemsGiftCertificatePIs = function( items, country, context )
 	{
 		var li = [];
 		var item = {};
@@ -433,8 +440,8 @@
 			context.order_lines.push( item );
 		}
 	}
-	
-	function getGCtotalAmount( order ) {
+
+	KlarnaPaymentsOrderRequestBuilder.prototype.getGCtotalAmount = function( order ) {
 		var giftCertificatePIs = order.getGiftCertificatePaymentInstruments().toArray();
 		var gcTotalAmount = 0;
 		var i = 0;
@@ -448,9 +455,9 @@
 	}
 
 
-	function buildShipmentItem( shipment ) {
-		var shipment_tax_rate = getShipmentTaxRate( shipment );
-		var shipment_unit_price = getShipmentUnitPrice( shipment );
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildShipmentItem = function( shipment ) {
+		var shipment_tax_rate = this.getShipmentTaxRate( shipment );
+		var shipment_unit_price = this.getShipmentUnitPrice( shipment );
 
 		shippingLineItem = new LineItem();
 		shippingLineItem.quantity = 1;
@@ -460,28 +467,28 @@
 		shippingLineItem.unit_price = Math.round( shipment_unit_price );
 		shippingLineItem.tax_rate = Math.round( shipment_tax_rate );
 		shippingLineItem.total_amount = shippingLineItem.unit_price;
-		shippingLineItem.total_tax_amount = ( country === 'US' ) ? 0 : Math.round( shipment.shippingTotalTax.value * 100 );
+		shippingLineItem.total_tax_amount = ( this.isTaxationPolicyNet() ) ? 0 : Math.round( shipment.shippingTotalTax.value * 100 );
 
 		return shippingLineItem;
 	}
 
-	function getShipmentTaxRate( shipment ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.getShipmentTaxRate = function( shipment ) {
 		var shipment_tax_rate = 0;
 
 		if ( !empty( shipment.shippingMethod ) && !empty( shipment.shippingMethod.taxClassID ) && !empty( shipment.shippingAddress ) ) {
-			shipment_tax_rate = ( country === 'US' ) ? 0 : ( TaxMgr.getTaxRate( shipment.shippingMethod.taxClassID, TaxMgr.getTaxJurisdictionID( new dw.order.ShippingLocation( shipment.shippingAddress ) ) ) ) * 10000;
+			shipment_tax_rate = ( this.isTaxationPolicyNet() ) ? 0 : ( TaxMgr.getTaxRate( shipment.shippingMethod.taxClassID, TaxMgr.getTaxJurisdictionID( new dw.order.ShippingLocation( shipment.shippingAddress ) ) ) ) * 10000;
 		}
 
 		return shipment_tax_rate;
 	}
 
-	function getShipmentUnitPrice( shipment ) {
-		var shipment_unit_price = ( shipment.shippingTotalGrossPrice.available && country !== 'US' ? shipment.shippingTotalGrossPrice.value : shipment.shippingTotalNetPrice.value ) * 100;
+	KlarnaPaymentsOrderRequestBuilder.prototype.getShipmentUnitPrice = function( shipment ) {
+		var shipment_unit_price = ( shipment.shippingTotalGrossPrice.available && !this.isTaxationPolicyNet() ? shipment.shippingTotalGrossPrice.value : shipment.shippingTotalNetPrice.value ) * 100;
 
 		return shipment_unit_price;
 	}
 
-	function buildShipments( shipments, country, context ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildShipments = function( shipments, context ) {
 		var shipment = {};
 		var shippingLineItem = {};
 
@@ -489,16 +496,16 @@
 			shipment = shipments[i];
 
 			if ( !empty( shipment.shippingMethod ) ) {
-				shippingLineItem = buildShipmentItem( shipment );
+				shippingLineItem = this.buildShipmentItem( shipment );
 
-				addPriceAdjustments( shipment.shippingPriceAdjustments.toArray(), null, null, country, context );
+				this.addPriceAdjustments( shipment.shippingPriceAdjustments.toArray(), null, null, context );
 
 				context.order_lines.push( shippingLineItem );
 			}
 		}
 	}
 
-	function getPriceAdjustmentPromoName( adj ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.getPriceAdjustmentPromoName = function( adj ) {
 		var promoName = !empty( adj.promotion ) && !empty( adj.promotion.name ) ? adj.promotion.name : ORDER_LINE_TYPE.DISCOUNT;
 
 		promoName = promoName.replace( /[^\x00-\x7F]/g, "" );
@@ -506,7 +513,7 @@
 		return promoName;
 	}
 
-	function getPriceAdjustmentPromoId( adj, pid, oid ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.getPriceAdjustmentPromoId = function( adj, pid, oid ) {
 		var promoId = adj.promotionID;
 
 		if ( !empty( pid ) ) {
@@ -518,15 +525,15 @@
 		return promoId;
 	}
 
-	function getPriceAdjustmentMerchantData( adj ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.getPriceAdjustmentMerchantData = function( adj ) {
 		return ( adj.couponLineItem ? adj.couponLineItem.couponCode : '' );
 	}
 
-	function getPriceAdjustmentTaxRate( adj ) {
-		return ( country === 'US' ) ? 0 : Math.round( adj.taxRate * 10000 );
+	KlarnaPaymentsOrderRequestBuilder.prototype.getPriceAdjustmentTaxRate = function( adj ) {
+		return ( this.isTaxationPolicyNet() ) ? 0 : Math.round( adj.taxRate * 10000 );
 	}
 
-	function addPriceAdjustments( adjusments, pid, oid, country, context ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.addPriceAdjustments = function( adjusments, pid, oid, context ) {
 		var adjusmentPrice = 0;
 		var promoName = '';
 		var promoId = '';
@@ -536,75 +543,75 @@
 		for ( let i = 0; i < adjusments.length; i++ ) {
 			adj = adjusments[i];
 			adjustment = new LineItem();
-			adjusmentPrice = ( adj.grossPrice.available && country !== 'US' ? adj.grossPrice.value : adj.netPrice.value ) * 100;
+			adjusmentPrice = ( adj.grossPrice.available && !this.isTaxationPolicyNet() ? adj.grossPrice.value : adj.netPrice.value ) * 100;
 
 			adjustment.quantity = 1;
 			adjustment.type = ORDER_LINE_TYPE.DISCOUNT;
-			adjustment.name = getPriceAdjustmentPromoName( adj );
-			adjustment.reference = getPriceAdjustmentPromoId( adj );
+			adjustment.name = this.getPriceAdjustmentPromoName( adj );
+			adjustment.reference = this.getPriceAdjustmentPromoId( adj );
 			adjustment.unit_price = Math.round( adjusmentPrice );
-			adjustment.merchant_data = getPriceAdjustmentMerchantData( adj );
-			adjustment.tax_rate = getPriceAdjustmentTaxRate( adj );
+			adjustment.merchant_data = this.getPriceAdjustmentMerchantData( adj );
+			adjustment.tax_rate = this.getPriceAdjustmentTaxRate( adj );
 			adjustment.total_amount = adjustment.unit_price;
-			adjustment.total_tax_amount = ( country === 'US' ) ? 0 : Math.round( adj.tax.value * 100 );
+			adjustment.total_tax_amount = ( this.isTaxationPolicyNet() ) ? 0 : Math.round( adj.tax.value * 100 );
 
 			context.order_lines.push( adjustment );
 		}
 	}
 
-	function buildBillingAddress( address )
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildBillingAddress = function( address )
 	{
 		this.context.billing_address.phone = address.phone;
 		this.context.billing_address.given_name = address.firstName;
 		this.context.billing_address.family_name = address.lastName;
-		this.context.billing_address.street_address = strval( address.address1 );
-		this.context.billing_address.street_address2 = strval( address.address2 );
-		this.context.billing_address.postal_code = strval( address.postalCode );
-		this.context.billing_address.city = strval( address.city );
-		this.context.billing_address.region = strval( address.stateCode );
-		this.context.billing_address.country = strval( address.countryCode.value );
+		this.context.billing_address.street_address = this.strval( address.address1 );
+		this.context.billing_address.street_address2 = this.strval( address.address2 );
+		this.context.billing_address.postal_code = this.strval( address.postalCode );
+		this.context.billing_address.city = this.strval( address.city );
+		this.context.billing_address.region = this.strval( address.stateCode );
+		this.context.billing_address.country = this.strval( address.countryCode.value );
 	}
 	
-	function buildShippingAddress( address )
+	KlarnaPaymentsOrderRequestBuilder.prototype.buildShippingAddress = function( address )
 	{
 		this.context.shipping_address.phone = address.phone;
 		this.context.shipping_address.given_name = address.firstName;
 		this.context.shipping_address.family_name = address.lastName;
-		this.context.shipping_address.street_address = strval( address.address1 );
-		this.context.shipping_address.street_address2 = strval( address.address2 );
-		this.context.shipping_address.postal_code = strval( address.postalCode );
-		this.context.shipping_address.city = strval( address.city );
-		this.context.shipping_address.region = strval( address.stateCode );
-		this.context.shipping_address.country = strval( address.countryCode.value );
+		this.context.shipping_address.street_address = this.strval( address.address1 );
+		this.context.shipping_address.street_address2 = this.strval( address.address2 );
+		this.context.shipping_address.postal_code = this.strval( address.postalCode );
+		this.context.shipping_address.city = this.strval( address.city );
+		this.context.shipping_address.region = this.strval( address.stateCode );
+		this.context.shipping_address.country = this.strval( address.countryCode.value );
 	}
 
-	function checkLocaleObjectParams( localeObject ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.isValidLocaleObjectParams = function( localeObject ) {
 		return ( !empty( localeObject.custom.country ) || !empty( localeObject.custom.klarnaLocale ) );
 	}
 
-	function checkParams( params ) {
-		return ( !empty( params.basket ) && !empty( params.localeObject ) && !checkLocaleObjectParams( params.localeObject ) );
+	KlarnaPaymentsOrderRequestBuilder.prototype.isValidParams = function( params ) {
+		return ( !empty( params.order ) && !empty( params.localeObject ) && this.isValidLocaleObjectParams( params.localeObject ) );
 	}
 
-	function validateParams( params ) {
-		if ( empty( params ) || !checkParams( params ) ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.validateParams = function( params ) {
+		if ( empty( params ) || !this.isValidParams( params ) ) {
 			throw new Error( 'Error when generating KlarnaPaymentsOrderRequestBuilder. Not valid params.' );
 		}
 	}
 
-	function strval( obj ) {
+	KlarnaPaymentsOrderRequestBuilder.prototype.strval = function( obj ) {
 		//  discuss at: http://locutus.io/php/strval/
 		// original by: Brett Zamir (http://brett-zamir.me)
 		// improved by: Kevin van Zonneveld (http://kvz.io)
 		// bugfixed by: Brett Zamir (http://brett-zamir.me)
-		//   example 1: strval({red: 1, green: 2, blue: 3, white: 4})
+		//   example 1: this.strval({red: 1, green: 2, blue: 3, white: 4})
 		//   returns 1: 'Object'
 
 		if ( obj === null ) {
 			return ''
 		}
 
-		return str;
+		return obj;
 	}
 
 	module.exports = KlarnaPaymentsOrderRequestBuilder;

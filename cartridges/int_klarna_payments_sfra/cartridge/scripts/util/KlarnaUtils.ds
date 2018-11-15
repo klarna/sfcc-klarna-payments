@@ -1,0 +1,27 @@
+'use strict';
+
+var Site = require('dw/system/Site');
+
+function isCountryInEU( country ) {
+    var isInEU = true;
+    var EUCountries = "BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB";
+
+    if ( EUCountries.indexOf( country ) === -1 ) {
+        isInEU = false;
+    }
+
+    return isInEU;
+}
+
+function isEnabledPreassessmentForCountry( country ) {
+    var isPreassessment = false;
+    var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
+
+    if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && !isCountryInEU( country ) ) {
+        isPreassessment = true;
+    }
+
+    return isPreassessment;
+}
+
+module.exports.isEnabledPreassessmentForCountry = isEnabledPreassessmentForCountry;

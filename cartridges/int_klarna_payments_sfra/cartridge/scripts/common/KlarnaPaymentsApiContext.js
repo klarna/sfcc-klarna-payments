@@ -2,13 +2,12 @@
 
 let HashMap = require( 'dw/util/HashMap' );
 
-let KlarnaPaymentsApiContext = function() {};
+let KlarnaPaymentsApiContext = function() {
+	this._flowApiUrls = null;
+};
 
-KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function()
-{
-
-	if ( this._flowApiUrls === null )
-	{
+KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function() {
+	if ( this._flowApiUrls === null ) {
 		this._flowApiUrls = new HashMap();
 
 		this._flowApiUrls.put( 'createSession', 'payments/v1/sessions' );

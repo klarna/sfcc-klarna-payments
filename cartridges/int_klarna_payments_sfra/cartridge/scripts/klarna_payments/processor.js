@@ -114,7 +114,7 @@ function _createOrder( order, localeObject )
 			session.privacy.KlarnaPaymentsFraudStatus = response.fraud_status;
 		} );
 	} catch( e ) {
-		log.error( 'Error in creating Klarna Payments Order: {0}', e );
+		log.error( 'Error in creating Klarna Payments Order: {0}', e.message + e.stack );
 		return false;
 	}
 
@@ -417,9 +417,22 @@ function handleVCNOrder( order, kpOrderID, localeObject ) {
 	}
 }
 
-function authorizeAcceptedOrder( order, kpOrderID, localeObject ) {
+function generateErrorAuthResult() {
+	return { error: true };
+}
+
+function generateSuccessAuthResult() {
+	return { authorized: true };
+}
+
+function isErrorAuthResult( authResult ) {
+	return ( !empty( authResult.error ) && authResult.error );
+}
+
+function authorizeAcceptedOrder( order, orderNo, kpOrderID, localeObject, paymentInstrument ) {
 	var kpVCNEnabledPreferenceValue = Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' );
-	var authorizationResult = {};
+	var authResult = {};
+	var error = false;
 	var isSettlementCreated = null;
 	var paymentProcessor = PaymentMgr.getPaymentMethod( paymentInstrument.getPaymentMethod() ).getPaymentProcessor();
 
@@ -431,25 +444,27 @@ function authorizeAcceptedOrder( order, kpOrderID, localeObject ) {
 		paymentInstrument.paymentTransaction.transactionID = session.privacy.KlarnaPaymentsOrderID;
 		paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
 		session.privacy.OrderNo = orderNo;
-		order.custom.kpOrderID = session.privacy.KlarnaPaymentsOrderID;	
+		order.custom.kpOrderID = session.privacy.KlarnaPaymentsOrderID;
 		order.custom.kpIsVCN = empty( kpVCNEnabledPreferenceValue ) ? false : kpVCNEnabledPreferenceValue;
 	} );
 
-	if ( session.privacy.KlarnaPaymentsFraudStatus === 'PENDING' ) {
-		authorizationResult = { authorized: true };
-	} else if ( kpVCNEnabledPreferenceValue ) {
+	if ( session.privacy.KlarnaPaymentsFraudStatus !== 'PENDING' && kpVCNEnabledPreferenceValue ) {
 		isSettlementCreated = _createVCNSettlement( order, session.privacy.KlarnaPaymentsOrderID , localeObject );
 		if ( isSettlementCreated ) {
 			//Plug here your Credit Card Processor
-			authorizationResult = callCreditCardAuthorizationHook( order );
+			authResult = callCreditCardAuthorizationHook( order );
 		} else {
-			_cancelOrder( order, localeObject );
+			authResult = generateErrorAuthResult();
 
-			authorizationResult = { error: true };
+			_cancelOrder( order, localeObject );
 		}
 	}
 
-	return authorizationResult;
+	if ( isErrorAuthResult( authResult ) ) {
+		return authResult;
+	}
+
+	return generateSuccessAuthResult();
 }
 
 /**
@@ -464,16 +479,16 @@ function authorize( order, orderNo, paymentInstrument ) {
 	var authorizationResult = {};
 	var localeObject = getLocale();
 
-	var klarnaOrderCreated = _createOrder( args.Order, localeObject );
+	var klarnaOrderCreated = _createOrder( order, localeObject );
 
 	Transaction.wrap( function() {
 		paymentInstrument.paymentTransaction.custom.kpFraudStatus = session.privacy.KlarnaPaymentsFraudStatus;	
 	} );
 
 	if ( !klarnaOrderCreated || session.privacy.KlarnaPaymentsFraudStatus === 'REJECTED' ) {
-		authorizationResult = { error: true };
+		authorizationResult = generateErrorAuthResult();
 	} else {
-		authorizationResult = authorizeAcceptedOrder( order, session.privacy.KlarnaPaymentsOrderID, localeObject );
+		authorizationResult = authorizeAcceptedOrder( order, orderNo, session.privacy.KlarnaPaymentsOrderID, localeObject, paymentInstrument );
 	}
 
 	return authorizationResult;

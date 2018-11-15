@@ -15,9 +15,10 @@ var Transaction = require('dw/system/Transaction');
 var StringUtils = require( 'dw/util/StringUtils' );
 var CustomObjectMgr = require( 'dw/object/CustomObjectMgr' );
 var Countries = require( '~/cartridge/scripts/util/Countries' );
+var KlarnaPaymentsApiContext = require('~/cartridge/scripts/common/KlarnaPaymentsApiContext');
+
 var KlarnaPayments = {
 	httpService 			: require('~/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
-	apiContext 				: require('~/cartridge/scripts/common/KlarnaPaymentsApiContext'),
 	sessionRequestBuilder 	: require('~/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder')
 };
 
@@ -78,13 +79,12 @@ KlarnaSessionManager.prototype._updateSession = function() {
 
 	var localeObject = this.getLocale();
 	var klarnaPaymentsHttpService = {};
-	var klarnaApiContext = {};
+	var klarnaApiContext = new KlarnaPaymentsApiContext();
 	var requestBody = {};
 	var requestUrl = '';
 	var response = {};
 
 	klarnaPaymentsHttpService = new KlarnaPayments.httpService();
-	klarnaApiContext = new KlarnaPayments.apiContext();
 	requestBody = this._getSessionRequestBody( BasketMgr.getCurrentBasket(), localeObject );
 	requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'updateSession' ), this.userSession.privacy.KlarnaPaymentsSessionID );
 
@@ -112,13 +112,12 @@ KlarnaSessionManager.prototype._createSession = function() {
 
 	var localeObject = this.getLocale();
 	var klarnaPaymentsHttpService = {};
-	var klarnaApiContext = {};
+	var klarnaApiContext = new KlarnaPaymentsApiContext();
 	var requestBody = {};
 	var requestUrl = '';
 	var response = {};
 
 	klarnaPaymentsHttpService = new KlarnaPayments.httpService();
-	klarnaApiContext = new KlarnaPayments.apiContext();
 	requestBody = this._getSessionRequestBody( BasketMgr.getCurrentBasket(), localeObject );
 	requestUrl = klarnaApiContext.getFlowApiUrls().get( 'createSession' );
 
@@ -142,7 +141,7 @@ KlarnaSessionManager.prototype.createOrUpdateSession = function() {
 			this._createSession();
 		}
 	} catch (e) {
-		log.error( 'Error in handling Klarna Payments Session: {0}', e );
+		log.error( 'Error in handling Klarna Payments Session: {0}', e.message + e.stack );
 
 		Transaction.wrap( function()
 		{

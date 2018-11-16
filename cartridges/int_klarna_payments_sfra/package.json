@@ -1,3 +1,30 @@
 {
-   "hooks": "./hooks.json"
+  "init": [],
+  "name": "Klarna",
+  "version": "17.4.0",
+  "description": "Salesforce Commerce Cloud | Klarna Integration",
+  "main": "Gruntfile.js",
+  "dependencies": {
+    "grunt": "^1.0.3",
+    "grunt-cli": "^1.3.2",
+    "grunt-contrib-watch": "^1.1.0",
+    "grunt-eslint": "^18.0.0",
+    "grunt-jscs": "^3.0.1",
+    "grunt-jsdoc": "^1.0.0"
+  },
+  "scripts": {
+    "test": "grunt test"
+  },
+  "author": "Alexander Gaydardzhiev",
+  "contributors": [
+    {
+      "name": "Ivan Zanev",
+      "email": "Ivan.Zanev@tryzens.com"
+    }
+  ],
+  "license": "",
+  "devDependencies": {
+    "sgmf-scripts": "^2.1.1"
+  },
+  "hooks": "./hooks.json"
 }

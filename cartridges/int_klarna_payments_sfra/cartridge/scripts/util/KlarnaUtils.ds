@@ -24,4 +24,29 @@ function isEnabledPreassessmentForCountry( country ) {
     return isPreassessment;
 }
 
+function strval( obj ) {
+    //  discuss at: http://locutus.io/php/strval/
+    // original by: Brett Zamir (http://brett-zamir.me)
+    // improved by: Kevin van Zonneveld (http://kvz.io)
+    // bugfixed by: Brett Zamir (http://brett-zamir.me)
+    //   example 1: this.strval({red: 1, green: 2, blue: 3, white: 4})
+    //   returns 1: 'Object'
+
+    if ( obj === null ) {
+        return ''
+    }
+
+    return obj;
+}
+
+function empty(variable) {
+    if( typeof variable === 'undefined' || variable === null ){
+        return true;
+    }
+
+    return false;
+}
+
 module.exports.isEnabledPreassessmentForCountry = isEnabledPreassessmentForCountry;
+module.exports.strval = strval;
+module.exports.empty = empty;

@@ -1,24 +1,24 @@
 var FRAUD_STATUS = {
-	ACCEPTED : 'ACCEPTED',
-	REJECTED : 'REJECTED',
-	PENDING : 'PENDING',
-	ACCEPTED_AFTER_REVIEW : 'ACCEPTED_AFTER_REVIEW',
-	REJECTED_AFTER_REVIEW : 'REJECTED_AFTER_REVIEW'
-}
+    ACCEPTED: 'ACCEPTED',
+    REJECTED: 'REJECTED',
+    PENDING: 'PENDING',
+    ACCEPTED_AFTER_REVIEW: 'ACCEPTED_AFTER_REVIEW',
+    REJECTED_AFTER_REVIEW: 'REJECTED_AFTER_REVIEW'
+};
 
-var CREDIT_CARD_PROCESSOR_ID = "BASIC_CREDIT";
+var CREDIT_CARD_PROCESSOR_ID = 'BASIC_CREDIT';
 
 var PAYMENT_METHOD = 'KLARNA_PAYMENTS';
 
 var ORDER_LINE_TYPE = {
-	DISCOUNT : 'discount',
-	SHIPPING_FEE : 'shipping_fee',
-	SALES_TAX : 'sales_tax',
-	PHYSICAL : 'physical',
-	SURCHARGE : 'surcharge',
-	GIFT_CERTIFICATE : 'gift_card',
-	GIFT_CERTIFICATE_PI : 'store_credit'
-}
+    DISCOUNT: 'discount',
+    SHIPPING_FEE: 'shipping_fee',
+    SALES_TAX: 'sales_tax',
+    PHYSICAL: 'physical',
+    SURCHARGE: 'surcharge',
+    GIFT_CERTIFICATE: 'gift_card',
+    GIFT_CERTIFICATE_PI: 'store_credit'
+};
 
 var CONTENT_TYPE = 'application/vnd.klarna.internal.emd-v2+json';
 

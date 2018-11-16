@@ -3,29 +3,64 @@
 var page = module.superModule;
 var server = require('server');
 
-var KlarnaPayments = {
-	httpService 			: require( '~/cartridge/scripts/common/KlarnaPaymentsHttpService.ds' ),
-	apiContext 				: require( '~/cartridge/scripts/common/KlarnaPaymentsApiContext' ),
-	sessionRequestBuilder 	: require( '~/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder' ), 
-	orderRequestBuilder 	: require( '~/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder' )
-};
-
-var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-var BasketMgr = require('dw/order/BasketMgr');
-var PaymentMgr = require('dw/order/PaymentMgr');
-var Resource = require('dw/web/Resource');
 
 var KLARNA_PAYMENT_METHOD = require('~/cartridge/scripts/util/KlarnaPaymentsConstants').PAYMENT_METHOD;
 
 server.extend(page);
 
+/**
+ * Calculates the amount to be payed by a non-gift certificate payment instrument based
+ * on the given basket. The method subtracts the amount of all redeemed gift certificates
+ * from the order total and returns this value.
+ *
+ * @param {Object} lineItemCtnr - LineIteam Container (Basket or Order)
+ * @returns {dw.value.Money} non gift certificate amount
+ */
+function calculateNonGiftCertificateAmount(lineItemCtnr) {
+    var orderTotal = 0;
+
+    orderTotal = lineItemCtnr.totalGrossPrice;
+
+    return orderTotal;
+}
+
+function validatePaymentAmount(currentBasket) {
+    var PaymentMgr = require('dw/order/PaymentMgr');
+
+    var amount = calculateNonGiftCertificateAmount(currentBasket);
+    var paymentInstruments = currentBasket.paymentInstruments;
+    var invalid = false;
+    var result = {};
+
+    for (var i = 0; i < paymentInstruments.length; i++) {
+        var paymentInstrument = paymentInstruments[i];
+        var paymentMethod = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod());
+        var paymentMethodID = paymentMethod.getID();
+
+        if (paymentMethodID === KLARNA_PAYMENT_METHOD) {
+            if (paymentInstrument.getPaymentTransaction().getAmount().getValue() !== amount.getValue()) {
+                invalid = true;
+            }
+        }
+    }
+
+    result.error = invalid;
+    return result;
+}
+
 server.prepend(
-    'SubmitPayment', 
-    server.middleware.https, 
+    'SubmitPayment',
+    server.middleware.https,
     csrfProtection.validateAjaxRequest,
     function (req, res, next) {
+        var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+        var StringUtils = require('dw/util/StringUtils');
+        var Money = require('dw/value/Money');
+
         var isKlarna = request.httpParameterMap.isKlarna.booleanValue;
+        var emailFromFillingPage = false;
+        var email = '';
 
         if (!isKlarna) {
             next();
@@ -96,12 +131,13 @@ server.prepend(
             };
         }
 
+
         if (customer.authenticated) {
-            var email = customer.getProfile().getEmail();
-            var emailFromFillingPage = false;
+            email = customer.getProfile().getEmail();
+            emailFromFillingPage = false;
         } else {
-            var email = klarnaForm.email.value;
-            var emailFromFillingPage = true;
+            email = klarnaForm.email.value;
+            emailFromFillingPage = true;
         }
 
         viewData.email = {
@@ -158,7 +194,7 @@ server.prepend(
             return;
         }
 
-        Transaction.wrap(function() {
+        Transaction.wrap(function () {
             processorResult.paymentInstrument.custom.klarnaPaymentCategoryID = paymentCategoryID;
         });
 
@@ -179,8 +215,8 @@ server.prepend(
             accountModel
         );
 
-        Transaction.wrap(function() {
-            basketModel.billing.payment.selectedPaymentInstruments[0].amountFormatted = dw.util.StringUtils.formatMoney(new dw.value.Money(basketModel.billing.payment.selectedPaymentInstruments[0].amount, currentBasket.getCurrencyCode()));
+        Transaction.wrap(function () {
+            basketModel.billing.payment.selectedPaymentInstruments[0].amountFormatted = StringUtils.formatMoney(new Money(basketModel.billing.payment.selectedPaymentInstruments[0].amount, currentBasket.getCurrencyCode()));
         });
 
         res.json({
@@ -196,68 +232,33 @@ server.prepend(
 
 server.prepend(
     'PlaceOrder',
-	function( req, res, next ) {
-		var currentBasket = BasketMgr.getCurrentBasket();
+	function (req, res, next) {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var Resource = require('dw/web/Resource');
 
-		if (!currentBasket) {
-			return next();
-		}
+    var currentBasket = BasketMgr.getCurrentBasket();
+
+    if (!currentBasket) {
+        return next();
+    }
 
 		// Re-validates existing payment instruments
-		var validPaymentAmount = validatePaymentAmount( currentBasket );
-		if ( validPaymentAmount.error ) {
-			res.json({
-				error: true,
-				errorStage: {
-					stage: 'payment',
-					step: 'paymentInstrument'
-				},
-				errorMessage: Resource.msg( 'error.payment.not.valid', 'checkout', null )
-			});
+    var validPaymentAmount = validatePaymentAmount(currentBasket);
+    if (validPaymentAmount.error) {
+        res.json({
+            error: true,
+            errorStage: {
+                stage: 'payment',
+                step: 'paymentInstrument'
+            },
+            errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null)
+        });
 
-			this.emit('route:Complete', req, res);
-		}
+        this.emit('route:Complete', req, res);
+    }
 
-		return next();
-	}
+    return next();
+}
 );
-
-/**
- * Calculates the amount to be payed by a non-gift certificate payment instrument based
- * on the given basket. The method subtracts the amount of all redeemed gift certificates
- * from the order total and returns this value.
- *
- * @param {Object} lineItemCtnr - LineIteam Container (Basket or Order)
- * @returns {dw.value.Money} non gift certificate amount
- */
-function calculateNonGiftCertificateAmount( lineItemCtnr ) {
-	var orderTotal = 0;
-
-	orderTotal = lineItemCtnr.totalGrossPrice;
-
-	return orderTotal;
-}
-
-function validatePaymentAmount( currentBasket ) {
-	var amount = calculateNonGiftCertificateAmount( currentBasket );
-	var paymentInstruments = currentBasket.paymentInstruments;
-    var invalid = false;
-    var result = {};
-
-    for (var i = 0; i < paymentInstruments.length; i++) {
-        var paymentInstrument = paymentInstruments[i];
-		var paymentMethod = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod());
-		var paymentMethodID = paymentMethod.getID();
-
-		if ( paymentMethodID === KLARNA_PAYMENT_METHOD ) {
-			if (paymentInstrument.getPaymentTransaction().getAmount().getValue() !== amount.getValue() ) {
-				invalid = true;
-			}
-		}
-	}
-
-    result.error = invalid;
-    return result;
-}
 
 module.exports = server.exports();

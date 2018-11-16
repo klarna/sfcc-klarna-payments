@@ -6,7 +6,7 @@ var StringUtils = require( 'dw/util/StringUtils' );
 
 var KlarnaHttpService = require( '~/cartridge/scripts/common/KlarnaPaymentsHttpService' );
 var KlarnaApiContext = require( '~/cartridge/scripts/common/KlarnaPaymentsApiContext' );
-var KlarnaOrderRequestBuilder = require( '~/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder' );
+var KlarnaOrderRequestBuilder = require( '~/cartridge/scripts/klarna_payments/requestBuilder/order' );
 
 /**
  * @constructor
@@ -56,11 +56,12 @@ function KlarnaOrderService() {
      * @return {string} Html snippet used for rendering the Klarna checkout
     */
 	this.updateOrder = function( basket, localeObject, klarnaOrderID ) {
-		var orderRequestBuilder = new KlarnaOrderRequestBuilder();
-		var requestBody = orderRequestBuilder.buildRequest( {
+        var orderRequestBuilder = new KlarnaOrderRequestBuilder();
+        orderRequestBuilder.setParams({
 			basket: basket,
 			localeObject: localeObject
-		} ).get();
+        });
+		var requestBody = orderRequestBuilder.buildRequest().get();
 
 		var requestUrl = StringUtils.format( this.klarnaApiContext.getFlowApiUrls().get( 'updateOrder' ), klarnaOrderID );
 		var response = {};

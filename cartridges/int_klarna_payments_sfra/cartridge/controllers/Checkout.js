@@ -1,11 +1,9 @@
-//Page.js
-var page = module.superModule; // require functionality from last controller in the chain with this name
+var page = module.superModule; //inherits functionality from next Product.js found to the right on the cartridge path
 var server = require('server');
-var KlarnaSessionManager = require( '~/cartridge/scripts/common/KlarnaSessionManager' );
-var Transaction = require('dw/system/Transaction');
+var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
 var BasketMgr = require('dw/order/BasketMgr');
 
-server.append('Begin', function(req, res, next) {
+server.append('Begin', function (req, res, next) {
     var userSession = request.session;
     var locale = request.locale;
     var currentBasket = BasketMgr.getCurrentBasket();

@@ -19,7 +19,7 @@ var KlarnaPaymentsApiContext = require('~/cartridge/scripts/common/KlarnaPayment
 
 var KlarnaPayments = {
 	httpService 			: require('~/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
-	sessionRequestBuilder 	: require('~/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder')
+	sessionRequestBuilder 	: require('~/cartridge/scripts/klarna_payments/requestBuilder/session')
 };
 
 function KlarnaSessionManager(userSession, locale) {
@@ -68,10 +68,12 @@ KlarnaSessionManager.prototype._getSessionRequestBody = function( basket, locale
 {
 	var sessionRequestBuilder = new KlarnaPayments.sessionRequestBuilder();
 	
-	return sessionRequestBuilder.buildRequest( {
+    sessionRequestBuilder.setParams({
 		basket: basket,
 		localeObject: localeObject
-	} ).get();
+    });
+
+	return sessionRequestBuilder.buildRequest().get();
 };
 
 KlarnaSessionManager.prototype._updateSession = function() {

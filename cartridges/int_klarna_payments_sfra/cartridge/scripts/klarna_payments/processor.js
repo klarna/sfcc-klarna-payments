@@ -305,7 +305,7 @@ function failOrder(order) {
 }
 
 /**
- * Processor Handle
+ * Handle the processing of a new Klarna payment transaction
  *
  * @param {dw.order.LineItemCtnr} basket - Current basket
  * @param {boolean} isFromCart - Is checkout started from cart
@@ -477,6 +477,22 @@ function authorize(order, orderNo, paymentInstrument) {
 }
 
 /**
+ * Save new fraud status into the the first Klarna Payment Transaction of an order
+ *
+ * @param {dw.order.order} order Order
+ * @param {string} kpFraudStatus Klarna fraud status
+ */
+function saveFraudStatus(order, kpFraudStatus) {
+    var paymentInstrument = order.getPaymentInstruments(PAYMENT_METHOD)[0];
+
+    var paymentTransaction = paymentInstrument.paymentTransaction;
+
+    Transaction.wrap(function () {
+        paymentTransaction.custom.kpFraudStatus = kpFraudStatus;
+    });
+}
+
+/**
  * Handle Klarna notification
  * @param {dw.order.order} order DW Order
  * @param {string} kpOrderID KP Order ID
@@ -484,6 +500,8 @@ function authorize(order, orderNo, paymentInstrument) {
  */
 function notify(order, kpOrderID, kpEventType) {
     var localeObject = getLocale();
+
+    saveFraudStatus(order, kpEventType);
 
     if (kpEventType === NOTIFY_EVENT_TYPES.FRAUD_RISK_ACCEPTED) {
         if (order.custom.kpIsVCN) {

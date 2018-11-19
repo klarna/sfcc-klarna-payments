@@ -1,3 +1,5 @@
+/* globals empty */
+
 'use strict';
 
 var URLUtils = require('dw/web/URLUtils');
@@ -8,10 +10,13 @@ var ArrayList = require('dw/util/ArrayList');
 var Builder = require('~/cartridge/scripts/common/Builder');
 var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
+var stripControlCharacters = require('~/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;
+
 var ORDER_LINE_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
 
-var empty = require('~/cartridge/scripts/util/KlarnaUtils').empty;
-
+/**
+ * KP Order Line Item Builder
+ */
 function OrderLineItem() {
     this.item = null;
 }
@@ -37,7 +42,7 @@ OrderLineItem.prototype.getItemTaxAmount = function (li) {
 OrderLineItem.prototype.getItemType = function (li) {
     var type = '';
 
-    if (li.hasOwnProperty('optionProductLineItem') && li.optionProductLineItem) {
+    if (Object.prototype.hasOwnProperty.call(li, 'optionProductLineItem') && li.optionProductLineItem) {
         type = ORDER_LINE_TYPE.SURCHARGE;
     } else {
         type = ORDER_LINE_TYPE.PHYSICAL;
@@ -49,7 +54,7 @@ OrderLineItem.prototype.getItemType = function (li) {
 OrderLineItem.prototype.getItemId = function (li) {
     var id = '';
 
-    if (li.hasOwnProperty('optionProductLineItem') && li.optionProductLineItem) {
+    if (Object.prototype.hasOwnProperty.call(li, 'optionProductLineItem') && li.optionProductLineItem) {
         id = li.parent.productID + '_' + li.optionID + '_' + li.optionValueID;
     } else {
         id = li.productID;
@@ -61,7 +66,7 @@ OrderLineItem.prototype.getItemId = function (li) {
 OrderLineItem.prototype.getItemBrand = function (li) {
     var brand = '';
 
-    if (li.hasOwnProperty('optionProductLineItem') && li.optionProductLineItem) {
+    if (Object.prototype.hasOwnProperty.call(li, 'optionProductLineItem') && li.optionProductLineItem) {
         brand = (!empty(li.parent.product) ? li.parent.product.brand : null);
     } else {
         brand = (!empty(li.product) ? li.product.brand : null);
@@ -98,7 +103,7 @@ OrderLineItem.prototype.getProductCategoryPath = function (product) {
 OrderLineItem.prototype.getItemCategoryPath = function (li) {
     var path = '';
 
-    if (li.hasOwnProperty('optionProductLineItem') && li.optionProductLineItem) {
+    if (Object.prototype.hasOwnProperty.call(li, 'optionProductLineItem') && li.optionProductLineItem) {
         path = (!empty(li.parent.product) ? this.getProductCategoryPath(li.parent.product) : null);
     } else {
         path = (!empty(li.product) ? this.getProductCategoryPath(li.product) : null);
@@ -139,7 +144,7 @@ OrderLineItem.prototype.buildItemProductAndImageUrls = function (li) {
 };
 
 OrderLineItem.prototype.getItemName = function (li) {
-    return li.productName.replace(/[^\x00-\x7F]/g, '');
+    return stripControlCharacters(li.productName);
 };
 
 OrderLineItem.prototype.build = function (li) {
@@ -175,4 +180,4 @@ OrderLineItem.prototype.build = function (li) {
     return this.item;
 };
 
-module.exports = OrderLineItem; 
+module.exports = OrderLineItem;

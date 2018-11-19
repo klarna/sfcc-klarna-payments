@@ -9,10 +9,12 @@ server.post('Notification', function (req, res) {
     var OrderMgr = require('dw/order/OrderMgr');
     var processor = require('~/cartridge/scripts/klarna_payments/processor');
 
-    var klarnaPaymentsFraudDecisionObject = JSON.parse(request.httpParameterMap.requestBodyAsString);
+    var requestParams = req.form;
+
+    var klarnaPaymentsFraudDecisionObject = JSON.parse(req.body);
     var kpOrderID = klarnaPaymentsFraudDecisionObject.order_id;
     var kpEventType = klarnaPaymentsFraudDecisionObject.event_type;
-    var currentCountry = request.httpParameterMap.klarna_country.value;
+    var currentCountry = requestParams.klarna_country;
     var order = OrderMgr.queryOrder('custom.kpOrderID = {0}', kpOrderID);
 
     if (!order) {
@@ -55,10 +57,10 @@ server.get('SaveAuth', function (req, res) {
     var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
 
     var token = req.httpHeaders['x-auth'];
-    var userSession = request.session;
-    var locale = request.locale;
+    var userSession = req.session.raw;
+    var localeId = req.locale.id;
 
-    var klarnaSessionManager = new KlarnaSessionManager(userSession, locale);
+    var klarnaSessionManager = new KlarnaSessionManager(userSession, localeId);
     klarnaSessionManager.saveAuthorizationToken(token);
 
     res.setStatusCode(200);

@@ -1,5 +1,7 @@
-var page = module.superModule; //inherits functionality from next Product.js found to the right on the cartridge path
+var page = module.superModule; // inherits functionality
 var server = require('server');
+
+server.extend(page);
 
 server.append('Confirm', function (req, res, next) {
     var OrderMgr = require('dw/order/OrderMgr');

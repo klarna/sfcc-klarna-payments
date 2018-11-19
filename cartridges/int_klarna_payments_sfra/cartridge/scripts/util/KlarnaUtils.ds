@@ -39,14 +39,11 @@ function strval( obj ) {
     return obj;
 }
 
-function empty(variable) {
-    if( typeof variable === 'undefined' || variable === null ){
-        return true;
-    }
-
-    return false;
+function stripControlCharacters(str) {
+    return str.replace(/[^\x00-\x7F]/g, '');
 }
 
 module.exports.isEnabledPreassessmentForCountry = isEnabledPreassessmentForCountry;
+module.exports.stripControlCharacters = stripControlCharacters;
 module.exports.strval = strval;
 module.exports.empty = empty;

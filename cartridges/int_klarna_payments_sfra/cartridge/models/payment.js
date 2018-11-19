@@ -1,10 +1,10 @@
 'use strict';
 
-var PaymentMgr = require( 'dw/order/PaymentMgr' );
-var PaymentInstrument = require( 'dw/order/PaymentInstrument' );
-var collections = require( '*/cartridge/scripts/util/collections' );
+var PaymentMgr = require('dw/order/PaymentMgr');
+var PaymentInstrument = require('dw/order/PaymentInstrument');
+var collections = require('*/cartridge/scripts/util/collections');
 
-var KLARNA_PAYMENT_METHOD = require( '~/cartridge/scripts/util/KlarnaPaymentsConstants' ).PAYMENT_METHOD;
+var KLARNA_PAYMENT_METHOD = require('~/cartridge/scripts/util/KlarnaPaymentsConstants').PAYMENT_METHOD;
 
 /**
  * Creates an array of objects containing applicable payment methods
@@ -13,13 +13,13 @@ var KLARNA_PAYMENT_METHOD = require( '~/cartridge/scripts/util/KlarnaPaymentsCon
  * @returns {Array} of object that contain information about the applicable payment methods for the
  *      current cart
  */
-function applicablePaymentMethods( paymentMethods ) {
-	return collections.map( paymentMethods, function( method ) {
-		return {
-			ID: method.ID,
-			name: method.name
-		};
-	} );
+function applicablePaymentMethods(paymentMethods) {
+    return collections.map(paymentMethods, function (method) {
+        return {
+            ID: method.ID,
+            name: method.name
+        };
+    });
 }
 
 /**
@@ -29,13 +29,13 @@ function applicablePaymentMethods( paymentMethods ) {
  * @returns {Array} Array of objects that contain information about applicable payment cards for
  *      current basket.
  */
-function applicablePaymentCards( paymentCards ) {
-	return collections.map( paymentCards, function( card ) {
-		return {
-			cardType: card.cardType,
-			name: card.name
-		};
-	} );
+function applicablePaymentCards(paymentCards) {
+    return collections.map(paymentCards, function (card) {
+        return {
+            cardType: card.cardType,
+            name: card.name
+        };
+    });
 }
 
 /**
@@ -44,29 +44,29 @@ function applicablePaymentCards( paymentCards ) {
  *      of payment instruments that the user is using to pay for the current basket
  * @returns {Array} Array of objects that contain information about the selected payment instruments
  */
-function getSelectedPaymentInstruments( selectedPaymentInstruments ) {
-	return collections.map( selectedPaymentInstruments, function( paymentInstrument ) {
-		var results = {
-			paymentMethod: paymentInstrument.paymentMethod,
-			amount: paymentInstrument.paymentTransaction.amount.value
-		};
+function getSelectedPaymentInstruments(selectedPaymentInstruments) {
+    return collections.map(selectedPaymentInstruments, function (paymentInstrument) {
+        var results = {
+            paymentMethod: paymentInstrument.paymentMethod,
+            amount: paymentInstrument.paymentTransaction.amount.value
+        };
 
-		if ( paymentInstrument.paymentMethod === 'CREDIT_CARD' ) {
-			results.lastFour = paymentInstrument.creditCardNumberLastDigits;
-			results.owner = paymentInstrument.creditCardHolder;
-			results.expirationYear = paymentInstrument.creditCardExpirationYear;
-			results.type = paymentInstrument.creditCardType;
-			results.maskedCreditCardNumber = paymentInstrument.maskedCreditCardNumber;
-			results.expirationMonth = paymentInstrument.creditCardExpirationMonth;
-		} else if ( paymentInstrument.paymentMethod === 'GIFT_CERTIFICATE' ) {
-			results.giftCertificateCode = paymentInstrument.giftCertificateCode;
-			results.maskedGiftCertificateCode = paymentInstrument.maskedGiftCertificateCode;
-		} else if ( paymentInstrument.paymentMethod === KLARNA_PAYMENT_METHOD ) {
-			results.paymentCategory = paymentInstrument.custom.klarnaPaymentCategoryID;
-		}
+        if (paymentInstrument.paymentMethod === 'CREDIT_CARD') {
+            results.lastFour = paymentInstrument.creditCardNumberLastDigits;
+            results.owner = paymentInstrument.creditCardHolder;
+            results.expirationYear = paymentInstrument.creditCardExpirationYear;
+            results.type = paymentInstrument.creditCardType;
+            results.maskedCreditCardNumber = paymentInstrument.maskedCreditCardNumber;
+            results.expirationMonth = paymentInstrument.creditCardExpirationMonth;
+        } else if (paymentInstrument.paymentMethod === 'GIFT_CERTIFICATE') {
+            results.giftCertificateCode = paymentInstrument.giftCertificateCode;
+            results.maskedGiftCertificateCode = paymentInstrument.maskedGiftCertificateCode;
+        } else if (paymentInstrument.paymentMethod === KLARNA_PAYMENT_METHOD) {
+            results.paymentCategory = paymentInstrument.custom.klarnaPaymentCategoryID;
+        }
 
-		return results;
-	} );
+        return results;
+    });
 }
 
 /**
@@ -76,26 +76,26 @@ function getSelectedPaymentInstruments( selectedPaymentInstruments ) {
  * @param {string} countryCode - the associated Site countryCode
  * @constructor
  */
-function Payment( currentBasket, currentCustomer, countryCode ) {
-	var paymentAmount = currentBasket.totalGrossPrice;
-	var paymentMethods = PaymentMgr.getApplicablePaymentMethods(
+function Payment(currentBasket, currentCustomer, countryCode) {
+    var paymentAmount = currentBasket.totalGrossPrice;
+    var paymentMethods = PaymentMgr.getApplicablePaymentMethods(
         currentCustomer,
         countryCode,
         paymentAmount.value
 	);
 
-	var paymentCards = PaymentMgr.getPaymentMethod( PaymentInstrument.METHOD_CREDIT_CARD )
-	.getApplicablePaymentCards( currentCustomer, countryCode, paymentAmount.value );
-	var paymentInstruments = currentBasket.paymentInstruments;
+    var paymentCards = PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD)
+	.getApplicablePaymentCards(currentCustomer, countryCode, paymentAmount.value);
+    var paymentInstruments = currentBasket.paymentInstruments;
 
-	this.applicablePaymentMethods =
-	paymentMethods ? applicablePaymentMethods( paymentMethods ) : null;
+    this.applicablePaymentMethods =
+	paymentMethods ? applicablePaymentMethods(paymentMethods) : null;
 
-	this.applicablePaymentCards =
-	paymentCards ? applicablePaymentCards( paymentCards ) : null;
+    this.applicablePaymentCards =
+	paymentCards ? applicablePaymentCards(paymentCards) : null;
 
-	this.selectedPaymentInstruments = paymentInstruments ?
-	getSelectedPaymentInstruments( paymentInstruments ) : null;
+    this.selectedPaymentInstruments = paymentInstruments ?
+	getSelectedPaymentInstruments(paymentInstruments) : null;
 }
 
 module.exports = Payment;

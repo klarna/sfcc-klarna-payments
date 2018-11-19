@@ -1,6 +1,9 @@
 (function () {
     'use strict';
 
+    /**
+     * address request model
+     */
     function Address() {
         this.title = '';
         this.given_name = '';
@@ -15,6 +18,9 @@
         this.country = '';
     }
 
+    /**
+     * Options model for KP Requests
+     */
     function Options() {
         this.color_details = '#0074C8';
         this.color_button = '#0074C8';
@@ -30,6 +36,10 @@
         this.radius_border = '5px';
     }
 
+    /**
+     * KP session request model
+     * @param {boolean} preAssement If locale country is preassessed
+     */
     function KlarnaPaymentsSessionModel(preAssement) {
         this.purchase_country = '';
         this.purchase_currency = '';
@@ -46,6 +56,9 @@
         this.merchant_data = null;
     }
 
+    /**
+     * line item request model
+     */
     function LineItem() {
         this.type = '';
         this.name = '';

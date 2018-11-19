@@ -1,26 +1,26 @@
 'use strict';
 
-let HashMap = require( 'dw/util/HashMap' );
+var HashMap = require('dw/util/HashMap');
 
-let KlarnaPaymentsApiContext = function() {
-	this._flowApiUrls = null;
+var KlarnaPaymentsApiContext = function () {
+    this.flowApiUrls = null;
 };
 
-KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function() {
-	if ( this._flowApiUrls === null ) {
-		this._flowApiUrls = new HashMap();
+KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function () {
+    if (this.flowApiUrls === null) {
+        this.flowApiUrls = new HashMap();
 
-		this._flowApiUrls.put( 'createSession', 'payments/v1/sessions' );
-		this._flowApiUrls.put( 'updateSession', 'payments/v1/sessions/{0}' );
-		this._flowApiUrls.put( 'getOrder', '/ordermanagement/v1/orders/{0}' );
-		this._flowApiUrls.put( 'createOrder', 'payments/v1/authorizations/{0}/order' );
-		this._flowApiUrls.put( 'cancelOrder', '/ordermanagement/v1/orders/{0}/cancel' );
-		this._flowApiUrls.put( 'getCompletedOrder', '/ordermanagement/v1/orders/{0}' );
-		this._flowApiUrls.put( 'acknowledgeOrder', 'ordermanagement/v1/orders/{0}/acknowledge' );
-		this._flowApiUrls.put( 'vcnSettlement', 'merchantcard/v2/settlements' );
-	}
+        this.flowApiUrls.put('createSession', 'payments/v1/sessions');
+        this.flowApiUrls.put('updateSession', 'payments/v1/sessions/{0}');
+        this.flowApiUrls.put('getOrder', '/ordermanagement/v1/orders/{0}');
+        this.flowApiUrls.put('createOrder', 'payments/v1/authorizations/{0}/order');
+        this.flowApiUrls.put('cancelOrder', '/ordermanagement/v1/orders/{0}/cancel');
+        this.flowApiUrls.put('getCompletedOrder', '/ordermanagement/v1/orders/{0}');
+        this.flowApiUrls.put('acknowledgeOrder', 'ordermanagement/v1/orders/{0}/acknowledge');
+        this.flowApiUrls.put('vcnSettlement', 'merchantcard/v2/settlements');
+    }
 
-	return this._flowApiUrls;
+    return this.flowApiUrls;
 };
 
 module.exports = KlarnaPaymentsApiContext;

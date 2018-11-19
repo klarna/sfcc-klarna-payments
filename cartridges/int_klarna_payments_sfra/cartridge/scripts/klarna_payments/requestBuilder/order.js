@@ -1,3 +1,5 @@
+/* globals empty */
+
 (function () {
     'use strict';
 
@@ -12,13 +14,17 @@
     var ORDER_LINE_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
     var CONTENT_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js').CONTENT_TYPE;
     var log = Logger.getLogger('KlarnaPaymentsOrderRequestBuilder.js');
-    var empty = require('~/cartridge/scripts/util/KlarnaUtils').empty;
+
+    var stripControlCharacters = require('~/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;
 
     var KlarnaPaymentsOrderModel = require('~/cartridge/scripts/klarna_payments/model/request/order').KlarnaPaymentsOrderModel;
     var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/order').LineItem;
     var AddressRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/address');
     var OrderLineItemRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/orderLineItem');
 
+    /**
+     * KP Order Request Builder
+     */
     function KlarnaPaymentsOrderRequestBuilder() {
         this.addressRequestBuilder = new AddressRequestBuilder();
         this.orderLineItemRequestBuilder = new OrderLineItemRequestBuilder();
@@ -306,7 +312,7 @@
         var shippingLineItem = new LineItem();
         shippingLineItem.quantity = 1;
         shippingLineItem.type = ORDER_LINE_TYPE.SHIPPING_FEE;
-        shippingLineItem.name = shipment.shippingMethod.displayName.replace(/[^\x00-\x7F]/g, '');
+        shippingLineItem.name = stripControlCharacters(shipment.shippingMethod.displayName);
         shippingLineItem.reference = shipment.shippingMethod.ID;
         shippingLineItem.unit_price = Math.round(shipmentUnitPrice);
         shippingLineItem.tax_rate = Math.round(shipmentTaxRate);
@@ -352,7 +358,7 @@
     KlarnaPaymentsOrderRequestBuilder.prototype.getPriceAdjustmentPromoName = function (adj) {
         var promoName = !empty(adj.promotion) && !empty(adj.promotion.name) ? adj.promotion.name : ORDER_LINE_TYPE.DISCOUNT;
 
-        promoName = promoName.replace(/[^\x00-\x7F]/g, '');
+        promoName = stripControlCharacters(promoName);
 
         return promoName;
     };

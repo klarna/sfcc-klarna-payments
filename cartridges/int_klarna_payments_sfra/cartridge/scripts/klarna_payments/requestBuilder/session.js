@@ -1,10 +1,11 @@
+/* globals empty */
+
 (function () {
     'use strict';
 
     var Site = require('dw/system/Site');
     var Logger = require('dw/system/Logger');
     var TaxMgr = require('dw/order/TaxMgr');
-    var ArrayList = require('dw/util/ArrayList');
 
     var ShippingLocation = require('dw/order/ShippingLocation');
     var Builder = require('~/cartridge/scripts/common/Builder');
@@ -13,12 +14,15 @@
     var KlarnaPaymentsSessionModel = require('~/cartridge/scripts/klarna_payments/model/request/session').KlarnaPaymentsSessionModel;
     var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/session').LineItem;
     var log = Logger.getLogger('KlarnaPaymentsSessionRequestBuilder.js');
-    var empty = require('~/cartridge/scripts/util/KlarnaUtils').empty;
     var isEnabledPreassessmentForCountry = require('~/cartridge/scripts/util/KlarnaUtils').isEnabledPreassessmentForCountry;
+    var stripControlCharacters = require('~/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;
 
     var AddressRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/address');
     var OrderLineItemRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/orderLineItem');
 
+    /**
+     * KP Session Request Builder
+     */
     function KlarnaPaymentsSessionRequestBuilder() {
         this.addressRequestBuilder = new AddressRequestBuilder();
         this.orderLineItemRequestBuilder = new OrderLineItemRequestBuilder();
@@ -325,7 +329,7 @@
         var shippingLineItem = new LineItem();
         shippingLineItem.quantity = 1;
         shippingLineItem.type = ORDER_LINE_TYPE.SHIPPING_FEE;
-        shippingLineItem.name = shipment.shippingMethod.displayName.replace(/[^\x00-\x7F]/g, '');
+        shippingLineItem.name = stripControlCharacters(shipment.shippingMethod.displayName);
         shippingLineItem.reference = shipment.shippingMethod.ID;
         shippingLineItem.unit_price = Math.round(shipmentUnitPrice);
         shippingLineItem.tax_rate = Math.round(shipmentTaxRate);
@@ -375,7 +379,7 @@
     KlarnaPaymentsSessionRequestBuilder.prototype.getPriceAdjustmentPromoName = function (adj) {
         var promoName = !empty(adj.promotion) && !empty(adj.promotion.name) ? adj.promotion.name : ORDER_LINE_TYPE.DISCOUNT;
 
-        promoName = promoName.replace(/[^\x00-\x7F]/g, '');
+        promoName = stripControlCharacters(promoName);
 
         return promoName;
     };

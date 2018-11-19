@@ -25,13 +25,18 @@ function calculateNonGiftCertificateAmount(lineItemCtnr) {
     return orderTotal;
 }
 
-function validatePaymentAmount(currentBasket) {
+/**
+ * Validate payment amount in klarna payment instrument matches basket amount
+ *
+ * @param {dw.order.Basket} currentBasket Basket
+ * @returns {boolean} true if payment amount is valid
+ */
+function isPaymentAmountValid(currentBasket) {
     var PaymentMgr = require('dw/order/PaymentMgr');
 
     var amount = calculateNonGiftCertificateAmount(currentBasket);
     var paymentInstruments = currentBasket.paymentInstruments;
-    var invalid = false;
-    var result = {};
+    var valid = true;
 
     for (var i = 0; i < paymentInstruments.length; i++) {
         var paymentInstrument = paymentInstruments[i];
@@ -40,13 +45,12 @@ function validatePaymentAmount(currentBasket) {
 
         if (paymentMethodID === KLARNA_PAYMENT_METHOD) {
             if (paymentInstrument.getPaymentTransaction().getAmount().getValue() !== amount.getValue()) {
-                invalid = true;
+                valid = false;
             }
         }
     }
 
-    result.error = invalid;
-    return result;
+    return valid;
 }
 
 server.prepend(
@@ -58,7 +62,10 @@ server.prepend(
         var StringUtils = require('dw/util/StringUtils');
         var Money = require('dw/value/Money');
 
-        var isKlarna = request.httpParameterMap.isKlarna.booleanValue;
+        var formParams = req.form;
+        var currentCustomer = req.currentCustomer;
+
+        var isKlarna = formParams.isKlarna;
         var emailFromFillingPage = false;
         var email = '';
 
@@ -132,8 +139,8 @@ server.prepend(
         }
 
 
-        if (customer.authenticated) {
-            email = customer.getProfile().getEmail();
+        if (currentCustomer.authenticated) {
+            email = currentCustomer.getProfile().getEmail();
             emailFromFillingPage = false;
         } else {
             email = klarnaForm.email.value;
@@ -242,9 +249,8 @@ server.prepend(
         return next();
     }
 
-		// Re-validates existing payment instruments
-    var validPaymentAmount = validatePaymentAmount(currentBasket);
-    if (validPaymentAmount.error) {
+	// Re-validates existing payment instruments
+    if (!isPaymentAmountValid(currentBasket)) {
         res.json({
             error: true,
             errorStage: {

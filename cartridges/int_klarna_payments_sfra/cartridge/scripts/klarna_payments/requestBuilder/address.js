@@ -1,10 +1,14 @@
+/* globals empty */
+
 'use strict';
 
 var Builder = require('~/cartridge/scripts/common/Builder');
 var AddressRequestModel = require('~/cartridge/scripts/klarna_payments/model/request/session').Address;
 var strval = require('~/cartridge/scripts/util/KlarnaUtils').strval;
-var empty = require('~/cartridge/scripts/util/KlarnaUtils').empty;
 
+/**
+ * Address request builder
+ */
 function Address() {
     this.address = null;
 }

@@ -57,13 +57,29 @@ server.get('SaveAuth', function (req, res) {
     var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
 
     var token = req.httpHeaders['x-auth'];
+    var finalizeRequired = req.httpHeaders['finalize-required'];
     var userSession = req.session.raw;
     var localeId = req.locale.id;
 
     var klarnaSessionManager = new KlarnaSessionManager(userSession, localeId);
-    klarnaSessionManager.saveAuthorizationToken(token);
+    klarnaSessionManager.saveAuthorizationToken(token, finalizeRequired);
 
     res.setStatusCode(200);
+});
+
+server.get('LoadAuth', function (req, res) {
+    var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
+    var userSession = req.session.raw;
+    var localeId = req.locale.id;
+
+    var klarnaSessionManager = new KlarnaSessionManager(userSession, localeId);
+    var authInfo = klarnaSessionManager.loadAuthorizationInfo();
+
+    res.json(authInfo);
+
+    res.setStatusCode(200);
+
+    this.emit('route:Complete', req, res);
 });
 
 module.exports = server.exports();

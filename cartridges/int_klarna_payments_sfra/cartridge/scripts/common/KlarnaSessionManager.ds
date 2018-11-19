@@ -27,12 +27,26 @@ function KlarnaSessionManager(userSession, locale) {
 	this.currentLocale = locale;
 }
 
-KlarnaSessionManager.prototype.saveAuthorizationToken = function(token) {
+KlarnaSessionManager.prototype.saveAuthorizationToken = function(token, finalizeRequired) {
 	Transaction.wrap( function(token) {
 		var _self = this;
 
 		this.userSession.privacy.KlarnaPaymentsAuthorizationToken = token;
+        this.userSession.privacy.KPAuthInfo = {
+            FinalizeRequired: finalizeRequired
+        };
 	}.bind(this, token) );
+}
+
+KlarnaSessionManager.prototype.loadAuthorizationInfo = function() {
+    var authInfo = {};
+    var kpAuthInfo = this.userSession.privacy.KPAuthInfo;
+
+    if (!empty(kpAuthInfo)) {
+        authInfo = kpAuthInfo;
+    }
+
+    return authInfo;
 }
 
 /**

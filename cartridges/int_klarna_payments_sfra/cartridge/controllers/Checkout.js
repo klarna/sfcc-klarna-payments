@@ -1,5 +1,3 @@
-/* global dw request session customer */
-
 var page = module.superModule; // inherits functionality
 var server = require('server');
 var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');

@@ -5,7 +5,7 @@
 *
 * @input Basket : dw.order.Basket The basket
 * @input LocaleObject : dw.object.CustomObject
-*/
+*/ 
 
 var request = require( 'dw/system/Request' );
 var BasketMgr = require( 'dw/order/BasketMgr' );
@@ -73,7 +73,7 @@ KlarnaSessionManager.prototype._getSessionRequestBody = function( basket, locale
 		localeObject: localeObject
     });
 
-	return sessionRequestBuilder.buildRequest().get();
+	return sessionRequestBuilder.build();
 };
 
 KlarnaSessionManager.prototype._updateSession = function() {
@@ -99,13 +99,6 @@ KlarnaSessionManager.prototype._updateSession = function() {
 	Transaction.wrap( function() {
 		_this.userSession.privacy.KlarnaPaymentsClientToken = response.client_token;
 		_this.userSession.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
-
-/*
-		var currentCookies = request.getHttpCookies();
-		if (currentCookies.hasOwnProperty('selectedKlarnaPaymentCategory')) {
-			this.userSession.privacy.SelectedKlarnaPaymentMethod = currentCookies['selectedKlarnaPaymentCategory'].value;
-		}
-*/
 	} );
 };
 

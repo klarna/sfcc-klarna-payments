@@ -4,13 +4,13 @@
 
 var URLUtils = require('dw/web/URLUtils');
 var Site = require('dw/system/Site');
-var TaxMgr = require('dw/order/TaxMgr');
 var ArrayList = require('dw/util/ArrayList');
 
 var Builder = require('~/cartridge/scripts/common/Builder');
 var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
 var stripControlCharacters = require('~/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;
+var isTaxationPolicyNet = require('~/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
 
 var ORDER_LINE_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
 
@@ -23,20 +23,16 @@ function OrderLineItem() {
 
 OrderLineItem.prototype = new Builder();
 
-OrderLineItem.prototype.isTaxationPolicyNet = function () {
-    return (TaxMgr.getTaxationPolicy() === TaxMgr.TAX_POLICY_NET);
-};
-
 OrderLineItem.prototype.getItemPrice = function (li) {
-    return (li.grossPrice.available && !this.isTaxationPolicyNet() ? li.grossPrice.value : li.netPrice.value) * 100;
+    return (li.grossPrice.available && !isTaxationPolicyNet() ? li.grossPrice.value : li.netPrice.value) * 100;
 };
 
 OrderLineItem.prototype.getItemTaxRate = function (li) {
-    return (this.isTaxationPolicyNet()) ? 0 : Math.round(li.taxRate * 10000);
+    return (isTaxationPolicyNet()) ? 0 : Math.round(li.taxRate * 10000);
 };
 
 OrderLineItem.prototype.getItemTaxAmount = function (li) {
-    return (this.isTaxationPolicyNet()) ? 0 : Math.round(li.tax.value * 100);
+    return (isTaxationPolicyNet()) ? 0 : Math.round(li.tax.value * 100);
 };
 
 OrderLineItem.prototype.getItemType = function (li) {

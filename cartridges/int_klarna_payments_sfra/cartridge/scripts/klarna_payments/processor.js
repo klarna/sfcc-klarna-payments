@@ -71,7 +71,7 @@ function getOrderRequestBody(order, localeObject) {
         localeObject: localeObject
     });
 
-    return orderRequestBuilder.buildRequest().get();
+    return orderRequestBuilder.build();
 }
 
 /**

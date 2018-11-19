@@ -7,16 +7,8 @@
         return 'Abstract method "' + name + '" must be override';
     };
 
-    Builder.prototype.buildRequest = function () {
-        throw new Error(log('buildRequest'));
-    };
-
-    Builder.prototype.buildResponse = function () {
-        throw new Error(log('buildResponse'));
-    };
-
-    Builder.prototype.get = function () {
-        throw new Error(log('get'));
+    Builder.prototype.build = function () {
+        throw new Error(log('build'));
     };
 
     module.exports = Builder;

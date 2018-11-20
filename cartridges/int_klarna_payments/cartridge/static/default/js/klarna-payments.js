@@ -75,7 +75,8 @@
 
 			if (hasShippingAddress) {
 				Klarna.Payments.authorize({
-						payment_method_category: $selectedPaymentMethod.id
+                        payment_method_category: $selectedPaymentMethod.id,
+                        auto_finalize: false
 				}, {
 						"billing_address": {
 							"given_name": $firstName.value,
@@ -129,7 +130,8 @@
 					})
 			} else {
 				Klarna.Payments.authorize({
-						payment_method_category: $selectedPaymentMethod.id
+                        payment_method_category: $selectedPaymentMethod.id,
+                        auto_finalize: false
 				}, {
 						"billing_address": {
 							"given_name": $firstName.value,

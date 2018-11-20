@@ -22,8 +22,5 @@
       "email": "Ivan.Zanev@tryzens.com"
     }
   ],
-  "license": "",
-  "devDependencies": {
-    "sgmf-scripts": "^2.1.1"
-  }
+  "license": ""
 }

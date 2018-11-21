@@ -11,8 +11,6 @@ var NOTIFY_EVENT_TYPES = KlarnaPaymentsConstants.NOTIFY_EVENT_TYPES;
 var Transaction = require('dw/system/Transaction');
 var PaymentMgr = require('dw/order/PaymentMgr');
 var OrderMgr = require('dw/order/OrderMgr');
-var CustomObjectMgr = require('dw/object/CustomObjectMgr');
-var Countries = require('~/cartridge/scripts/util/Countries');
 var Logger = require('dw/system/Logger');
 var StringUtils = require('dw/util/StringUtils');
 var Site = require('dw/system/Site');
@@ -25,6 +23,9 @@ var log = Logger.getLogger('KLARNA_PAYMENTS.js');
 var KlarnaPaymentsOrderRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/order');
 var KlarnaPaymentsHttpService = require('~/cartridge/scripts/common/KlarnaPaymentsHttpService.ds');
 var KlarnaPaymentsApiContext = require('~/cartridge/scripts/common/KlarnaPaymentsApiContext');
+var KlarnaLocaleMgr = require('~/cartridge/scripts/klarna_payments/locale');
+
+var klarnaLocaleMgr = new KlarnaLocaleMgr();
 
 var collections = require('*/cartridge/scripts/util/collections');
 
@@ -131,26 +132,6 @@ function cancelOrder(order, localeObject) {
         return false;
     }
     return true;
-}
-
-/**
- * Gets Klarna Payments Locale object
- *
- * @param {string} currentCountry current country locale
- *
- * @return {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
- */
-function getLocale(currentCountry) {
-    var localeObject = {};
-    var currCountry = currentCountry;
-
-    if (empty(currentCountry)) {
-        currCountry = Countries.getCurrent({ CurrentRequest: request }).countryCode;
-    }
-
-    localeObject = CustomObjectMgr.getCustomObject('KlarnaCountries', currCountry);
-
-    return localeObject;
 }
 
 /**
@@ -425,7 +406,7 @@ function authorizeAcceptedOrder(order, orderNo, kpOrderID, localeObject, payment
  */
 function authorize(order, orderNo, paymentInstrument) {
     var authorizationResult = {};
-    var localeObject = getLocale();
+    var localeObject = klarnaLocaleMgr.getLocale();
 
     var klarnaOrderCreated = createKlarnaOrder(order, localeObject);
 
@@ -467,7 +448,7 @@ function saveFraudStatus(order, kpFraudStatus) {
  * @param {string} kpEventType event type
  */
 function notify(order, kpOrderID, kpEventType) {
-    var localeObject = getLocale();
+    var localeObject = klarnaLocaleMgr.getLocale();
 
     saveFraudStatus(order, kpEventType);
 

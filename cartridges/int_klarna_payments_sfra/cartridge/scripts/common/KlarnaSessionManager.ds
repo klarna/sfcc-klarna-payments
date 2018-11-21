@@ -14,7 +14,6 @@ var log = Logger.getLogger( 'KlarnaPayments' );
 var Transaction = require('dw/system/Transaction');
 var StringUtils = require( 'dw/util/StringUtils' );
 var CustomObjectMgr = require( 'dw/object/CustomObjectMgr' );
-var Countries = require( '~/cartridge/scripts/util/Countries' );
 var KlarnaPaymentsApiContext = require('~/cartridge/scripts/common/KlarnaPaymentsApiContext');
 
 var KlarnaPayments = {
@@ -22,9 +21,13 @@ var KlarnaPayments = {
 	sessionRequestBuilder 	: require('~/cartridge/scripts/klarna_payments/requestBuilder/session')
 };
 
-function KlarnaSessionManager(userSession, locale) {
+function KlarnaSessionManager(userSession, klarnaLocaleMgr) {
 	this.userSession = userSession;
-	this.currentLocale = locale;
+    this.klarnaLocaleMgr = klarnaLocaleMgr;
+}
+
+KlarnaSessionManager.prototype.getKlarnaLocaleMgr = function () {
+    return this.klarnaLocaleMgr; 
 }
 
 KlarnaSessionManager.prototype.saveAuthorizationToken = function(token, finalizeRequired) {
@@ -50,27 +53,6 @@ KlarnaSessionManager.prototype.loadAuthorizationInfo = function() {
 }
 
 /**
- * Gets Klarna Payments Locale object
- * 
- * @param {string} currentCountry current country locale
- * 
- * @return {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
- */
-KlarnaSessionManager.prototype.getLocale = function( currentCountryCode ) {
-	var localeObject = {};
-	var countryCode = '';
-	if ( empty( currentCountryCode ) ) {
-		currentCountryCode = Countries.getCurrent( this.currentLocale ).countryCode;
-	}
-
-	var country = this.currentLocale.country;
-
-	localeObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', currentCountryCode );
-
-	return localeObject;
-}
-
-/**
  * Creates a Klarna payments session through Klarna API
  * @param {dw.order.Basket} 		basket			SCC Basket object
  * @param {dw.object.CustomObject} 	localeObject 	corresponding to the locale Custom Object from KlarnaCountries
@@ -93,7 +75,7 @@ KlarnaSessionManager.prototype._getSessionRequestBody = function( basket, locale
 KlarnaSessionManager.prototype._updateSession = function() {
 	_this = this;
 
-	var localeObject = this.getLocale();
+	var localeObject = this.getKlarnaLocaleMgr().getLocale();
 	var klarnaPaymentsHttpService = {};
 	var klarnaApiContext = new KlarnaPaymentsApiContext();
 	var requestBody = {};
@@ -119,7 +101,7 @@ KlarnaSessionManager.prototype._updateSession = function() {
 KlarnaSessionManager.prototype._createSession = function() {
 	var _this = this;
 
-	var localeObject = this.getLocale();
+	var localeObject = this.getKlarnaLocaleMgr().getLocale();
 	var klarnaPaymentsHttpService = {};
 	var klarnaApiContext = new KlarnaPaymentsApiContext();
 	var requestBody = {};

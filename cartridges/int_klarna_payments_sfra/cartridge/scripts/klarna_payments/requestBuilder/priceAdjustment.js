@@ -89,7 +89,7 @@ PriceAdjustment.prototype.build = function (adj) {
     this.adjustment.total_amount = adjusmentPrice;
     this.adjustment.total_tax_amount = this.getPriceAdjustmentTotalTaxAmount(adj);
 
-    return this.item;
+    return this.adjustment;
 };
 
 module.exports = PriceAdjustment;

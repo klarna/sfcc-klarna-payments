@@ -18,7 +18,6 @@ var StringUtils = require('dw/util/StringUtils');
 var Site = require('dw/system/Site');
 var Cypher = require('dw/crypto/Cipher');
 var Status = require('dw/system/Status');
-var Money = require('dw/value/Money');
 var HookMgr = require('dw/system/HookMgr');
 
 var log = Logger.getLogger('KLARNA_PAYMENTS.js');
@@ -28,33 +27,6 @@ var KlarnaPaymentsHttpService = require('~/cartridge/scripts/common/KlarnaPaymen
 var KlarnaPaymentsApiContext = require('~/cartridge/scripts/common/KlarnaPaymentsApiContext');
 
 var collections = require('*/cartridge/scripts/util/collections');
-
-/**
- * Calculates the amount to be payed by a non-gift certificate payment instrument based
- * on the given basket. The method subtracts the amount of all redeemed gift certificates
- * from the order total and returns this value.
- *
- * @param {Object} lineItemCtnr - LineIteam Container (Basket or Order)
- * @returns {dw.value.Money} non gift certificate amount
- */
-function calculateNonGiftCertificateAmount(lineItemCtnr) {
-    var orderTotal = 0;
-    var amountOpen = 0;
-    var giftCertTotal = new Money(0.0, lineItemCtnr.currencyCode);
-    var gcPaymentInstrs = lineItemCtnr.getGiftCertificatePaymentInstruments();
-    var iter = gcPaymentInstrs.iterator();
-    var orderPI = null;
-
-    while (iter.hasNext()) {
-        orderPI = iter.next();
-        giftCertTotal = giftCertTotal.add(orderPI.getPaymentTransaction().getAmount());
-    }
-
-    orderTotal = lineItemCtnr.totalGrossPrice;
-    amountOpen = orderTotal.subtract(giftCertTotal);
-
-    return amountOpen;
-}
 
 /**
  * Creates a Klarna payments order through Klarna API
@@ -314,7 +286,7 @@ function failOrder(order) {
 function handle(basket) {
     var methodName = PAYMENT_METHOD;
 
-    var amount = calculateNonGiftCertificateAmount(basket);
+    var amount = basket.totalGrossPrice;
 
     var paymentInstrument = null;
 

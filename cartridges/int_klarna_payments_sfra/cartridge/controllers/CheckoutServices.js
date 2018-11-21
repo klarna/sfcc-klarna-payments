@@ -5,53 +5,7 @@ var server = require('server');
 
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
-var KLARNA_PAYMENT_METHOD = require('~/cartridge/scripts/util/KlarnaPaymentsConstants').PAYMENT_METHOD;
-
 server.extend(page);
-
-/**
- * Calculates the amount to be payed by a non-gift certificate payment instrument based
- * on the given basket. The method subtracts the amount of all redeemed gift certificates
- * from the order total and returns this value.
- *
- * @param {Object} lineItemCtnr - LineIteam Container (Basket or Order)
- * @returns {dw.value.Money} non gift certificate amount
- */
-function calculateNonGiftCertificateAmount(lineItemCtnr) {
-    var orderTotal = 0;
-
-    orderTotal = lineItemCtnr.totalGrossPrice;
-
-    return orderTotal;
-}
-
-/**
- * Validate payment amount in klarna payment instrument matches basket amount
- *
- * @param {dw.order.Basket} currentBasket Basket
- * @returns {boolean} true if payment amount is valid
- */
-function isPaymentAmountValid(currentBasket) {
-    var PaymentMgr = require('dw/order/PaymentMgr');
-
-    var amount = calculateNonGiftCertificateAmount(currentBasket);
-    var paymentInstruments = currentBasket.paymentInstruments;
-    var valid = true;
-
-    for (var i = 0; i < paymentInstruments.length; i++) {
-        var paymentInstrument = paymentInstruments[i];
-        var paymentMethod = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod());
-        var paymentMethodID = paymentMethod.getID();
-
-        if (paymentMethodID === KLARNA_PAYMENT_METHOD) {
-            if (paymentInstrument.getPaymentTransaction().getAmount().getValue() !== amount.getValue()) {
-                valid = false;
-            }
-        }
-    }
-
-    return valid;
-}
 
 server.prepend(
     'SubmitPayment',
@@ -235,36 +189,6 @@ server.prepend(
         });
         this.emit('route:Complete', req, res);
     }
-);
-
-server.prepend(
-    'PlaceOrder',
-	function (req, res, next) {
-    var BasketMgr = require('dw/order/BasketMgr');
-    var Resource = require('dw/web/Resource');
-
-    var currentBasket = BasketMgr.getCurrentBasket();
-
-    if (!currentBasket) {
-        return next();
-    }
-
-	// Re-validates existing payment instruments
-    if (!isPaymentAmountValid(currentBasket)) {
-        res.json({
-            error: true,
-            errorStage: {
-                stage: 'payment',
-                step: 'paymentInstrument'
-            },
-            errorMessage: Resource.msg('error.payment.not.valid', 'checkout', null)
-        });
-
-        this.emit('route:Complete', req, res);
-    }
-
-    return next();
-}
 );
 
 module.exports = server.exports();

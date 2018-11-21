@@ -19,7 +19,6 @@
     var OrderLineItemRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/orderLineItem');
     var ShipmentItemRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/shipmentItem');
     var PriceAdjustmentRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/priceAdjustment');
-    var GiftCertificatePIRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/giftCertificatePI');
     var SalesTaxRequestRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/salesTax');
     var AdditionalCustomerInfoRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/additionalCustomerInfo');
 
@@ -31,7 +30,6 @@
         this.orderLineItemRequestBuilder = new OrderLineItemRequestBuilder();
         this.shipmentItemRequestBuilder = new ShipmentItemRequestBuilder();
         this.priceAdjustmentRequestBuilder = new PriceAdjustmentRequestBuilder();
-        this.giftCertificatePIRequestBuilder = new GiftCertificatePIRequestBuilder();
         this.salesTaxRequestBuilder = new SalesTaxRequestRequestBuilder();
         this.additionalCustomerInfoRequestBuilder = new AdditionalCustomerInfoRequestBuilder();
 
@@ -56,10 +54,6 @@
 
     KlarnaPaymentsOrderRequestBuilder.prototype.getPriceAdjustmentRequestBuilder = function () {
         return this.priceAdjustmentRequestBuilder;
-    };
-
-    KlarnaPaymentsOrderRequestBuilder.prototype.getGiftCertificatePIRequestBuilder = function () {
-        return this.giftCertificatePIRequestBuilder;
     };
 
     KlarnaPaymentsOrderRequestBuilder.prototype.getSalesTaxRequestBuilder = function () {
@@ -132,19 +126,9 @@
 
     KlarnaPaymentsOrderRequestBuilder.prototype.buildOrderLines = function (order) {
         var lineItems = order.getAllProductLineItems().toArray();
-        var giftCertificates = order.getGiftCertificateLineItems().toArray();
-        var giftCertificatePIs = order.getGiftCertificatePaymentInstruments().toArray();
         var shipments = order.shipments;
 
         this.buildItems(lineItems, this.context);
-
-        if (giftCertificates.length > 0) {
-            this.buildItems(giftCertificates, this.context);
-        }
-
-        if (giftCertificatePIs.length > 0) {
-            this.buildItemsGiftCertificatePIs(giftCertificatePIs, this.context);
-        }
 
         this.buildShipments(shipments, this.context);
 
@@ -165,9 +149,8 @@
 
     KlarnaPaymentsOrderRequestBuilder.prototype.buildTotalAmount = function (order) {
         var orderAmount = this.getOrderAmount(order);
-        var gcTotalAmount = this.getGCtotalAmount(order);
 
-        this.context.order_amount = Math.round(orderAmount - gcTotalAmount);
+        this.context.order_amount = Math.round(orderAmount);
 
 		// Set order discount line items
         this.addPriceAdjustments(order.priceAdjustments, null, null, this.context);
@@ -226,8 +209,8 @@
     KlarnaPaymentsOrderRequestBuilder.prototype.buildMerchantInformation = function ()	{
         var country = this.getLocaleObject().country;
 
-        this.context.merchant_urls.confirmation = URLUtils.https('KLARNA_PAYMENTS-Confirmation', 'klarna_country', country).toString();
-        this.context.merchant_urls.notification = URLUtils.https('KLARNA_PAYMENTS-Notification', 'klarna_country', country).toString();
+        this.context.merchant_urls.confirmation = URLUtils.https('KlarnaPayments-Confirmation', 'klarna_country', country).toString();
+        this.context.merchant_urls.notification = URLUtils.https('KlarnaPayments-Notification', 'klarna_country', country).toString();
 
         return this;
     };
@@ -275,19 +258,6 @@
 
             context.order_lines.push(newItem);
         }
-    };
-
-    KlarnaPaymentsOrderRequestBuilder.prototype.getGCtotalAmount = function (order) {
-        var giftCertificatePIs = order.getGiftCertificatePaymentInstruments().toArray();
-        var gcTotalAmount = 0;
-        var i = 0;
-
-        if (giftCertificatePIs.length > 0) {
-            for (i = 0; i < giftCertificatePIs.length; i++) {
-                gcTotalAmount += giftCertificatePIs[i].getPaymentTransaction().getAmount() * 100;
-            }
-        }
-        return gcTotalAmount;
     };
 
     KlarnaPaymentsOrderRequestBuilder.prototype.buildShipments = function (shipments, context) {

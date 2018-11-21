@@ -17,7 +17,6 @@
     var OrderLineItemRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/orderLineItem');
     var ShipmentItemRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/shipmentItem');
     var PriceAdjustmentRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/priceAdjustment');
-    var GiftCertificatePIRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/giftCertificatePI');
     var SalesTaxRequestRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/salesTax');
     var AdditionalCustomerInfoRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/additionalCustomerInfo');
 
@@ -29,7 +28,6 @@
         this.orderLineItemRequestBuilder = new OrderLineItemRequestBuilder();
         this.shipmentItemRequestBuilder = new ShipmentItemRequestBuilder();
         this.priceAdjustmentRequestBuilder = new PriceAdjustmentRequestBuilder();
-        this.giftCertificatePIRequestBuilder = new GiftCertificatePIRequestBuilder();
         this.salesTaxRequestBuilder = new SalesTaxRequestRequestBuilder();
         this.additionalCustomerInfoRequestBuilder = new AdditionalCustomerInfoRequestBuilder();
 
@@ -53,10 +51,6 @@
 
     KlarnaPaymentsSessionRequestBuilder.prototype.getPriceAdjustmentRequestBuilder = function () {
         return this.priceAdjustmentRequestBuilder;
-    };
-
-    KlarnaPaymentsSessionRequestBuilder.prototype.getGiftCertificatePIRequestBuilder = function () {
-        return this.giftCertificatePIRequestBuilder;
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.getSalesTaxRequestBuilder = function () {
@@ -128,43 +122,17 @@
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildOrderLines = function (basket) {
         var lineItems = basket.getAllProductLineItems().toArray();
-        var giftCertificates = basket.getGiftCertificateLineItems().toArray();
-        var giftCertificatePIs = basket.getGiftCertificatePaymentInstruments().toArray();
         var shipments = basket.shipments;
 
         this.buildItems(lineItems, this);
-
-        if (giftCertificates.length > 0) {
-            this.buildItems(giftCertificates);
-        }
-
-        if (giftCertificatePIs.length > 0) {
-            this.buildItemsGiftCertificatePIs(giftCertificatePIs);
-        }
 
         this.buildShipments(shipments);
 
         return this;
     };
 
-    KlarnaPaymentsSessionRequestBuilder.prototype.getGCtotalAmount = function (basket) {
-        var giftCertificatePIs = basket.getGiftCertificatePaymentInstruments().toArray();
-        var gcTotalAmount = 0;
-        var i = 0;
-
-        if (giftCertificatePIs.length > 0) {
-            for (i = 0; i < giftCertificatePIs.length; i++) {
-                gcTotalAmount += giftCertificatePIs[i].getPaymentTransaction().getAmount() * 100;
-            }
-        }
-
-        return gcTotalAmount;
-    };
-
     KlarnaPaymentsSessionRequestBuilder.prototype.getOrderAmount = function (basket) {
-        var gcTotalAmount = this.getGCtotalAmount(basket);
-
-        return ((basket.totalGrossPrice.available ? basket.totalGrossPrice.value : basket.totalNetPrice.value) * 100) - gcTotalAmount;
+        return ((basket.totalGrossPrice.available ? basket.totalGrossPrice.value : basket.totalNetPrice.value) * 100);
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildTotalAmount = function (basket) {
@@ -244,20 +212,6 @@
             this.context.order_lines.push(newItem);
 
             i += 1;
-        }
-    };
-
-    KlarnaPaymentsSessionRequestBuilder.prototype.buildItemsGiftCertificatePIs = function (items) {
-        var li = [];
-        var newItem = {};
-        var i = 0;
-
-        for (i = 0; i < items.length; i++) {
-            li = items[i];
-
-            newItem = this.getGiftCertificatePIRequestBuilder().build(li);
-
-            this.context.order_lines.push(newItem);
         }
     };
 

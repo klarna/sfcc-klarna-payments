@@ -30,29 +30,6 @@ server.post('Notification', function (req, res) {
     }
 });
 
-server.get('TestNotification', function () {
-    var URLUtils = require('dw/web/URLUtils');
-    var ServiceRegistry = require('dw/svc/ServiceRegistry');
-    var notificationUrl = URLUtils.https('KLARNA_PAYMENTS-Notification', 'klarna_country', 'en_US').toString();
-    var requestBody = {
-        order_id: 'd2a1a1a1-5879-61ba-8372-8ee7e1bf263d',
-        event_type: 'FRAUD_RISK_REJECTED'
-    };
-
-    try {
-        var service = ServiceRegistry.get('klarna.http.defaultendpoint');
-        service.setCredentialID('klarna.http.uscredentials');
-        service.URL = notificationUrl;
-        service.addHeader('Content-Type', 'application/json');
-        service.addHeader('Accept', 'application/json');
-        service.setRequestMethod('POST');
-
-        service.call(requestBody);
-    } catch (e) {
-        log.error(e);
-    }
-});
-
 server.get('SaveAuth', function (req, res) {
     var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
 

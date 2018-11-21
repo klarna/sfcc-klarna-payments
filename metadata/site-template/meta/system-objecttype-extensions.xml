@@ -169,6 +169,20 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+			<attribute-definition attribute-id="vcnPrivateKey">
+                <display-name xml:lang="x-default">VCN Private Key</display-name>
+                <description xml:lang="x-default">Your 4096 bit RSA Private Key</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="vcnPublicKey">
+                <display-name xml:lang="x-default">VCN Public Key</display-name>
+                <description xml:lang="x-default">Your 4096 bit RSA Public Key</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
 		</custom-attribute-definitions>				
 		<group-definitions>
 			<attribute-group group-id="Klarna_Payments">
@@ -190,11 +204,13 @@
 				<attribute attribute-id="kpRadiusBorder"/>
 				<attribute attribute-id="kpAttachments"/>	
 				<attribute attribute-id="kpNotAvailableMessage"/>	
-				<attribute attribute-id="kpVCNEnabled"/>				
+				<attribute attribute-id="kpVCNEnabled"/>
+				<attribute attribute-id="vcnPrivateKey"/>
+				<attribute attribute-id="vcnPublicKey"/>			
             </attribute-group>
         </group-definitions>
 	</type-extension>
-	
+
 	<type-extension type-id="Order">
 		<custom-attribute-definitions>
             <attribute-definition attribute-id="kpOrderID">

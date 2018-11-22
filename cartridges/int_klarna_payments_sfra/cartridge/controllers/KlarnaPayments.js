@@ -59,4 +59,24 @@ server.get('LoadAuth', function (req, res) {
     this.emit('route:Complete', req, res);
 });
 
+server.get('RefreshSession', function (req, res) {
+    var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
+    var KlarnaLocale = require('~/cartridge/scripts/klarna_payments/locale');
+
+    var userSession = req.session.raw;
+
+    var klarnaSessionManager = new KlarnaSessionManager(userSession, new KlarnaLocale());
+    var response = klarnaSessionManager.createOrUpdateSession();
+
+    res.json({
+        klarna: response,
+        paymentMethodHtmlName: server.forms.getForm('billing').paymentMethod.htmlName,
+        paymentCategoryHtmlName: server.forms.getForm('klarna').paymentCategory.htmlName
+    });
+
+    res.setStatusCode(200);
+
+    this.emit('route:Complete', req, res);
+});
+
 module.exports = server.exports();

@@ -10,7 +10,8 @@
     // klarna payments urls
     var KPurls =  {
         saveAuth			: URLUtils.https('KlarnaPayments-SaveAuth').toString(),
-        loadAuth            : URLUtils.https('KlarnaPayments-LoadAuth').toString()
+        loadAuth            : URLUtils.https('KlarnaPayments-LoadAuth').toString(),
+        refreshSession      : URLUtils.https('KlarnaPayments-RefreshSession').toString()
     };
 
     //klarna payments objects 

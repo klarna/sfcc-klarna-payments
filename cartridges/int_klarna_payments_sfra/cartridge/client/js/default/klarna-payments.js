@@ -2,10 +2,10 @@
 
 var KlarnaCheckout = {
     initStages: {},
+    stageDefer: null,
     currentStage: null,
     klarnaPaymentsUrls: null,
     klarnaPaymentsObjects: null,
-    $klarnaPaymentCategories: null,
     prefix: 'klarna'
 };
 
@@ -21,7 +21,6 @@ KlarnaCheckout.getCookie = function (name) {
 KlarnaCheckout.init = function (config) {
     this.klarnaPaymentsUrls = config.urls;
     this.klarnaPaymentsObjects = config.objects;
-    this.$klarnaPaymentCategories = $('.klarna-payment-item');
 
     setInterval(function () {
         var currentStage = $('.data-checkout-stage').attr('data-checkout-stage');
@@ -35,33 +34,43 @@ KlarnaCheckout.init = function (config) {
 };
 
 KlarnaCheckout.handleStageChanged = function (newStage) {
+    var promise = null;
+
     if (typeof this.initStages[newStage] === 'undefined' || !this.initStages[newStage]) {
         try {
-            this.initStage(newStage);
+            promise = this.initStage(newStage);
+
+            promise.done(function () {
+                this.refreshStage(newStage);
+            }.bind(this));
         } catch (e) {
             console.log(e);
         }
 
         this.initStages[newStage] = true;
+    } else {
+        this.refreshStage(newStage);
     }
-
-    this.refreshStage(newStage);
 };
 
 KlarnaCheckout.initStage = function (stage) {
+    var promise = null;
+
     switch (stage) {
         case 'shipping':
-            this.initShippingStage();
+            promise = this.initShippingStage();
             break;
         case 'payment':
-            this.initPaymentStage();
+            promise = this.initPaymentStage();
             break;
         case 'placeOrder':
-            this.initPlaceOrderStage();
+            promise = this.initPlaceOrderStage();
             break;
         default:
             break;
     }
+
+    return promise;
 };
 
 KlarnaCheckout.refreshStage = function (stage) {
@@ -84,29 +93,64 @@ KlarnaCheckout.refreshStage = function (stage) {
 };
 
 KlarnaCheckout.initShippingStage = function () {
+    var defer = $.Deferred(); // eslint-disable-line
 
+    defer.resolve();
+
+    return defer;
 };
 
 KlarnaCheckout.initPaymentStage = function () {
-    Klarna.Payments.init({
-        client_token: this.klarnaPaymentsObjects.clientToken
-    });
+    var defer = $.Deferred(); // eslint-disable-line
 
-    this.initPaymentOptionsTabs();
+    $.ajax({
+        url: this.klarnaPaymentsUrls.refreshSession
+    }).done(function (res) {
+        Klarna.Payments.init({
+            client_token: res.klarna.client_token
+        });
 
-    this.initKlarnaSubmitPaymentButton();
+        this.klarnaPaymentsObjects.paymentCategoryHtmlName = res.paymentCategoryHtmlName;
+        this.klarnaPaymentsObjects.paymentMethodHtmlName = res.paymentMethodHtmlName;
 
-    if (this.klarnaPaymentsObjects.preassesment) {
-        this.handlePaymentNeedsPreassesment();
-    }
+        this.initPaymentOptionsTabs(res.klarna.payment_method_categories);
+
+        this.initKlarnaSubmitPaymentButton();
+
+        if (this.klarnaPaymentsObjects.preassesment) {
+            this.handlePaymentNeedsPreassesment();
+        }
+
+        this.klarnaPaymentsObjects.clientToken = res.klarna.client_token;
+
+        defer.resolve();
+    }.bind(this));
+
+    return defer;
 };
 
 KlarnaCheckout.initPlaceOrderStage = function () {
-    Klarna.Payments.init({
-        client_token: this.klarnaPaymentsObjects.clientToken
-    });
+    var defer = $.Deferred(); // eslint-disable-line
 
-    this.initKlarnaPlaceOrderButton();
+    if (!this.klarnaPaymentsObjects.clientToken) {
+        $.ajax({
+            url: this.klarnaPaymentsUrls.refreshSession
+        }).done(function (res) {
+            Klarna.Payments.init({
+                client_token: res.klarna.client_token
+            });
+
+            this.initKlarnaPlaceOrderButton();
+
+            this.klarnaPaymentsObjects.clientToken = res.klarna.client_token;
+
+            defer.resolve();
+        }.bind(this));
+    } else {
+        defer.resolve();
+    }
+
+    return defer;
 };
 
 KlarnaCheckout.handleUpdateCheckoutView = function (data) {
@@ -137,10 +181,15 @@ KlarnaCheckout.refreshPaymentStage = function () {
     }
 };
 
+KlarnaCheckout.getKlarnaPaymentOptionTabs = function () {
+    return $('.klarna-payment-item');
+};
+
 KlarnaCheckout.refreshKlarnaPaymentOptions = function () {
+    var $klarnaPaymentCategories = this.getKlarnaPaymentOptionTabs();
     var selectedPaymentCategoryId = this.getFormSelectedPaymentCategory();
 
-    this.$klarnaPaymentCategories.each(function (index, el) {
+    $klarnaPaymentCategories.each(function (index, el) {
         var $el = $(el);
         var klarnaPaymentCategoryId = this.getKlarnaPaymentMethod($el.attr('data-method-id'));
 
@@ -156,8 +205,44 @@ KlarnaCheckout.refreshPlaceOrderStage = function () {
     $klarnaPlaceOrderBtn.prop('disabled', false);
 };
 
-KlarnaCheckout.initPaymentOptionsTabs = function () {
-    var $paymentOptionsTabs = $('.payment-options[role=tablist] a[data-toggle="tab"]');
+KlarnaCheckout.createPaymentOptionTab = function (klarnaPaymentCategory) {
+    var html =
+        '<li class="nav-item klarna-payment-item" data-method-id="klarna_' + klarnaPaymentCategory.identifier + '">' +
+            '<a class="nav-link klarna-payments-' + klarnaPaymentCategory.identifier + '-tab" data-toggle="tab" href="#klarna_payments_' + klarnaPaymentCategory.identifier + '" role="tab">' +
+                '<img class="credit-card-option"' +
+                    'src="' + klarnaPaymentCategory.asset_urls.standard + '"' +
+                    'height="32"' +
+                    'alt="' + klarnaPaymentCategory.name + '"' +
+                    'title="' + klarnaPaymentCategory.name + '"' +
+                '/>' +
+            '</a>' +
+        '</li>';
+
+    return $(html);
+};
+
+KlarnaCheckout.createPaymentOptionTabContent = function (klarnaPaymentCategory) {
+    var html =
+        '<div class="tab-pane klarna_payments-content klarna_payments_' + klarnaPaymentCategory.identifier + '-content" id="klarna_payments_' + klarnaPaymentCategory.identifier + '" role="tabpanel">' +
+            '<input type="hidden" class="form-control" name="isKlarna" value="true" disabled="disabled" />' +
+            '<input type="hidden" class="form-control" name="' + this.klarnaPaymentsObjects.paymentMethodHtmlName + '" value="KLARNA_PAYMENTS" disabled="disabled" />' +
+            '<input type="hidden" class="form-control" name="' + this.klarnaPaymentsObjects.paymentCategoryHtmlName + '" value="' + klarnaPaymentCategory.identifier + '" disabled="disabled" />' +
+            '<div id="klarna_payments_' + klarnaPaymentCategory.identifier + '_container" style="text-align: center;"></div>' +
+        '</div>';
+
+    return $(html);
+};
+
+KlarnaCheckout.initPaymentOptionsTabs = function (klarnaPaymentCategories) {
+    $(klarnaPaymentCategories).each(function (index, klarnaPaymentCategory) {
+        var $paymentTab = this.createPaymentOptionTab(klarnaPaymentCategory);
+        $('.payment-options').append($paymentTab);
+
+        var $paymentTabContent = this.createPaymentOptionTabContent(klarnaPaymentCategory);
+        $('.credit-card-selection-new .tab-content').append($paymentTabContent);
+    }.bind(this));
+
+    var $paymentOptionsTabs = $('.payment-options a[data-toggle="tab"]');
 
     $paymentOptionsTabs.on('shown.bs.tab', function (e) {
         $paymentOptionsTabs.each(function () {
@@ -174,7 +259,9 @@ KlarnaCheckout.initPaymentOptionsTabs = function () {
 };
 
 KlarnaCheckout.bindListenersToPaymentCategories = function () {
-    this.$klarnaPaymentCategories.each(function (index, el) {
+    var $klarnaPaymentCategories = this.getKlarnaPaymentOptionTabs();
+
+    $klarnaPaymentCategories.each(function (index, el) {
         var $klarnaPaymentCategory = $(el);
         var klarnaPaymentCategoryId = $klarnaPaymentCategory.attr('data-method-id');
 
@@ -435,8 +522,9 @@ KlarnaCheckout.getSelectedPaymentMethod = function () {
 
 KlarnaCheckout.isKlarnaPaymentCategory = function (paymentCategory) {
     var flag = false;
+    var $klarnaPaymentCategories = this.getKlarnaPaymentOptionTabs();
 
-    this.$klarnaPaymentCategories.each(function (i, cat) {
+    $klarnaPaymentCategories.each(function (i, cat) {
         var $category = $(cat);
 
         var klarnaPaymentCategoryId = this.getKlarnaPaymentMethod($category.attr('data-method-id'));

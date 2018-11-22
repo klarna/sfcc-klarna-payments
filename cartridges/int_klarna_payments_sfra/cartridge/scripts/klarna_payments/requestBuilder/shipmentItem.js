@@ -54,6 +54,7 @@ ShipmentItem.prototype.build = function (shipment) {
     this.item.unit_price = shipmentUnitPrice;
     this.item.tax_rate = Math.round(shipmentTaxRate);
     this.item.total_amount = shipmentUnitPrice;
+
     this.item.total_tax_amount = this.calculateShippingTotalTaxAmount(shipment);
 
     return this.item;

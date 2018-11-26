@@ -121,7 +121,9 @@
 
         customerPreferredAddress = currentCustomer.addressBook.preferredAddress;
 
-        this.getAddressRequestBuilder().build(customerPreferredAddress);
+        this.context.billing_address = this.getAddressRequestBuilder().build(customerPreferredAddress);
+
+        return this;
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildShipping = function (basket) {
@@ -139,6 +141,8 @@
             }
 
             this.context.shipping_address = this.getAddressRequestBuilder().build(shippingAddress);
+
+            return this;
         }
 
         this.context.shipping_address.email = '';

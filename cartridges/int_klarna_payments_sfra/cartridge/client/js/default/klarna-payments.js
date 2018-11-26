@@ -445,7 +445,7 @@ KlarnaCheckout.obtainBillingAddressData = function () {
 
     var $paymentForm = $('.payment-form');
     var $addressSelectorElement = $paymentForm.find('.addressSelector');
-    var $selectedOption = $addressSelectorElement.find('option[value=' + $addressSelectorElement.val() + ']');
+    var $selectedOption = $addressSelectorElement.find(':selected');
 
     address.given_name = $selectedOption.attr('data-first-name');
     address.family_name = $selectedOption.attr('data-last-name');

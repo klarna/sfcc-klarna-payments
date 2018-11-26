@@ -16,8 +16,6 @@
 
     //klarna payments objects 
     var KPObjects = {
-        sessionID			: CurrentSession.privacy.KlarnaPaymentsSessionID ? CurrentSession.privacy.KlarnaPaymentsSessionID.toString() : null,
-        clientToken			: CurrentSession.privacy.KlarnaPaymentsClientToken ? CurrentSession.privacy.KlarnaPaymentsClientToken.toString() : null,
         preassesment		: preassess
     };
 </isscript>

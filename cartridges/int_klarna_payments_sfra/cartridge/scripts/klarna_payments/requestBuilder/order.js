@@ -101,14 +101,29 @@
         return this;
     };
 
-    KlarnaPaymentsOrderRequestBuilder.prototype.buildBilling = function (basket) {
-        this.context.billing_address = this.getAddressRequestBuilder().build(basket);
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildBilling = function (order) {
+        var billingAddress = order.getBillingAddress();
+        if (billingAddress === null) {
+            return this;
+        }
+
+        this.context.billing_address = this.getAddressRequestBuilder().build(billingAddress);
+        this.context.billing_address.email = order.customerEmail || '';
 
         return this;
     };
 
-    KlarnaPaymentsOrderRequestBuilder.prototype.buildShipping = function (basket) {
-        this.context.shipping_address = this.getAddressRequestBuilder().build(basket);
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildShipping = function (order) {
+        // get default shipment shipping address
+        var shippingAddress = order.getShipments().iterator().next().getShippingAddress();
+
+        if (shippingAddress === null || shippingAddress.address1 === null) {
+            delete this.context.shipping_address;
+            return this;
+        }
+
+        this.context.shipping_address = this.getAddressRequestBuilder().build(shippingAddress);
+        this.context.shipping_address.email = order.customerEmail;
 
         return this;
     };

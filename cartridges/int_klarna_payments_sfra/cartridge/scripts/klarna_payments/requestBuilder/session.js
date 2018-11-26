@@ -98,13 +98,57 @@
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildBilling = function (basket) {
-        this.context.billing_address = this.getAddressRequestBuilder().build(basket);
+        var currentCustomer = basket.getCustomer();
+        var customerPreferredAddress = {};
 
-        return this;
+        this.context.billing_address.email = basket.customerEmail || '';
+
+        if (empty(currentCustomer) || empty(currentCustomer.profile)) {
+            var billingAddress = basket.getShipments().iterator().next().getShippingAddress();
+            if (empty(billingAddress)) {
+                return this;
+            }
+
+            this.context.billing_address = this.getAddressRequestBuilder().build(billingAddress);
+
+            return this;
+        }
+
+        this.context.billing_address.email = currentCustomer.profile.email;
+        this.context.billing_address.phone = currentCustomer.profile.phoneMobile;
+        this.context.billing_address.given_name = currentCustomer.profile.firstName;
+        this.context.billing_address.family_name = currentCustomer.profile.lastName;
+
+        customerPreferredAddress = currentCustomer.addressBook.preferredAddress;
+
+        this.getAddressRequestBuilder().build(customerPreferredAddress);
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildShipping = function (basket) {
-        this.context.shipping_address = this.getAddressRequestBuilder().build(basket);
+        var currentCustomer = basket.getCustomer();
+        var customerPreferredAddress = {};
+
+        this.context.shipping_address.email = basket.customerEmail || '';
+
+        if (empty(currentCustomer) || empty(currentCustomer.profile)) {
+            // get default shipment shipping address
+            var shippingAddress = basket.getShipments().iterator().next().getShippingAddress();
+            if (empty(shippingAddress)) {
+                delete this.context.shipping_address;
+                return this;
+            }
+
+            this.context.shipping_address = this.getAddressRequestBuilder().build(shippingAddress);
+        }
+
+        this.context.shipping_address.email = '';
+        this.context.shipping_address.phone = currentCustomer.profile.phoneMobile;
+        this.context.shipping_address.given_name = currentCustomer.profile.firstName;
+        this.context.shipping_address.family_name = currentCustomer.profile.lastName;
+
+        customerPreferredAddress = currentCustomer.addressBook.preferredAddress;
+
+        this.context.shipping_address = this.getAddressRequestBuilder().build(customerPreferredAddress);
 
         return this;
     };

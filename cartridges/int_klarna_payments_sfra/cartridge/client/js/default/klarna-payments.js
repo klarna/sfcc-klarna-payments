@@ -270,10 +270,11 @@ KlarnaCheckout.bindListenersToPaymentCategories = function () {
 };
 
 KlarnaCheckout.handlePaymentNeedsPreassesment = function () {
-    var $billingAddressForm = $('#dwfrm_billing > fieldset')[0];
-    var $billingAddressFormElements = $billingAddressForm.find('input[name*=dwfrm_billing_billingAddress], select[name*=dwfrm_billing_billingAddress]');
+    var $billingAddressForm = $('#dwfrm_billing');
+    var $billingAddressElementsFields = $billingAddressForm.find('.billing-address');
+    var $billingAddressFormElements = $billingAddressElementsFields.find('input, select');
 
-    $billingAddressForm.addEventListener('change', function () {
+    $billingAddressForm.on('change', function () {
         var selectedPaymentMethod = this.getSelectedPaymentMethod();
 
         var formValid = true;

@@ -103,28 +103,19 @@ KlarnaCheckout.initShippingStage = function () {
 KlarnaCheckout.initPaymentStage = function () {
     var defer = $.Deferred(); // eslint-disable-line
 
-    $.ajax({
-        url: this.klarnaPaymentsUrls.refreshSession
-    }).done(function (res) {
-        Klarna.Payments.init({
-            client_token: res.klarna.client_token
-        });
+    Klarna.Payments.init({
+        client_token: this.klarnaPaymentsObjects.clientToken
+    });
 
-        this.klarnaPaymentsObjects.paymentCategoryHtmlName = res.paymentCategoryHtmlName;
-        this.klarnaPaymentsObjects.paymentMethodHtmlName = res.paymentMethodHtmlName;
+    this.initPaymentOptionsTabs();
 
-        this.initPaymentOptionsTabs(res.klarna.payment_method_categories);
+    this.initKlarnaSubmitPaymentButton();
 
-        this.initKlarnaSubmitPaymentButton();
+    if (this.klarnaPaymentsObjects.preassesment) {
+        this.handlePaymentNeedsPreassesment();
+    }
 
-        if (this.klarnaPaymentsObjects.preassesment) {
-            this.handlePaymentNeedsPreassesment();
-        }
-
-        this.klarnaPaymentsObjects.clientToken = res.klarna.client_token;
-
-        defer.resolve();
-    }.bind(this));
+    defer.resolve();
 
     return defer;
 };
@@ -132,23 +123,13 @@ KlarnaCheckout.initPaymentStage = function () {
 KlarnaCheckout.initPlaceOrderStage = function () {
     var defer = $.Deferred(); // eslint-disable-line
 
-    if (!this.klarnaPaymentsObjects.clientToken) {
-        $.ajax({
-            url: this.klarnaPaymentsUrls.refreshSession
-        }).done(function (res) {
-            Klarna.Payments.init({
-                client_token: res.klarna.client_token
-            });
+    Klarna.Payments.init({
+        client_token: this.klarnaPaymentsObjects.clientToken
+    });
 
-            this.initKlarnaPlaceOrderButton();
+    this.initKlarnaPlaceOrderButton();
 
-            this.klarnaPaymentsObjects.clientToken = res.klarna.client_token;
-
-            defer.resolve();
-        }.bind(this));
-    } else {
-        defer.resolve();
-    }
+    defer.resolve();
 
     return defer;
 };
@@ -176,9 +157,7 @@ KlarnaCheckout.refreshPaymentStage = function () {
     $klarnaSubmitPaymentBtn.show();
     $klarnaSubmitPaymentBtn.prop('disabled', false);
 
-    if (this.getFormSelectedPaymentMethod() === 'KLARNA_PAYMENTS') {
-        this.refreshKlarnaPaymentOptions();
-    }
+    this.refreshKlarnaPaymentOptions();
 };
 
 KlarnaCheckout.getKlarnaPaymentOptionTabs = function () {
@@ -187,14 +166,15 @@ KlarnaCheckout.getKlarnaPaymentOptionTabs = function () {
 
 KlarnaCheckout.refreshKlarnaPaymentOptions = function () {
     var $klarnaPaymentCategories = this.getKlarnaPaymentOptionTabs();
-    var selectedPaymentCategoryId = this.getFormSelectedPaymentCategory();
+    var $selectedPaymentOptionEl = $('.payment-information .nav-link.active').closest('li');
+    var selectedPaymentOptionId = this.getKlarnaPaymentMethod($selectedPaymentOptionEl.attr('data-method-id'));
 
     $klarnaPaymentCategories.each(function (index, el) {
         var $el = $(el);
         var klarnaPaymentCategoryId = this.getKlarnaPaymentMethod($el.attr('data-method-id'));
 
-        if (klarnaPaymentCategoryId === selectedPaymentCategoryId) {
-            $el.find('a.nav-link').click();
+        if (klarnaPaymentCategoryId === selectedPaymentOptionId) {
+            $el.click();
         }
     }.bind(this));
 };
@@ -233,15 +213,7 @@ KlarnaCheckout.createPaymentOptionTabContent = function (klarnaPaymentCategory) 
     return $(html);
 };
 
-KlarnaCheckout.initPaymentOptionsTabs = function (klarnaPaymentCategories) {
-    $(klarnaPaymentCategories).each(function (index, klarnaPaymentCategory) {
-        var $paymentTab = this.createPaymentOptionTab(klarnaPaymentCategory);
-        $('.payment-options').append($paymentTab);
-
-        var $paymentTabContent = this.createPaymentOptionTabContent(klarnaPaymentCategory);
-        $('.credit-card-selection-new .tab-content').append($paymentTabContent);
-    }.bind(this));
-
+KlarnaCheckout.initPaymentOptionsTabs = function () {
     var $paymentOptionsTabs = $('.payment-options a[data-toggle="tab"]');
 
     $paymentOptionsTabs.on('shown.bs.tab', function (e) {
@@ -263,9 +235,11 @@ KlarnaCheckout.bindListenersToPaymentCategories = function () {
 
     $klarnaPaymentCategories.each(function (index, el) {
         var $klarnaPaymentCategory = $(el);
-        var klarnaPaymentCategoryId = $klarnaPaymentCategory.attr('data-method-id');
+        var klarnaPaymentCategoryId = this.getKlarnaPaymentMethod($klarnaPaymentCategory.attr('data-method-id'));
 
-        $klarnaPaymentCategory.on('click', this.loadPaymentData(klarnaPaymentCategoryId));
+        $klarnaPaymentCategory.on('click', function () {
+            this.loadPaymentData(klarnaPaymentCategoryId);
+        }.bind(this));
     }.bind(this));
 };
 
@@ -282,14 +256,14 @@ KlarnaCheckout.handlePaymentNeedsPreassesment = function () {
         $billingAddressFormElements.each(function (index, el) {
             var $el = $(el);
 
-            if ($el.getAttribute('aria-invalid') === 'true' || ($el.getAttribute('aria-required') === 'true' && $el.value.length === 0)) {
+            if ($el.attr('aria-invalid') === 'true' || ($el.attr('aria-required') === 'true' && $el.value.length === 0)) {
                 formValid = false;
                 return;
             }
         });
 
         if (formValid && this.isKlarnaPaymentCategory(selectedPaymentMethod)) {
-            this.updatePaymentData(selectedPaymentMethod);
+            this.loadPaymentData(selectedPaymentMethod);
         }
     }.bind(this));
 };
@@ -503,6 +477,10 @@ KlarnaCheckout.getFormSelectedPaymentCategory = function () {
     var categoryId = $('.payment-information').attr('data-payment-category-id');
 
     return categoryId;
+};
+
+KlarnaCheckout.setFormSelectedPaymentCategory = function (categoryId) {
+    $('.payment-information').attr('data-payment-category-id', categoryId);
 };
 
 KlarnaCheckout.getSelectPaymentMethodElement = function () {

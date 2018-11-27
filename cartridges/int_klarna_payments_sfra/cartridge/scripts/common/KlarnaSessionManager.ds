@@ -93,8 +93,8 @@ KlarnaSessionManager.prototype._updateSession = function() {
 	response = klarnaPaymentsHttpService.call( requestUrl, 'GET', localeObject.custom.credentialID );
 
 	Transaction.wrap( function() {
-	//	_this.userSession.privacy.KlarnaPaymentsClientToken = response.client_token;
-	//	_this.userSession.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
+		_this.userSession.privacy.KlarnaPaymentsClientToken = response.client_token;
+		_this.userSession.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
 	} );
 
     return response;
@@ -118,8 +118,8 @@ KlarnaSessionManager.prototype._createSession = function() {
 
 	Transaction.wrap( function() {
 		_this.userSession.privacy.KlarnaPaymentsSessionID = response.session_id;
-	//	_this.userSession.privacy.KlarnaPaymentsClientToken = response.client_token;
-	//	_this.userSession.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
+		_this.userSession.privacy.KlarnaPaymentsClientToken = response.client_token;
+		_this.userSession.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
 		_this.userSession.privacy.SelectedKlarnaPaymentMethod = null;
 	} );
 
@@ -138,8 +138,7 @@ KlarnaSessionManager.prototype.createOrUpdateSession = function() {
 	} catch (e) {
 		log.error( 'Error in handling Klarna Payments Session: {0}', e.message + e.stack );
 
-		Transaction.wrap( function()
-		{
+		Transaction.wrap( function() {
 			_this.userSession.privacy.KlarnaPaymentsSessionID = null;
 			_this.userSession.privacy.KlarnaPaymentsClientToken = null;
 			_this.userSession.privacy.KlarnaPaymentMethods = null;

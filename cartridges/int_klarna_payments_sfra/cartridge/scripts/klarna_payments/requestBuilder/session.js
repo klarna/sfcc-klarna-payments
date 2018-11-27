@@ -270,7 +270,7 @@
         for (var i = 0; i < shipments.length; i++) {
             shipment = shipments[i];
 
-            if (!empty(shipment.shippingMethod) && !empty(shipment.shippingAddress)) {
+            if (!empty(shipment.shippingMethod)) {
                 shippingLineItem = this.getShipmentItemRequestBuilder().build(shipment);
 
                 this.addPriceAdjustments(shipment.shippingPriceAdjustments.toArray(), null, null);

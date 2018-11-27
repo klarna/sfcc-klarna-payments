@@ -31,25 +31,25 @@ server.post('Notification', function (req, res) {
 });
 
 server.get('SaveAuth', function (req, res) {
+    var KlarnaLocale = require('~/cartridge/scripts/klarna_payments/locale');
     var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
 
     var token = req.httpHeaders['x-auth'];
     var finalizeRequired = req.httpHeaders['finalize-required'];
     var userSession = req.session.raw;
-    var localeId = req.locale.id;
 
-    var klarnaSessionManager = new KlarnaSessionManager(userSession, localeId);
+    var klarnaSessionManager = new KlarnaSessionManager(userSession, new KlarnaLocale());
     klarnaSessionManager.saveAuthorizationToken(token, finalizeRequired);
 
     res.setStatusCode(200);
 });
 
 server.get('LoadAuth', function (req, res) {
+    var KlarnaLocale = require('~/cartridge/scripts/klarna_payments/locale');
     var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
     var userSession = req.session.raw;
-    var localeId = req.locale.id;
 
-    var klarnaSessionManager = new KlarnaSessionManager(userSession, localeId);
+    var klarnaSessionManager = new KlarnaSessionManager(userSession, new KlarnaLocale());
     var authInfo = klarnaSessionManager.loadAuthorizationInfo();
 
     res.json(authInfo);

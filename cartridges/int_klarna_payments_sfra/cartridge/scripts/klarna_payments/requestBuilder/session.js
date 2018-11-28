@@ -110,11 +110,11 @@
             }
 
             this.context.billing_address = this.getAddressRequestBuilder().build(billingAddress);
+            this.context.billing_address.email = basket.customerEmail || '';
 
             return this;
         }
 
-        this.context.billing_address.email = currentCustomer.profile.email;
         this.context.billing_address.phone = currentCustomer.profile.phoneMobile;
         this.context.billing_address.given_name = currentCustomer.profile.firstName;
         this.context.billing_address.family_name = currentCustomer.profile.lastName;
@@ -124,6 +124,8 @@
         if (!empty(customerPreferredAddress)) {
             this.context.billing_address = this.getAddressRequestBuilder().build(customerPreferredAddress);
         }
+
+        this.context.billing_address.email = currentCustomer.profile.email;
 
         return this;
     };

@@ -18,7 +18,7 @@ Address.prototype = new Builder();
 Address.prototype.build = function (dwAddress) {
     this.address = new AddressRequestModel();
 
-    this.address.phone = dwAddress.phone;
+    this.address.phone = strval(dwAddress.phone);
     this.address.given_name = dwAddress.firstName;
     this.address.family_name = dwAddress.lastName;
     this.address.street_address = strval(dwAddress.address1);

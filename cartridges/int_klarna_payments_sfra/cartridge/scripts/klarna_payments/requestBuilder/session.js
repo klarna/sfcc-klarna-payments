@@ -121,7 +121,9 @@
 
         customerPreferredAddress = currentCustomer.addressBook.preferredAddress;
 
-        this.context.billing_address = this.getAddressRequestBuilder().build(customerPreferredAddress);
+        if (!empty(customerPreferredAddress)) {
+            this.context.billing_address = this.getAddressRequestBuilder().build(customerPreferredAddress);
+        }
 
         return this;
     };
@@ -152,7 +154,9 @@
 
         customerPreferredAddress = currentCustomer.addressBook.preferredAddress;
 
-        this.context.shipping_address = this.getAddressRequestBuilder().build(customerPreferredAddress);
+        if (!empty(customerPreferredAddress)) {
+            this.context.shipping_address = this.getAddressRequestBuilder().build(customerPreferredAddress);
+        }
 
         return this;
     };

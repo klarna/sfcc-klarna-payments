@@ -115,7 +115,7 @@
             return this;
         }
 
-        this.context.billing_address.phone = currentCustomer.profile.phoneMobile;
+        this.context.billing_address.phone = currentCustomer.profile.phoneHome;
         this.context.billing_address.given_name = currentCustomer.profile.firstName;
         this.context.billing_address.family_name = currentCustomer.profile.lastName;
 
@@ -150,7 +150,7 @@
         }
 
         this.context.shipping_address.email = '';
-        this.context.shipping_address.phone = currentCustomer.profile.phoneMobile;
+        this.context.shipping_address.phone = currentCustomer.profile.phoneHome;
         this.context.shipping_address.given_name = currentCustomer.profile.firstName;
         this.context.shipping_address.family_name = currentCustomer.profile.lastName;
 

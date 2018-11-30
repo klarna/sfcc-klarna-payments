@@ -7,6 +7,7 @@ var KlarnaPaymentsConstants = require('~/cartridge/scripts/util/KlarnaPaymentsCo
 var PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
 var CREDIT_CARD_PROCESSOR_ID = KlarnaPaymentsConstants.CREDIT_CARD_PROCESSOR_ID;
 var NOTIFY_EVENT_TYPES = KlarnaPaymentsConstants.NOTIFY_EVENT_TYPES;
+var KLARNA_FRAUD_STATUSES = KlarnaPaymentsConstants.FRAUD_STATUS;
 
 var Transaction = require('dw/system/Transaction');
 var PaymentMgr = require('dw/order/PaymentMgr');
@@ -360,26 +361,20 @@ function updateOrderWithKlarnaOrderInfo(order, paymentInstrument) {
 /**
  *
  * @param {dw.order.order} order DW Order
- * @param {string} orderNo DW Order No
  * @param {string} kpOrderID KP Order ID
  * @param {Object} localeObject locale info
- * @param {dw.order.paymentInstrument} paymentInstrument klarna payment instrument
  *
  * @return {AuthorizationResult} authorization result
  */
-function authorizeAcceptedOrder(order, orderNo, kpOrderID, localeObject, paymentInstrument) {
+function authorizeAcceptedOrder(order, kpOrderID, localeObject) {
     var kpVCNEnabledPreferenceValue = Site.getCurrent().getCustomPreferenceValue('kpVCNEnabled');
     var authResult = {};
 
-    if (session.privacy.KlarnaPaymentsFraudStatus === 'ACCEPTED' && !kpVCNEnabledPreferenceValue) {
-        acknowledgeOrder(session.privacy.KlarnaPaymentsOrderID, localeObject);
-    }
-
-    updateOrderWithKlarnaOrderInfo(order, paymentInstrument);
-
-    if (session.privacy.KlarnaPaymentsFraudStatus !== 'PENDING' && kpVCNEnabledPreferenceValue) {
+    if (!kpVCNEnabledPreferenceValue) {
+        acknowledgeOrder(kpOrderID, localeObject);
+    } else {
         try {
-            createVCNSettlement(order, session.privacy.KlarnaPaymentsOrderID, localeObject);
+            createVCNSettlement(order, kpOrderID, localeObject);
 
             authResult = callCreditCardAuthorizationHook(order);
         } catch (e) {
@@ -416,10 +411,16 @@ function authorize(order, orderNo, paymentInstrument) {
         pInstr.paymentTransaction.custom.kpFraudStatus = session.privacy.KlarnaPaymentsFraudStatus;
     });
 
-    if (!klarnaOrderCreated || session.privacy.KlarnaPaymentsFraudStatus === 'REJECTED') {
+    if (!klarnaOrderCreated || session.privacy.KlarnaPaymentsFraudStatus === KLARNA_FRAUD_STATUSES.REJECTED) {
         authorizationResult = generateErrorAuthResult();
     } else {
-        authorizationResult = authorizeAcceptedOrder(order, orderNo, session.privacy.KlarnaPaymentsOrderID, localeObject, paymentInstrument);
+        updateOrderWithKlarnaOrderInfo(order, paymentInstrument);
+
+        if (session.privacy.KlarnaPaymentsFraudStatus === KLARNA_FRAUD_STATUSES.PENDING) {
+            authorizationResult = generateSuccessAuthResult();
+        } else {
+            authorizationResult = authorizeAcceptedOrder(order, session.privacy.KlarnaPaymentsOrderID, localeObject);
+        }
     }
 
     return authorizationResult;

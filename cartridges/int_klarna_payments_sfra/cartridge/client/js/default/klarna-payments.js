@@ -275,7 +275,6 @@ KlarnaCheckout.getKlarnaPaymentMethod = function (methodId) {
 };
 
 KlarnaCheckout.handleFinalizeRequired = function () {
-    var $klarnaPlaceOrderBtn = $('.klarna-place-order');
     var $placeOrderBtn = $('.place-order');
     var selectedPaymentMethod = this.getCookie('selectedKlarnaPaymentCategory');
 
@@ -289,8 +288,6 @@ KlarnaCheckout.handleFinalizeRequired = function () {
                 },
                 url: this.klarnaPaymentsUrls.saveAuth
             }).done(function () {
-                $klarnaPlaceOrderBtn.hide();
-
                 // call the click event on the original checkout button
                 // to trigger checkout stage processing
                 $placeOrderBtn.click();
@@ -320,10 +317,16 @@ KlarnaCheckout.initKlarnaPlaceOrderButton = function () {
     $klarnaPlaceOrderBtn.click(function (event) {
         event.stopPropagation();
 
+        $klarnaPlaceOrderBtn.prop('disabled', true);
+
         $.ajax({
             url: this.klarnaPaymentsUrls.loadAuth
         }).done(this.handleLoadAuthResponse.bind(this));
     }.bind(this));
+};
+
+KlarnaCheckout.getKlarnaSubmitPaymentBtn = function () {
+    return $('.klarna-submit-payment');
 };
 
 KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
@@ -362,13 +365,13 @@ KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
                     }).done(function () {
                         document.cookie = 'selectedKlarnaPaymentCategory=' + selectedPaymentMethod + '; path=/';
 
-                        $klarnaSubmitPaymentBtn.hide();
+                        $klarnaSubmitPaymentBtn.prop('disabled', true);
 
 						// call the click event on the original checkout button
 						// to trigger checkout stage processing
                         $submitPaymentBtn.click();
                     });
-                } else {
+                } else if (res.show_form) {
                     $klarnaSubmitPaymentBtn.prop('disabled', false);
                 }
             }.bind(this));
@@ -539,10 +542,9 @@ KlarnaCheckout.loadPaymentData = function (paymentCategory) {
         container: containerName,
         payment_method_category: klarnaPaymentMethod
     }, updateData, function (res) {
-        if (!res.show_form) {
-			//	$continueBtn.disabled = true;
-        }
-    });
+        var $klarnaSubmitPaymentBtn = this.getKlarnaSubmitPaymentBtn();
+        $klarnaSubmitPaymentBtn.prop('disabled', !res.show_form);
+    }.bind(this));
 };
 
 window.klarnaAsyncCallback = function () {

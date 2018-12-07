@@ -2,7 +2,6 @@
 
 'use strict';
 
-var Countries = require('~/cartridge/scripts/util/Countries');
 var CustomObjectMgr = require('dw/object/CustomObjectMgr');
 var Locale = require('dw/util/Locale');
 
@@ -16,9 +15,7 @@ KlarnaLocale.prototype.getRequestLocale = function () {
 
 KlarnaLocale.prototype.getRequestLocaleCountryCode = function () {
     var requestLocale = this.getRequestLocale();
-    var countryCode = Countries.getCurrent(requestLocale).countryCode;
-
-    return countryCode;
+    return requestLocale.country;
 };
 
 /**

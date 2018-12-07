@@ -28,9 +28,18 @@ ShipmentItem.prototype.calculateShippingTotalTaxAmount = function (shipment) {
 
 ShipmentItem.prototype.getShipmentTaxRate = function (shipment) {
     var shipmentTaxRate = 0;
+    var taxJurisdictionId = '';
 
-    if (!empty(shipment.shippingMethod) && !empty(shipment.shippingMethod.taxClassID) && !empty(shipment.shippingAddress)) {
-        shipmentTaxRate = (isTaxationPolicyNet()) ? 0 : (TaxMgr.getTaxRate(shipment.shippingMethod.taxClassID, TaxMgr.getTaxJurisdictionID(new ShippingLocation(shipment.shippingAddress)))) * 10000;
+    if (!empty(shipment.shippingMethod) && !empty(shipment.shippingMethod.taxClassID)) {
+        if (!empty(shipment.shippingAddress)) {
+            taxJurisdictionId = TaxMgr.getTaxJurisdictionID(new ShippingLocation(shipment.shippingAddress));
+        } else {
+            taxJurisdictionId = TaxMgr.getDefaultTaxJurisdictionID();
+        }
+
+        var taxRate = TaxMgr.getTaxRate(shipment.shippingMethod.taxClassID, taxJurisdictionId);
+
+        shipmentTaxRate = (isTaxationPolicyNet()) ? 0 : (taxRate) * 10000;
     }
 
     return shipmentTaxRate;

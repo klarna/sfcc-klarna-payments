@@ -7,7 +7,7 @@
                         height="32"
                         alt="${paymentOption.name}"
                         title="${paymentOption.name}"
-                />
+                /> <span class="option-name">${klarnaPaymentMethod.name}</span>
             </a>
         </li>
     </isloop>

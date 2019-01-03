@@ -8,13 +8,16 @@
     "lint": "sgmf-scripts --lint js && sgmf-scripts --lint css",
     "upload": "sgmf-scripts --upload -- ",
     "uploadCartridge": "sgmf-scripts --uploadCartridge sfraklarnapayments",
-    "compile:js": "sgmf-scripts --compile js"
+    "compile:js": "sgmf-scripts --compile js",
+    "compile:scss": "sgmf-scripts --compile css"
   },
   "author": "Ivan Zanev",
   "devDependencies": {
     "eslint": "^3.2.2",
     "eslint-config-airbnb-base": "^5.0.1",
     "eslint-plugin-import": "^1.12.0",
+    "node-sass": "^4.11.0",
+    "sass-loader": "^7.1.0",
     "sgmf-scripts": "^2.1.1",
     "stylelint": "^7.1.0",
     "stylelint-config-standard": "^12.0.0",
@@ -23,5 +26,9 @@
   "dependencies": {
     "autoprefixer": "^9.3.1",
     "eslint-plugin-sitegenesis": "^1.0.0"
-  }
+  },
+  "browserslist": [
+    "last 2 versions",
+    "ie >= 10"
+  ]
 }

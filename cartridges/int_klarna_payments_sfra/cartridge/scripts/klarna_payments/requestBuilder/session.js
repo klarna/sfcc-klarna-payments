@@ -18,7 +18,7 @@
     var ShipmentItemRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/shipmentItem');
     var PriceAdjustmentRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/priceAdjustment');
     var SalesTaxRequestRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/salesTax');
-    var AdditionalCustomerInfoRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/additionalCustomerInfo');
+    var AdditionalCustomerInfoRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/additionalCustomerInfo');
 
     /**
      * KP Session Request Builder

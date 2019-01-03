@@ -19,7 +19,7 @@ function getCountries() {
 		// loop over allowed locales
 		for (var i = 0; i < allowedLocales.length; i++) {
 			var locale = Locale.getLocale(allowedLocales[i]);
-			if (country.countryCode === locale.country) {
+			if (country.id === locale.ID) {
 				hasAllowedLocale = true;
 				break;
 			}
@@ -53,12 +53,12 @@ function getCurrent(currentLocale) {
 		return;
 	}
 	var country;
-	if (!currentLocale.country) {
+	if (!currentLocale.ID) {
 		return countries[0]; // return the first in the list if the requested one is not available
 	}
 	for (var i = 0; i < countries.length; i++) {
 		var _country = countries[i];
-		if (_country.countryCode === currentLocale.country) {
+		if (_country.id === currentLocale.ID) {
 			country = _country;
 			break;
 		}

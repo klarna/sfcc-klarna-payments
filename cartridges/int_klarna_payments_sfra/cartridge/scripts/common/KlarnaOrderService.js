@@ -61,7 +61,7 @@ function KlarnaOrderService() {
             basket: basket,
             localeObject: localeObject
         });
-    
+
         var requestBody = orderRequestBuilder.build();
 
         var requestUrl = StringUtils.format(this.klarnaApiContext.getFlowApiUrls().get('updateOrder'), klarnaOrderID);

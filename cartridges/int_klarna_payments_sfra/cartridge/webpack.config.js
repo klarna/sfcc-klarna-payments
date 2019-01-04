@@ -15,8 +15,8 @@ module.exports = [{
         filename: '[name].js'
     }
 }, {
-    mode: "production",
-    name: "scss",
+    mode: 'production',
+    name: 'scss',
     entry: {
         'klarna-payments': path.join(__dirname, '/client/scss/default/klarna-payments.scss')
     },
@@ -28,7 +28,7 @@ module.exports = [{
         rules: [{
             test: /\.scss?$/,
             use: [
-                "sass-loader"
+                'sass-loader'
             ]
         }]
     }

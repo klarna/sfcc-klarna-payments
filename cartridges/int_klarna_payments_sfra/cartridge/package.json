@@ -24,8 +24,7 @@
     "stylelint-scss": "^1.3.4"
   },
   "dependencies": {
-    "autoprefixer": "^9.4.4",
-    "eslint-plugin-sitegenesis": "^1.0.0"
+    "autoprefixer": "^9.4.4"
   },
   "browserslist": [
     "last 2 versions",

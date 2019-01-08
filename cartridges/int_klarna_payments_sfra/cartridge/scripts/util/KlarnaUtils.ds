@@ -2,6 +2,9 @@
 
 var Site = require('dw/system/Site');
 var TaxMgr = require('dw/order/TaxMgr');
+var collections = require('*/cartridge/scripts/util/collections');
+var Transaction = require('dw/system/Transaction');
+var KlarnaPaymentsConstants = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js');
 
 function isCountryInEU( country ) {
     var isInEU = true;
@@ -48,8 +51,29 @@ function isTaxationPolicyNet() {
     return (TaxMgr.getTaxationPolicy() === TaxMgr.TAX_POLICY_NET);
 };
 
+function isKlarnaPaymentInstrument(paymentInstr) {
+    var PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
+
+    return (paymentInstr.getPaymentMethod() === PAYMENT_METHOD);
+}
+
+function removeAllKlarnaPaymentInstruments(basket) {
+    var methodName = KlarnaPaymentsConstants.PAYMENT_METHOD;
+
+    Transaction.wrap(function () {
+        var paymentInstruments = basket.getPaymentInstruments(methodName);
+
+        collections.forEach(paymentInstruments, function (item) {
+            if (isKlarnaPaymentInstrument(item)) {
+                basket.removePaymentInstrument(item);
+            }
+        });
+    });
+}
+
 module.exports.isEnabledPreassessmentForCountry = isEnabledPreassessmentForCountry;
 module.exports.stripControlCharacters = stripControlCharacters;
 module.exports.isTaxationPolicyNet = isTaxationPolicyNet;
+module.exports.removeAllKlarnaPaymentInstruments = removeAllKlarnaPaymentInstruments;
 module.exports.strval = strval;
 module.exports.empty = empty;

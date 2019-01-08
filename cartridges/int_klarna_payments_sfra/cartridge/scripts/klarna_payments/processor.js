@@ -270,12 +270,6 @@ function handle(basket) {
     var paymentInstrument = null;
 
     Transaction.wrap(function () {
-        var paymentInstruments = basket.getPaymentInstruments(methodName);
-
-        collections.forEach(paymentInstruments, function (item) {
-            basket.removePaymentInstrument(item);
-        });
-
         paymentInstrument = basket.createPaymentInstrument(methodName, amount);
     });
 

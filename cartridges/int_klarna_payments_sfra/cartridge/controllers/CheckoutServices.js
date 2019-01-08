@@ -12,9 +12,13 @@ server.prepend(
     server.middleware.https,
     csrfProtection.validateAjaxRequest,
     function (req, res, next) {
+        var KlarnaUtils = require('~/cartridge/scripts/util/KlarnaUtils');
         var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
         var StringUtils = require('dw/util/StringUtils');
         var Money = require('dw/value/Money');
+        var BasketMgr = require('dw/order/BasketMgr');
+
+        var currentBasket = BasketMgr.getCurrentBasket();
 
         var formParams = req.form;
         var currentCustomer = req.currentCustomer;
@@ -24,6 +28,8 @@ server.prepend(
         var email = '';
 
         if (!isKlarna) {
+            KlarnaUtils.removeAllKlarnaPaymentInstruments(currentBasket);
+
             next();
             return;
         }
@@ -36,8 +42,6 @@ server.prepend(
         var OrderModel = require('*/cartridge/models/order');
         var Locale = require('dw/util/Locale');
         var URLUtils = require('dw/web/URLUtils');
-        var BasketMgr = require('dw/order/BasketMgr');
-        var currentBasket = BasketMgr.getCurrentBasket();
 
         if (!currentBasket) {
             res.json({

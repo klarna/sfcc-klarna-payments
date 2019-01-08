@@ -505,16 +505,31 @@ KlarnaCheckout.obtainBillingAddressData = function () {
     var $addressSelectorElement = $paymentForm.find('.addressSelector');
     var $selectedOption = $addressSelectorElement.find(':selected');
 
-    address.given_name = $selectedOption.attr('data-first-name');
-    address.family_name = $selectedOption.attr('data-last-name');
-    address.street_address = $selectedOption.attr('data-address1');
-    address.street_address2 = $selectedOption.attr('data-address2');
-    address.city = $selectedOption.attr('data-city');
-    address.region = $selectedOption.attr('data-state-code');
-    address.postal_code = $selectedOption.attr('data-postal-code');
-    address.country = $selectedOption.attr('data-country-code');
-    address.phone = $selectedOption.attr('data-phone');
-    address.email = this.getKlarnaEmail().val();
+    if ($selectedOption.val() === 'new') {
+        var $billingAddressForm = $('.billing-address');
+
+        address.given_name = $billingAddressForm.find('.billingFirstName').val();
+        address.family_name = $billingAddressForm.find('.billingLastName').val();
+        address.street_address = $billingAddressForm.find('.billingAddressOne').val();
+        address.street_address2 = $billingAddressForm.find('.billingAddressTwo').val();
+        address.city = $billingAddressForm.find('.billingAddressCity').val();
+        address.region = $billingAddressForm.find('.billingState').val();
+        address.postal_code = $billingAddressForm.find('.billingZipCode').val();
+        address.country = $billingAddressForm.find('.billingCountry').val();
+        address.phone = $billingAddressForm.find('.billingPhoneNumber').val();
+        address.email = this.getKlarnaEmail().val();
+    } else {
+        address.given_name = $selectedOption.attr('data-first-name');
+        address.family_name = $selectedOption.attr('data-last-name');
+        address.street_address = $selectedOption.attr('data-address1');
+        address.street_address2 = $selectedOption.attr('data-address2');
+        address.city = $selectedOption.attr('data-city');
+        address.region = $selectedOption.attr('data-state-code');
+        address.postal_code = $selectedOption.attr('data-postal-code');
+        address.country = $selectedOption.attr('data-country-code');
+        address.phone = $selectedOption.attr('data-phone');
+        address.email = this.getKlarnaEmail().val();
+    }
 
     return address;
 };

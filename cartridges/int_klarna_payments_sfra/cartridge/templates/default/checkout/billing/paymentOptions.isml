@@ -15,7 +15,7 @@
 >
     <isset name="klarnaForm" value="${pdict.klarnaForm}" scope="page"/>
 
-    <div class="form-group required	${klarnaForm.email.htmlName}">
+    <div class="form-group required	${klarnaForm.email.htmlName} hide">
         <label class="form-control-label" for="email">${Resource.msg('field.customer.email','checkout',null)}</label>
         <span class="info-icon">
             <span class="icon">i</span>

@@ -109,6 +109,8 @@ KlarnaCheckout.initPaymentStage = function () {
 
     this.initPaymentOptionsTabs();
 
+    this.initKlarnaEmail();
+
     this.initKlarnaSubmitPaymentButton();
 
     if (this.klarnaPaymentsObjects.preassesment) {
@@ -214,11 +216,23 @@ KlarnaCheckout.createPaymentOptionTabContent = function (klarnaPaymentCategory) 
 };
 
 KlarnaCheckout.initPaymentOptionsTabs = function () {
+    var _this = this;
     var $paymentOptionsTabs = $('.payment-options a[data-toggle="tab"]');
 
     $paymentOptionsTabs.on('shown.bs.tab', function (e) {
+        var $clickedTabLink = $(e.target);
+
+        if ($clickedTabLink.parent('li').hasClass('klarna-payment-item')) {
+            _this.getKlarnaEmailContainer().removeClass('hide');
+        } else {
+            _this.getKlarnaEmailContainer().addClass('hide');
+        }
+
         $paymentOptionsTabs.each(function () {
-            var $tabContent = $($(this).attr('href'));
+            var $tabLink = $(this);
+            var tabId = $tabLink.attr('href');
+            var $tabContent = $(tabId);
+
             if (this === e.target) {
                 $tabContent.find('input, textarea, select').removeAttr('disabled', 'disabled');
             } else {
@@ -329,6 +343,60 @@ KlarnaCheckout.getKlarnaSubmitPaymentBtn = function () {
     return $('.klarna-submit-payment');
 };
 
+KlarnaCheckout.isKlarnaEmailValid = function () {
+    var $emailField = this.getKlarnaEmail();
+    var regExpPattern = $emailField.attr('pattern');
+    var maxlength = parseInt($emailField.attr('maxlength'));
+    var email = $emailField.val();
+    var regExp = new RegExp(regExpPattern);
+
+    if (email.length > maxlength) {
+        return false;
+    }
+
+    if (!regExp.test(email)) {
+        return false;
+    }
+
+    return true;
+};
+
+KlarnaCheckout.initKlarnaEmail = function () {
+    var $emailField = this.getKlarnaEmail();
+
+    $emailField.on('keypress input', function () {
+        if (this.isKlarnaEmailValid()) {
+            this.markKlarnaEmailValid();
+        } else {
+            this.markKlarnaEmailInvalid();
+        }
+    }.bind(this));
+};
+
+KlarnaCheckout.markKlarnaEmailInvalid = function () {
+    var $emailField = this.getKlarnaEmail();
+
+    $emailField.next('.invalid-feedback').html('This field is required').show();
+};
+
+KlarnaCheckout.markKlarnaEmailValid = function () {
+    var $emailField = this.getKlarnaEmail();
+
+    $emailField.next('.invalid-feedback').hide();
+};
+
+KlarnaCheckout.getKlarnaEmail = function () {
+    var $emailField = $('.payment-form .klarna_email');
+
+    return $emailField;
+};
+
+KlarnaCheckout.getKlarnaEmailContainer = function () {
+    var $emailField = this.getKlarnaEmail();
+
+    return $emailField.parent('.form-group');
+};
+
 KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
     var $submitPaymentBtn = $('.submit-payment');
 
@@ -345,6 +413,18 @@ KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
 
         if (this.isKlarnaPaymentCategory(selectedPaymentMethod)) {
             event.preventDefault(); // prevent form submission until authorize call is done
+
+            if (!this.isKlarnaEmailValid()) {
+                this.markKlarnaEmailInvalid();
+
+                $([document.documentElement, document.body]).animate({
+                    scrollTop: this.getKlarnaEmail().offset().top
+                }, 500);
+
+                event.stopPropagation();
+                return;
+            }
+
             $klarnaSubmitPaymentBtn.prop('disabled', true);
 
             if (this.userHasEnteredShippingAddress()) {
@@ -434,7 +514,7 @@ KlarnaCheckout.obtainBillingAddressData = function () {
     address.postal_code = $selectedOption.attr('data-postal-code');
     address.country = $selectedOption.attr('data-country-code');
     address.phone = $selectedOption.attr('data-phone');
-    address.email = $paymentForm.find('.klarna_email').val();
+    address.email = this.getKlarnaEmail().val();
 
     return address;
 };
@@ -464,7 +544,7 @@ KlarnaCheckout.obtainShippingAddressData = function () {
     address.postal_code = $shippingAddressBlock.find('.shippingZipCode').val();
     address.country = $shippingAddressBlock.find('.shippingCountry').val();
     address.phone = $shippingAddressBlock.find('.shippingPhoneNumber').val();
-    address.email = $('.payment-form .klarna_email').val();
+    address.email = this.getKlarnaEmail().val();
 
     return address;
 };

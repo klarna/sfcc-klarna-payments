@@ -4,6 +4,8 @@
 require('shelljs/make');
 var path = require('path');
 
+var ExtractTextPlugin = require('sgmf-scripts')['extract-text-webpack-plugin'];
+
 module.exports = [{
     mode: 'production',
     name: 'js',
@@ -13,7 +15,11 @@ module.exports = [{
     output: {
         path: path.resolve('./static/default/js/'),
         filename: '[name].js'
-    }
+    },
+	optimization: {
+		// We no not want to minimize our code.
+		minimize: false
+	}
 }, {
     mode: 'production',
     name: 'scss',
@@ -21,15 +27,39 @@ module.exports = [{
         'klarna-payments': path.join(__dirname, '/client/scss/default/klarna-payments.scss')
     },
     output: {
-        path: path.resolve('./static/default/scss/'),
-        filename: '[name].scss'
+        path: path.resolve('./static/default/css/'),
+        filename: '[name].css'
     },
     module: {
-        rules: [{
-            test: /\.scss?$/,
-            use: [
-                'sass-loader'
-            ]
+		rules: [{
+            test: /\.scss$/,
+            use: ExtractTextPlugin.extract({
+                use: [{
+                    loader: 'css-loader',
+                    options: {
+                        url: false,
+                        minimize: true
+                    }
+                }, {
+                    loader: 'postcss-loader',
+                    options: {
+                        plugins: [
+                            require('autoprefixer')()
+                        ]
+                    }
+                }, {
+                    loader: 'sass-loader',
+                    options: {
+                        includePaths: [
+                            path.resolve('node_modules'),
+                            path.resolve('node_modules/flag-icon-css/sass')
+                        ]
+                    }
+                }]
+            })
         }]
-    }
+    },
+    plugins: [
+        new ExtractTextPlugin({ filename: '[name].css' })
+    ]
 }];

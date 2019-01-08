@@ -233,14 +233,15 @@ function callCreditCardAuthorizationHook(order) {
     var paymentInstrument = order.getPaymentInstruments(PAYMENT_METHOD)[0];
     var paymentProcessor = PaymentMgr
 		.getPaymentMethod(paymentInstrument.paymentMethod)
-		.paymentProcessor;
+        .paymentProcessor;
+    var transactionID = paymentInstrument.getPaymentTransaction().getTransactionID();
 
     var hook = 'app.payment.processor.' + CREDIT_CARD_PROCESSOR_ID;
     if (!HookMgr.hasHook(hook)) {
         throw new Error('File of app.payment.processor.' + CREDIT_CARD_PROCESSOR_ID + ' hook is missing or the hook is not configured');
     }
 
-    processorResult = HookMgr.callHook('app.payment.processor.' + CREDIT_CARD_PROCESSOR_ID, 'Authorize', order.getOrderNo(), paymentInstrument, paymentProcessor);
+    processorResult = HookMgr.callHook('app.payment.processor.' + CREDIT_CARD_PROCESSOR_ID, 'Authorize', transactionID, paymentInstrument, paymentProcessor);
     return processorResult;
 }
 
@@ -346,16 +347,15 @@ function updateOrderWithKlarnaOrderInfo(order, paymentInstrument) {
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
     var pInstr = paymentInstrument;
     var dwOrder = order;
+    var kpOrderId = session.privacy.KlarnaPaymentsOrderID;
 
-    Transaction.begin();
-
-    pInstr.paymentTransaction.transactionID = session.privacy.KlarnaPaymentsOrderID;
-    pInstr.paymentTransaction.paymentProcessor = paymentProcessor;
-    session.privacy.OrderNo = order.getOrderNo();
-    dwOrder.custom.kpOrderID = session.privacy.KlarnaPaymentsOrderID;
-    dwOrder.custom.kpIsVCN = empty(kpVCNEnabledPreferenceValue) ? false : kpVCNEnabledPreferenceValue;
-
-    Transaction.commit();
+    Transaction.wrap(function () {
+        pInstr.paymentTransaction.transactionID = kpOrderId;
+        pInstr.paymentTransaction.paymentProcessor = paymentProcessor;
+        session.privacy.OrderNo = order.getOrderNo();
+        dwOrder.custom.kpOrderID = kpOrderId;
+        dwOrder.custom.kpIsVCN = empty(kpVCNEnabledPreferenceValue) ? false : kpVCNEnabledPreferenceValue;
+    });
 }
 
 /**
@@ -402,24 +402,25 @@ function authorizeAcceptedOrder(order, kpOrderID, localeObject) {
 function authorize(order, orderNo, paymentInstrument) {
     var authorizationResult = {};
     var localeObject = klarnaLocaleMgr.getLocale();
-
+    var kpFraudPendingStatus = session.privacy.KlarnaPaymentsFraudStatus;
+    var kpOrderID = session.privacy.KlarnaPaymentsOrderID;
     var klarnaOrderCreated = createKlarnaOrder(order, localeObject);
 
     Transaction.wrap(function () {
         var pInstr = paymentInstrument;
 
-        pInstr.paymentTransaction.custom.kpFraudStatus = session.privacy.KlarnaPaymentsFraudStatus;
+        pInstr.paymentTransaction.custom.kpFraudStatus = kpFraudPendingStatus;
     });
 
-    if (!klarnaOrderCreated || session.privacy.KlarnaPaymentsFraudStatus === KLARNA_FRAUD_STATUSES.REJECTED) {
+    if (!klarnaOrderCreated || kpFraudPendingStatus === KLARNA_FRAUD_STATUSES.REJECTED) {
         authorizationResult = generateErrorAuthResult();
     } else {
         updateOrderWithKlarnaOrderInfo(order, paymentInstrument);
 
-        if (session.privacy.KlarnaPaymentsFraudStatus === KLARNA_FRAUD_STATUSES.PENDING) {
+        if (kpFraudPendingStatus === KLARNA_FRAUD_STATUSES.PENDING) {
             authorizationResult = generateSuccessAuthResult();
         } else {
-            authorizationResult = authorizeAcceptedOrder(order, session.privacy.KlarnaPaymentsOrderID, localeObject);
+            authorizationResult = authorizeAcceptedOrder(order, kpOrderID, localeObject);
         }
     }
 
@@ -463,7 +464,6 @@ function notify(order, kpOrderID, kpEventType) {
         failOrder(order);
     }
 }
-
 module.exports.handle = handle;
 module.exports.authorize = authorize;
 module.exports.notify = notify;

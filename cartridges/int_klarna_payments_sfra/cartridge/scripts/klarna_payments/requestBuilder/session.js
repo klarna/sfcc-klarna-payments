@@ -19,6 +19,7 @@
     var PriceAdjustmentRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/priceAdjustment');
     var SalesTaxRequestRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/salesTax');
     var AdditionalCustomerInfoRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/additionalCustomerInfo');
+    var OptionsRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/options');
 
     /**
      * KP Session Request Builder
@@ -30,6 +31,7 @@
         this.priceAdjustmentRequestBuilder = new PriceAdjustmentRequestBuilder();
         this.salesTaxRequestBuilder = new SalesTaxRequestRequestBuilder();
         this.additionalCustomerInfoRequestBuilder = new AdditionalCustomerInfoRequestBuilder();
+        this.optionsRequestBuilder = new OptionsRequestBuilder();
 
         this.context = null;
         this.params = null;
@@ -59,6 +61,10 @@
 
     KlarnaPaymentsSessionRequestBuilder.prototype.getAdditionalCustomerInfoRequestBuilder = function () {
         return this.additionalCustomerInfoRequestBuilder;
+    };
+
+    KlarnaPaymentsSessionRequestBuilder.prototype.getOptionsRequestBuilder = function () {
+        return this.optionsRequestBuilder;
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.setLocaleObject = function (localeObject) {
@@ -222,20 +228,26 @@
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildOptions = function () {
-        this.context.options.color_details 				= Site.getCurrent().getCustomPreferenceValue('kpColorDetails');
-        this.context.options.color_button 				= Site.getCurrent().getCustomPreferenceValue('kpColorButton');
-        this.context.options.color_button_text 			= Site.getCurrent().getCustomPreferenceValue('kpColorButtonText');
-        this.context.options.color_checkbox 			= Site.getCurrent().getCustomPreferenceValue('kpColorCheckbox');
-        this.context.options.color_checkbox_checkmark 	= Site.getCurrent().getCustomPreferenceValue('kpColorCheckboxCheckmark');
-        this.context.options.color_header 				= Site.getCurrent().getCustomPreferenceValue('kpColorHeader');
-        this.context.options.color_link 				= Site.getCurrent().getCustomPreferenceValue('kpColorLink');
-        this.context.options.color_border 				= Site.getCurrent().getCustomPreferenceValue('kpColorBorder');
-        this.context.options.color_border_selected 		= Site.getCurrent().getCustomPreferenceValue('kpColorBorderSelected');
-        this.context.options.color_text 				= Site.getCurrent().getCustomPreferenceValue('kpColorText');
-        this.context.options.color_text_secondary 		= Site.getCurrent().getCustomPreferenceValue('kpColorTextSecondary');
-        this.context.options.radius_border 				= Site.getCurrent().getCustomPreferenceValue('kpRadiusBorder');
+        var currentSite = Site.getCurrent();
 
-        return this;
+        var preferences = {
+            kpColorDetails: currentSite.getCustomPreferenceValue('kpColorDetails'),
+            kpColorButton: currentSite.getCustomPreferenceValue('kpColorButton'),
+            kpColorButtonText: currentSite.getCustomPreferenceValue('kpColorButtonText'),
+            kpColorCheckbox: currentSite.getCustomPreferenceValue('kpColorCheckbox'),
+            kpColorCheckboxCheckmark: currentSite.getCustomPreferenceValue('kpColorCheckboxCheckmark'),
+            kpColorHeader: currentSite.getCustomPreferenceValue('kpColorHeader'),
+            kpColorLink: currentSite.getCustomPreferenceValue('kpColorLink'),
+            kpColorBorder: currentSite.getCustomPreferenceValue('kpColorBorder'),
+            kpColorBorderSelected: currentSite.getCustomPreferenceValue('kpColorBorderSelected'),
+            kpColorText: currentSite.getCustomPreferenceValue('kpColorText'),
+            kpColorTextSecondary: currentSite.getCustomPreferenceValue('kpColorTextSecondary'),
+            kpRadiusBorder: currentSite.getCustomPreferenceValue('kpRadiusBorder')
+        };
+
+        var options = this.getOptionsRequestBuilder().build(preferences);
+
+        this.context.options = options;
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildItem = function (li) {

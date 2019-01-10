@@ -41,7 +41,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#CBCBCD</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorBorderSelected">
                 <display-name xml:lang="x-default">Border Selected Color Preference</display-name>
@@ -50,7 +49,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorButton">
                 <display-name xml:lang="x-default">Button Color Preference</display-name>
@@ -59,7 +57,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorButtonText">
                 <display-name xml:lang="x-default">Button Text Color Preference</display-name>
@@ -68,7 +65,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#FFFFFF</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorCheckbox">
                 <display-name xml:lang="x-default">Checkbox Color Preference</display-name>
@@ -77,7 +73,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorCheckboxCheckmark">
                 <display-name xml:lang="x-default">Checkbox Checkmark Color Preference</display-name>
@@ -86,7 +81,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#FFFFFF</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorDetails">
                 <display-name xml:lang="x-default">Details Color Preference</display-name>
@@ -95,7 +89,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorHeader">
                 <display-name xml:lang="x-default">Header Color Preference</display-name>
@@ -104,7 +97,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorLink">
                 <display-name xml:lang="x-default">Link Color Preference</display-name>
@@ -113,7 +105,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorText">
                 <display-name xml:lang="x-default">Text Color Preference</display-name>
@@ -122,7 +113,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#3C3C3E</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorTextSecondary">
                 <display-name xml:lang="x-default">Secondary Text Color Preference</display-name>
@@ -131,7 +121,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#9E9EA0</default-value>
             </attribute-definition>
 			<attribute-definition attribute-id="kpRadiusBorder">
                 <display-name xml:lang="x-default">Border Radius Preference</display-name>
@@ -140,7 +129,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>5px</default-value>
             </attribute-definition>
 			<attribute-definition attribute-id="kpAttachments">
                 <display-name xml:lang="x-default">Attachments</display-name>

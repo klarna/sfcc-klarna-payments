@@ -18,24 +18,6 @@ function Address() {
 }
 
 /**
- * options request model
- */
-function Options() {
-    this.color_details = '#0074C8';
-    this.color_button = '#0074C8';
-    this.color_button_text = '#FFFFFF';
-    this.color_checkbox = '#0074C8';
-    this.color_checkbox_checkmark = '#FFFFFF';
-    this.color_header = '#0074C8';
-    this.color_link = '#0074C8';
-    this.color_border = '#CBCBCD';
-    this.color_border_selected = '#0074C8';
-    this.color_text = '#3C3C3E';
-    this.color_text_secondary = '#9E9EA0';
-    this.radius_border = '5px';
-}
-
-/**
  * merchant urls request model
  */
 function MerchantUrls() {

@@ -467,7 +467,8 @@ KlarnaCheckout.updatePaymentSummary = function (order) {
 
     if (firstPaymentInstrument.paymentMethod === 'KLARNA_PAYMENTS') {
         htmlToAppend += '<div class="payment">';
-        htmlToAppend += '<div class="method-name">' + firstPaymentInstrument.paymentMethod + '</div>';
+        htmlToAppend += '<div class="method-name">' + firstPaymentInstrument.name + '</div>';
+        htmlToAppend += '<div class="category-name">' + firstPaymentInstrument.categoryName + '</div>';
         if (typeof firstPaymentInstrument.amountFormatted !== 'undefined') {
             htmlToAppend += '<div class="amount">' + firstPaymentInstrument.amountFormatted + '</span>';
         }

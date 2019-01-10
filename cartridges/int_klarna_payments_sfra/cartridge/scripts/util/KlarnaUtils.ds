@@ -4,7 +4,16 @@ var Site = require('dw/system/Site');
 var TaxMgr = require('dw/order/TaxMgr');
 var collections = require('*/cartridge/scripts/util/collections');
 var Transaction = require('dw/system/Transaction');
+var PaymentMgr = require('dw/order/PaymentMgr');
 var KlarnaPaymentsConstants = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js');
+
+function getKlarnaPaymentMethodName() {
+    var paymentMethodId = KlarnaPaymentsConstants.PAYMENT_METHOD;
+
+    var paymentMethod = PaymentMgr.getPaymentMethod(paymentMethodId);
+
+    return paymentMethod.getName();
+};
 
 function isCountryInEU( country ) {
     var isInEU = true;
@@ -75,5 +84,6 @@ module.exports.isEnabledPreassessmentForCountry = isEnabledPreassessmentForCount
 module.exports.stripControlCharacters = stripControlCharacters;
 module.exports.isTaxationPolicyNet = isTaxationPolicyNet;
 module.exports.removeAllKlarnaPaymentInstruments = removeAllKlarnaPaymentInstruments;
+module.exports.getKlarnaPaymentMethodName = getKlarnaPaymentMethodName;
 module.exports.strval = strval;
 module.exports.empty = empty;

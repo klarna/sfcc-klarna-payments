@@ -301,10 +301,19 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="klarnaPaymentCategoryName">
+                <display-name xml:lang="x-default">Klarna Payment Category Name</display-name>
+                <description xml:lang="x-default">Holding the name of selected Klarna Payments Option</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
 		<group-definitions>
             <attribute-group group-id="Klarna_Payments">
                 <attribute attribute-id="klarnaPaymentCategoryID"/>
+                <attribute attribute-id="klarnaPaymentCategoryName"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

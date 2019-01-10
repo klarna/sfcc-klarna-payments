@@ -4,6 +4,7 @@ var page = module.superModule;
 var server = require('server');
 
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
+var KlarnaPaymentsCategoriesModel = require('~/cartridge/scripts/klarna_payments/model/categories');
 
 server.extend(page);
 
@@ -27,9 +28,9 @@ server.prepend(
         var emailFromFillingPage = false;
         var email = '';
 
-        if (!isKlarna) {
-            KlarnaUtils.removeAllKlarnaPaymentInstruments(currentBasket);
+        KlarnaUtils.removeAllKlarnaPaymentInstruments(currentBasket);
 
+        if (!isKlarna) {
             next();
             return;
         }
@@ -59,12 +60,18 @@ server.prepend(
         var billingForm = server.forms.getForm('billing');
         var viewData = {};
 
+        var userSession = req.session.raw;
         var paymentCategoryID = klarnaForm.paymentCategory.value;
         var paymentMethodID = billingForm.paymentMethod.value;
+
         viewData.paymentMethod = {
             value: paymentMethodID,
             htmlName: billingForm.paymentMethod.htmlName
         };
+
+        var kpCategories = new KlarnaPaymentsCategoriesModel(userSession.privacy.KlarnaPaymentMethods);
+        var selectedPaymentCategory = kpCategories.findCategoryById(paymentCategoryID);
+        var paymentCategoryName = selectedPaymentCategory.name;
 
         var billingFormErrors = COHelpers.validateBillingForm(billingForm.addressFields);
 
@@ -161,6 +168,7 @@ server.prepend(
 
         Transaction.wrap(function () {
             processorResult.paymentInstrument.custom.klarnaPaymentCategoryID = paymentCategoryID;
+            processorResult.paymentInstrument.custom.klarnaPaymentCategoryName = paymentCategoryName;
         });
 
         var usingMultiShipping = false; // Current integration support only single shpping
@@ -182,6 +190,8 @@ server.prepend(
 
         Transaction.wrap(function () {
             basketModel.billing.payment.selectedPaymentInstruments[0].amountFormatted = StringUtils.formatMoney(new Money(basketModel.billing.payment.selectedPaymentInstruments[0].amount, currentBasket.getCurrencyCode()));
+            basketModel.billing.payment.selectedPaymentInstruments[0].name = KlarnaUtils.getKlarnaPaymentMethodName();
+            basketModel.billing.payment.selectedPaymentInstruments[0].categoryName = paymentCategoryName;
         });
 
         res.json({

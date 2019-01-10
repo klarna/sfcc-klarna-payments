@@ -263,14 +263,14 @@ function failOrder(order) {
  * @returns {Object} Processor handling result
  */
 function handle(basket) {
-    var methodName = PAYMENT_METHOD;
+    var methodId = PAYMENT_METHOD;
 
     var amount = basket.totalGrossPrice;
 
     var paymentInstrument = null;
 
     Transaction.wrap(function () {
-        paymentInstrument = basket.createPaymentInstrument(methodName, amount);
+        paymentInstrument = basket.createPaymentInstrument(methodId, amount);
     });
 
     return {

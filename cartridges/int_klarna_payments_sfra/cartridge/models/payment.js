@@ -63,6 +63,7 @@ function getSelectedPaymentInstruments(selectedPaymentInstruments) {
             results.maskedGiftCertificateCode = paymentInstrument.maskedGiftCertificateCode;
         } else if (paymentInstrument.paymentMethod === KLARNA_PAYMENT_METHOD) {
             results.paymentCategory = paymentInstrument.custom.klarnaPaymentCategoryID;
+            results.categoryName = paymentInstrument.custom.klarnaPaymentCategoryName;
         }
 
         return results;

@@ -4,7 +4,6 @@ var page = module.superModule;
 var server = require('server');
 
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-var KlarnaPaymentsCategoriesModel = require('~/cartridge/scripts/klarna_payments/model/categories');
 
 server.extend(page);
 
@@ -19,6 +18,7 @@ server.prepend(
         var Money = require('dw/value/Money');
         var BasketMgr = require('dw/order/BasketMgr');
         var Transaction = require('dw/system/Transaction');
+        var KlarnaPaymentsCategoriesModel = require('~/cartridge/scripts/klarna_payments/model/categories');
 
         var currentBasket = BasketMgr.getCurrentBasket();
 
@@ -29,7 +29,7 @@ server.prepend(
         var emailFromFillingPage = false;
         var email = '';
 
-        Transaction.wrap(function() {
+        Transaction.wrap(function () {
             currentBasket.removeAllPaymentInstruments();
         });
 
@@ -41,7 +41,6 @@ server.prepend(
         var HookMgr = require('dw/system/HookMgr');
         var Resource = require('dw/web/Resource');
         var PaymentMgr = require('dw/order/PaymentMgr');
-        var Transaction = require('dw/system/Transaction');
         var AccountModel = require('*/cartridge/models/account');
         var OrderModel = require('*/cartridge/models/order');
         var Locale = require('dw/util/Locale');

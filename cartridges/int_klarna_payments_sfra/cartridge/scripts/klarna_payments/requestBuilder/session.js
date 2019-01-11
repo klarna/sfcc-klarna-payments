@@ -248,6 +248,8 @@
         var options = this.getOptionsRequestBuilder().build(preferences);
 
         this.context.options = options;
+
+        return this;
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildItem = function (li) {

@@ -39,7 +39,7 @@ function KlarnaPaymentsOrderModel() {
     this.order_lines = [];
     this.merchant_reference1 = '';
     this.merchant_reference2 = '';
-    this.options = new Options();
+    this.options = null;
     this.merchant_urls = new MerchantUrls();
     this.merchant_data = null;
 }

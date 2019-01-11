@@ -54,17 +54,17 @@ KlarnaCheckout.handleStageChanged = function (newStage) {
 };
 
 KlarnaCheckout.initStage = function (stage) {
-    var promise = null;
+    var promise = $.Deferred(); // eslint-disable-line
 
     switch (stage) {
         case 'shipping':
-            promise = this.initShippingStage();
+            this.initShippingStage(promise);
             break;
         case 'payment':
-            promise = this.initPaymentStage();
+            this.initPaymentStage(promise);
             break;
         case 'placeOrder':
-            promise = this.initPlaceOrderStage();
+            this.initPlaceOrderStage(promise);
             break;
         default:
             break;
@@ -92,17 +92,11 @@ KlarnaCheckout.refreshStage = function (stage) {
     }
 };
 
-KlarnaCheckout.initShippingStage = function () {
-    var defer = $.Deferred(); // eslint-disable-line
-
+KlarnaCheckout.initShippingStage = function (defer) {
     defer.resolve();
-
-    return defer;
 };
 
-KlarnaCheckout.initPaymentStage = function () {
-    var defer = $.Deferred(); // eslint-disable-line
-
+KlarnaCheckout.initPaymentStage = function (defer) {
     Klarna.Payments.init({
         client_token: this.klarnaPaymentsObjects.clientToken
     });
@@ -118,13 +112,9 @@ KlarnaCheckout.initPaymentStage = function () {
     }
 
     defer.resolve();
-
-    return defer;
 };
 
-KlarnaCheckout.initPlaceOrderStage = function () {
-    var defer = $.Deferred(); // eslint-disable-line
-
+KlarnaCheckout.initPlaceOrderStage = function (defer) {
     Klarna.Payments.init({
         client_token: this.klarnaPaymentsObjects.clientToken
     });
@@ -132,8 +122,6 @@ KlarnaCheckout.initPlaceOrderStage = function () {
     this.initKlarnaPlaceOrderButton();
 
     defer.resolve();
-
-    return defer;
 };
 
 KlarnaCheckout.handleUpdateCheckoutView = function (data) {

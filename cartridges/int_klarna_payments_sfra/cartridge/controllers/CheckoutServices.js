@@ -18,6 +18,7 @@ server.prepend(
         var StringUtils = require('dw/util/StringUtils');
         var Money = require('dw/value/Money');
         var BasketMgr = require('dw/order/BasketMgr');
+        var Transaction = require('dw/system/Transaction');
 
         var currentBasket = BasketMgr.getCurrentBasket();
 
@@ -28,7 +29,9 @@ server.prepend(
         var emailFromFillingPage = false;
         var email = '';
 
-        KlarnaUtils.removeAllKlarnaPaymentInstruments(currentBasket);
+        Transaction.wrap(function() {
+            currentBasket.removeAllPaymentInstruments();
+        });
 
         if (!isKlarna) {
             next();

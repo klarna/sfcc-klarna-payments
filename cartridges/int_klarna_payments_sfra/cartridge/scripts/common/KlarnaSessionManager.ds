@@ -72,7 +72,7 @@ KlarnaSessionManager.prototype._getSessionRequestBody = function( basket, locale
 	return sessionRequestBuilder.build();
 };
 
-KlarnaSessionManager.prototype._updateSession = function() {
+KlarnaSessionManager.prototype.refreshSession = function() {
 	_this = this;
 
 	var localeObject = this.getKlarnaLocaleMgr().getLocale();
@@ -100,7 +100,7 @@ KlarnaSessionManager.prototype._updateSession = function() {
     return response;
 };
 
-KlarnaSessionManager.prototype._createSession = function() {
+KlarnaSessionManager.prototype.createSession = function() {
 	var _this = this;
 
 	var localeObject = this.getKlarnaLocaleMgr().getLocale();
@@ -117,6 +117,7 @@ KlarnaSessionManager.prototype._createSession = function() {
 	response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
 
 	Transaction.wrap( function() {
+		_this.userSession.privacy.KlarnaLocale = localeObject.custom.klarnaLocale;
 		_this.userSession.privacy.KlarnaPaymentsSessionID = response.session_id;
 		_this.userSession.privacy.KlarnaPaymentsClientToken = response.client_token;
 		_this.userSession.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
@@ -126,14 +127,21 @@ KlarnaSessionManager.prototype._createSession = function() {
     return response;
 };
 
+KlarnaSessionManager.prototype.hasValidSession = function() {
+	var localeObject = this.getKlarnaLocaleMgr().getLocale();
+	var localesMatch = (localeObject.custom.klarnaLocale === this.userSession.privacy.KlarnaLocale);
+
+	return ( !empty( this.userSession.privacy.KlarnaPaymentsSessionID ) && localesMatch);
+};
+
 KlarnaSessionManager.prototype.createOrUpdateSession = function() {
 	var _this = this;
 
 	try {
-		if( !empty( _this.userSession.privacy.KlarnaPaymentsSessionID ) ) {
-			return this._updateSession();
+		if (_this.hasValidSession()) {
+			return this.refreshSession();
 		} else {
-			return this._createSession();
+			return this.createSession();
 		}
 	} catch (e) {
 		log.error( 'Error in handling Klarna Payments Session: {0}', e.message + e.stack );
@@ -143,7 +151,7 @@ KlarnaSessionManager.prototype.createOrUpdateSession = function() {
 			_this.userSession.privacy.KlarnaPaymentsClientToken = null;
 			_this.userSession.privacy.KlarnaPaymentMethods = null;
 			_this.userSession.privacy.SelectedKlarnaPaymentMethod = null;
-		} );
+		});
 	}
 }
 

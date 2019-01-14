@@ -9,7 +9,6 @@ server.append('Confirm', function (req, res, next) {
     var order = OrderMgr.getOrder(req.querystring.ID);
 
     var viewData = res.getViewData();
-    viewData.klarnaPaymentMethodName = KlarnaUtils.getKlarnaPaymentMethodName();
     viewData.klarna = {
         currency: order.getCurrencyCode()
     };

@@ -20,7 +20,6 @@ server.append('Begin', function (req, res, next) {
         currency: currentBasket.getCurrencyCode()
     };
     viewData.klarnaForm = server.forms.getForm('klarna');
-    viewData.klarnaPaymentMethodName = KlarnaUtils.getKlarnaPaymentMethodName();
 
     return next();
 });

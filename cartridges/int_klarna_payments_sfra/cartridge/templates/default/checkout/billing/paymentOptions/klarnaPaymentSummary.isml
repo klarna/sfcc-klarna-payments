@@ -1,5 +1,8 @@
+<isscript>
+    var klarnaPaymentMethodName = require('~/cartridge/scripts/util/KlarnaUtils').getKlarnaPaymentMethodName();
+</isscript>
 <div class="method-name">
-    ${pdict.klarnaPaymentMethodName} <br />
+    ${klarnaPaymentMethodName} <br />
     ${payment.categoryName}
 </div>
 <div class="amount">

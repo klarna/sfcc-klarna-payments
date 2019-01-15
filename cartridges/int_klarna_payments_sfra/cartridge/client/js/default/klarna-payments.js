@@ -491,23 +491,23 @@ KlarnaCheckout.obtainBillingAddressData = function () {
     };
 
     var $paymentForm = $('.payment-form');
-    var $addressSelectorElement = $paymentForm.find('.addressSelector');
-    var $selectedOption = $addressSelectorElement.find(':selected');
+    var $billingAddressFieldset = $('.billing-address');
 
-    if ($selectedOption.val() === 'new') {
-        var $billingAddressForm = $('.billing-address');
-
-        address.given_name = $billingAddressForm.find('.billingFirstName').val();
-        address.family_name = $billingAddressForm.find('.billingLastName').val();
-        address.street_address = $billingAddressForm.find('.billingAddressOne').val();
-        address.street_address2 = $billingAddressForm.find('.billingAddressTwo').val();
-        address.city = $billingAddressForm.find('.billingAddressCity').val();
-        address.region = $billingAddressForm.find('.billingState').val();
-        address.postal_code = $billingAddressForm.find('.billingZipCode').val();
-        address.country = $billingAddressForm.find('.billingCountry').val();
-        address.phone = $billingAddressForm.find('.billingPhoneNumber').val();
+    if ($billingAddressFieldset.is(':visible')) {
+        address.given_name = $billingAddressFieldset.find('.billingFirstName').val();
+        address.family_name = $billingAddressFieldset.find('.billingLastName').val();
+        address.street_address = $billingAddressFieldset.find('.billingAddressOne').val();
+        address.street_address2 = $billingAddressFieldset.find('.billingAddressTwo').val();
+        address.city = $billingAddressFieldset.find('.billingAddressCity').val();
+        address.region = $billingAddressFieldset.find('.billingState').val();
+        address.postal_code = $billingAddressFieldset.find('.billingZipCode').val();
+        address.country = $billingAddressFieldset.find('.billingCountry').val();
+        address.phone = $billingAddressFieldset.find('.billingPhoneNumber').val();
         address.email = this.getKlarnaEmail().val();
     } else {
+        var $addressSelectorElement = $paymentForm.find('.addressSelector');
+        var $selectedOption = $addressSelectorElement.find(':selected');
+
         address.given_name = $selectedOption.attr('data-first-name');
         address.family_name = $selectedOption.attr('data-last-name');
         address.street_address = $selectedOption.attr('data-address1');

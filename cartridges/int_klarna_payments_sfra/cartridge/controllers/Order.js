@@ -1,6 +1,5 @@
 var page = module.superModule; // inherits functionality
 var server = require('server');
-var KlarnaUtils = require('~/cartridge/scripts/util/KlarnaUtils');
 
 server.extend(page);
 

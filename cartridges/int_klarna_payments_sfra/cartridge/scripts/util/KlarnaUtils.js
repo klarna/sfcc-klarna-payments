@@ -1,3 +1,5 @@
+/* globals empty */
+
 'use strict';
 
 var Site = require('dw/system/Site');
@@ -13,31 +15,31 @@ function getKlarnaPaymentMethodName() {
     var paymentMethod = PaymentMgr.getPaymentMethod(paymentMethodId);
 
     return paymentMethod.getName();
-};
+}
 
-function isCountryInEU( country ) {
+function isCountryInEU(country) {
     var isInEU = true;
-    var EUCountries = "BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB";
+    var EUCountries = 'BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB';
 
-    if ( EUCountries.indexOf( country ) === -1 ) {
+    if (EUCountries.indexOf(country) === -1) {
         isInEU = false;
     }
 
     return isInEU;
 }
 
-function isEnabledPreassessmentForCountry( country ) {
+function isEnabledPreassessmentForCountry(country) {
     var isPreassessment = false;
-    var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
+    var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue('kpPreAssessment');
 
-    if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && !isCountryInEU( country ) ) {
+    if (!empty(preAssessmentCountries) && (preAssessmentCountries.indexOf(country) !== -1) && !isCountryInEU(country)) {
         isPreassessment = true;
     }
 
     return isPreassessment;
 }
 
-function strval( obj ) {
+function strval(obj) {
     //  discuss at: http://locutus.io/php/strval/
     // original by: Brett Zamir (http://brett-zamir.me)
     // improved by: Kevin van Zonneveld (http://kvz.io)
@@ -45,8 +47,8 @@ function strval( obj ) {
     //   example 1: this.strval({red: 1, green: 2, blue: 3, white: 4})
     //   returns 1: 'Object'
 
-    if ( obj === null ) {
-        return ''
+    if (obj === null) {
+        return '';
     }
 
     return obj;
@@ -58,7 +60,7 @@ function stripControlCharacters(str) {
 
 function isTaxationPolicyNet() {
     return (TaxMgr.getTaxationPolicy() === TaxMgr.TAX_POLICY_NET);
-};
+}
 
 function isKlarnaPaymentInstrument(paymentInstr) {
     var PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;

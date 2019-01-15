@@ -1,29 +1,32 @@
+/* globals empty */
+
 var Logger = require('dw/system/Logger');
 var ServiceRegistry = require('dw/svc/ServiceRegistry');
 var StringUtils = require('dw/util/StringUtils');
 var Site = require('dw/system/Site');
+var Resource = require('dw/web/Resource');
 
 function KlarnaPaymentsHttpService() {
-    this._logger = Logger.getLogger('RequestTrace');
+    this.logger = Logger.getLogger('RequestTrace');
     this.lastStatusCode = 200;
 }
 
-KlarnaPaymentsHttpService.prototype.getLastStatusCode = function() {
+KlarnaPaymentsHttpService.prototype.getLastStatusCode = function () {
     return this.lastStatusCode;
-}
+};
 
-KlarnaPaymentsHttpService.prototype.call = function(urlPath: String, httpVerb : String, credentialID : String, requestBody: Object) {
-    var serviceID : String = Site.getCurrent().getCustomPreferenceValue('kpServiceName');
+KlarnaPaymentsHttpService.prototype.call = function (urlPath, httpVerb, credentialID, requestBody) {
+    var serviceID = Site.getCurrent().getCustomPreferenceValue('kpServiceName');
     ServiceRegistry.configure(serviceID, {
-        createRequest: function(svc, requestBody) {
-            return JSON.stringify(requestBody);
+        createRequest: function (svc, sRequestBody) {
+            return JSON.stringify(sRequestBody);
         },
-        parseResponse : function(svc, client) {
+        parseResponse: function (svc, client) {
             return client;
         }
     });
-    
-    var service : Service = ServiceRegistry.get(serviceID);
+
+    var service = ServiceRegistry.get(serviceID);
     service.setCredentialID(credentialID);
     service.URL += urlPath;
     service.addHeader('Content-Type', 'application/json');
@@ -33,7 +36,7 @@ KlarnaPaymentsHttpService.prototype.call = function(urlPath: String, httpVerb : 
         service.setRequestMethod(httpVerb);
     }
 
-    var result : Result;
+    var result;
     try {
         if (empty(requestBody)) {
             result = service.call();
@@ -44,7 +47,7 @@ KlarnaPaymentsHttpService.prototype.call = function(urlPath: String, httpVerb : 
         this.lastStatusCode = result.error;
     } catch (ex) {
         var exception = ex;
-        this._logger.error(exception.message);
+        this.logger.error(exception.message);
     }
 
     this.logResponseData(urlPath, httpVerb, requestBody, result);
@@ -52,38 +55,38 @@ KlarnaPaymentsHttpService.prototype.call = function(urlPath: String, httpVerb : 
 
     if (!empty(result.object.text)) {
         var jsonResponse = result.object.text.replace(/\r?\n|\r/g, ' ');
-        return JSON.parse(jsonResponse)
+        return JSON.parse(jsonResponse);
     }
 
     return result.status;
-}
+};
 
-KlarnaPaymentsHttpService.prototype.isValidHttpVerb = function(httpVerb) {
-    var validHttpVerbs = ['GET', 'PUT', 'POST',  'DELETE', 'PATCH'];
+KlarnaPaymentsHttpService.prototype.isValidHttpVerb = function (httpVerb) {
+    var validHttpVerbs = ['GET', 'PUT', 'POST', 'DELETE', 'PATCH'];
 
     if (validHttpVerbs.indexOf(httpVerb) !== -1) {
         return true;
     }
 
     throw new Error('Not valid HTTP verb defined - ' + httpVerb);
-}
+};
 
-KlarnaPaymentsHttpService.prototype.detectErrorResponse = function(result : Object, httpVerb : String, requestUrl : String, requestBody : Object) {
+KlarnaPaymentsHttpService.prototype.detectErrorResponse = function (result, httpVerb, requestUrl, requestBody) {
     if (empty(result)) {
-        this._logger.error('result was empty');
+        this.logger.error('result was empty');
         throw new Error(this.getErrorResponse('default'));
-    } else if (result.error != 0 || result.status == 'ERROR' || result.status == 'SERVICE_UNAVAILABLE') {
+    } else if (result.error !== 0 || result.status === 'ERROR' || result.status === 'SERVICE_UNAVAILABLE') {
         this.logErrorResponse(result, requestUrl, requestBody);
         throw new Error(result.errorMessage);
     }
-}
+};
 
-KlarnaPaymentsHttpService.prototype.getErrorResponse = function(errorCode: String) {
-	return Resource.msg('apierror.flow.default', 'klarnapayments', null);
-}
+KlarnaPaymentsHttpService.prototype.getErrorResponse = function () {
+    return Resource.msg('apierror.flow.default', 'klarnapayments', null);
+};
 
-KlarnaPaymentsHttpService.prototype.logErrorResponse = function(result : Object, requestUrl : String, requestBody : Object) {
-    var content: String = 'result.error=[' + result.error;
+KlarnaPaymentsHttpService.prototype.logErrorResponse = function (result, requestUrl, requestBody) {
+    var content = 'result.error=[' + result.error;
     content += '], result.status=[' + result.status;
     content += '], result.errorMessage=[' + result.errorMessage + ']';
 
@@ -99,10 +102,10 @@ KlarnaPaymentsHttpService.prototype.logErrorResponse = function(result : Object,
         content += ', requestBody=[' + JSON.stringify(requestBody) + ']';
     }
 
-    this._logger.error(content);
-}
+    this.logger.error(content);
+};
 
-KlarnaPaymentsHttpService.prototype.logResponseData = function(urlPath: String, httpVerb : String, requestBody: Object, result : Object) {
+KlarnaPaymentsHttpService.prototype.logResponseData = function (urlPath, httpVerb, requestBody, result) {
     try {
         var message = '';
         var requestBodyJson = JSON.stringify(requestBody);
@@ -120,12 +123,11 @@ KlarnaPaymentsHttpService.prototype.logResponseData = function(urlPath: String, 
                         requestBodyJson);
         }
 
-        this._logger.info(message);
-
+        this.logger.info(message);
     } catch (e) {
         var exception = e;
-        this._logger.error(exception);
+        this.logger.error(exception);
     }
-}
+};
 
 module.exports = KlarnaPaymentsHttpService;

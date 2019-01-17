@@ -94,9 +94,9 @@ KlarnaSessionManager.prototype.getSessionRequestBody = function (basket, localeO
  * Refresh an existing Klarna Session.
  *
  * The current session is updated by using the REST Klarna interface.
- * Then, another GET call is made to retrieve session information and 
+ * Then, another GET call is made to retrieve session information and
  * update DW user session.
- * 
+ *
  * @returns {Object} Response from the GET call.
  */
 KlarnaSessionManager.prototype.refreshSession = function () {
@@ -108,13 +108,18 @@ KlarnaSessionManager.prototype.refreshSession = function () {
     var requestBody = {};
     var requestUrl = '';
     var response = {};
-
+    var klarnaSessionID = this.userSession.privacy.KlarnaPaymentsSessionID;
+    
     klarnaPaymentsHttpService = new KlarnaPayments.HttpService();
     requestBody = this.getSessionRequestBody(BasketMgr.getCurrentBasket(), localeObject);
-    requestUrl = StringUtils.format(klarnaApiContext.getFlowApiUrls().get('updateSession'), this.userSession.privacy.KlarnaPaymentsSessionID);
+    requestUrl = StringUtils.format(klarnaApiContext.getFlowApiUrls().get('updateSession'), klarnaSessionID);
 
-	// Update session
-    klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
+    try {
+        // Update session
+        klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
+    } catch (e) {
+        return this.createSession();
+    }
 
 	// Read updated session
     response = klarnaPaymentsHttpService.call(requestUrl, 'GET', localeObject.custom.credentialID);
@@ -129,10 +134,10 @@ KlarnaSessionManager.prototype.refreshSession = function () {
 
 /**
  * Create a new Klarna session.
- * 
- * Parts of the Klarna API call's response are saved into 
+ *
+ * Parts of the Klarna API call's response are saved into
  * the DW user session for later use.
- * 
+ *
  * @returns {Object} Klarna API call response.
  */
 KlarnaSessionManager.prototype.createSession = function () {
@@ -164,8 +169,8 @@ KlarnaSessionManager.prototype.createSession = function () {
 
 /**
  * Validates Klarna Session.
- * 
- * @returns {bool} true, if the session is valid. 
+ *
+ * @returns {bool} true, if the session is valid.
  */
 KlarnaSessionManager.prototype.hasValidSession = function () {
     var localeObject = this.getKlarnaLocaleMgr().getLocale();
@@ -176,7 +181,7 @@ KlarnaSessionManager.prototype.hasValidSession = function () {
 
 /**
  * Create or Update Klarna session.
- * 
+ *
  * @returns {Object} Last API call's response; on error - null
  */
 KlarnaSessionManager.prototype.createOrUpdateSession = function () {

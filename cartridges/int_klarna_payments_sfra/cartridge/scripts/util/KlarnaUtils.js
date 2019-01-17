@@ -4,11 +4,14 @@
 
 var Site = require('dw/system/Site');
 var TaxMgr = require('dw/order/TaxMgr');
-var collections = require('*/cartridge/scripts/util/collections');
-var Transaction = require('dw/system/Transaction');
 var PaymentMgr = require('dw/order/PaymentMgr');
 var KlarnaPaymentsConstants = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js');
 
+/**
+ * Return Klarna Payment Method name.
+ *
+ * @returns {string} Klarna Payment Method name.
+ */
 function getKlarnaPaymentMethodName() {
     var paymentMethodId = KlarnaPaymentsConstants.PAYMENT_METHOD;
 
@@ -17,6 +20,12 @@ function getKlarnaPaymentMethodName() {
     return paymentMethod.getName();
 }
 
+/**
+ * Checks whether a country code maps to a Country in Europe.
+ *
+ * @param {string} country two-letter country code.
+ * @returns {bool} true, if country is in Europe.
+ */
 function isCountryInEU(country) {
     var isInEU = true;
     var EUCountries = 'BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB';
@@ -28,6 +37,12 @@ function isCountryInEU(country) {
     return isInEU;
 }
 
+/**
+ * Checks whether Preassessment preference is activated for a country.
+ *
+ * @param {string} country 2-letter country code.
+ * @returns {bool} true, if preassessment is on for this country.
+ */
 function isEnabledPreassessmentForCountry(country) {
     var isPreassessment = false;
     var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue('kpPreAssessment');
@@ -39,14 +54,13 @@ function isEnabledPreassessmentForCountry(country) {
     return isPreassessment;
 }
 
+/**
+ * Converts null to empty string.
+ *
+ * @param {Object} obj of any kind.
+ * @return {Object|empty string}
+ */
 function strval(obj) {
-    //  discuss at: http://locutus.io/php/strval/
-    // original by: Brett Zamir (http://brett-zamir.me)
-    // improved by: Kevin van Zonneveld (http://kvz.io)
-    // bugfixed by: Brett Zamir (http://brett-zamir.me)
-    //   example 1: this.strval({red: 1, green: 2, blue: 3, white: 4})
-    //   returns 1: 'Object'
-
     if (obj === null) {
         return '';
     }
@@ -54,38 +68,28 @@ function strval(obj) {
     return obj;
 }
 
+/**
+ * Remove control characters from a string.
+ *
+ * @param {string} str input string.
+ * @returns {string} without control characters.
+ */
 function stripControlCharacters(str) {
     return str.replace(/[^\x00-\x7F]/g, '');
 }
 
+/**
+ * Checks if site's taxation policy is Net.
+ *
+ * @returns {bool} true, if policy is Net, false if Gross.
+ */
 function isTaxationPolicyNet() {
     return (TaxMgr.getTaxationPolicy() === TaxMgr.TAX_POLICY_NET);
-}
-
-function isKlarnaPaymentInstrument(paymentInstr) {
-    var PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
-
-    return (paymentInstr.getPaymentMethod() === PAYMENT_METHOD);
-}
-
-function removeAllKlarnaPaymentInstruments(basket) {
-    var methodName = KlarnaPaymentsConstants.PAYMENT_METHOD;
-
-    Transaction.wrap(function () {
-        var paymentInstruments = basket.getPaymentInstruments(methodName);
-
-        collections.forEach(paymentInstruments, function (item) {
-            if (isKlarnaPaymentInstrument(item)) {
-                basket.removePaymentInstrument(item);
-            }
-        });
-    });
 }
 
 module.exports.isEnabledPreassessmentForCountry = isEnabledPreassessmentForCountry;
 module.exports.stripControlCharacters = stripControlCharacters;
 module.exports.isTaxationPolicyNet = isTaxationPolicyNet;
-module.exports.removeAllKlarnaPaymentInstruments = removeAllKlarnaPaymentInstruments;
 module.exports.getKlarnaPaymentMethodName = getKlarnaPaymentMethodName;
 module.exports.strval = strval;
 module.exports.empty = empty;

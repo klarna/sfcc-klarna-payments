@@ -2,17 +2,17 @@
 
 function KlarnaPaymentsCategories(categories) {
     this.categories = categories;
-};
+}
 
-KlarnaPaymentsCategories.prototype.findCategoryById = function(categoryId) {
+KlarnaPaymentsCategories.prototype.findCategoryById = function (categoryId) {
     var cat = null;
 
-    for each (var item in this.categories) {
+    this.categories.toArray().forEach(function (item, index) {
         if (item.identifier === categoryId) {
             cat = item;
-            break;
+            return;
         }
-    }
+    });
 
     return cat;
 };

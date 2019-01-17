@@ -278,6 +278,7 @@ KlarnaCheckout.getKlarnaPaymentMethod = function (methodId) {
 
 KlarnaCheckout.handleFinalizeRequired = function () {
     var $placeOrderBtn = $('.place-order');
+    var $klarnaPlaceOrderBtn = this.getKlarnaPlaceOrderBtn();
     var selectedPaymentMethod = this.getCookie('selectedKlarnaPaymentCategory');
 
     Klarna.Payments.finalize({
@@ -294,6 +295,8 @@ KlarnaCheckout.handleFinalizeRequired = function () {
                 // to trigger checkout stage processing
                 $placeOrderBtn.click();
             });
+        } else if (res.show_form) {
+            $klarnaPlaceOrderBtn.prop('disabled', false);
         }
     }.bind(this));
 };
@@ -325,6 +328,10 @@ KlarnaCheckout.initKlarnaPlaceOrderButton = function () {
             url: this.klarnaPaymentsUrls.loadAuth
         }).done(this.handleLoadAuthResponse.bind(this));
     }.bind(this));
+};
+
+KlarnaCheckout.getKlarnaPlaceOrderBtn = function () {
+    return $('.klarna-place-order');
 };
 
 KlarnaCheckout.getKlarnaSubmitPaymentBtn = function () {

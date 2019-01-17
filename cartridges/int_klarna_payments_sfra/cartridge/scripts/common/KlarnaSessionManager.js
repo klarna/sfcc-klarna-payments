@@ -1,12 +1,9 @@
 /* globals empty */
 
 /**
-* KlarnaSessionManager.js
+* Klarna Session Manager
 *
-* Used to handle Klarna Session
-*
-* @input Basket : dw.order.Basket The basket
-* @input LocaleObject : dw.object.CustomObject
+* Used to manage Klarna Sessions opened per-locale at checkout.
 */
 
 var BasketMgr = require('dw/order/BasketMgr');
@@ -20,15 +17,35 @@ var KlarnaPayments = {
     SessionRequestBuilder: require('~/cartridge/scripts/klarna_payments/requestBuilder/session')
 };
 
+/**
+ * @constructor
+ *
+ * @param {dw.system.Session} userSession - User session.
+ * @param {KlarnaLocale} klarnaLocaleMgr - KlarnaLocale instance.
+ */
 function KlarnaSessionManager(userSession, klarnaLocaleMgr) {
     this.userSession = userSession;
     this.klarnaLocaleMgr = klarnaLocaleMgr;
 }
 
+/**
+ * Returns the KlarnaLocale instance passed when constructing this manager.
+ *
+ * @returns {KlarnaLocale} KlarnaLocale instance
+ */
 KlarnaSessionManager.prototype.getKlarnaLocaleMgr = function () {
     return this.klarnaLocaleMgr;
 };
 
+/**
+ * Save authorization info (token and flags) in user session.
+ *
+ * This method saves authorization info passed from a successful payment
+ * authorization call.
+ *
+ * @param {string} token - the authorization token received from a call to authorize.
+ * @param {bool} finalizeRequired - boolean flag to indicate if the authorization requires finalization.
+ */
 KlarnaSessionManager.prototype.saveAuthorizationToken = function (token, finalizeRequired) {
     Transaction.wrap(function (authToken) {
         this.userSession.privacy.KlarnaPaymentsAuthorizationToken = authToken;
@@ -38,6 +55,11 @@ KlarnaSessionManager.prototype.saveAuthorizationToken = function (token, finaliz
     }.bind(this, token));
 };
 
+/**
+ * Returns authorization info previously saved in user session.
+ *
+ * @returns {Object} authorization info.
+ */
 KlarnaSessionManager.prototype.loadAuthorizationInfo = function () {
     var authInfo = {};
     var kpAuthInfo = this.userSession.privacy.KPAuthInfo;
@@ -68,6 +90,15 @@ KlarnaSessionManager.prototype.getSessionRequestBody = function (basket, localeO
     return sessionRequestBuilder.build();
 };
 
+/**
+ * Refresh an existing Klarna Session.
+ *
+ * The current session is updated by using the REST Klarna interface.
+ * Then, another GET call is made to retrieve session information and 
+ * update DW user session.
+ * 
+ * @returns {Object} Response from the GET call.
+ */
 KlarnaSessionManager.prototype.refreshSession = function () {
     var instance = this;
 
@@ -96,6 +127,14 @@ KlarnaSessionManager.prototype.refreshSession = function () {
     return response;
 };
 
+/**
+ * Create a new Klarna session.
+ * 
+ * Parts of the Klarna API call's response are saved into 
+ * the DW user session for later use.
+ * 
+ * @returns {Object} Klarna API call response.
+ */
 KlarnaSessionManager.prototype.createSession = function () {
     var instance = this;
 
@@ -123,6 +162,11 @@ KlarnaSessionManager.prototype.createSession = function () {
     return response;
 };
 
+/**
+ * Validates Klarna Session.
+ * 
+ * @returns {bool} true, if the session is valid. 
+ */
 KlarnaSessionManager.prototype.hasValidSession = function () {
     var localeObject = this.getKlarnaLocaleMgr().getLocale();
     var localesMatch = (localeObject.custom.klarnaLocale === this.userSession.privacy.KlarnaLocale);
@@ -130,6 +174,11 @@ KlarnaSessionManager.prototype.hasValidSession = function () {
     return (!empty(this.userSession.privacy.KlarnaPaymentsSessionID) && localesMatch);
 };
 
+/**
+ * Create or Update Klarna session.
+ * 
+ * @returns {Object} Last API call's response; on error - null
+ */
 KlarnaSessionManager.prototype.createOrUpdateSession = function () {
     var instance = this;
 

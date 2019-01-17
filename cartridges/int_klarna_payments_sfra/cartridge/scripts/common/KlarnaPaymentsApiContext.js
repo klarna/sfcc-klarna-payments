@@ -2,10 +2,19 @@
 
 var HashMap = require('dw/util/HashMap');
 
+/**
+ * @constructor
+ * @classdesc Klarna Payments Api Context, container for Klarna API URLs.
+ */
 var KlarnaPaymentsApiContext = function () {
     this.flowApiUrls = null;
 };
 
+/**
+ * Return Klarna API URLs.
+ * 
+ * @returns {HashMap} Klarna API URLs.
+ */
 KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function () {
     if (this.flowApiUrls === null) {
         this.flowApiUrls = new HashMap();

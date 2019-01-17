@@ -1,5 +1,10 @@
 /* globals $, Klarna */
 
+/**
+ * Checkout enhancements for Klarna support.
+ * 
+ * @classdesc Klarna Checkout
+ */
 var KlarnaCheckout = {
     initStages: {},
     stageDefer: null,
@@ -9,6 +14,13 @@ var KlarnaCheckout = {
     prefix: 'klarna'
 };
 
+/**
+ * Return a cookie value by name.
+ * 
+ * Utility function.
+ * 
+ * @returns {string} cookie value.
+ */
 KlarnaCheckout.getCookie = function (name) {
     var value = '; ' + document.cookie;
     var parts = value.split('; ' + name + '=');
@@ -18,6 +30,18 @@ KlarnaCheckout.getCookie = function (name) {
     return '';
 };
 
+/**
+ * Initialize Klarna checkout.
+ * 
+ * SFRA checkout is made up of several stages: shipping, 
+ * payment, place order.
+ * 
+ * Klarna Checkout enhances the usual SFRA checkout, by 
+ * adding an interval function to check for and handle 
+ * stage changes (progressing further or going back through the stages).
+ * 
+ * @params {Object} - configuration settings.
+ */
 KlarnaCheckout.init = function (config) {
     this.klarnaPaymentsUrls = config.urls;
     this.klarnaPaymentsObjects = config.objects;
@@ -33,6 +57,17 @@ KlarnaCheckout.init = function (config) {
     }.bind(this), 100);
 };
 
+/**
+ * Handle checkout stage changed.
+ * 
+ * Usually, the user progresses further through the stages 
+ * by filling out valid information. The first time a stage 
+ * is loaded, Klarna Checkout initializes the stage by adding 
+ * stage-specific enhancements. If a stage is already initialized, 
+ * the stage is only refreshed.
+ * 
+ * @params {string} newStage - ID of new stage.
+ */
 KlarnaCheckout.handleStageChanged = function (newStage) {
     var promise = null;
 
@@ -124,16 +159,6 @@ KlarnaCheckout.initPlaceOrderStage = function (defer) {
     defer.resolve();
 };
 
-KlarnaCheckout.handleUpdateCheckoutView = function (data) {
-    var order = data.order;
-
-    if (!order.billing.payment || !order.billing.payment.selectedPaymentInstruments
-		|| !order.billing.payment.selectedPaymentInstruments.length > 0) {
-        return;
-    }
-
-    this.updatePaymentSummary(order, data.options);
-};
 
 KlarnaCheckout.refreshShippingStage = function () {
     // code executed everytime when shipping stage is loaded
@@ -150,8 +175,10 @@ KlarnaCheckout.refreshPaymentStage = function () {
     this.refreshKlarnaPaymentOptions();
 };
 
-KlarnaCheckout.getKlarnaPaymentOptionTabs = function () {
-    return $('.klarna-payment-item');
+KlarnaCheckout.refreshPlaceOrderStage = function () {
+    var $klarnaPlaceOrderBtn = $('.klarna-place-order');
+    $klarnaPlaceOrderBtn.show();
+    $klarnaPlaceOrderBtn.prop('disabled', false);
 };
 
 KlarnaCheckout.refreshKlarnaPaymentOptions = function () {
@@ -169,51 +196,49 @@ KlarnaCheckout.refreshKlarnaPaymentOptions = function () {
     }.bind(this));
 };
 
-KlarnaCheckout.refreshPlaceOrderStage = function () {
-    var $klarnaPlaceOrderBtn = $('.klarna-place-order');
-    $klarnaPlaceOrderBtn.show();
-    $klarnaPlaceOrderBtn.prop('disabled', false);
+/**
+ * Handle payment submission by updating the payment summary specifically for Klarna payments.
+ * 
+ * When the user submits a Klarna payment, an AJAX call is issued 
+ * by the SFRA code to save the new payment and then the place order 
+ * stage's payment summary is refreshed with payment instruments information.
+ * 
+ */
+KlarnaCheckout.handleUpdateCheckoutView = function (data) {
+    var order = data.order;
+
+    if (!order.billing.payment || !order.billing.payment.selectedPaymentInstruments
+		|| !order.billing.payment.selectedPaymentInstruments.length > 0) {
+        return;
+    }
+
+    this.updatePaymentSummary(order, data.options);
 };
 
-KlarnaCheckout.createPaymentOptionTab = function (klarnaPaymentCategory) {
-    var html =
-        '<li class="nav-item klarna-payment-item" data-method-id="klarna_' + klarnaPaymentCategory.identifier + '">' +
-            '<a class="nav-link klarna-payments-' + klarnaPaymentCategory.identifier + '-tab" data-toggle="tab" href="#klarna_payments_' + klarnaPaymentCategory.identifier + '" role="tab">' +
-                '<img class="credit-card-option"' +
-                    'src="' + klarnaPaymentCategory.asset_urls.standard + '"' +
-                    'height="32"' +
-                    'alt="' + klarnaPaymentCategory.name + '"' +
-                    'title="' + klarnaPaymentCategory.name + '"' +
-                '/>' +
-            '</a>' +
-        '</li>';
-
-    return $(html);
+KlarnaCheckout.getKlarnaPaymentOptionTabs = function () {
+    return $('.klarna-payment-item');
 };
 
-KlarnaCheckout.createPaymentOptionTabContent = function (klarnaPaymentCategory) {
-    var html =
-        '<div class="tab-pane klarna_payments-content klarna_payments_' + klarnaPaymentCategory.identifier + '-content" id="klarna_payments_' + klarnaPaymentCategory.identifier + '" role="tabpanel">' +
-            '<input type="hidden" class="form-control" name="isKlarna" value="true" disabled="disabled" />' +
-            '<input type="hidden" class="form-control" name="' + this.klarnaPaymentsObjects.paymentMethodHtmlName + '" value="KLARNA_PAYMENTS" disabled="disabled" />' +
-            '<input type="hidden" class="form-control" name="' + this.klarnaPaymentsObjects.paymentCategoryHtmlName + '" value="' + klarnaPaymentCategory.identifier + '" disabled="disabled" />' +
-            '<div id="klarna_payments_' + klarnaPaymentCategory.identifier + '_container" style="text-align: center;"></div>' +
-        '</div>';
-
-    return $(html);
-};
-
+/**
+ * Initialize payment options tabs.
+ * 
+ * The method handles all payment options tabs, even non-Klarna ones. 
+ * Information from hidden tabs is not going to be submitted as only shown tab's 
+ * inputs are enabled.
+ * 
+ * Additional Klarna email is shown if a Klarna payment option is selected.
+ */
 KlarnaCheckout.initPaymentOptionsTabs = function () {
-    var _this = this;
+    var instance = this;
     var $paymentOptionsTabs = $('.payment-options a[data-toggle="tab"]');
 
     $paymentOptionsTabs.on('shown.bs.tab', function (e) {
         var $clickedTabLink = $(e.target);
 
         if ($clickedTabLink.parent('li').hasClass('klarna-payment-item')) {
-            _this.getKlarnaEmailContainer().removeClass('hide');
+            instance.getKlarnaEmailContainer().removeClass('hide');
         } else {
-            _this.getKlarnaEmailContainer().addClass('hide');
+            instance.getKlarnaEmailContainer().addClass('hide');
         }
 
         $paymentOptionsTabs.each(function () {
@@ -232,6 +257,12 @@ KlarnaCheckout.initPaymentOptionsTabs = function () {
     this.bindListenersToPaymentCategories();
 };
 
+/**
+ * Configure event listeners for clicking on Klarna payment option tabs.
+ * 
+ * Each event listener will trigger a Klarna API call to load payment data 
+ * based on current billing and shipping address information.
+ */
 KlarnaCheckout.bindListenersToPaymentCategories = function () {
     var $klarnaPaymentCategories = this.getKlarnaPaymentOptionTabs();
 
@@ -242,31 +273,6 @@ KlarnaCheckout.bindListenersToPaymentCategories = function () {
         $klarnaPaymentCategory.on('click', function () {
             this.loadPaymentData(klarnaPaymentCategoryId);
         }.bind(this));
-    }.bind(this));
-};
-
-KlarnaCheckout.handlePaymentNeedsPreassesment = function () {
-    var $billingAddressForm = $('#dwfrm_billing');
-    var $billingAddressElementsFields = $billingAddressForm.find('.billing-address');
-    var $billingAddressFormElements = $billingAddressElementsFields.find('input, select');
-
-    $billingAddressForm.on('change', function () {
-        var selectedPaymentMethod = this.getSelectedPaymentMethod();
-
-        var formValid = true;
-
-        $billingAddressFormElements.each(function (index, el) {
-            var $el = $(el);
-
-            if ($el.attr('aria-invalid') === 'true' || ($el.attr('aria-required') === 'true' && $el.value.length === 0)) {
-                formValid = false;
-                return;
-            }
-        });
-
-        if (formValid && this.isKlarnaPaymentCategory(selectedPaymentMethod)) {
-            this.loadPaymentData(selectedPaymentMethod);
-        }
     }.bind(this));
 };
 
@@ -338,10 +344,40 @@ KlarnaCheckout.getKlarnaSubmitPaymentBtn = function () {
     return $('.klarna-submit-payment');
 };
 
+/**
+ * Initialize additional email input field.
+ * 
+ * Klarna expects an email as part of billing address data which the 
+ * default SFRA checkout does not have. This method adds validation 
+ * handling.
+ */
+KlarnaCheckout.initKlarnaEmail = function () {
+    var $emailField = this.getKlarnaEmail();
+
+    $emailField.on('keypress input', function () {
+        if (this.isKlarnaEmailValid()) {
+            this.markKlarnaEmailValid();
+        } else {
+            this.markKlarnaEmailInvalid();
+        }
+    }.bind(this));
+};
+
+KlarnaCheckout.getKlarnaEmail = function () {
+    var $emailField = $('.payment-form .klarna_email');
+
+    return $emailField;
+};
+
+/**
+ * Checks Klarna email input for valid email.
+ * 
+ * @returns {bool} true, if user entered a valid email.
+ */
 KlarnaCheckout.isKlarnaEmailValid = function () {
     var $emailField = this.getKlarnaEmail();
     var regExpPattern = $emailField.attr('pattern');
-    var maxlength = parseInt($emailField.attr('maxlength'));
+    var maxlength = parseInt($emailField.attr('maxlength'), 10);
     var email = $emailField.val();
     var regExp = new RegExp(regExpPattern);
 
@@ -356,16 +392,10 @@ KlarnaCheckout.isKlarnaEmailValid = function () {
     return true;
 };
 
-KlarnaCheckout.initKlarnaEmail = function () {
+KlarnaCheckout.getKlarnaEmailContainer = function () {
     var $emailField = this.getKlarnaEmail();
 
-    $emailField.on('keypress input', function () {
-        if (this.isKlarnaEmailValid()) {
-            this.markKlarnaEmailValid();
-        } else {
-            this.markKlarnaEmailInvalid();
-        }
-    }.bind(this));
+    return $emailField.parent('.form-group');
 };
 
 KlarnaCheckout.markKlarnaEmailInvalid = function () {
@@ -380,18 +410,13 @@ KlarnaCheckout.markKlarnaEmailValid = function () {
     $emailField.next('.invalid-feedback').hide();
 };
 
-KlarnaCheckout.getKlarnaEmail = function () {
-    var $emailField = $('.payment-form .klarna_email');
-
-    return $emailField;
-};
-
-KlarnaCheckout.getKlarnaEmailContainer = function () {
-    var $emailField = this.getKlarnaEmail();
-
-    return $emailField.parent('.form-group');
-};
-
+/**
+ * Create and configure a Klarna submit payment button.
+ * 
+ * The default submit payment button will be hidden and the user is going to click 
+ * on a duplicate Klarna submit payment button, which makes a Klarna authorize call.
+ *
+ */
 KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
     var $submitPaymentBtn = $('.submit-payment');
 
@@ -454,6 +479,43 @@ KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
     }.bind(this));
 };
 
+/**
+ * Handle preassessment on submit payment stage.
+ * 
+ * Preassesment sends information on-the-fly for each billing address 
+ * change. If a Klarna payment category is selected, a Klarna API call 
+ * is executed to load payment data.
+ */
+KlarnaCheckout.handlePaymentNeedsPreassesment = function () {
+    var $billingAddressForm = $('#dwfrm_billing');
+    var $billingAddressElementsFields = $billingAddressForm.find('.billing-address');
+    var $billingAddressFormElements = $billingAddressElementsFields.find('input, select');
+
+    $billingAddressForm.on('change', function () {
+        var selectedPaymentMethod = this.getSelectedPaymentMethod();
+
+        var formValid = true;
+
+        $billingAddressFormElements.each(function (index, el) {
+            var $el = $(el);
+
+            if ($el.attr('aria-invalid') === 'true' || ($el.attr('aria-required') === 'true' && $el.value.length === 0)) {
+                formValid = false;
+                return;
+            }
+        });
+
+        if (formValid && this.isKlarnaPaymentCategory(selectedPaymentMethod)) {
+            this.loadPaymentData(selectedPaymentMethod);
+        }
+    }.bind(this));
+};
+
+/**
+ * Update payment summary with Klarna payment instrument information.
+ * 
+ * @param {Object} DW order info.
+ */
 KlarnaCheckout.updatePaymentSummary = function (order) {
     var selectedPaymentInstruments = order.billing.payment.selectedPaymentInstruments;
     var firstPaymentInstrument = selectedPaymentInstruments[0];
@@ -483,6 +545,14 @@ KlarnaCheckout.updatePaymentSummary = function (order) {
     $paymentSummary.empty().append(htmlToAppend);
 };
 
+/**
+ * Obtain billing address information on submit payment stage.
+ * 
+ * This method handles the cases of adding/updating a billing address, 
+ * as well as using an existing one from the billing address drop-down.
+ * 
+ * @returns {Object} - Klarna billing address.
+ */
 KlarnaCheckout.obtainBillingAddressData = function () {
     var address = {
         given_name: '',
@@ -530,6 +600,14 @@ KlarnaCheckout.obtainBillingAddressData = function () {
     return address;
 };
 
+/**
+ * Obtain shipping address information on submit payment stage.
+ * 
+ * Shipping address information is taken from the shipping address 
+ * block.
+ * 
+ * @returns {Object} - Klarna shipping address.
+ */
 KlarnaCheckout.obtainShippingAddressData = function () {
     var address = {
         given_name: '',
@@ -566,7 +644,6 @@ KlarnaCheckout.getFormSelectedPaymentMethod = function () {
     return methodId;
 };
 
-
 KlarnaCheckout.getFormSelectedPaymentCategory = function () {
     var categoryId = $('.payment-information').attr('data-payment-category-id');
 
@@ -593,6 +670,12 @@ KlarnaCheckout.getSelectedPaymentMethod = function () {
     return klarnaMethodId;
 };
 
+/**
+ * Confirms if a payment category is a Klarna payment category.
+ * 
+ * @param {string} paymentCategory Klarna payment category ID.
+ * @returns {bool} true, if the payment category is a Klarna payment category.
+ */
 KlarnaCheckout.isKlarnaPaymentCategory = function (paymentCategory) {
     var flag = false;
     var $klarnaPaymentCategories = this.getKlarnaPaymentOptionTabs();
@@ -610,12 +693,24 @@ KlarnaCheckout.isKlarnaPaymentCategory = function (paymentCategory) {
     return flag;
 };
 
+/**
+ * Checks if user has entered shipping address.
+ * 
+ * @returns {bool} If shipping address has been selected.
+ */
 KlarnaCheckout.userHasEnteredShippingAddress = function () {
     var $shipmentUUIDElement = $('.single-shipping .shipping-form').find('.shipmentUUID');
 
     return ($shipmentUUIDElement.value !== '');
 };
 
+/**
+ * Execute a Klarna API call to Load payment data for a specified Klarna payment category.
+ * 
+ * Note: Klarna JS client automatically refreshes the contents of the passed container.
+ * 
+ * @param {string} paymentCategory Klarna payment category.
+ */
 KlarnaCheckout.loadPaymentData = function (paymentCategory) {
     var klarnaPaymentMethod = this.getKlarnaPaymentMethod(paymentCategory);
 
@@ -638,6 +733,12 @@ KlarnaCheckout.loadPaymentData = function (paymentCategory) {
     }.bind(this));
 };
 
+/**
+ * Initialize Klarna checkout enhancements.
+ * 
+ * This method is called as soon as the Klarna JS API client has been 
+ * properly initialized (this is done by the client itself). 
+ */
 window.klarnaAsyncCallback = function () {
     $(function () {
         $('body').on('checkout:updateCheckoutView', function (e, data) {

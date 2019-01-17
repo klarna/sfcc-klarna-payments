@@ -1,20 +1,44 @@
 /* globals empty */
 
+/**
+ * Klarna Payments HTTP service wrapper
+ *
+ * Thin wrapper around service registry to handle debug logging
+ * of responses from Klarna API service calls.
+ *
+ */
+
 var Logger = require('dw/system/Logger');
 var ServiceRegistry = require('dw/svc/ServiceRegistry');
 var StringUtils = require('dw/util/StringUtils');
 var Site = require('dw/system/Site');
 var Resource = require('dw/web/Resource');
 
+/**
+ * @constructor
+ */
 function KlarnaPaymentsHttpService() {
     this.logger = Logger.getLogger('RequestTrace');
     this.lastStatusCode = 200;
 }
 
+/**
+ * Returns the status code of the last API service call.
+ * @returns {int} last status code.
+ */
 KlarnaPaymentsHttpService.prototype.getLastStatusCode = function () {
     return this.lastStatusCode;
 };
 
+/**
+ * Executes an HTTP request to Klarna API
+ *
+ * @param {string} urlPath - URL path.
+ * @param {string} httpVerb - a valid HTTP verb.
+ * @param {string} credentialID - DW service credentials ID.
+ * @param {Object} requestBody - optional, JSON body.
+ * @returns {string} Parsed JSON response; if not available - response status code.
+ */
 KlarnaPaymentsHttpService.prototype.call = function (urlPath, httpVerb, credentialID, requestBody) {
     var serviceID = Site.getCurrent().getCustomPreferenceValue('kpServiceName');
     ServiceRegistry.configure(serviceID, {
@@ -61,6 +85,12 @@ KlarnaPaymentsHttpService.prototype.call = function (urlPath, httpVerb, credenti
     return result.status;
 };
 
+/**
+ * Validates an input against the HTTP verbs.
+ *
+ * @param {string} httpVerb - one of POST, GET, PUT, DELETE.
+ * @returns {boolean} - true, if the passed input is a valid HTTP verb.
+ */
 KlarnaPaymentsHttpService.prototype.isValidHttpVerb = function (httpVerb) {
     var validHttpVerbs = ['GET', 'PUT', 'POST', 'DELETE', 'PATCH'];
 
@@ -71,6 +101,14 @@ KlarnaPaymentsHttpService.prototype.isValidHttpVerb = function (httpVerb) {
     throw new Error('Not valid HTTP verb defined - ' + httpVerb);
 };
 
+/**
+ * Transforms an error response from Klarna API into an Error exception.
+ *
+ * @param {Object} result - Response object.
+ * @param {string} httpVerb - a valid HTTP verb.
+ * @param {string} requestUrl - The URL used to make the request.
+ * @param {JSON} requestBody - optional, JSON body.
+ */
 KlarnaPaymentsHttpService.prototype.detectErrorResponse = function (result, httpVerb, requestUrl, requestBody) {
     if (empty(result)) {
         this.logger.error('result was empty');
@@ -81,10 +119,22 @@ KlarnaPaymentsHttpService.prototype.detectErrorResponse = function (result, http
     }
 };
 
+/**
+ * Returns a default error response message.
+ *
+ * @returns {string} error message.
+ */
 KlarnaPaymentsHttpService.prototype.getErrorResponse = function () {
     return Resource.msg('apierror.flow.default', 'klarnapayments', null);
 };
 
+/**
+ * Log debug information regarding an error response.
+ *
+ * @param {string} result - Result from last service call.
+ * @param {string} requestUrl - Request URL of the last service call.
+ * @param {Object} requestBody - Request body of the last service call.
+ */
 KlarnaPaymentsHttpService.prototype.logErrorResponse = function (result, requestUrl, requestBody) {
     var content = 'result.error=[' + result.error;
     content += '], result.status=[' + result.status;
@@ -105,6 +155,14 @@ KlarnaPaymentsHttpService.prototype.logErrorResponse = function (result, request
     this.logger.error(content);
 };
 
+/**
+ * Log debug response data for successful API calls.
+ *
+ * @param {string} urlPath - URL path from last service call.
+ * @param {string} httpVerb - valid HTTP verb from last service call.
+ * @param {Object} requestBody - Request body of the last service call.
+ * @param {Object} result - Response object.
+ */
 KlarnaPaymentsHttpService.prototype.logResponseData = function (urlPath, httpVerb, requestBody, result) {
     try {
         var message = '';

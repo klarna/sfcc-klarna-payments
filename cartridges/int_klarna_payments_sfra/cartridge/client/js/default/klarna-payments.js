@@ -2,7 +2,7 @@
 
 /**
  * Checkout enhancements for Klarna support.
- * 
+ *
  * @classdesc Klarna Checkout
  */
 var KlarnaCheckout = {
@@ -16,9 +16,10 @@ var KlarnaCheckout = {
 
 /**
  * Return a cookie value by name.
- * 
+ *
  * Utility function.
- * 
+ *
+ * @param {string} name - cookie name.
  * @returns {string} cookie value.
  */
 KlarnaCheckout.getCookie = function (name) {
@@ -32,15 +33,15 @@ KlarnaCheckout.getCookie = function (name) {
 
 /**
  * Initialize Klarna checkout.
- * 
- * SFRA checkout is made up of several stages: shipping, 
+ *
+ * SFRA checkout is made up of several stages: shipping,
  * payment, place order.
- * 
- * Klarna Checkout enhances the usual SFRA checkout, by 
- * adding an interval function to check for and handle 
+ *
+ * Klarna Checkout enhances the usual SFRA checkout, by
+ * adding an interval function to check for and handle
  * stage changes (progressing further or going back through the stages).
- * 
- * @params {Object} - configuration settings.
+ *
+ * @param {Object} config - configuration settings.
  */
 KlarnaCheckout.init = function (config) {
     this.klarnaPaymentsUrls = config.urls;
@@ -59,14 +60,14 @@ KlarnaCheckout.init = function (config) {
 
 /**
  * Handle checkout stage changed.
- * 
- * Usually, the user progresses further through the stages 
- * by filling out valid information. The first time a stage 
- * is loaded, Klarna Checkout initializes the stage by adding 
- * stage-specific enhancements. If a stage is already initialized, 
+ *
+ * Usually, the user progresses further through the stages
+ * by filling out valid information. The first time a stage
+ * is loaded, Klarna Checkout initializes the stage by adding
+ * stage-specific enhancements. If a stage is already initialized,
  * the stage is only refreshed.
- * 
- * @params {string} newStage - ID of new stage.
+ *
+ * @param {string} newStage - ID of new stage.
  */
 KlarnaCheckout.handleStageChanged = function (newStage) {
     var promise = null;
@@ -198,11 +199,12 @@ KlarnaCheckout.refreshKlarnaPaymentOptions = function () {
 
 /**
  * Handle payment submission by updating the payment summary specifically for Klarna payments.
- * 
- * When the user submits a Klarna payment, an AJAX call is issued 
- * by the SFRA code to save the new payment and then the place order 
+ *
+ * When the user submits a Klarna payment, an AJAX call is issued
+ * by the SFRA code to save the new payment and then the place order
  * stage's payment summary is refreshed with payment instruments information.
- * 
+ *
+ * @param {Object} data - payment data.
  */
 KlarnaCheckout.handleUpdateCheckoutView = function (data) {
     var order = data.order;
@@ -221,11 +223,11 @@ KlarnaCheckout.getKlarnaPaymentOptionTabs = function () {
 
 /**
  * Initialize payment options tabs.
- * 
- * The method handles all payment options tabs, even non-Klarna ones. 
- * Information from hidden tabs is not going to be submitted as only shown tab's 
+ *
+ * The method handles all payment options tabs, even non-Klarna ones.
+ * Information from hidden tabs is not going to be submitted as only shown tab's
  * inputs are enabled.
- * 
+ *
  * Additional Klarna email is shown if a Klarna payment option is selected.
  */
 KlarnaCheckout.initPaymentOptionsTabs = function () {
@@ -259,8 +261,8 @@ KlarnaCheckout.initPaymentOptionsTabs = function () {
 
 /**
  * Configure event listeners for clicking on Klarna payment option tabs.
- * 
- * Each event listener will trigger a Klarna API call to load payment data 
+ *
+ * Each event listener will trigger a Klarna API call to load payment data
  * based on current billing and shipping address information.
  */
 KlarnaCheckout.bindListenersToPaymentCategories = function () {
@@ -301,7 +303,7 @@ KlarnaCheckout.handleFinalizeRequired = function () {
                 // to trigger checkout stage processing
                 $placeOrderBtn.click();
             });
-        } else if (res.show_form) {
+        } else {
             $klarnaPlaceOrderBtn.prop('disabled', false);
         }
     }.bind(this));
@@ -346,9 +348,9 @@ KlarnaCheckout.getKlarnaSubmitPaymentBtn = function () {
 
 /**
  * Initialize additional email input field.
- * 
- * Klarna expects an email as part of billing address data which the 
- * default SFRA checkout does not have. This method adds validation 
+ *
+ * Klarna expects an email as part of billing address data which the
+ * default SFRA checkout does not have. This method adds validation
  * handling.
  */
 KlarnaCheckout.initKlarnaEmail = function () {
@@ -371,7 +373,7 @@ KlarnaCheckout.getKlarnaEmail = function () {
 
 /**
  * Checks Klarna email input for valid email.
- * 
+ *
  * @returns {bool} true, if user entered a valid email.
  */
 KlarnaCheckout.isKlarnaEmailValid = function () {
@@ -412,8 +414,8 @@ KlarnaCheckout.markKlarnaEmailValid = function () {
 
 /**
  * Create and configure a Klarna submit payment button.
- * 
- * The default submit payment button will be hidden and the user is going to click 
+ *
+ * The default submit payment button will be hidden and the user is going to click
  * on a duplicate Klarna submit payment button, which makes a Klarna authorize call.
  *
  */
@@ -481,9 +483,9 @@ KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
 
 /**
  * Handle preassessment on submit payment stage.
- * 
- * Preassesment sends information on-the-fly for each billing address 
- * change. If a Klarna payment category is selected, a Klarna API call 
+ *
+ * Preassesment sends information on-the-fly for each billing address
+ * change. If a Klarna payment category is selected, a Klarna API call
  * is executed to load payment data.
  */
 KlarnaCheckout.handlePaymentNeedsPreassesment = function () {
@@ -513,8 +515,8 @@ KlarnaCheckout.handlePaymentNeedsPreassesment = function () {
 
 /**
  * Update payment summary with Klarna payment instrument information.
- * 
- * @param {Object} DW order info.
+ *
+ * @param {Object} order DW order info.
  */
 KlarnaCheckout.updatePaymentSummary = function (order) {
     var selectedPaymentInstruments = order.billing.payment.selectedPaymentInstruments;
@@ -547,10 +549,10 @@ KlarnaCheckout.updatePaymentSummary = function (order) {
 
 /**
  * Obtain billing address information on submit payment stage.
- * 
- * This method handles the cases of adding/updating a billing address, 
+ *
+ * This method handles the cases of adding/updating a billing address,
  * as well as using an existing one from the billing address drop-down.
- * 
+ *
  * @returns {Object} - Klarna billing address.
  */
 KlarnaCheckout.obtainBillingAddressData = function () {
@@ -602,10 +604,10 @@ KlarnaCheckout.obtainBillingAddressData = function () {
 
 /**
  * Obtain shipping address information on submit payment stage.
- * 
- * Shipping address information is taken from the shipping address 
+ *
+ * Shipping address information is taken from the shipping address
  * block.
- * 
+ *
  * @returns {Object} - Klarna shipping address.
  */
 KlarnaCheckout.obtainShippingAddressData = function () {
@@ -672,7 +674,7 @@ KlarnaCheckout.getSelectedPaymentMethod = function () {
 
 /**
  * Confirms if a payment category is a Klarna payment category.
- * 
+ *
  * @param {string} paymentCategory Klarna payment category ID.
  * @returns {bool} true, if the payment category is a Klarna payment category.
  */
@@ -695,7 +697,7 @@ KlarnaCheckout.isKlarnaPaymentCategory = function (paymentCategory) {
 
 /**
  * Checks if user has entered shipping address.
- * 
+ *
  * @returns {bool} If shipping address has been selected.
  */
 KlarnaCheckout.userHasEnteredShippingAddress = function () {
@@ -706,9 +708,9 @@ KlarnaCheckout.userHasEnteredShippingAddress = function () {
 
 /**
  * Execute a Klarna API call to Load payment data for a specified Klarna payment category.
- * 
+ *
  * Note: Klarna JS client automatically refreshes the contents of the passed container.
- * 
+ *
  * @param {string} paymentCategory Klarna payment category.
  */
 KlarnaCheckout.loadPaymentData = function (paymentCategory) {
@@ -735,9 +737,9 @@ KlarnaCheckout.loadPaymentData = function (paymentCategory) {
 
 /**
  * Initialize Klarna checkout enhancements.
- * 
- * This method is called as soon as the Klarna JS API client has been 
- * properly initialized (this is done by the client itself). 
+ *
+ * This method is called as soon as the Klarna JS API client has been
+ * properly initialized (this is done by the client itself).
  */
 window.klarnaAsyncCallback = function () {
     $(function () {

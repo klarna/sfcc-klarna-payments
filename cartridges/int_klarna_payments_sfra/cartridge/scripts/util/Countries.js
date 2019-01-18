@@ -4,11 +4,6 @@ var countriesData = require('~/cartridge/config/countries');
 var Locale = require('dw/util/Locale');
 
 /**
- *
- *		No changes were made to this script. It was copied over from
- *		Site Genesis to prevent complications with external cartridge
- *		references
- *
  * @description filter out the countries array to return only ones that are allowed in
  * site's allowedLocales
  * @return {array} allowedCountries array of countries that have allowed locales
@@ -31,28 +26,14 @@ function getCountries() {
     return allowedCountries;
 }
 
-function getCountriesGroupedBy(group) {
-    var countries = getCountries();
-    var countriesGrouped = {};
-    countries.forEach(function (country) {
-        var key = country.hasOwnProperty(group) ? country[group] : undefined;
-        if (countriesGrouped.hasOwnProperty(key)) {
-            countriesGrouped[key].push(country);
-        } else {
-            countriesGrouped[key] = [country];
-        }
-    });
-    return countriesGrouped;
-}
-
 /**
  * @description iterate over the countries array, find the first country that has the current locale
  * @param {PipelineDictionary} currentLocale the current locale object
- * @return {Object} country the object containing the country's settings
+ * @returns {Object|null} country the object containing the country's settings; null if no data available
  */
 function getCurrent(currentLocale) {
     if (!countriesData || countriesData.length === 0) {
-        return;
+        return null;
     }
 
     var selectedCountry = null;
@@ -71,5 +52,4 @@ function getCurrent(currentLocale) {
 }
 
 exports.getCountries = getCountries;
-exports.getCountriesGroupedBy = getCountriesGroupedBy;
 exports.getCurrent = getCurrent;

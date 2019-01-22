@@ -6,9 +6,8 @@
 	var Countries = require(SG_CORE + '/cartridge/scripts/util/Countries');
 	var country = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
 	
-	var preAssessmentCountries = dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
 	var preAssement = false;
-	if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && !isCountryInEU( country ) )
+	if ( !isCountryInEU( country ) )
 	{
 		preAssement = true;
 	}

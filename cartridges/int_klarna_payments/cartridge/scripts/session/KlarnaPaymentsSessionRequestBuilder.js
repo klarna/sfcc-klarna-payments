@@ -51,9 +51,8 @@
 		localeObject = params.localeObject.custom;
 		
 		var country = localeObject.country;
-		var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue( 'kpPreAssessment' );
 		var preAssement = false;
-		if ( !empty( preAssessmentCountries ) && ( preAssessmentCountries.indexOf( country ) !== -1 ) && !isCountryInEU( country ) )
+		if ( !isCountryInEU( country ) )
 		{
 			preAssement = true;
 		}

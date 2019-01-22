@@ -45,9 +45,8 @@ function isCountryInEU(country) {
  */
 function isEnabledPreassessmentForCountry(country) {
     var isPreassessment = false;
-    var preAssessmentCountries = Site.getCurrent().getCustomPreferenceValue('kpPreAssessment');
 
-    if (!empty(preAssessmentCountries) && (preAssessmentCountries.indexOf(country) !== -1) && !isCountryInEU(country)) {
+    if (!isCountryInEU(country)) {
         isPreassessment = true;
     }
 

@@ -26,14 +26,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="kpPreAssessment">
-                <display-name xml:lang="x-default">Pre-Assessment is on for:</display-name>
-                <description xml:lang="x-default">Pre-assessment flag. Comma separated string values with country codes, which should have the pre-assessment flag ON. For example the following string “CN, AU” would mean the pre-assessment is ON only for China and Australia. Note: Even if ON for an EU member country, consumer information will not be sent to Klarna until the authorize step.</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
 			  <attribute-definition attribute-id="kpColorBorder">
                 <display-name xml:lang="x-default">Border Color Preference</display-name>
                 <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
@@ -177,7 +169,6 @@
                 <display-name xml:lang="x-default">Klarna Payments</display-name>
 				<attribute attribute-id="sendProductAndImageURLs"/>
 				<attribute attribute-id="merchant_reference2_mapping"/>
-				<attribute attribute-id="kpPreAssessment"/>
 				<attribute attribute-id="kpColorDetails"/>
 				<attribute attribute-id="kpColorButton"/>
 				<attribute attribute-id="kpColorButtonText"/>

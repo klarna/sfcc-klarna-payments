@@ -18,15 +18,16 @@ var Site = require('dw/system/Site');
 var Cypher = require('dw/crypto/Cipher');
 var Status = require('dw/system/Status');
 var HookMgr = require('dw/system/HookMgr');
-
 var log = Logger.getLogger('KLARNA_PAYMENTS.js');
 
 var KlarnaPaymentsOrderRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/order');
 var KlarnaPaymentsHttpService = require('~/cartridge/scripts/common/KlarnaPaymentsHttpService');
 var KlarnaPaymentsApiContext = require('~/cartridge/scripts/common/KlarnaPaymentsApiContext');
 var KlarnaLocaleMgr = require('~/cartridge/scripts/klarna_payments/locale');
+var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
 
 var klarnaLocaleMgr = new KlarnaLocaleMgr();
+var klarnaSessionManager = new KlarnaSessionManager(session, klarnaLocaleMgr);
 
 /**
  * Creates a Klarna payments order through Klarna API
@@ -47,13 +48,14 @@ function getOrderRequestBody(order, localeObject) {
 }
 
 /**
- * Creates a Klarna order through Klarna API
+ * Calls Klarna Create Order API.
+ *
  * @param {dw.order.Order} order SCC order object
  * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
  *
- * @return {boolean} true if order has been successfully created, otherwise false
+ * @return {Object|null} Klarna Payments create order response data on success, null on failure.
  */
-function createKlarnaOrder(order, localeObject) {
+function callKlarnaCreateOrderAPI(order, localeObject) {
     var klarnaPaymentsHttpService = {};
     var klarnaApiContext = {};
     var requestBody = {};
@@ -69,18 +71,11 @@ function createKlarnaOrder(order, localeObject) {
 
         response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
 
-        Transaction.wrap(function () {
-            session.privacy.KlarnaPaymentsSessionID = null; // dettach klarna session handler id from user session
-            session.privacy.KlarnaPaymentsOrderID = response.order_id;
-            session.privacy.KlarnaPaymentsRedirectURL = response.redirect_url;
-            session.privacy.KlarnaPaymentsFraudStatus = response.fraud_status;
-        });
+        return response;
     } catch (e) {
         log.error('Error in creating Klarna Payments Order: {0}', e.message + e.stack);
-        return false;
+        return null;
     }
-
-    return true;
 }
 
 /**
@@ -333,24 +328,24 @@ function isErrorAuthResult(authResult) {
  *
  * @param {dw.order.order} order DW order
  * @param {dw.order.paymentInstrument} paymentInstrument DW payment instrument
+ * @param {string} kpOrderId Klarna Order Id.
  */
-function updateOrderWithKlarnaOrderInfo(order, paymentInstrument) {
+function updateOrderWithKlarnaOrderInfo(order, paymentInstrument, kpOrderId) {
     var kpVCNEnabledPreferenceValue = Site.getCurrent().getCustomPreferenceValue('kpVCNEnabled');
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
     var pInstr = paymentInstrument;
     var dwOrder = order;
-    var kpOrderId = session.privacy.KlarnaPaymentsOrderID;
 
     Transaction.wrap(function () {
         pInstr.paymentTransaction.transactionID = kpOrderId;
         pInstr.paymentTransaction.paymentProcessor = paymentProcessor;
-        session.privacy.OrderNo = order.getOrderNo();
         dwOrder.custom.kpOrderID = kpOrderId;
         dwOrder.custom.kpIsVCN = empty(kpVCNEnabledPreferenceValue) ? false : kpVCNEnabledPreferenceValue;
     });
 }
 
 /**
+ * Authorize order already accepted by Klarna.
  *
  * @param {dw.order.order} order DW Order
  * @param {string} kpOrderID KP Order ID
@@ -384,6 +379,40 @@ function authorizeAcceptedOrder(order, kpOrderID, localeObject) {
 }
 
 /**
+ * Handle Klarna Create Order API call response.
+ *
+ * @param {dw.order.order} order DW Order.
+ * @param {dw.order.OrderPaymentInstrument} paymentInstrument DW PaymentInstrument.
+ * @param {Object} kpOrderInfo Response data from Klarna Create Order API call.
+ * @returns {Object} Authorization result object.
+ */
+function handleKlarnaOrderCreated(order, paymentInstrument, kpOrderInfo) {
+    var authorizationResult = {};
+    var localeObject = klarnaLocaleMgr.getLocale();
+    var kpFraudStatus = kpOrderInfo.fraud_status;
+    var kpOrderId = kpOrderInfo.order_id;
+
+    klarnaSessionManager.removeSession();
+
+    Transaction.wrap(function () {
+        var pInstr = paymentInstrument;
+        pInstr.paymentTransaction.custom.kpFraudStatus = kpFraudStatus;
+    });
+
+    updateOrderWithKlarnaOrderInfo(order, paymentInstrument, kpOrderId);
+
+    if (kpFraudStatus === KLARNA_FRAUD_STATUSES.REJECTED) {
+        authorizationResult = generateErrorAuthResult();
+    } else if (kpFraudStatus === KLARNA_FRAUD_STATUSES.PENDING) {
+        authorizationResult = generateSuccessAuthResult();
+    } else {
+        authorizationResult = authorizeAcceptedOrder(order, kpOrderId, localeObject);
+    }
+
+    return authorizationResult;
+}
+
+/**
  * Update Order Data
  *
  * @param {dw.order.LineItemCtnr} order - Order object
@@ -392,31 +421,14 @@ function authorizeAcceptedOrder(order, kpOrderID, localeObject) {
  * @returns {Object} Processor authorizing result
  */
 function authorize(order, orderNo, paymentInstrument) {
-    var authorizationResult = {};
     var localeObject = klarnaLocaleMgr.getLocale();
-    var kpFraudPendingStatus = session.privacy.KlarnaPaymentsFraudStatus;
-    var kpOrderID = session.privacy.KlarnaPaymentsOrderID;
-    var klarnaOrderCreated = createKlarnaOrder(order, localeObject);
+    var apiResponseData = callKlarnaCreateOrderAPI(order, localeObject);
 
-    Transaction.wrap(function () {
-        var pInstr = paymentInstrument;
-
-        pInstr.paymentTransaction.custom.kpFraudStatus = kpFraudPendingStatus;
-    });
-
-    if (!klarnaOrderCreated || kpFraudPendingStatus === KLARNA_FRAUD_STATUSES.REJECTED) {
-        authorizationResult = generateErrorAuthResult();
-    } else {
-        updateOrderWithKlarnaOrderInfo(order, paymentInstrument);
-
-        if (kpFraudPendingStatus === KLARNA_FRAUD_STATUSES.PENDING) {
-            authorizationResult = generateSuccessAuthResult();
-        } else {
-            authorizationResult = authorizeAcceptedOrder(order, kpOrderID, localeObject);
-        }
+    if (!apiResponseData) {
+        return generateErrorAuthResult();
     }
 
-    return authorizationResult;
+    return handleKlarnaOrderCreated(order, paymentInstrument, apiResponseData);
 }
 
 /**

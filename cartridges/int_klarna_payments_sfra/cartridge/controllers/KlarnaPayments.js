@@ -6,16 +6,20 @@ var Logger = require('dw/system/Logger');
 var log = Logger.getLogger('KlarnaPayments');
 
 server.post('Notification', function (req, res) {
+    var StringUtils = require('dw/util/StringUtils');
     var OrderMgr = require('dw/order/OrderMgr');
     var processor = require('~/cartridge/scripts/klarna_payments/processor');
 
     var requestParams = req.form;
 
     var klarnaPaymentsFraudDecisionObject = JSON.parse(req.body);
+
     var kpOrderID = klarnaPaymentsFraudDecisionObject.order_id;
     var kpEventType = klarnaPaymentsFraudDecisionObject.event_type;
     var currentCountry = requestParams.klarna_country;
     var order = OrderMgr.queryOrder('custom.kpOrderID = {0}', kpOrderID);
+
+    StringUtils.format('Notification received: requestBody=[{0}]', req.body);
 
     if (!order) {
         res.setStatusCode(200);

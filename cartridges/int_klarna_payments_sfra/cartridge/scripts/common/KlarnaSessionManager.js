@@ -109,6 +109,7 @@ KlarnaSessionManager.prototype.refreshSession = function () {
     var requestUrl = '';
     var response = {};
     var klarnaSessionID = this.userSession.privacy.KlarnaPaymentsSessionID;
+    // eslint-disable-next-line no-trailing-spaces
     
     klarnaPaymentsHttpService = new KlarnaPayments.HttpService();
     requestBody = this.getSessionRequestBody(BasketMgr.getCurrentBasket(), localeObject);
@@ -165,6 +166,14 @@ KlarnaSessionManager.prototype.createSession = function () {
     });
 
     return response;
+};
+
+KlarnaSessionManager.prototype.removeSession = function () {
+    var instance = this;
+
+    Transaction.wrap(function () {
+        instance.userSession.privacy.KlarnaPaymentsSessionID = null;
+    });
 };
 
 /**

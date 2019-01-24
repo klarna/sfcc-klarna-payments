@@ -145,7 +145,6 @@ OrderLineItem.prototype.getItemName = function (li) {
 
 OrderLineItem.prototype.build = function (li) {
     var itemPrice = this.getItemPrice(li);
-    var	itemType = '';
     var quantity = li.quantityValue;
     var brand = this.getItemBrand(li);
     var categoryPath = this.getItemCategoryPath(li);
@@ -154,7 +153,6 @@ OrderLineItem.prototype.build = function (li) {
     this.item.type = this.getItemType(li);
     this.item.reference = this.getItemId(li);
     this.item.quantity = quantity;
-    this.item.type = itemType;
     this.item.name = this.getItemName(li);
     this.item.unit_price = Math.round(itemPrice / quantity);
     this.item.tax_rate = this.getItemTaxRate(li);

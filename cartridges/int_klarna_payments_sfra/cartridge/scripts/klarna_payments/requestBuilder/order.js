@@ -23,6 +23,8 @@
     var AdditionalCustomerInfoRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/additionalCustomerInfo');
     var OptionsRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/options');
 
+    var isTaxationPolicyNet = require('~/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
+
     /**
      * KP Order Request Builder
      */
@@ -179,17 +181,13 @@
         return this;
     };
 
-    KlarnaPaymentsOrderRequestBuilder.prototype.isTaxationPolicyNet = function () {
-        return (this.getLocaleObject().country === 'US');
-    };
-
     KlarnaPaymentsOrderRequestBuilder.prototype.buildTotalTax = function (order) {
         var totalTax = order.totalTax.value * 100;
         var salesTaxItem = {};
 
         this.context.order_tax_amount = Math.round(totalTax);
 
-        if (this.isTaxationPolicyNet()) {
+        if (isTaxationPolicyNet()) {
             salesTaxItem = this.getSalesTaxRequestBuilder().build(order);
 
             this.context.order_lines.push(salesTaxItem);

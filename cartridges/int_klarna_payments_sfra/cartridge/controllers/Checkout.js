@@ -3,6 +3,7 @@ var server = require('server');
 var BasketMgr = require('dw/order/BasketMgr');
 var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
 var KlarnaLocale = require('~/cartridge/scripts/klarna_payments/locale');
+var COHelpers = require('~/cartridge/scripts/checkout/checkoutHelpers');
 
 server.extend(page);
 

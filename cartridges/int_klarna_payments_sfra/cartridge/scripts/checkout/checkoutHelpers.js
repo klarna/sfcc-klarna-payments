@@ -1,5 +1,7 @@
 'use strict';
 
+var superMdl = module.superModule;
+
 var KlarnaPaymentsConstants = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js');
 
 var KLARNA_PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
@@ -27,7 +29,7 @@ function getKlarnaPaymentTransactionFraudStatus(order) {
  * @param {dw.order.Order} order - The order object to be placed
  * @returns {Object} an error object
  */
-function placeOrder(order) {
+superMdl.placeOrder = function (order) {
     var result = { error: false };
     var kpFraudStatus = getKlarnaPaymentTransactionFraudStatus(order);
 
@@ -55,8 +57,6 @@ function placeOrder(order) {
     }
 
     return result;
-}
-
-module.exports = {
-    placeOrder: placeOrder
 };
+
+module.exports = superMdl;

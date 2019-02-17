@@ -7,6 +7,47 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 
 server.extend(page);
 
+server.prepend('Get', server.middleware.https, function (req, res, next) {
+    var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+    var BasketMgr = require('dw/order/BasketMgr');
+    var currentBasket = BasketMgr.getCurrentBasket();
+    var URLUtils = require('dw/web/URLUtils');
+
+    if (!currentBasket) {
+        res.json({
+            error: true,
+            cartError: true,
+            fieldErrors: [],
+            serverErrors: [],
+            redirectUrl: URLUtils.url('Cart-Show').toString()
+        });
+        return next();
+    }
+
+    if (!currentBasket.billingAddress || !currentBasket.billingAddress.address1) {
+        if (req.currentCustomer.addressBook
+            && req.currentCustomer.addressBook.preferredAddress) {
+            // Copy over preferredAddress (use addressUUID for matching)
+            COHelpers.copyBillingAddressToBasket(
+                req.currentCustomer.addressBook.preferredAddress, currentBasket);
+        } else {
+            // Copy over first shipping address (use shipmentUUID for matching)
+            COHelpers.copyBillingAddressToBasket(
+                currentBasket.defaultShipment.shippingAddress, currentBasket);
+        }
+    }
+
+    var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
+    var KlarnaLocale = require('~/cartridge/scripts/klarna_payments/locale');
+
+    var userSession = req.session.raw;
+
+    var klarnaSessionManager = new KlarnaSessionManager(userSession, new KlarnaLocale());
+    klarnaSessionManager.createOrUpdateSession();
+
+    return next();
+});
+
 server.prepend(
     'SubmitPayment',
     server.middleware.https,
@@ -173,8 +214,7 @@ server.prepend(
             processorResult.paymentInstrument.custom.klarnaPaymentCategoryName = paymentCategoryName;
         });
 
-        var usingMultiShipping = false; // Current integration support only single shpping
-        req.session.privacyCache.set('usingMultiShipping', usingMultiShipping);
+        var usingMultiShipping = false; req.session.privacyCache.get('usingMultiShipping');
 
         if (emailFromFillingPage !== null) {
             Transaction.wrap(function () {
@@ -206,5 +246,6 @@ server.prepend(
         this.emit('route:Complete', req, res);
     }
 );
+
 
 module.exports = server.exports();

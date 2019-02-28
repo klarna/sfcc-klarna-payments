@@ -39,7 +39,6 @@ server.prepend('Get', server.middleware.https, function (req, res, next) {
 
     var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
     var KlarnaLocale = require('~/cartridge/scripts/klarna_payments/locale');
-
     var userSession = req.session.raw;
 
     var klarnaSessionManager = new KlarnaSessionManager(userSession, new KlarnaLocale());

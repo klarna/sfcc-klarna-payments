@@ -5,7 +5,7 @@
 var TaxMgr = require('dw/order/TaxMgr');
 var ShippingLocation = require('dw/order/ShippingLocation');
 
-var Builder = require('*/cartridge/scripts/common/Builder');
+var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
 var LineItem = require('*/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
 var stripControlCharacters = require('*/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;

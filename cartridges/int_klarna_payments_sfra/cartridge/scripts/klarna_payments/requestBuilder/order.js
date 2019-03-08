@@ -10,7 +10,7 @@
 
     var log = Logger.getLogger('KlarnaPaymentsOrderRequestBuilder.js');
 
-    var Builder = require('*/cartridge/scripts/common/Builder');
+    var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
     var CONTENT_TYPE = require('*/cartridge/scripts/util/KlarnaPaymentsConstants.js').CONTENT_TYPE;
 
     var KlarnaPaymentsOrderModel = require('*/cartridge/scripts/klarna_payments/model/request/order').KlarnaPaymentsOrderModel;

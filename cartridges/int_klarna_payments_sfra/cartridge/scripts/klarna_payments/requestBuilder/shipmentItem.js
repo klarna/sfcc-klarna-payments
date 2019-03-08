@@ -5,13 +5,21 @@
 var TaxMgr = require('dw/order/TaxMgr');
 var ShippingLocation = require('dw/order/ShippingLocation');
 
+<<<<<<< HEAD
 var Builder = require('~/cartridge/scripts/common/Builder');
 var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 var AddressRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/address');
 
 var isTaxationPolicyNet = require('~/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
+=======
+var Builder = require('*/cartridge/scripts/common/Builder');
+var LineItem = require('*/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
-var ORDER_LINE_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
+var stripControlCharacters = require('*/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;
+var isTaxationPolicyNet = require('*/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
+>>>>>>> 7c95891... KLARNAPII-437: replace all cartridge paths to be using * to allow overloading
+
+var ORDER_LINE_TYPE = require('*/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
 
 /**
  * KP Order Line Item Builder

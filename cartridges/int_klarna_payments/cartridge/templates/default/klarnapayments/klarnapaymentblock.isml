@@ -3,7 +3,7 @@
 <isif condition="${session.privacy.KlarnaPaymentMethods}">
 
 	<isscript>
-		var SG_CORE = require( 'int_klarna_payments/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CORE;
+		var SG_CORE = require( '*/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CORE;
 		var Countries = require(SG_CORE + '/cartridge/scripts/util/Countries');
 		var countryCode = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
 			

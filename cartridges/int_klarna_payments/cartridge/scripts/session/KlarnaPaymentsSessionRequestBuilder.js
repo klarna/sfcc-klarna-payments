@@ -11,11 +11,11 @@
 	var HookMgr = require( 'dw/system/HookMgr' );
 	var ArrayList = require( 'dw/util/ArrayList' );
 
-	var Builder = require( '../util/Builder' );
-	var ORDER_LINE_TYPE = require( '../util/KlarnaPaymentsConstants.js' ).ORDER_LINE_TYPE;
-	var CONTENT_TYPE = require( '../util/KlarnaPaymentsConstants.js' ).CONTENT_TYPE;
-	var KlarnaPaymentsSessionModel = require( './KlarnaPaymentsSessionModel' ).KlarnaPaymentsSessionModel;
-	var LineItem = require( './KlarnaPaymentsSessionModel' ).LineItem;
+	var Builder = require( '*/cartridge/scripts/util/Builder' );
+	var ORDER_LINE_TYPE = require( '*/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).ORDER_LINE_TYPE;
+	var CONTENT_TYPE = require( '*/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).CONTENT_TYPE;
+	var KlarnaPaymentsSessionModel = require( '*/cartridge/scripts/session/KlarnaPaymentsSessionModel' ).KlarnaPaymentsSessionModel;
+	var LineItem = require( '*/cartridge/scripts/session/KlarnaPaymentsSessionModel' ).LineItem;
 	var log = Logger.getLogger( 'KlarnaPaymentsSessionRequestBuilder.js' );
 
 	function KlarnaPaymentsSessionRequestBuilder()

@@ -2,10 +2,10 @@
 
 'use strict';
 
-var Builder = require('~/cartridge/scripts/common/Builder');
-var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/session').LineItem;
+var Builder = require('*/cartridge/scripts/common/Builder');
+var LineItem = require('*/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
-var ORDER_LINE_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
+var ORDER_LINE_TYPE = require('*/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
 
 /**
  * KP Order Line Item Builder

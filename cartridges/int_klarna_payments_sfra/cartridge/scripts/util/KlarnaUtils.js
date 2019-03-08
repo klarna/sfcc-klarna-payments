@@ -5,7 +5,7 @@
 var Site = require('dw/system/Site');
 var TaxMgr = require('dw/order/TaxMgr');
 var PaymentMgr = require('dw/order/PaymentMgr');
-var KlarnaPaymentsConstants = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js');
+var KlarnaPaymentsConstants = require('*/cartridge/scripts/util/KlarnaPaymentsConstants.js');
 
 /**
  * Return Klarna Payment Method name.

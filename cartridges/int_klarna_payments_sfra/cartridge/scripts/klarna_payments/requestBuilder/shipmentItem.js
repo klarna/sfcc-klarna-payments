@@ -6,6 +6,7 @@ var TaxMgr = require('dw/order/TaxMgr');
 var ShippingLocation = require('dw/order/ShippingLocation');
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 var Builder = require('~/cartridge/scripts/common/Builder');
 var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 var AddressRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/address');
@@ -13,6 +14,9 @@ var AddressRequestBuilder = require('~/cartridge/scripts/klarna_payments/request
 var isTaxationPolicyNet = require('~/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
 =======
 var Builder = require('*/cartridge/scripts/common/Builder');
+=======
+var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
+>>>>>>> de985f8... KLARNAPII-437: move Builder to klarna_payments directory to avoid future name collisions.
 var LineItem = require('*/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
 var stripControlCharacters = require('*/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;

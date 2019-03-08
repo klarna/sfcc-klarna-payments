@@ -2,7 +2,7 @@
 
 'use strict';
 
-var Builder = require('*/cartridge/scripts/common/Builder');
+var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
 var strval = require('*/cartridge/scripts/util/KlarnaUtils').strval;
 
 /**

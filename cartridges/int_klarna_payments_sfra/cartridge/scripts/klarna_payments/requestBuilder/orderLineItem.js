@@ -6,7 +6,7 @@ var URLUtils = require('dw/web/URLUtils');
 var Site = require('dw/system/Site');
 var ArrayList = require('dw/util/ArrayList');
 
-var Builder = require('*/cartridge/scripts/common/Builder');
+var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
 var LineItem = require('*/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
 <<<<<<< HEAD

@@ -37,8 +37,8 @@ server.prepend('Get', server.middleware.https, function (req, res, next) {
         }
     }
 
-    var KlarnaSessionManager = require('*/cartridge/scripts/common/KlarnaSessionManager');
-    var KlarnaLocale = require('*/cartridge/scripts/klarna_payments/locale');
+    var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
+    var KlarnaLocale = require('~/cartridge/scripts/klarna_payments/locale');
     var userSession = req.session.raw;
 
     var klarnaSessionManager = new KlarnaSessionManager(userSession, new KlarnaLocale());
@@ -52,13 +52,13 @@ server.prepend(
     server.middleware.https,
     csrfProtection.validateAjaxRequest,
     function (req, res, next) {
-        var KlarnaUtils = require('*/cartridge/scripts/util/KlarnaUtils');
+        var KlarnaUtils = require('~/cartridge/scripts/util/KlarnaUtils');
         var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
         var StringUtils = require('dw/util/StringUtils');
         var Money = require('dw/value/Money');
         var BasketMgr = require('dw/order/BasketMgr');
         var Transaction = require('dw/system/Transaction');
-        var KlarnaPaymentsCategoriesModel = require('*/cartridge/scripts/klarna_payments/model/categories');
+        var KlarnaPaymentsCategoriesModel = require('~/cartridge/scripts/klarna_payments/model/categories');
 
         var currentBasket = BasketMgr.getCurrentBasket();
 

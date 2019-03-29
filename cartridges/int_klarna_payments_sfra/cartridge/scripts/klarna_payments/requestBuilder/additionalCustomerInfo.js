@@ -2,9 +2,9 @@
 
 'use strict';
 
-var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
+var Builder = require('~/cartridge/scripts/common/Builder');
 
-var CONTENT_TYPE = require('*/cartridge/scripts/util/KlarnaPaymentsConstants.js').CONTENT_TYPE;
+var CONTENT_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js').CONTENT_TYPE;
 
 /**
  * KP Order Line Item Builder

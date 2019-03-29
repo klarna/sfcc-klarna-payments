@@ -4,7 +4,7 @@ var PaymentMgr = require('dw/order/PaymentMgr');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var collections = require('*/cartridge/scripts/util/collections');
 
-var KLARNA_PAYMENT_METHOD = require('*/cartridge/scripts/util/KlarnaPaymentsConstants').PAYMENT_METHOD;
+var KLARNA_PAYMENT_METHOD = require('~/cartridge/scripts/util/KlarnaPaymentsConstants').PAYMENT_METHOD;
 
 /**
  * Creates an array of objects containing applicable payment methods

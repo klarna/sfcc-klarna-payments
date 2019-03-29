@@ -7,8 +7,8 @@
  */
 
 var KlarnaPayments = {
-	httpService 			: require('*/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
-	apiContext 				: require('*/cartridge/scripts/common/KlarnaPaymentsApiContext')
+	httpService 			: require('~/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
+	apiContext 				: require('~/cartridge/scripts/common/KlarnaPaymentsApiContext')
 };
 
 function execute( args : PipelineDictionary ) : Number

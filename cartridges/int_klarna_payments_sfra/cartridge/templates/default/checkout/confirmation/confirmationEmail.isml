@@ -106,7 +106,7 @@
                 </isif>
                 <isif condition="${payment.paymentMethod === 'KLARNA_PAYMENTS'}">
                     <isscript>
-                        var klarnaPaymentMethodName = require('*/cartridge/scripts/util/KlarnaUtils').getKlarnaPaymentMethodName();
+                        var klarnaPaymentMethodName = require('~/cartridge/scripts/util/KlarnaUtils').getKlarnaPaymentMethodName();
                     </isscript>
                     <div class="row payment-method">
                         <span class="method-name">${klarnaPaymentMethodName}</span> <br />

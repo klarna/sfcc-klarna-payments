@@ -6,13 +6,13 @@ var URLUtils = require('dw/web/URLUtils');
 var Site = require('dw/system/Site');
 var ArrayList = require('dw/util/ArrayList');
 
-var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
-var LineItem = require('*/cartridge/scripts/klarna_payments/model/request/session').LineItem;
+var Builder = require('~/cartridge/scripts/common/Builder');
+var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
-var stripControlCharacters = require('*/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;
-var isTaxationPolicyNet = require('*/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
+var stripControlCharacters = require('~/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;
+var isTaxationPolicyNet = require('~/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
 
-var ORDER_LINE_TYPE = require('*/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
+var ORDER_LINE_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
 
 /**
  * KP Order Line Item Builder

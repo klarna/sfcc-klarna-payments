@@ -19,19 +19,19 @@ var PaymentInstrument = require( 'dw/order/PaymentInstrument' );
 var Site = require( 'dw/system/Site' );
 var Cypher = require( 'dw/crypto/Cipher' );
 
-var COSummary = require( '*/cartridge/controllers/COSummary.js' );
+var COSummary = require( 'sitegenesis_storefront_controllers/cartridge/controllers/COSummary.js' );
 
 /* Script Modules */
 var log = Logger.getLogger( 'KLARNA_PAYMENTS.js' );
-var SG_CONTROLLERS = require( '*/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CONTROLLERS;
-var SG_CORE = require( '*/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CORE;
+var SG_CONTROLLERS = require( 'int_klarna_payments/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CONTROLLERS;
+var SG_CORE = require( 'int_klarna_payments/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CORE;
 var guard = require( SG_CONTROLLERS + '/cartridge/scripts/guard' );
 var Countries = require( SG_CORE + '/cartridge/scripts/util/Countries' );
 var KlarnaPayments = {
-	httpService 			: require( '*/cartridge/scripts/common/KlarnaPaymentsHttpService.ds' ),
-	apiContext 				: require( '*/cartridge/scripts/common/KlarnaPaymentsApiContext' ),
-	sessionRequestBuilder 	: require( '*/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder' ), 
-	orderRequestBuilder 	: require( '*/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder' )
+	httpService 			: require( 'int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsHttpService.ds' ),
+	apiContext 				: require( 'int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsApiContext' ),
+	sessionRequestBuilder 	: require( 'int_klarna_payments/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder' ), 
+	orderRequestBuilder 	: require( 'int_klarna_payments/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder' )
 };
 var Utils = require( SG_CORE + '/cartridge/scripts/checkout/Utils' );
 

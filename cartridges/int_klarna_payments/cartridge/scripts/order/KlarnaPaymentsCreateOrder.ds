@@ -16,9 +16,9 @@
 var Logger = require( 'dw/system/Logger' );
 var logger = Logger.getLogger( 'klarnaPaymentsCreateOrder.ds' );
 var KlarnaPayments = {
-	httpService 			: require('*/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
-	apiContext 				: require('*/cartridge/scripts/common/KlarnaPaymentsApiContext'),
-	orderRequestBuilder 	: require('*/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder')
+	httpService 			: require('~/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
+	apiContext 				: require('~/cartridge/scripts/common/KlarnaPaymentsApiContext'),
+	orderRequestBuilder 	: require('~/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder')
 };
 
 function execute( args : PipelineDictionary ) : Number

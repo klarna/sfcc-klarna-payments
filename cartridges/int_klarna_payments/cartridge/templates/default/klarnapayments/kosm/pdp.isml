@@ -1,0 +1,9 @@
+<div class="kosm-pdp">
+	<isscript>
+		var KlarnaOSM = require('~/../int_klarna_payments/cartridge/scripts/common/KlarnaOSM');
+	</isscript>
+	<isif condition="${KlarnaOSM.isEnabledPDPPage()}">
+		<klarna-placement data-id="${KlarnaOSM.getPDPPagePlacementTagId()}" data-purchase_amount="${KlarnaOSM.formatPurchaseAmount(pdict.price)}"></klarna-placement>
+		<script src="${KlarnaOSM.getScriptURL()}"></script>
+	</isif>
+</div>

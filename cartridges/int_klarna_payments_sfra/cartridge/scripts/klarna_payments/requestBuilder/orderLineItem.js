@@ -9,7 +9,6 @@ var ArrayList = require('dw/util/ArrayList');
 var Builder = require('~/cartridge/scripts/common/Builder');
 var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
-var stripControlCharacters = require('~/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;
 var isTaxationPolicyNet = require('~/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
 
 var ORDER_LINE_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
@@ -140,7 +139,7 @@ OrderLineItem.prototype.buildItemProductAndImageUrls = function (li) {
 };
 
 OrderLineItem.prototype.getItemName = function (li) {
-    return stripControlCharacters(li.productName);
+    return li.productName;
 };
 
 OrderLineItem.prototype.build = function (li) {

@@ -8,7 +8,6 @@ var ShippingLocation = require('dw/order/ShippingLocation');
 var Builder = require('~/cartridge/scripts/common/Builder');
 var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
-var stripControlCharacters = require('~/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;
 var isTaxationPolicyNet = require('~/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
 
 var ORDER_LINE_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
@@ -58,7 +57,7 @@ ShipmentItem.prototype.build = function (shipment) {
     this.item = new LineItem();
     this.item.quantity = 1;
     this.item.type = ORDER_LINE_TYPE.SHIPPING_FEE;
-    this.item.name = stripControlCharacters(shipment.shippingMethod.displayName);
+    this.item.name = shipment.shippingMethod.displayName;
     this.item.reference = shipment.shippingMethod.ID;
     this.item.unit_price = shipmentUnitPrice;
     this.item.tax_rate = Math.round(shipmentTaxRate);

@@ -1,9 +1,15 @@
-<div class="kosm-cart">
+<isset name="LineItemCtnr" value="${pdict.p_lineitemctnr}" scope="page"/>
+<isscript>
+    var KlarnaHelper = require('~/cartridge/scripts/util/KlarnaHelper');
+    var KlarnaOSM = require('~/cartridge/scripts/marketing/KlarnaOSM');
+</isscript>
+
+<isif condition="${!empty(LineItemCtnr) && KlarnaOSM.isEnabledCartPage()}">
     <isscript>
-        var KlarnaOSM = require('~/cartridge/scripts/common/KlarnaOSM');
+        var orderTotalValue = KlarnaHelper.calculateOrderTotalValue(LineItemCtnr);
     </isscript>
-    <isif condition="${KlarnaOSM.isEnabledCartPage()}">
-        <klarna-placement data-id="${KlarnaOSM.getCartPagePlacementTagId()}" data-purchase_amount="${KlarnaOSM.formatPurchaseAmount(pdict.price)}"></klarna-placement>
-        <script src="${KlarnaOSM.getScriptURL()}"></script>
-    </isif>
-</div>
+    <div class="kosm-cart">
+        <klarna-placement data-id="${KlarnaOSM.getCartPagePlacementTagId()}" data-purchase_amount="${KlarnaOSM.formatPurchaseAmount(orderTotalValue)}"></klarna-placement>
+        <isset name="isKlarnaOSMScriptRequired" value="true" scope="page" />
+    </div>
+</isif>

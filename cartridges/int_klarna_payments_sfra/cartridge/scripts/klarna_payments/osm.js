@@ -1,16 +1,13 @@
 'use strict';
 
 var Site = require('dw/system/Site');
-var KlarnaLocale = require('~/cartridge/scripts/klarna_payments/locale');
 
 /**
  * Klarna On-Site Messaging Component
  */
 var KlarnaOSM = {
-    getUCI: function () {
-        var value = Site.getCurrent().getCustomPreferenceValue('osmUCI');
-
-        return value;
+    isEnabled: function () {
+        return (this.isEnabledCartPage() || this.isEnabledPDPPage());
     },
     isEnabledCartPage: function () {
         var value = Site.getCurrent().getCustomPreferenceValue('osmCartEnabled');
@@ -33,14 +30,9 @@ var KlarnaOSM = {
         return value;
     },
     getScriptURL: function () {
-        var klarnaLocale = new KlarnaLocale();
-        var countryCode = klarnaLocale.getRequestLocaleCountryCode();
-        var domain = 'us-library.klarnaservices.com';
-        var uci = this.getUCI();
+        var value = Site.getCurrent().getCustomPreferenceValue('osmLibraryUrl');
 
-        var url = 'https://' + domain + '/merchant.js?uci=' + uci + '&country=' + countryCode;
-
-        return url;
+        return value;
     },
     formatPurchaseAmount: function (price) {
         var formattedAmount = Math.round(price.value * 100);

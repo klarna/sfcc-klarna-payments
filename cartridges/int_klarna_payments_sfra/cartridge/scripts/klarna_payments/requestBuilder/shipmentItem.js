@@ -50,6 +50,26 @@ ShipmentItem.prototype.getShipmentUnitPrice = function (shipment) {
     return shipmentUnitPrice;
 };
 
+ShipmentItem.prototype.getShipmentProductIds = function (shipment) {
+    var productIds = [];
+
+    var shipmentLineItemsIterator = shipment.getAllLineItems().iterator();
+
+    while (shipmentLineItemsIterator.hasNext()) {
+        var shipmentLineItem = shipmentLineItemsIterator.next();
+
+        try {
+            if (!empty(shipmentLineItem.productID)) {
+                productIds.push(shipmentLineItem.productID);
+            }
+        } catch (e) {
+
+        }
+    }
+
+    return productIds;
+};
+
 ShipmentItem.prototype.build = function (shipment) {
     var shipmentTaxRate = this.getShipmentTaxRate(shipment);
     var shipmentUnitPrice = Math.round(this.getShipmentUnitPrice(shipment));
@@ -62,6 +82,7 @@ ShipmentItem.prototype.build = function (shipment) {
     this.item.unit_price = shipmentUnitPrice;
     this.item.tax_rate = Math.round(shipmentTaxRate);
     this.item.total_amount = shipmentUnitPrice;
+    this.item.merchant_data = JSON.stringify(this.getShipmentProductIds(shipment));
 
     this.item.total_tax_amount = this.calculateShippingTotalTaxAmount(shipment);
 

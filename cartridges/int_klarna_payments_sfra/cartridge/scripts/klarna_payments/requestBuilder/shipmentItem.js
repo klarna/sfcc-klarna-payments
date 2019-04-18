@@ -7,6 +7,7 @@ var ShippingLocation = require('dw/order/ShippingLocation');
 
 var Builder = require('~/cartridge/scripts/common/Builder');
 var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/session').LineItem;
+var AddressRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/address');
 
 var isTaxationPolicyNet = require('~/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
 
@@ -17,9 +18,14 @@ var ORDER_LINE_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.
  */
 function ShipmentItem() {
     this.item = null;
+    this.addressRequestBuilder = new AddressRequestBuilder();
 }
 
 ShipmentItem.prototype = new Builder();
+
+ShipmentItem.prototype.getAddressRequestBuilder = function () {
+    return this.addressRequestBuilder;
+};
 
 ShipmentItem.prototype.calculateShippingTotalTaxAmount = function (shipment) {
     return (isTaxationPolicyNet()) ? 0 : Math.round(shipment.shippingTotalTax.value * 100);
@@ -53,21 +59,28 @@ ShipmentItem.prototype.getShipmentUnitPrice = function (shipment) {
 ShipmentItem.prototype.getShipmentProductIds = function (shipment) {
     var productIds = [];
 
-    var shipmentLineItemsIterator = shipment.getAllLineItems().iterator();
+    var shipmentLineItemsIterator = shipment.getProductLineItems().iterator();
 
     while (shipmentLineItemsIterator.hasNext()) {
         var shipmentLineItem = shipmentLineItemsIterator.next();
 
-        try {
-            if (!empty(shipmentLineItem.productID)) {
-                productIds.push(shipmentLineItem.productID);
-            }
-        } catch (e) {
-
-        }
+        productIds.push(shipmentLineItem.productID);
     }
 
     return productIds;
+};
+
+ShipmentItem.prototype.buildMerchantData = function (shipment) {
+    var merchantDataStr = JSON.stringify({
+        'products': this.getShipmentProductIds(shipment),
+        'address': this.getAddressRequestBuilder().buildFlat(shipment.shippingAddress)
+    });
+
+    if (merchantDataStr.length > 255) {
+        merchantDataStr = merchantDataStr.substr(0, 255-3) + '...';
+    }
+
+    return merchantDataStr;
 };
 
 ShipmentItem.prototype.build = function (shipment) {
@@ -82,7 +95,7 @@ ShipmentItem.prototype.build = function (shipment) {
     this.item.unit_price = shipmentUnitPrice;
     this.item.tax_rate = Math.round(shipmentTaxRate);
     this.item.total_amount = shipmentUnitPrice;
-    this.item.merchant_data = JSON.stringify(this.getShipmentProductIds(shipment));
+    this.item.merchant_data = this.buildMerchantData(shipment);
 
     this.item.total_tax_amount = this.calculateShippingTotalTaxAmount(shipment);
 

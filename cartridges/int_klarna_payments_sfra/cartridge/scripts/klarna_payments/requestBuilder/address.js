@@ -15,6 +15,44 @@ function Address() {
 
 Address.prototype = new Builder();
 
+Address.prototype.buildFlat = function (dwAddress) {
+    var flatAddress = "";
+
+    if (!empty(dwAddress.firstName)) {
+        flatAddress += ' ' + dwAddress.firstName;
+    }
+
+    if (!empty(dwAddress.lastName)) {
+        flatAddress += ' ' + dwAddress.lastName;
+    }
+
+    if (!empty(dwAddress.address1)) {
+        flatAddress += ' ' + strval(dwAddress.address1);
+    }
+
+    if (!empty(dwAddress.address2)) {
+        flatAddress += ' ' + strval(dwAddress.address2);
+    }
+
+    if (!empty(dwAddress.city)) {
+        flatAddress += ' ' + strval(dwAddress.city);
+    }
+
+    if (!empty(dwAddress.stateCode)) {
+        flatAddress += ' ' + strval(dwAddress.stateCode);
+    }
+
+    if (!empty(dwAddress.postalCode)) {
+        flatAddress += ' ' + strval(dwAddress.postalCode);
+    }
+
+    if (!empty(dwAddress.phone)) {
+        flatAddress += ' ' + dwAddress.phone;
+    }
+
+    return flatAddress;
+};
+
 Address.prototype.build = function (dwAddress) {
     this.address = new AddressRequestModel();
 

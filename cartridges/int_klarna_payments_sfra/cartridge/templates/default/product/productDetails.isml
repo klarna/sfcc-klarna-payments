@@ -98,16 +98,9 @@
                                 <isset name="price" value="${product.price}" scope="page" />
                                 <isinclude template="product/components/pricing/main" />
                             </div>
-
-                            <div class="kosm-pdp">
-                                <isscript>
-                                    var KlarnaOSM = require('~/cartridge/scripts/klarna_payments/osm');
-                                </isscript>
-                                <isif condition="${KlarnaOSM.isEnabledPDPPage()}">
-                                    <klarna-placement data-id="${KlarnaOSM.getPDPPagePlacementTagId()}" data-purchase_amount="${KlarnaOSM.formatPurchaseAmount(price)}"></klarna-placement>
-                                    <script src="${KlarnaOSM.getScriptURL()}"></script>
-                                </isif>
-                            </div>
+ 
+                            <isinclude template="klarnapayments/modules.isml"/>
+                            <iskosmpdp p_price="${price}" />
 
                             <!-- Cart and [Optionally] Apple Pay -->
                             <isinclude template="product/components/addToCartProduct" />

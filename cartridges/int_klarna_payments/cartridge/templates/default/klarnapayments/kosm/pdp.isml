@@ -1,9 +1,19 @@
+<isset name="OrigProduct" value="${pdict.p_product}" scope="page"/>
+
+<isscript>
+	var KlarnaOSM = require('~/cartridge/scripts/marketing/KlarnaOSM');
+</isscript>
+
+<isif condition="${!empty(pdict.ProductSetStandardPrice) && !empty(pdict.ProductSetSalesPrice)}">
+	<isset name="currencyCode" value="${session.getCurrency().getCurrencyCode()}" scope="page"/>
+	<isset name="ProductPrice" value="${new dw.value.Money(Math.min(pdict.ProductSetStandardPrice, pdict.ProductSetSalesPrice), currencyCode)}" scope="page" /> 
+<iselseif condition="${!empty(SalesPrice)}">
+	<isset name="ProductPrice" value="${SalesPrice}" scope="page" />
+</isif>
+
+<isif condition="${KlarnaOSM.isEnabledPDPPage() && !empty(ProductPrice)}">
 <div class="kosm-pdp">
-	<isscript>
-		var KlarnaOSM = require('~/../int_klarna_payments/cartridge/scripts/common/KlarnaOSM');
-	</isscript>
-	<isif condition="${KlarnaOSM.isEnabledPDPPage()}">
-		<klarna-placement data-id="${KlarnaOSM.getPDPPagePlacementTagId()}" data-purchase_amount="${KlarnaOSM.formatPurchaseAmount(pdict.price)}"></klarna-placement>
-		<script src="${KlarnaOSM.getScriptURL()}"></script>
-	</isif>
+	<klarna-placement data-id="${KlarnaOSM.getPDPPagePlacementTagId()}" data-purchase_amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}"></klarna-placement>
+	<isset name="isKlarnaOSMScriptRequired" value="true" scope="page" />
 </div>
+</isif>

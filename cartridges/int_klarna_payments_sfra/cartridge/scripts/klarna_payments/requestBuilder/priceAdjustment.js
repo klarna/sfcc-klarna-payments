@@ -5,7 +5,6 @@
 var Builder = require('~/cartridge/scripts/common/Builder');
 var LineItem = require('~/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
-var stripControlCharacters = require('~/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;
 var isTaxationPolicyNet = require('~/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
 
 var ORDER_LINE_TYPE = require('~/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
@@ -39,8 +38,6 @@ PriceAdjustment.prototype.getObjectId = function () {
 
 PriceAdjustment.prototype.getPriceAdjustmentPromoName = function (adj) {
     var promoName = !empty(adj.promotion) && !empty(adj.promotion.name) ? adj.promotion.name : ORDER_LINE_TYPE.DISCOUNT;
-
-    promoName = stripControlCharacters(promoName);
 
     return promoName;
 };

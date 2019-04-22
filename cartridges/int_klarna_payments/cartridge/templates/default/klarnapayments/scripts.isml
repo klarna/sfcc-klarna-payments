@@ -1,0 +1,7 @@
+<isscript>
+    var KlarnaOSM = require('~/cartridge/scripts/marketing/KlarnaOSM');
+</isscript>
+
+<isif condition="${KlarnaOSM.isEnabled()}">
+    <script src="${KlarnaOSM.getScriptURL()}"></script>
+</isif>

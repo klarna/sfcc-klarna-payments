@@ -68,16 +68,6 @@ function strval(obj) {
 }
 
 /**
- * Remove control characters from a string.
- *
- * @param {string} str input string.
- * @returns {string} without control characters.
- */
-function stripControlCharacters(str) {
-    return str.replace(/[^\x00-\x7F]/g, '');
-}
-
-/**
  * Checks if site's taxation policy is Net.
  *
  * @returns {bool} true, if policy is Net, false if Gross.
@@ -87,7 +77,6 @@ function isTaxationPolicyNet() {
 }
 
 module.exports.isEnabledPreassessmentForCountry = isEnabledPreassessmentForCountry;
-module.exports.stripControlCharacters = stripControlCharacters;
 module.exports.isTaxationPolicyNet = isTaxationPolicyNet;
 module.exports.getKlarnaPaymentMethodName = getKlarnaPaymentMethodName;
 module.exports.strval = strval;

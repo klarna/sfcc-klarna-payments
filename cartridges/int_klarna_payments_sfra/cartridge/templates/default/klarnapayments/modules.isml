@@ -2,10 +2,9 @@
 
 <ismodule template="klarnapayments/kosm/cart.isml"
 	name="kosmcart"
-	attribute="p_lineitemctnr"
 />
 
 <ismodule template="klarnapayments/kosm/pdp.isml"
 	name="kosmpdp"
-	attribute="p_product"
+	attribute="p_price"
 />

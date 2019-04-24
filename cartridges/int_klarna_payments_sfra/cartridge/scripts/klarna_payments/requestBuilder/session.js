@@ -8,18 +8,18 @@
 
     var log = Logger.getLogger('KlarnaPaymentsSessionRequestBuilder.js');
 
-    var Builder = require('~/cartridge/scripts/common/Builder');
-    var KlarnaPaymentsSessionModel = require('~/cartridge/scripts/klarna_payments/model/request/session').KlarnaPaymentsSessionModel;
-    var isEnabledPreassessmentForCountry = require('~/cartridge/scripts/util/KlarnaUtils').isEnabledPreassessmentForCountry;
-    var isTaxationPolicyNet = require('~/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
+    var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
+    var KlarnaPaymentsSessionModel = require('*/cartridge/scripts/klarna_payments/model/request/session').KlarnaPaymentsSessionModel;
+    var isEnabledPreassessmentForCountry = require('*/cartridge/scripts/util/KlarnaUtils').isEnabledPreassessmentForCountry;
+    var isTaxationPolicyNet = require('*/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
 
-    var AddressRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/address');
-    var OrderLineItemRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/orderLineItem');
-    var ShipmentItemRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/shipmentItem');
-    var PriceAdjustmentRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/priceAdjustment');
-    var SalesTaxRequestRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/salesTax');
+    var AddressRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/address');
+    var OrderLineItemRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/orderLineItem');
+    var ShipmentItemRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/shipmentItem');
+    var PriceAdjustmentRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/priceAdjustment');
+    var SalesTaxRequestRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/salesTax');
     var AdditionalCustomerInfoRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/additionalCustomerInfo');
-    var OptionsRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/options');
+    var OptionsRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/options');
 
     /**
      * KP Session Request Builder

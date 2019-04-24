@@ -344,7 +344,7 @@
 			item = new LineItem();
 			item.quantity = quantity;
 			item.type = itemType;
-			item.name = isGiftCertificate ? 'Gift Certificate' : li.productName;
+			item.name = isGiftCertificate ? 'Gift Certificate' : li.productName.replace( /[^\x00-\x7F]/g, "" );
 			item.reference = itemID;
 			item.unit_price = Math.round( itemPrice / quantity );
 			item.tax_rate = ( country === 'US' ) ? 0 : Math.round( li.taxRate * 10000 );
@@ -478,7 +478,7 @@
 				shippingLineItem = new LineItem();
 				shippingLineItem.quantity = 1;
 				shippingLineItem.type = ORDER_LINE_TYPE.SHIPPING_FEE;
-				shippingLineItem.name = shipment.shippingMethod.displayName;
+				shippingLineItem.name = shipment.shippingMethod.displayName.replace( /[^\x00-\x7F]/g, "" );
 				shippingLineItem.reference = shipment.shippingMethod.ID;
 				shippingLineItem.unit_price = Math.round( shipment_unit_price );
 				shippingLineItem.tax_rate = Math.round( shipment_tax_rate );
@@ -521,7 +521,7 @@
 
 			adjustment.quantity = 1;
 			adjustment.type = ORDER_LINE_TYPE.DISCOUNT;
-			adjustment.name = promoName;
+			adjustment.name = promoName.replace( /[^\x00-\x7F]/g, "" );
 			adjustment.reference = promoId;
 			adjustment.unit_price = Math.round( adjusmentPrice );
 			adjustment.merchant_data = adj.couponLineItem ? adj.couponLineItem.couponCode : '';

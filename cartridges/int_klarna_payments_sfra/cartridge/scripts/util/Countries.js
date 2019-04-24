@@ -1,6 +1,6 @@
 /* globals dw */
 
-var countriesData = require('~/cartridge/config/countries');
+var countriesData = require('*/cartridge/config/countries');
 var Locale = require('dw/util/Locale');
 
 /**

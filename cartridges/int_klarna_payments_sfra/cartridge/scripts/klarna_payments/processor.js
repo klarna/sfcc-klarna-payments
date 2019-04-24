@@ -2,7 +2,7 @@
 
 'use strict';
 
-var KlarnaPaymentsConstants = require('~/cartridge/scripts/util/KlarnaPaymentsConstants');
+var KlarnaPaymentsConstants = require('*/cartridge/scripts/util/KlarnaPaymentsConstants');
 
 var PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
 var CREDIT_CARD_PROCESSOR_ID = KlarnaPaymentsConstants.CREDIT_CARD_PROCESSOR_ID;
@@ -20,11 +20,11 @@ var Status = require('dw/system/Status');
 var HookMgr = require('dw/system/HookMgr');
 var log = Logger.getLogger('KLARNA_PAYMENTS.js');
 
-var KlarnaPaymentsOrderRequestBuilder = require('~/cartridge/scripts/klarna_payments/requestBuilder/order');
-var KlarnaPaymentsHttpService = require('~/cartridge/scripts/common/KlarnaPaymentsHttpService');
-var KlarnaPaymentsApiContext = require('~/cartridge/scripts/common/KlarnaPaymentsApiContext');
-var KlarnaLocaleMgr = require('~/cartridge/scripts/klarna_payments/locale');
-var KlarnaSessionManager = require('~/cartridge/scripts/common/KlarnaSessionManager');
+var KlarnaPaymentsOrderRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/order');
+var KlarnaPaymentsHttpService = require('*/cartridge/scripts/common/KlarnaPaymentsHttpService');
+var KlarnaPaymentsApiContext = require('*/cartridge/scripts/common/KlarnaPaymentsApiContext');
+var KlarnaLocaleMgr = require('*/cartridge/scripts/klarna_payments/locale');
+var KlarnaSessionManager = require('*/cartridge/scripts/common/KlarnaSessionManager');
 
 var klarnaLocaleMgr = new KlarnaLocaleMgr();
 var klarnaSessionManager = new KlarnaSessionManager(session, klarnaLocaleMgr);

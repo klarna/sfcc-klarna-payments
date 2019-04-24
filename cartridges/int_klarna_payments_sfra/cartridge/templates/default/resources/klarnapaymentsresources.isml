@@ -2,8 +2,8 @@
 
 <isscript>
     var CurrentSession = pdict.CurrentSession;
-    var KlarnaUtils = require( '~/cartridge/scripts/util/KlarnaUtils' );
-    var Countries = require('~/cartridge/scripts/util/Countries');
+    var KlarnaUtils = require( '*/cartridge/scripts/util/KlarnaUtils' );
+    var Countries = require('*/cartridge/scripts/util/Countries');
     var country = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
     var preassess = KlarnaUtils.isEnabledPreassessmentForCountry( country );
 

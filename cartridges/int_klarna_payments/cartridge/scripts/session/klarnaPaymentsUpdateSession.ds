@@ -13,9 +13,9 @@ var Transaction = require( 'dw/system/Transaction' );
 var Logger = require( 'dw/system/Logger' );
 var logger = Logger.getLogger( 'klarnaPaymentsUpdateSession.ds' );
 var KlarnaPayments = {
-	httpService 			: require('int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
-	apiContext 				: require('int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsApiContext'),
-	sessionRequestBuilder 	: require('int_klarna_payments/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder')
+	httpService 			: require('*/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
+	apiContext 				: require('*/cartridge/scripts/common/KlarnaPaymentsApiContext'),
+	sessionRequestBuilder 	: require('*/cartridge/scripts/session/KlarnaPaymentsSessionRequestBuilder')
 };
 
 function execute( args : PipelineDictionary ) : Number

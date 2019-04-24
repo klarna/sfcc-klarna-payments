@@ -9,12 +9,7 @@ var ArrayList = require('dw/util/ArrayList');
 var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
 var LineItem = require('*/cartridge/scripts/klarna_payments/model/request/session').LineItem;
 
-<<<<<<< HEAD
-var isTaxationPolicyNet = require('~/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
-=======
-var stripControlCharacters = require('*/cartridge/scripts/util/KlarnaUtils').stripControlCharacters;
 var isTaxationPolicyNet = require('*/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
->>>>>>> 7c95891... KLARNAPII-437: replace all cartridge paths to be using * to allow overloading
 
 var ORDER_LINE_TYPE = require('*/cartridge/scripts/util/KlarnaPaymentsConstants.js').ORDER_LINE_TYPE;
 

@@ -2,6 +2,7 @@
 
 var superMdl = module.superModule;
 
+var placeOrderParent = superMdl.placeOrder;
 var KlarnaPaymentsConstants = require('*/cartridge/scripts/util/KlarnaPaymentsConstants.js');
 
 var KLARNA_PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
@@ -13,15 +14,20 @@ var OrderMgr = require('dw/order/OrderMgr');
 var Order = require('dw/order/Order');
 
 /**
- *
- * @param {dw.order.Order} order - The order object to be placed
- * @returns {string} Klarna Payments Fraud Status
+ * Find the first klarna payment transaction within the order (if exists).
+ * 
+ * @param {dw.order.Order} order - The Order currently being placed.
+ * @returns {dw.order.PaymentTransaction} Klarna Payment Transaction
  */
-function getKlarnaPaymentTransactionFraudStatus(order) {
-    var paymentInstrument = order.getPaymentInstruments(KLARNA_PAYMENT_METHOD)[0];
-    var paymentTransaction = paymentInstrument.paymentTransaction;
+function findKlarnaPaymentTransaction(order) {
+    var paymentTransaction = null;
+    var paymentInstruments = order.getPaymentInstruments(KLARNA_PAYMENT_METHOD);
 
-    return paymentTransaction.custom.kpFraudStatus;
+    if (!empty(paymentInstruments) && paymentInstruments.length) {
+        paymentTransaction = paymentInstruments[0].paymentTransaction;
+    }
+
+    return paymentTransaction;
 }
 
 /**
@@ -29,34 +35,40 @@ function getKlarnaPaymentTransactionFraudStatus(order) {
  * @param {dw.order.Order} order - The order object to be placed
  * @returns {Object} an error object
  */
-superMdl.placeOrder = function (order) {
+superMdl.placeOrder = function (order, fraudDetectionStatus) {
     var result = { error: false };
-    var kpFraudStatus = getKlarnaPaymentTransactionFraudStatus(order);
+    var klarnaPaymentTransaction = findKlarnaPaymentTransaction(order);
 
-    try {
-        Transaction.begin();
+    if (!klarnaPaymentTransaction) {
+        return placeOrderParent(order, fraudDetectionStatus);
+    } else {
+        var kpFraudStatus = klarnaPaymentTransaction.custom.kpFraudStatus;
 
-        if (kpFraudStatus === KLARNA_FRAUD_STATUSES.PENDING) {
-            order.setExportStatus(order.EXPORT_STATUS_NOTEXPORTED);
-            order.setConfirmationStatus(order.CONFIRMATION_STATUS_NOTCONFIRMED);
-            order.setPaymentStatus(order.PAYMENT_STATUS_NOTPAID);
-        } else {
-            var placeOrderStatus = OrderMgr.placeOrder(order);
-            if (placeOrderStatus === Status.ERROR) {
-                throw new Error();
+        try {
+            Transaction.begin();
+    
+            if (kpFraudStatus === KLARNA_FRAUD_STATUSES.PENDING) {
+                order.setExportStatus(order.EXPORT_STATUS_NOTEXPORTED);
+                order.setConfirmationStatus(order.CONFIRMATION_STATUS_NOTCONFIRMED);
+                order.setPaymentStatus(order.PAYMENT_STATUS_NOTPAID);
+            } else {
+                var placeOrderStatus = OrderMgr.placeOrder(order);
+                if (placeOrderStatus === Status.ERROR) {
+                    throw new Error();
+                }
+    
+                order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
+                order.setExportStatus(Order.EXPORT_STATUS_READY);
             }
-
-            order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
-            order.setExportStatus(Order.EXPORT_STATUS_READY);
+    
+            Transaction.commit();
+        } catch (e) {
+            Transaction.wrap(function () { OrderMgr.failOrder(order); });
+            result.error = true;
         }
-
-        Transaction.commit();
-    } catch (e) {
-        Transaction.wrap(function () { OrderMgr.failOrder(order); });
-        result.error = true;
+    
+        return result;
     }
-
-    return result;
 };
 
 module.exports = superMdl;

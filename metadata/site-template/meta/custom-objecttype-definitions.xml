@@ -27,6 +27,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="osmUCI">
+                <display-name xml:lang="x-default">On-site marketing UCI</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
             <attribute-definition attribute-id="showShippingOptions">
                 <display-name xml:lang="x-default">Show Shipping Options</display-name>
                 <type>boolean</type>
@@ -739,6 +747,7 @@
                 <attribute attribute-id="country"/>
                 <attribute attribute-id="klarnaLocale"/>
                 <attribute attribute-id="credentialID"/>
+                <attribute attribute-id="osmUCI"/>
                 <attribute attribute-id="shippingCountries"/>
                 <attribute attribute-id="showShippingOptions"/>
                 <attribute attribute-id="showShippingCountries"/>

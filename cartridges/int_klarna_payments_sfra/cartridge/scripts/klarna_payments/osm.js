@@ -3,7 +3,7 @@
 'use strict';
 
 var Site = require('dw/system/Site');
-var Locale = require('dw/util/Locale');
+var KlarnaLocale = require('*/cartridge/scripts/klarna_payments/locale');
 
 /**
  * Klarna On-Site Messaging Component
@@ -32,10 +32,6 @@ var KlarnaOSM = {
 
         return value;
     },
-    getCountryCode: function () {
-        var requestLocale = Locale.getLocale(request.locale);
-        return requestLocale.country;
-    },
     getLibraryPrefix: function (countryCode) {
         if (countryCode === 'US') {
             return 'us';
@@ -44,12 +40,13 @@ var KlarnaOSM = {
         }
     },
     getScriptURL: function () {
-        var value = Site.getCurrent().getCustomPreferenceValue('osmUCI');
-
-        var currentCountryCode = this.getCountryCode();
+        var klarnaLocale = new KlarnaLocale();
+        var localeObject = klarnaLocale.getLocale();
+        var currentCountryCode = klarnaLocale.getRequestLocaleCountryCode();
+        var uci = localeObject.custom.osmUCI;
         var currentPrefix = this.getLibraryPrefix(currentCountryCode);
 
-        var url = 'https://' + currentPrefix + '-library.klarnaservices.com/merchant.js?uci=' + value + '&country=' + currentCountryCode;
+        var url = 'https://' + currentPrefix + '-library.klarnaservices.com/merchant.js?uci=' + uci + '&country=' + currentCountryCode;
 
         return url;
     },

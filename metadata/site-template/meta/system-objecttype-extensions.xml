@@ -163,14 +163,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
-			<attribute-definition attribute-id="osmUCI">
-                <display-name xml:lang="x-default">UCI</display-name>
-                <description xml:lang="x-default">UCI (Unified Client Identifier) used to assemble the library URL.</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-				<default-value></default-value>
-            </attribute-definition>
 			<attribute-definition attribute-id="osmCartEnabled">
                 <display-name xml:lang="x-default">Cart Placement Tag Enabled</display-name>
                 <description xml:lang="x-default">Whether Cart Placement Tag is Enabled</description>
@@ -226,7 +218,6 @@
 				<attribute attribute-id="kpVCNEnabled"/>
 				<attribute attribute-id="vcnPrivateKey"/>
 				<attribute attribute-id="vcnPublicKey"/>
-				<attribute attribute-id="osmUCI"/>
 				<attribute attribute-id="osmCartEnabled"/>
 				<attribute attribute-id="osmCartTagId"/>
 				<attribute attribute-id="osmPDPEnabled"/>

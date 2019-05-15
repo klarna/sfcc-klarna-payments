@@ -1,7 +1,9 @@
 'use strict';
 
 var Site = require('dw/system/Site');
-var Locale = require('dw/util/Locale');
+var CustomObjectMgr = require( 'dw/object/CustomObjectMgr' );
+var SG_CORE = require( '*/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CORE;
+var Countries = require( SG_CORE + '/cartridge/scripts/util/Countries' );
 
 /**
  * Klarna On-Site Messaging Component
@@ -35,10 +37,6 @@ var KlarnaOSM = {
 
         return value;
     },
-    getCountryCode: function () {
-        var requestLocale = Locale.getLocale(request.locale);
-        return requestLocale.country;
-    },
     getLibraryPrefix: function (countryCode) {
         if (countryCode === 'US') {
             return 'us';
@@ -46,13 +44,21 @@ var KlarnaOSM = {
             return 'eu';
         }
     },
+    getCountry: function () {
+        return Countries.getCurrent( {CurrentRequest: request} ).countryCode;
+    },
+    getLocale: function ( ) {
+        var countryCode = this.getCountry();
+    
+        return CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
+    },
     getScriptURL: function () {
-        var value = Site.getCurrent().getCustomPreferenceValue('osmUCI');
-
-        var currentCountryCode = this.getCountryCode();
+        var localeObject = this.getLocale();
+        var currentCountryCode = this.getCountry();
+        var uci = localeObject.custom.osmUCI;
         var currentPrefix = this.getLibraryPrefix(currentCountryCode);
 
-        var url = 'https://' + currentPrefix + '-library.klarnaservices.com/merchant.js?uci=' + value + '&country=' + currentCountryCode;
+        var url = 'https://' + currentPrefix + '-library.klarnaservices.com/merchant.js?uci=' + uci + '&country=' + currentCountryCode;
 
         return url;
     },

@@ -1,7 +1,5 @@
 <isset name="ProductPrice" value="${pdict.p_price}" scope="page"/>
 
-<isset name="klarnaOSMJsAdded" value="${klarnaOSMJsAdded}" scope="page" />
-
 <isscript>
     var KlarnaOSM = require('~/cartridge/scripts/klarna_payments/osm');
 </isscript>
@@ -13,7 +11,7 @@
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');
 
-        if (empty(klarnaOSMJsAdded) && !klarnaOSMJsAdded) {
+        if (!klarnaOSMJsAdded) {
             assets.addJs(KlarnaOSM.getScriptURL());
         }
     </isscript>

@@ -1,3 +1,5 @@
+<isset name="klarnaOSMJsAdded" value="${klarnaOSMJsAdded}" scope="page" />
+
 <div class="kosm-cart">
     <isscript>
         var BasketMgr = require('dw/order/BasketMgr');
@@ -8,5 +10,15 @@
     </isscript>
     <isif condition="${KlarnaOSM.isEnabledCartPage()}">
         <klarna-placement data-id="${KlarnaOSM.getCartPagePlacementTagId()}" data-purchase_amount="${KlarnaOSM.formatPurchaseAmount(totalGrossPrice)}"></klarna-placement>
+
+        <isscript>
+            var assets = require('*/cartridge/scripts/assets.js');
+
+            if (empty(klarnaOSMJsAdded) && !klarnaOSMJsAdded) {
+                assets.addJs(KlarnaOSM.getScriptURL());
+            }
+        </isscript>
+
+        <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
     </isif>
 </div>

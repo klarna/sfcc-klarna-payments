@@ -3,7 +3,8 @@
 'use strict';
 
 var Site = require('dw/system/Site');
-var KlarnaLocale = require('*/cartridge/scripts/klarna_payments/locale');
+var CustomObjectMgr = require( 'dw/object/CustomObjectMgr' );
+var Locale = require('dw/util/Locale');
 
 /**
  * Klarna On-Site Messaging Component
@@ -39,11 +40,21 @@ var KlarnaOSM = {
             return 'eu';
         }
     },
-    getScriptURL: function () {
-        var klarnaLocale = new KlarnaLocale();
-        var localeObject = klarnaLocale.getLocale();
-        var currentCountryCode = klarnaLocale.getRequestLocaleCountryCode();
+    getCountryCode: function () {
+        var requestLocale = Locale.getLocale(request.locale);
+        var currentCountryCode = requestLocale.country;
+
+        return currentCountryCode;
+    },
+    getUCI: function (countryCode) {
+        var localeObject = CustomObjectMgr.getCustomObject('KlarnaCountries', countryCode);
         var uci = localeObject.custom.osmUCI;
+
+        return uci;
+    },
+    getScriptURL: function () {
+        var currentCountryCode = this.getCountryCode();
+        var uci = this.getUCI(currentCountryCode);
         var currentPrefix = this.getLibraryPrefix(currentCountryCode);
 
         var url = 'https://' + currentPrefix + '-library.klarnaservices.com/merchant.js?uci=' + uci + '&country=' + currentCountryCode;

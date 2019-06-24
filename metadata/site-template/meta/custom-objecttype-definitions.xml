@@ -35,6 +35,38 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+			<attribute-definition attribute-id="osmCartEnabled">
+                <display-name xml:lang="x-default">Cart Placement Tag Enabled</display-name>
+                <description xml:lang="x-default">Whether Cart Placement Tag is Enabled</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
+            </attribute-definition>
+			<attribute-definition attribute-id="osmCartTagId">
+                <display-name xml:lang="x-default">Cart Placement Tag ID</display-name>
+                <description xml:lang="x-default">ID of On-site messaging placement tag for Cart Page.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value></default-value>
+            </attribute-definition>
+			<attribute-definition attribute-id="osmPDPEnabled">
+                <display-name xml:lang="x-default">PDP Placement Tag Enabled</display-name>
+                <description xml:lang="x-default">Whether PDP Placement Tag is Enabled</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
+            </attribute-definition>
+			<attribute-definition attribute-id="osmPDPTagId">
+                <display-name xml:lang="x-default">PDP Placement Tag ID</display-name>
+                <description xml:lang="x-default">ID of On-site messaging placement tag for PDP Page.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value></default-value>
+            </attribute-definition>
         </attribute-definitions>
         <group-definitions>
             <attribute-group group-id="custom">
@@ -43,6 +75,10 @@
                 <attribute attribute-id="klarnaLocale"/>
                 <attribute attribute-id="credentialID"/>
                 <attribute attribute-id="osmUCI"/>
+				<attribute attribute-id="osmCartEnabled"/>
+				<attribute attribute-id="osmCartTagId"/>
+				<attribute attribute-id="osmPDPEnabled"/>
+				<attribute attribute-id="osmPDPTagId"/>
             </attribute-group>
         </group-definitions>
     </custom-type>

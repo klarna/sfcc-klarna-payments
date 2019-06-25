@@ -48,6 +48,23 @@ function getOrderRequestBody(order, localeObject) {
 }
 
 /**
+ * Attempts to create a full-amount capture through Klarna API.
+ * @param {string} klarnaOrderID KP Order ID
+ * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries.
+ * @param {Object} captureData capture data.
+ */
+function createCapture(klarnaOrderID, localeObject, captureData) {
+    var klarnaPaymentsHttpService = new KlarnaPaymentsHttpService();
+    var klarnaApiContext = new KlarnaPaymentsApiContext();
+    var requestUrl = StringUtils.format(klarnaApiContext.getFlowApiUrls().get('createCapture'), klarnaOrderID);
+    var requestBody = {
+        captured_amount: captureData.amount
+    };
+
+    klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
+}
+
+/**
  * Calls Klarna Create Order API.
  *
  * @param {dw.order.Order} order SCC order object
@@ -129,8 +146,55 @@ function cancelOrder(order, localeObject) {
 }
 
 /**
+ * Returns full order amount for a DW order.
+ *
+ * @param {dw.order.Order} dwOrder DW Order object.
+ * @return {number} order amount
+ */
+function getOrderAmount(dwOrder) {
+    var orderAmount = 0;
+
+    if (dwOrder.totalGrossPrice.available) {
+        orderAmount = dwOrder.totalGrossPrice.value * 100;
+    } else {
+        orderAmount = dwOrder.totalNetPrice.value * 100;
+    }
+
+    return orderAmount;
+}
+
+/**
+ * Handle auto-capture functionality.
+ *
+ * @param {dw.order.Order} dwOrder DW Order object.
+ * @param {string} kpOrderId Klarna Payments Order ID
+ * @param {dw.object.CustomObject} localeObject locale object (KlarnaCountries).
+ */
+function handleAutoCapture(dwOrder, kpOrderId, localeObject) {
+    var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue('kpAutoCapture');
+
+    if (autoCaptureEnabled) {
+        var captureData = {
+            amount: getOrderAmount(dwOrder)
+        };
+
+        try {
+            createCapture(kpOrderId, localeObject, captureData);
+
+            Transaction.wrap(function () {
+                dwOrder.setPaymentStatus(dwOrder.PAYMENT_STATUS_PAID);
+            });
+        } catch (e) {
+            log.error('Error in creating Klarna Payments Order Capture: {0}', e.message + e.stack);
+        }
+    }
+}
+
+/**
  * Place an order using OrderMgr. If order is placed successfully,
- * its status will be set as confirmed, and export status set to ready. Acknowledge order with Klarna Payments
+ * its status will be set as confirmed, and export status set to ready.
+ * Autocapture is handled after placing the order (if enabled).
+ * At last, the order is acknowledged via Klarna Payments API.
  *
  * @param {dw.order.Order} 			order 					SCC order object
  * @param {string} 					klarnaPaymentsOrderID 	Klarna Payments Order ID
@@ -149,6 +213,7 @@ function placeOrder(order, klarnaPaymentsOrderID, localeObject) {
         order.setExportStatus(order.EXPORT_STATUS_READY);
     });
 
+    handleAutoCapture(order, klarnaPaymentsOrderID, localeObject);
     acknowledgeOrder(klarnaPaymentsOrderID, localeObject);
 }
 
@@ -358,6 +423,7 @@ function authorizeAcceptedOrder(order, kpOrderID, localeObject) {
     var authResult = {};
 
     if (!kpVCNEnabledPreferenceValue) {
+        handleAutoCapture(order, kpOrderID, localeObject);
         acknowledgeOrder(kpOrderID, localeObject);
     } else {
         try {

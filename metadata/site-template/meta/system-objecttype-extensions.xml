@@ -2,6 +2,14 @@
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
+			<attribute-definition attribute-id="kpAutoCapture">
+                <display-name xml:lang="x-default">Autocapture</display-name>
+                <description xml:lang="x-default">If enabled, a full capture will be attempted automatically prior to order acknowledge. If disabled, the merchant needs to manually capture the order amount from the KP dashboard.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
+            </attribute-definition>
 			<attribute-definition attribute-id="kpServiceName">
                 <display-name xml:lang="x-default">Klarna Payments Service Name</display-name>
                 <description xml:lang="x-default">The service name used for the current site</description>
@@ -207,6 +215,7 @@
 		<group-definitions>
 			<attribute-group group-id="Klarna_Payments">
                 <display-name xml:lang="x-default">Klarna Payments</display-name>
+                <attribute attribute-id="kpAutoCapture"/>
 				<attribute attribute-id="sendProductAndImageURLs"/>
 				<attribute attribute-id="merchant_reference2_mapping"/>
 				<attribute attribute-id="kpColorDetails"/>
@@ -222,7 +231,7 @@
 				<attribute attribute-id="kpColorTextSecondary"/>
 				<attribute attribute-id="kpRadiusBorder"/>
 				<attribute attribute-id="kpAttachments"/>	
-				<attribute attribute-id="kpNotAvailableMessage"/>	
+				<attribute attribute-id="kpNotAvailableMessage"/>
 				<attribute attribute-id="kpVCNEnabled"/>
 				<attribute attribute-id="vcnPrivateKey"/>
 				<attribute attribute-id="vcnPublicKey"/>

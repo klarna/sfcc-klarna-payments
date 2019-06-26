@@ -8,6 +8,7 @@ var Locale = require( 'dw/util/Locale' );
  */
 var KlarnaOSM = {
 	countryCode: '',
+	klarnaCountriesObject: null,
 	setCountryCode: function( countryCode ) {
 		this.countryCode = countryCode;
 	},
@@ -24,33 +25,42 @@ var KlarnaOSM = {
 
 		return this.countryCode;
 	},
+	loadKlarnaCountriesObject: function() {
+		var countryCode = this.getCountryCode();
+		var localeObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
+
+		return localeObject;
+	},
+	getKlarnaCountriesObject: function() {
+		if ( !this.klarnaCountriesObject ) {
+			this.klarnaCountriesObject = this.loadKlarnaCountriesObject();
+		}
+
+		return this.klarnaCountriesObject;
+	},
 	isEnabled: function() {
 		return ( this.isEnabledCartPage() || this.isEnabledPDPPage() );
 	},
 	isEnabledCartPage: function() {
-		var countryCode = this.getCountryCode();
-		var localeObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
+		var localeObject = this.getKlarnaCountriesObject();
 		var value = localeObject.custom.osmCartEnabled;
 
 		return value;
 	},
 	getCartPagePlacementTagId: function() {
-		var countryCode = this.getCountryCode();
-		var localeObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
+		var localeObject = this.getKlarnaCountriesObject();
 		var value = localeObject.custom.osmCartTagId;
 
 		return value;
 	},
 	isEnabledPDPPage: function() {
-		var countryCode = this.getCountryCode();
-		var localeObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
+		var localeObject = this.getKlarnaCountriesObject();
 		var value = localeObject.custom.osmPDPEnabled;
 
 		return value;
 	},
 	getPDPPagePlacementTagId: function() {
-		var countryCode = this.getCountryCode();
-		var localeObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
+		var localeObject = this.getKlarnaCountriesObject();
 		var value = localeObject.custom.osmPDPTagId;
 
 		return value;
@@ -65,8 +75,7 @@ var KlarnaOSM = {
 		return 'eu';
 	},
 	getUCI: function() {
-		var countryCode = this.getCountryCode();
-		var localeObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
+		var localeObject = this.getKlarnaCountriesObject();
 		var uci = localeObject.custom.osmUCI;
 
 		return uci;

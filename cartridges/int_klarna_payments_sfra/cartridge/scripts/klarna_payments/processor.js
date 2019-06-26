@@ -146,21 +146,34 @@ function cancelOrder(order, localeObject) {
 }
 
 /**
+ * Find the first klarna payment transaction within the order (if exists).
+ *
+ * @param {dw.order.Order} order - The Order currently being placed.
+ * @returns {dw.order.PaymentTransaction} Klarna Payment Transaction
+ */
+function findKlarnaPaymentTransaction(order) {
+    var paymentTransaction = null;
+    var paymentInstruments = order.getPaymentInstruments(PAYMENT_METHOD);
+
+    if (!empty(paymentInstruments) && paymentInstruments.length) {
+        paymentTransaction = paymentInstruments[0].paymentTransaction;
+    }
+
+    return paymentTransaction;
+}
+
+/**
  * Returns full order amount for a DW order.
  *
  * @param {dw.order.Order} dwOrder DW Order object.
- * @return {number} order amount
+ * @return {dw.value.Money} payment transaction amount.
  */
-function getOrderAmount(dwOrder) {
-    var orderAmount = 0;
+function getPaymentInstrumentAmount(dwOrder) {
+    var kpTransaction = findKlarnaPaymentTransaction(dwOrder);
 
-    if (dwOrder.totalGrossPrice.available) {
-        orderAmount = dwOrder.totalGrossPrice.value * 100;
-    } else {
-        orderAmount = dwOrder.totalNetPrice.value * 100;
-    }
+    var transactionAmount = kpTransaction.getAmount();
 
-    return orderAmount;
+    return transactionAmount;
 }
 
 /**
@@ -171,29 +184,27 @@ function getOrderAmount(dwOrder) {
  * @param {dw.object.CustomObject} localeObject locale object (KlarnaCountries).
  */
 function handleAutoCapture(dwOrder, kpOrderId, localeObject) {
-    var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue('kpAutoCapture');
+    var captureData = {
+        amount: Math.round(getPaymentInstrumentAmount(dwOrder).getValue() * 100)
+    };
 
-    if (autoCaptureEnabled) {
-        var captureData = {
-            amount: getOrderAmount(dwOrder)
-        };
+    try {
+        createCapture(kpOrderId, localeObject, captureData);
 
-        try {
-            createCapture(kpOrderId, localeObject, captureData);
+        Transaction.wrap(function () {
+            dwOrder.setPaymentStatus(dwOrder.PAYMENT_STATUS_PAID);
+        });
+    } catch (e) {
+        log.error('Error in creating Klarna Payments Order Capture: {0}', e.message + e.stack);
 
-            Transaction.wrap(function () {
-                dwOrder.setPaymentStatus(dwOrder.PAYMENT_STATUS_PAID);
-            });
-        } catch (e) {
-            log.error('Error in creating Klarna Payments Order Capture: {0}', e.message + e.stack);
-        }
+        throw e;
     }
 }
 
 /**
  * Place an order using OrderMgr. If order is placed successfully,
  * its status will be set as confirmed, and export status set to ready.
- * Autocapture is handled after placing the order (if enabled).
+ * Autocapture is handled after placing the order if enabled).
  * At last, the order is acknowledged via Klarna Payments API.
  *
  * @param {dw.order.Order} 			order 					SCC order object
@@ -213,8 +224,19 @@ function placeOrder(order, klarnaPaymentsOrderID, localeObject) {
         order.setExportStatus(order.EXPORT_STATUS_READY);
     });
 
-    handleAutoCapture(order, klarnaPaymentsOrderID, localeObject);
-    acknowledgeOrder(klarnaPaymentsOrderID, localeObject);
+    if (!order.custom.kpIsVCN) {
+        try {
+            var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue('kpAutoCapture');
+
+            if (autoCaptureEnabled) {
+                handleAutoCapture(order, klarnaPaymentsOrderID, localeObject);
+            }
+
+            acknowledgeOrder(klarnaPaymentsOrderID, localeObject);
+        } catch (e) {
+			log.error('Order could not be placed: {0}', e.message + e.stack);
+        }
+    }
 }
 
 /**
@@ -419,12 +441,22 @@ function updateOrderWithKlarnaOrderInfo(order, paymentInstrument, kpOrderId) {
  * @return {AuthorizationResult} authorization result
  */
 function authorizeAcceptedOrder(order, kpOrderID, localeObject) {
+    var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue('kpAutoCapture');
     var kpVCNEnabledPreferenceValue = Site.getCurrent().getCustomPreferenceValue('kpVCNEnabled');
     var authResult = {};
 
     if (!kpVCNEnabledPreferenceValue) {
-        handleAutoCapture(order, kpOrderID, localeObject);
-        acknowledgeOrder(kpOrderID, localeObject);
+        if (autoCaptureEnabled) {
+            try {
+                handleAutoCapture(order, kpOrderID, localeObject);
+
+                acknowledgeOrder(kpOrderID, localeObject);
+            } catch (e) {
+                authResult = generateErrorAuthResult();
+            }
+        } else {
+            acknowledgeOrder(kpOrderID, localeObject);
+        }
     } else {
         try {
             createVCNSettlement(order, kpOrderID, localeObject);
@@ -534,6 +566,7 @@ function notify(order, kpOrderID, kpEventType) {
         failOrder(order);
     }
 }
+
 module.exports.handle = handle;
 module.exports.authorize = authorize;
 module.exports.notify = notify;

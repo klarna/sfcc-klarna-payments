@@ -1,49 +1,99 @@
 'use strict';
 
-var Site = require('dw/system/Site');
+var CustomObjectMgr = require( 'dw/object/CustomObjectMgr' );
+var Locale = require( 'dw/util/Locale' );
 
 /**
  * Klarna On-Site Messaging Component
  */
 var KlarnaOSM = {
-    getUCI: function () {
-        var value = Site.getCurrent().getCustomPreferenceValue('osmUCI');
+	countryCode: '',
+	klarnaCountriesObject: null,
+	setCountryCode: function( countryCode ) {
+		this.countryCode = countryCode;
+	},
+	retrieveCountryCodeFromRequestLocale: function() {
+		var requestLocale = Locale.getLocale( request.locale );
+		var currentCountryCode = requestLocale.country;
 
-        return value;
-    },
-    isEnabled: function () {
-        return (this.isEnabledCartPage() || this.isEnabledPDPPage());
-    },
-    isEnabledCartPage: function () {
-        var value = Site.getCurrent().getCustomPreferenceValue('osmCartEnabled');
+		return currentCountryCode;
+	},
+	getCountryCode: function() {
+		if ( !this.countryCode ) {
+			this.countryCode = this.retrieveCountryCodeFromRequestLocale();
+		}
 
-        return value;
-    },
-    getCartPagePlacementTagId: function () {
-        var value = Site.getCurrent().getCustomPreferenceValue('osmCartTagId');
+		return this.countryCode;
+	},
+	loadKlarnaCountriesObject: function() {
+		var countryCode = this.getCountryCode();
+		var localeObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
 
-        return value;
-    },
-    isEnabledPDPPage: function () {
-        var value = Site.getCurrent().getCustomPreferenceValue('osmPDPEnabled');
+		return localeObject;
+	},
+	getKlarnaCountriesObject: function() {
+		if ( !this.klarnaCountriesObject ) {
+			this.klarnaCountriesObject = this.loadKlarnaCountriesObject();
+		}
 
-        return value;
-    },
-    getPDPPagePlacementTagId: function () {
-        var value = Site.getCurrent().getCustomPreferenceValue('osmPDPTagId');
+		return this.klarnaCountriesObject;
+	},
+	isEnabled: function() {
+		return ( this.isEnabledCartPage() || this.isEnabledPDPPage() );
+	},
+	isEnabledCartPage: function() {
+		var localeObject = this.getKlarnaCountriesObject();
+		var value = localeObject.custom.osmCartEnabled;
 
-        return value;
-    },
-    getScriptURL: function () {
-        var value = Site.getCurrent().getCustomPreferenceValue('osmLibraryUrl');
+		return value;
+	},
+	getCartPagePlacementTagId: function() {
+		var localeObject = this.getKlarnaCountriesObject();
+		var value = localeObject.custom.osmCartTagId;
 
-        return value;
-    },
-    formatPurchaseAmount: function (price) {
-        var formattedAmount = Math.round(price.value * 100);
+		return value;
+	},
+	isEnabledPDPPage: function() {
+		var localeObject = this.getKlarnaCountriesObject();
+		var value = localeObject.custom.osmPDPEnabled;
 
-        return formattedAmount;
-    }
+		return value;
+	},
+	getPDPPagePlacementTagId: function() {
+		var localeObject = this.getKlarnaCountriesObject();
+		var value = localeObject.custom.osmPDPTagId;
+
+		return value;
+	},
+	getLibraryPrefix: function() {
+		var countryCode = this.getCountryCode();
+
+		if ( countryCode === 'US' ) {
+			return 'us';
+		}
+
+		return 'eu';
+	},
+	getUCI: function() {
+		var localeObject = this.getKlarnaCountriesObject();
+		var uci = localeObject.custom.osmUCI;
+
+		return uci;
+	},
+	getScriptURL: function() {
+		var currentCountryCode = this.getCountryCode();
+		var uci = this.getUCI();
+		var currentPrefix = this.getLibraryPrefix();
+
+		var url = 'https://' + currentPrefix + '-library.klarnaservices.com/merchant.js?uci=' + uci + '&country=' + currentCountryCode;
+
+		return url;
+	},
+	formatPurchaseAmount: function( price ) {
+		var formattedAmount = Math.round( price.value * 100 );
+
+		return formattedAmount;
+	}
 };
 
 module.exports = KlarnaOSM;

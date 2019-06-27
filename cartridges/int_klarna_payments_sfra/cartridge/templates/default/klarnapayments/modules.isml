@@ -8,3 +8,5 @@
 	name="kosmpdp"
 	attribute="p_price"
 />
+
+<isset name="klarnaOSMJsAdded" value="${false}" scope="page" />

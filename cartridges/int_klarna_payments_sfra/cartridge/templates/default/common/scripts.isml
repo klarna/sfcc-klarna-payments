@@ -2,5 +2,3 @@
 <isloop items="${ require('*/cartridge/scripts/assets.js').scripts }" var="script">
     <script type="text/javascript" src="${script}"></script>
 </isloop>
-
-<isinclude template="klarnapayments/scripts.isml"/>

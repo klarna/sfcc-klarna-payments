@@ -181,6 +181,98 @@
 		}
 	}
 }, {
+	"countryCode": "AT",
+	"name": {
+        "en_GB": "Austria",
+		"de_DE": "Austria"
+	},
+	"continent": "europe",
+	"locales": ["de_AT"],
+	"currencyCode": "EUR",
+	"taxation": {
+        "type": "gross",
+        "rate": 0.19
+	},
+	"priceBooks": [
+		"eur-list-prices",
+		"eur-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+				"fieldName": "state",
+				"type": "select",
+				"required": true
+			}],
+			"address2": {
+				"help": {
+					"cid": "apo-fpo",
+					"label": {
+						"property": "singleshipping.apofpo",
+						"file": "checkout"
+					}
+				}
+			},
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent" : {
+			"eventaddress": [{
+				"fieldName": "country",
+				"type": "select"
+			}, {
+				"fieldName": "states.state",
+				"type": "select",
+				"required": true
+			}],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [{
+					"fieldName": "states.state",
+					"type": "select"
+				}, {
+					"fieldName": "country",
+					"type": "select"
+				}]
+			}
+		},
+		"expirationInfo": {
+			"year" : {
+				"type" : "select",
+				"rowclass": "year"
+			},
+			"month" : {
+				"type" : "select",
+				"rowclass": "month"
+			}
+		}
+	}
+}, {
 	"countryCode": "GB",
 	"name": {
 		"en_GB": "United Kingdom"

@@ -4,9 +4,19 @@
         var currentBasket = BasketMgr.getCurrentBasket();
         var totalGrossPrice = currentBasket.getTotalGrossPrice();
 
-       	var KlarnaOSM = require('~/cartridge/scripts/klarna_payments/osm');
+        var KlarnaOSM = require('~/cartridge/scripts/klarna_payments/osm');
     </isscript>
     <isif condition="${KlarnaOSM.isEnabledCartPage()}">
         <klarna-placement data-id="${KlarnaOSM.getCartPagePlacementTagId()}" data-purchase_amount="${KlarnaOSM.formatPurchaseAmount(totalGrossPrice)}"></klarna-placement>
+
+        <isscript>
+            var assets = require('*/cartridge/scripts/assets.js');
+
+            if (!klarnaOSMJsAdded) {
+                assets.addJs(KlarnaOSM.getScriptURL());
+            }
+        </isscript>
+
+        <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
     </isif>
 </div>

@@ -35,6 +35,61 @@ var KlarnaPayments = {
 };
 var Utils = require( SG_CORE + '/cartridge/scripts/checkout/Utils' );
 
+/**
+ * Find the first klarna payment transaction within the order (if exists).
+ *
+ * @param {dw.order.Order} order - The Order currently being placed.
+ * @returns {dw.order.PaymentTransaction} Klarna Payment Transaction
+ */
+function findKlarnaPaymentTransaction(order) {
+    var paymentTransaction = null;
+    var paymentInstruments = order.getPaymentInstruments("Klarna");
+
+    if (!empty(paymentInstruments) && paymentInstruments.length) {
+        paymentTransaction = paymentInstruments[0].paymentTransaction;
+    }
+
+    return paymentTransaction;
+}
+
+/**
+ * Returns full order amount for a DW order.
+ *
+ * @param {dw.order.Order} dwOrder DW Order object.
+ * @return {dw.value.Money} payment transaction amount.
+ */
+function getPaymentInstrumentAmount(dwOrder) {
+    var kpTransaction = findKlarnaPaymentTransaction(dwOrder);
+
+    var transactionAmount = kpTransaction.getAmount();
+
+    return transactionAmount;
+}
+
+/**
+ * Handle auto-capture functionality.
+ *
+ * @param {dw.order.Order} dwOrder DW Order object.
+ * @param {string} kpOrderId Klarna Payments Order ID
+ * @param {dw.object.CustomObject} localeObject locale object (KlarnaCountries).
+ */
+function handleAutoCapture(dwOrder, kpOrderId, localeObject) {
+    var captureData = {
+        amount: Math.round(getPaymentInstrumentAmount(dwOrder).getValue() * 100)
+    };
+
+    try {
+        _createCapture(kpOrderId, localeObject, captureData);
+
+        Transaction.wrap(function () {
+            dwOrder.setPaymentStatus(dwOrder.PAYMENT_STATUS_PAID);
+        });
+    } catch (e) {
+        log.error('Error in creating Klarna Payments Order Capture: {0}', e.message + e.stack);
+
+        throw e;
+    }
+}
 
 /**
  * Creates a Klarna payment instrument for the given basket
@@ -106,6 +161,14 @@ function authorize( args )
 	}
 	if( session.privacy.KlarnaPaymentsFraudStatus === 'ACCEPTED' && !Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' ))
 	{
+        if (autoCaptureEnabled) {
+            try {
+                handleAutoCapture(args.Order, session.privacy.KlarnaPaymentsOrderID, localeObject);
+            } catch (e) {
+                return { error: true };
+            }
+		}
+
 		_acknowledgeOrder( session.privacy.KlarnaPaymentsOrderID, localeObject );
 	}
 	
@@ -141,6 +204,23 @@ function authorize( args )
 	}
 	
 	return { authorized: true };
+}
+
+/**
+ * Attempts to create a full-amount capture through Klarna API.
+ * @param {string} klarnaOrderID KP Order ID
+ * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries.
+ * @param {Object} captureData capture data.
+ */
+function _createCapture(klarnaOrderID, localeObject, captureData) {
+	var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+	var klarnaApiContext = new KlarnaPayments.apiContext();
+    var requestUrl = StringUtils.format(klarnaApiContext.getFlowApiUrls().get('createCapture'), klarnaOrderID);
+    var requestBody = {
+        captured_amount: captureData.amount
+    };
+
+    klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
 }
 
 /**
@@ -515,7 +595,21 @@ function placeOrder( order, klarnaPaymentsOrderID, localeObject )
 		order.setConfirmationStatus( order.CONFIRMATION_STATUS_CONFIRMED );
 		order.setExportStatus( order.EXPORT_STATUS_READY );
 	} );
+
+	if (!order.custom.kpIsVCN) {
+		try {
+			var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue('kpAutoCapture');
 	
+			if (autoCaptureEnabled) {
+				handleAutoCapture(order, klarnaPaymentsOrderID, localeObject);
+			}
+	
+			_acknowledgeOrder( klarnaPaymentsOrderID, localeObject );
+		} catch (e) {
+			log.error('Order could not be placed: {0}', e.message + e.stack);
+		}
+	}
+
 	_acknowledgeOrder( klarnaPaymentsOrderID, localeObject );
 }
 

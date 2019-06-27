@@ -12,7 +12,7 @@ var KlarnaPaymentsApiContext = function () {
 
 /**
  * Return Klarna API URLs.
- * 
+ *
  * @returns {HashMap} Klarna API URLs.
  */
 KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function () {
@@ -26,6 +26,7 @@ KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function () {
         this.flowApiUrls.put('cancelOrder', '/ordermanagement/v1/orders/{0}/cancel');
         this.flowApiUrls.put('getCompletedOrder', '/ordermanagement/v1/orders/{0}');
         this.flowApiUrls.put('acknowledgeOrder', 'ordermanagement/v1/orders/{0}/acknowledge');
+        this.flowApiUrls.put('createCapture', '/ordermanagement/v1/orders/{0}/captures');
         this.flowApiUrls.put('vcnSettlement', 'merchantcard/v2/settlements');
     }
 

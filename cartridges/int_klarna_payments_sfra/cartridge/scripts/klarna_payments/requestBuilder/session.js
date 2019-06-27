@@ -86,6 +86,8 @@
     KlarnaPaymentsSessionRequestBuilder.prototype.init = function (preAssement) {
         this.context = new KlarnaPaymentsSessionModel(preAssement);
 
+        this.getShipmentItemRequestBuilder().setMerchantDataAvailable(preAssement);
+
         return this;
     };
 
@@ -182,10 +184,9 @@
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildOrderLines = function (basket) {
         var lineItems = basket.getAllProductLineItems().toArray();
-        var shipments = basket.shipments;
-
         this.buildItems(lineItems, this);
 
+        var shipments = basket.shipments;
         this.buildShipments(shipments);
 
         return this;

@@ -18,9 +18,15 @@ var ORDER_LINE_TYPE = require('*/cartridge/scripts/util/KlarnaPaymentsConstants.
 function ShipmentItem() {
     this.item = null;
     this.addressRequestBuilder = new AddressRequestBuilder();
+    this.isMerchantDataAvailable = true;
 }
 
 ShipmentItem.prototype = new Builder();
+
+
+ShipmentItem.prototype.setMerchantDataAvailable = function (isMerchantDataAvailable) {
+    this.isMerchantDataAvailable = isMerchantDataAvailable;
+};
 
 ShipmentItem.prototype.getAddressRequestBuilder = function () {
     return this.addressRequestBuilder;
@@ -94,7 +100,7 @@ ShipmentItem.prototype.build = function (shipment) {
     this.item.tax_rate = Math.round(shipmentTaxRate);
     this.item.total_amount = shipmentUnitPrice;
 
-    if (!empty(shipment.shippingAddress)) {
+    if (this.isMerchantDataAvailable && !empty(shipment.shippingAddress)) {
         this.item.merchant_data = this.buildMerchantData(shipment);
     }
 

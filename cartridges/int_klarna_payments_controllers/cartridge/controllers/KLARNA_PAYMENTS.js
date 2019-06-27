@@ -161,6 +161,8 @@ function authorize( args )
 	}
 	if( session.privacy.KlarnaPaymentsFraudStatus === 'ACCEPTED' && !Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' ))
 	{
+		var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue('kpAutoCapture');
+
         if (autoCaptureEnabled) {
             try {
                 handleAutoCapture(args.Order, session.privacy.KlarnaPaymentsOrderID, localeObject);

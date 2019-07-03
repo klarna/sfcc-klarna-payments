@@ -28,7 +28,7 @@
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="osmUCI">
-                <display-name xml:lang="x-default">On-site marketing UCI</display-name>
+                <display-name xml:lang="x-default">On-site messaging UCI</display-name>
                 <type>string</type>
                 <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>

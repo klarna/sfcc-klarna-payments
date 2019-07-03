@@ -1,8 +1,8 @@
 {
   "init": [],
-  "name": "Klarna",
+  "name": "Klarna Payment",
   "version": "19.1.0",
-  "description": "Salesforce Commerce Cloud | Klarna Integration",
+  "description": "Salesforce Commerce Cloud | Klarna Payment Integration",
   "main": "Gruntfile.js",
   "dependencies": {
     "grunt": "^1.0.3",

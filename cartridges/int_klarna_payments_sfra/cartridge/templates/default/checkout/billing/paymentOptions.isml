@@ -1,3 +1,15 @@
+<script>
+    <isinclude template="/resources/klarnapaymentsresources.isml"/>
+</script>
+
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addJs('js/klarna-payments.js');
+    assets.addJs('https://x.klarnacdn.net/kp/lib/v1/api.js');
+
+    assets.addCss('css/klarna-payments.css');
+</isscript>
+
 <isscript>
     var paymentMethodId = "CREDIT_CARD";
     var paymentCategoryId = ""; // applicable only for klarna payment method
@@ -23,8 +35,6 @@
                 ${Resource.msg('tooltip.email','creditCard',null)}
             </div>
         </span>
-        <input type="text" class="form-control klarna_email" id="${klarnaForm.email.htmlName}"
-            value="${pdict.order.orderEmail||''}" <isprint value=${klarnaForm.email.attributes} encoding="off"/> >
         <div class="invalid-feedback"></div>
     </div>
 

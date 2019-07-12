@@ -139,8 +139,6 @@ KlarnaCheckout.initPaymentStage = function (defer) {
 
     this.initPaymentOptionsTabs();
 
-    this.initKlarnaEmail();
-
     this.initKlarnaSubmitPaymentButton();
 
     if (this.klarnaPaymentsObjects.preassesment) {
@@ -231,18 +229,9 @@ KlarnaCheckout.getKlarnaPaymentOptionTabs = function () {
  * Additional Klarna email is shown if a Klarna payment option is selected.
  */
 KlarnaCheckout.initPaymentOptionsTabs = function () {
-    var instance = this;
     var $paymentOptionsTabs = $('.payment-options a[data-toggle="tab"]');
 
     $paymentOptionsTabs.on('shown.bs.tab', function (e) {
-        var $clickedTabLink = $(e.target);
-
-        if ($clickedTabLink.parent('li').hasClass('klarna-payment-item')) {
-            instance.getKlarnaEmailContainer().removeClass('hide');
-        } else {
-            instance.getKlarnaEmailContainer().addClass('hide');
-        }
-
         $paymentOptionsTabs.each(function () {
             var $tabLink = $(this);
             var tabId = $tabLink.attr('href');
@@ -347,72 +336,6 @@ KlarnaCheckout.getKlarnaSubmitPaymentBtn = function () {
 };
 
 /**
- * Initialize additional email input field.
- *
- * Klarna expects an email as part of billing address data which the
- * default SFRA checkout does not have. This method adds validation
- * handling.
- */
-KlarnaCheckout.initKlarnaEmail = function () {
-    var $emailField = this.getKlarnaEmail();
-
-    $emailField.on('keypress input', function () {
-        if (this.isKlarnaEmailValid()) {
-            this.markKlarnaEmailValid();
-        } else {
-            this.markKlarnaEmailInvalid();
-        }
-    }.bind(this));
-};
-
-KlarnaCheckout.getKlarnaEmail = function () {
-    var $emailField = $('.payment-form .klarna_email');
-
-    return $emailField;
-};
-
-/**
- * Checks Klarna email input for valid email.
- *
- * @returns {bool} true, if user entered a valid email.
- */
-KlarnaCheckout.isKlarnaEmailValid = function () {
-    var $emailField = this.getKlarnaEmail();
-    var regExpPattern = $emailField.attr('pattern');
-    var maxlength = parseInt($emailField.attr('maxlength'), 10);
-    var email = $emailField.val();
-    var regExp = new RegExp(regExpPattern);
-
-    if (email.length > maxlength) {
-        return false;
-    }
-
-    if (!regExp.test(email)) {
-        return false;
-    }
-
-    return true;
-};
-
-KlarnaCheckout.getKlarnaEmailContainer = function () {
-    var $emailField = this.getKlarnaEmail();
-
-    return $emailField.parent('.form-group');
-};
-
-KlarnaCheckout.markKlarnaEmailInvalid = function () {
-    var $emailField = this.getKlarnaEmail();
-
-    $emailField.next('.invalid-feedback').html('This field is required').show();
-};
-
-KlarnaCheckout.markKlarnaEmailValid = function () {
-    var $emailField = this.getKlarnaEmail();
-
-    $emailField.next('.invalid-feedback').hide();
-};
-
-/**
  * Create and configure a Klarna submit payment button.
  *
  * The default submit payment button will be hidden and the user is going to click
@@ -435,17 +358,6 @@ KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
 
         if (this.isKlarnaPaymentCategory(selectedPaymentMethod)) {
             event.preventDefault(); // prevent form submission until authorize call is done
-
-            if (!this.isKlarnaEmailValid()) {
-                this.markKlarnaEmailInvalid();
-
-                $([document.documentElement, document.body]).animate({
-                    scrollTop: this.getKlarnaEmail().offset().top
-                }, 500);
-
-                event.stopPropagation();
-                return;
-            }
 
             $klarnaSubmitPaymentBtn.prop('disabled', true);
 
@@ -501,7 +413,7 @@ KlarnaCheckout.handlePaymentNeedsPreassesment = function () {
         $billingAddressFormElements.each(function (index, el) {
             var $el = $(el);
 
-            if ($el.attr('aria-invalid') === 'true' || ($el.attr('aria-required') === 'true' && $el.value.length === 0)) {
+            if ($el.attr('aria-invalid') === 'true' || ($el.attr('aria-required') === 'true' && $el.val().length === 0)) {
                 formValid = false;
                 return;
             }
@@ -571,6 +483,7 @@ KlarnaCheckout.obtainBillingAddressData = function () {
 
     var $paymentForm = $('.payment-form');
     var $billingAddressFieldset = $('.billing-address');
+    var $contactInfoBlock = $('.contact-info-block');
 
     if ($billingAddressFieldset.is(':visible')) {
         address.given_name = $billingAddressFieldset.find('.billingFirstName').val();
@@ -582,7 +495,7 @@ KlarnaCheckout.obtainBillingAddressData = function () {
         address.postal_code = $billingAddressFieldset.find('.billingZipCode').val();
         address.country = $billingAddressFieldset.find('.billingCountry').val();
         address.phone = $billingAddressFieldset.find('.billingPhoneNumber').val();
-        address.email = this.getKlarnaEmail().val();
+        address.email = $contactInfoBlock.find('.email').val();
     } else {
         var $addressSelectorElement = $paymentForm.find('.addressSelector');
         var $selectedOption = $addressSelectorElement.find(':selected');
@@ -596,7 +509,7 @@ KlarnaCheckout.obtainBillingAddressData = function () {
         address.postal_code = $selectedOption.attr('data-postal-code');
         address.country = $selectedOption.attr('data-country-code');
         address.phone = $selectedOption.attr('data-phone');
-        address.email = this.getKlarnaEmail().val();
+        address.email = $contactInfoBlock.find('.email').val();
     }
 
     return address;
@@ -625,6 +538,7 @@ KlarnaCheckout.obtainShippingAddressData = function () {
     };
 
     var $shippingAddressBlock = $('.single-shipping .shipping-address-block');
+    var $contactInfoBlock = $('.contact-info-block');
 
     address.given_name = $shippingAddressBlock.find('.shippingFirstName').val();
     address.family_name = $shippingAddressBlock.find('.shippingLastName').val();
@@ -635,7 +549,7 @@ KlarnaCheckout.obtainShippingAddressData = function () {
     address.postal_code = $shippingAddressBlock.find('.shippingZipCode').val();
     address.country = $shippingAddressBlock.find('.shippingCountry').val();
     address.phone = $shippingAddressBlock.find('.shippingPhoneNumber').val();
-    address.email = this.getKlarnaEmail().val();
+    address.email = $contactInfoBlock.find('.email').val();
 
     return address;
 };

@@ -27,17 +27,6 @@
 >
     <isset name="klarnaForm" value="${pdict.klarnaForm}" scope="page"/>
 
-    <div class="form-group required	${klarnaForm.email.htmlName} hide">
-        <label class="form-control-label" for="email">${Resource.msg('field.customer.email','checkout',null)}</label>
-        <span class="info-icon">
-            <span class="icon">i</span>
-            <div class="tooltip">
-                ${Resource.msg('tooltip.email','creditCard',null)}
-            </div>
-        </span>
-        <div class="invalid-feedback"></div>
-    </div>
-
     <ul class="nav nav-tabs nav-fill payment-options" role="tablist">
         <isinclude template="checkout/billing/paymentOptions/paymentOptionsTabs" />
     </ul>

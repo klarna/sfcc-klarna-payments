@@ -1,6 +1,6 @@
 node_modules/
 coverage/
-cartridges/*/cartridge/static/
+cartridges/int_klarna_payments_sfra/cartridge/static/
 npm-debug.log
 cartridges.zip
 .idea/

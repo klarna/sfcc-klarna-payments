@@ -1,2 +1,10 @@
-/cartridges/node_modules
-/cartridges/doc
+node_modules/
+coverage/
+cartridges/int_klarna_payments_sfra/cartridge/static/
+npm-debug.log
+cartridges.zip
+.idea/
+dw.json
+.DS_Store
+.vscode/
+doc/

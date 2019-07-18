@@ -1,0 +1,36 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<isif condition="${session.privacy.KlarnaPaymentMethods}">
+
+    <isscript>
+        var Countries = require('*/cartridge/scripts/util/Countries');
+        var countryCode = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
+
+        var KlarnaPaymentNotAvailable = "Klarna Payment not available";
+
+        if( !empty( dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpNotAvailableMessage' ) ) ) {
+            var kpNotAvailableJSON = JSON.parse( dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpNotAvailableMessage' ) );
+            if( kpNotAvailableJSON.hasOwnProperty( countryCode ) ) {
+                KlarnaPaymentNotAvailable = kpNotAvailableJSON[countryCode.toString()];
+            } else {
+                KlarnaPaymentNotAvailable = kpNotAvailableJSON.default;
+            }
+        }
+    </isscript>
+
+    <isloop items="${session.privacy.KlarnaPaymentMethods}" var="klarnaPaymentMethod">
+        <div class="tab-pane klarna_payments-content klarna_payments_${klarnaPaymentMethod.identifier}" id="${'klarna_payments_' + klarnaPaymentMethod.identifier}" role="tabpanel">
+            <fieldset class="payment-form-fields">
+                <input type="hidden" class="form-control" name="isKlarna" value="true" disabled="disabled" />
+                <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="KLARNA_PAYMENTS" disabled="disabled" />
+                <input type="hidden" class="form-control" name="${pdict.klarnaForm.paymentCategory.htmlName}" value="${klarnaPaymentMethod.identifier}" disabled="disabled" />
+
+                <div id="${'klarna_payments_' + klarnaPaymentMethod.identifier + '_container'}" style="text-align: center;"></div>
+                <isif condition="${empty(session.privacy.KlarnaPaymentsSessionID)}">
+                    <div class="klarna_payments_error" style="text-align: center; font-weight: bold; color: red;"><isprint value="${KlarnaPaymentNotAvailable}"/></div>
+                </isif>
+            </fieldset>
+        </div>
+    </isloop>
+
+</isif>

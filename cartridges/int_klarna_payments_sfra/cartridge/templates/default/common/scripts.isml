@@ -1,0 +1,4 @@
+<script type="text/javascript" src="${URLUtils.staticURL('/js/main.js')}"></script>
+<isloop items="${ require('*/cartridge/scripts/assets.js').scripts }" var="script">
+    <script type="text/javascript" src="${script}"></script>
+</isloop>

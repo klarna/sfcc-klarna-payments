@@ -2,6 +2,14 @@
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
+			<attribute-definition attribute-id="kpAutoCapture">
+                <display-name xml:lang="x-default">Autocapture</display-name>
+                <description xml:lang="x-default">If enabled, a full capture will be attempted automatically prior to order acknowledge. If disabled, the merchant needs to manually capture the order amount from the KP dashboard.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+				<default-value>false</default-value>
+            </attribute-definition>
 			<attribute-definition attribute-id="kpServiceName">
                 <display-name xml:lang="x-default">Klarna Payments Service Name</display-name>
                 <description xml:lang="x-default">The service name used for the current site</description>
@@ -26,14 +34,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="kpPreAssessment">
-                <display-name xml:lang="x-default">Pre-Assessment is on for:</display-name>
-                <description xml:lang="x-default">Pre-assessment flag. Comma separated string values with country codes, which should have the pre-assessment flag ON. For example the following string “CN, AU” would mean the pre-assessment is ON only for China and Australia. Note: Even if ON for an EU member country, consumer information will not be sent to Klarna until the authorize step.</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-            </attribute-definition>
 			  <attribute-definition attribute-id="kpColorBorder">
                 <display-name xml:lang="x-default">Border Color Preference</display-name>
                 <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
@@ -41,7 +41,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#CBCBCD</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorBorderSelected">
                 <display-name xml:lang="x-default">Border Selected Color Preference</display-name>
@@ -50,7 +49,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorButton">
                 <display-name xml:lang="x-default">Button Color Preference</display-name>
@@ -59,7 +57,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorButtonText">
                 <display-name xml:lang="x-default">Button Text Color Preference</display-name>
@@ -68,7 +65,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#FFFFFF</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorCheckbox">
                 <display-name xml:lang="x-default">Checkbox Color Preference</display-name>
@@ -77,7 +73,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorCheckboxCheckmark">
                 <display-name xml:lang="x-default">Checkbox Checkmark Color Preference</display-name>
@@ -86,7 +81,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#FFFFFF</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorDetails">
                 <display-name xml:lang="x-default">Details Color Preference</display-name>
@@ -95,7 +89,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorHeader">
                 <display-name xml:lang="x-default">Header Color Preference</display-name>
@@ -104,7 +97,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorLink">
                 <display-name xml:lang="x-default">Link Color Preference</display-name>
@@ -113,7 +105,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#0074C8</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorText">
                 <display-name xml:lang="x-default">Text Color Preference</display-name>
@@ -122,7 +113,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#3C3C3E</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpColorTextSecondary">
                 <display-name xml:lang="x-default">Secondary Text Color Preference</display-name>
@@ -131,7 +121,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>#9E9EA0</default-value>
             </attribute-definition>
 			<attribute-definition attribute-id="kpRadiusBorder">
                 <display-name xml:lang="x-default">Border Radius Preference</display-name>
@@ -140,7 +129,6 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>5px</default-value>
             </attribute-definition>
 			<attribute-definition attribute-id="kpAttachments">
                 <display-name xml:lang="x-default">Attachments</display-name>
@@ -169,13 +157,27 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+			<attribute-definition attribute-id="vcnPrivateKey">
+                <display-name xml:lang="x-default">VCN Private Key</display-name>
+                <description xml:lang="x-default">Your 4096 bit RSA Private Key</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="vcnPublicKey">
+                <display-name xml:lang="x-default">VCN Public Key</display-name>
+                <description xml:lang="x-default">Your 4096 bit RSA Public Key</description>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
 		</custom-attribute-definitions>				
 		<group-definitions>
 			<attribute-group group-id="Klarna_Payments">
                 <display-name xml:lang="x-default">Klarna Payments</display-name>
+                <attribute attribute-id="kpAutoCapture"/>
 				<attribute attribute-id="sendProductAndImageURLs"/>
 				<attribute attribute-id="merchant_reference2_mapping"/>
-				<attribute attribute-id="kpPreAssessment"/>
 				<attribute attribute-id="kpColorDetails"/>
 				<attribute attribute-id="kpColorButton"/>
 				<attribute attribute-id="kpColorButtonText"/>
@@ -189,12 +191,14 @@
 				<attribute attribute-id="kpColorTextSecondary"/>
 				<attribute attribute-id="kpRadiusBorder"/>
 				<attribute attribute-id="kpAttachments"/>	
-				<attribute attribute-id="kpNotAvailableMessage"/>	
-				<attribute attribute-id="kpVCNEnabled"/>				
+				<attribute attribute-id="kpNotAvailableMessage"/>
+				<attribute attribute-id="kpVCNEnabled"/>
+				<attribute attribute-id="vcnPrivateKey"/>
+				<attribute attribute-id="vcnPublicKey"/>
             </attribute-group>
         </group-definitions>
 	</type-extension>
-	
+
 	<type-extension type-id="Order">
 		<custom-attribute-definitions>
             <attribute-definition attribute-id="kpOrderID">
@@ -274,7 +278,34 @@
             </attribute-group>
         </group-definitions>
 	</type-extension>
-	
+
+	<type-extension type-id="OrderPaymentInstrument">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="klarnaPaymentCategoryID">
+                <display-name xml:lang="x-default">Klarna Payment Category ID</display-name>
+                <description xml:lang="x-default">Holding the ID of selected Klarna Payments Option</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="klarnaPaymentCategoryName">
+                <display-name xml:lang="x-default">Klarna Payment Category Name</display-name>
+                <description xml:lang="x-default">Holding the name of selected Klarna Payments Option</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+		<group-definitions>
+            <attribute-group group-id="Klarna_Payments">
+                <attribute attribute-id="klarnaPaymentCategoryID"/>
+                <attribute attribute-id="klarnaPaymentCategoryName"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
 	<type-extension type-id="PaymentTransaction">
 		<custom-attribute-definitions>
             <attribute-definition attribute-id="kpFraudStatus">

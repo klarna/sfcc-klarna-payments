@@ -1,0 +1,27 @@
+<iscontent type="text/javascript" charset="UTF-8" compact="true"/>
+
+<isscript>
+    var CurrentSession = pdict.CurrentSession;
+    var KlarnaUtils = require( '*/cartridge/scripts/util/KlarnaUtils' );
+    var Countries = require('*/cartridge/scripts/util/Countries');
+    var country = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
+    var preassess = KlarnaUtils.isEnabledPreassessmentForCountry( country );
+
+    // klarna payments urls
+    var KPurls =  {
+        saveAuth			: URLUtils.https('KlarnaPayments-SaveAuth').toString(),
+        loadAuth            : URLUtils.https('KlarnaPayments-LoadAuth').toString(),
+        refreshSession      : URLUtils.https('KlarnaPayments-RefreshSession').toString()
+    };
+
+    //klarna payments objects 
+    var KPObjects = {
+        clientToken			: CurrentSession.privacy.KlarnaPaymentsClientToken ? CurrentSession.privacy.KlarnaPaymentsClientToken.toString() : null,
+        preassesment		: preassess
+    };
+</isscript>
+
+(function(app){
+    window.KlarnaPaymentsUrls = <isprint value="${JSON.stringify(KPurls)}" encoding="on"/>;
+    window.KlarnaPaymentsObjects = <isprint value="${!empty(KPObjects) ? JSON.stringify(KPObjects) : '[]'}" encoding="on"/>;
+}(window.app = window.app || {}));

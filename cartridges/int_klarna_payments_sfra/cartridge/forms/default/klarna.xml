@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+    <field formid="paymentCategory" label="" type="string" mandatory="true" binding="paymentCategory" max-length="254" />
+</form>

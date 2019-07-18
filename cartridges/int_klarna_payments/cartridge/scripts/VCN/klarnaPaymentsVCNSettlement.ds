@@ -15,8 +15,8 @@ var Cypher = require( 'dw/crypto/Cipher' );
 var logger = Logger.getLogger( 'klarnaPaymentsVCNSettlement.ds' );
 var Transaction = require( 'dw/system/Transaction' );
 var KlarnaPayments = {
-	httpService 			: require('int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
-	apiContext 				: require('int_klarna_payments/cartridge/scripts/common/KlarnaPaymentsApiContext')
+	httpService 			: require('*/cartridge/scripts/common/KlarnaPaymentsHttpService.ds'),
+	apiContext 				: require('*/cartridge/scripts/common/KlarnaPaymentsApiContext')
 };
 
 function execute( args : PipelineDictionary ) : Number

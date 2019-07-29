@@ -4,7 +4,7 @@
  * Builds Extra Merchant Data
  * This is a sample script to help you develop your own extra merchant data.
  * 
- * @param {argsObj} 	object
+ * @param {Object} args funciton arguments
  * 
  * @return {String} EMD as JSON string
  */

@@ -76,12 +76,12 @@ ShipmentItem.prototype.getShipmentProductIds = function (shipment) {
 
 ShipmentItem.prototype.buildMerchantData = function (shipment) {
     var merchantDataStr = JSON.stringify({
-        'products': this.getShipmentProductIds(shipment),
-        'address': this.getAddressRequestBuilder().buildFlat(shipment.shippingAddress)
+        products: this.getShipmentProductIds(shipment),
+        address: this.getAddressRequestBuilder().buildFlat(shipment.shippingAddress)
     });
 
     if (merchantDataStr.length > 255) {
-        merchantDataStr = merchantDataStr.substr(0, 255-3) + '...';
+        merchantDataStr = merchantDataStr.substr(0, 255 - 3) + '...';
     }
 
     return merchantDataStr;

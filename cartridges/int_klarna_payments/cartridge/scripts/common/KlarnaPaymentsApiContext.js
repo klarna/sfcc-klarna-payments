@@ -7,7 +7,7 @@ let KlarnaPaymentsApiContext = function() {};
 KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function()
 {
 
-	if ( this._flowApiUrls == null )
+	if ( !this._flowApiUrls )
 	{
 		this._flowApiUrls = new HashMap();
 

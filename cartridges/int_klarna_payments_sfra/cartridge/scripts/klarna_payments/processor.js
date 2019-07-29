@@ -234,7 +234,7 @@ function placeOrder(order, klarnaPaymentsOrderID, localeObject) {
 
             acknowledgeOrder(klarnaPaymentsOrderID, localeObject);
         } catch (e) {
-			log.error('Order could not be placed: {0}', e.message + e.stack);
+            log.error('Order could not be placed: {0}', e.message + e.stack);
         }
     }
 }

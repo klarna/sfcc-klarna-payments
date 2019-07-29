@@ -1,3 +1,5 @@
+/* global $ */
+
 $(function () {
     $('body').on('product:afterAttributeSelect', function (e, response) {
         if (response.data.product.price.sales) {

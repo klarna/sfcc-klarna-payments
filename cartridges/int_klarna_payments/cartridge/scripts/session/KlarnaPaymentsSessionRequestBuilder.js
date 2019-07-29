@@ -2,8 +2,6 @@
 {
 	'use strict';
 
-	var ShippingMgr = require( 'dw/order/ShippingMgr' );
-	var Transaction = require( 'dw/system/Transaction' );
 	var URLUtils = require( 'dw/web/URLUtils' );
 	var Site = require( 'dw/system/Site' );
 	var Logger = require( 'dw/system/Logger' );
@@ -228,7 +226,7 @@
 	KlarnaPaymentsSessionRequestBuilder.prototype.buildTotalAmount = function( basket, localeObject )
 	{
 		var country = localeObject.country;
-		var gcTotalAmount = getGCtotalAmount(basket);
+		var gcTotalAmount = getGCtotalAmount( basket );
 		var orderAmount = ( basket.totalGrossPrice.available ? basket.totalGrossPrice.value : basket.totalNetPrice.value ) * 100 - gcTotalAmount;
 
 		this.context.order_amount = Math.round( orderAmount );
@@ -269,13 +267,13 @@
 
 	KlarnaPaymentsSessionRequestBuilder.prototype.buildAdditionalCustomerInfo = function( basket )
 	{
-		if ( Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' ) && HookMgr.hasHook('extra.merchant.data') )
+		if ( Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' ) && HookMgr.hasHook( 'extra.merchant.data' ) )
 		{			
 			this.context.attachment = new Object();
 			this.context.attachment.content_type = CONTENT_TYPE;
-			this.context.attachment.body = 	HookMgr.callHook('extra.merchant.data', 'BuildEMD', {
+			this.context.attachment.body = 	HookMgr.callHook( 'extra.merchant.data', 'BuildEMD', {
 	            LineItemCtnr: basket
-	        });		
+	        } );		
 		}
 
 		return this;
@@ -313,7 +311,7 @@
 		for ( var i = 0; i < items.length; i++ )
 		{
 			li = items[i];
-			var isGiftCertificate = ( li.describe().getSystemAttributeDefinition('recipientEmail') && !empty( li.recipientEmail ) ) ? true : false;
+			var isGiftCertificate = ( li.describe().getSystemAttributeDefinition( 'recipientEmail' ) && !empty( li.recipientEmail ) ) ? true : false;
 			
 			if ( isGiftCertificate )
 			{
@@ -322,19 +320,19 @@
 			}
 			else
 			{
-				if ( li.hasOwnProperty('optionProductLineItem') && li.optionProductLineItem )
+				if ( li.hasOwnProperty( 'optionProductLineItem' ) && li.optionProductLineItem )
 				{
 					itemType = ORDER_LINE_TYPE.SURCHARGE;
 					itemID = li.parent.productID + '_' + li.optionID + '_' + li.optionValueID;
-					brand = !empty(li.parent.product) ? li.parent.product.brand : null;
-					categoryPath = !empty(li.parent.product) ? _getProductCategoryPath(li.parent.product) : null;
+					brand = !empty( li.parent.product ) ? li.parent.product.brand : null;
+					categoryPath = !empty( li.parent.product ) ? _getProductCategoryPath( li.parent.product ) : null;
 				}			
 				else
 				{
 					itemType = ORDER_LINE_TYPE.PHYSICAL;
 					itemID = li.productID;
-					brand = !empty(li.product) ? li.product.brand : null;
-					categoryPath = !empty(li.product) ? _getProductCategoryPath(li.product) : null;
+					brand = !empty( li.product ) ? li.product.brand : null;
+					categoryPath = !empty( li.product ) ? _getProductCategoryPath( li.product ) : null;
 				}
 			}
 			
@@ -391,7 +389,7 @@
 		}
 	}
 	
-	function _getProductCategoryPath (product)
+	function _getProductCategoryPath( product )
 	{
 		var path;
 		// get category from products primary category
@@ -405,18 +403,18 @@
 		if ( category !== null )
 		{
 			path = new ArrayList();
-			while( category.parent != null )
+			while( category.parent !== null )
 			{
 				if( category.online ) path.addAt( 0, category.displayName );
 				category = category.parent;
 			}
-			path = path.join(' > ').substring( 0, 749 ); //Maximum 750 characters per Klarna's documentation
+			path = path.join( ' > ' ).substring( 0, 749 ); //Maximum 750 characters per Klarna's documentation
 		}		
 		
 		return path;		
 	}
 	
-	function buildItemsGiftCertificatePIs(items, country, context)
+	function buildItemsGiftCertificatePIs( items, country, context )
 	{
 		var li = [];
 		var item = {};
@@ -431,16 +429,16 @@
 			item.type = ORDER_LINE_TYPE.GIFT_CERTIFICATE_PI;
 			item.name = 'Gift Certificate';
 			item.reference = li.getMaskedGiftCertificateCode();
-			item.unit_price = paymentTransaction.getAmount() * 100 * (-1);
+			item.unit_price = paymentTransaction.getAmount() * 100 * ( -1 );
 			item.tax_rate = 0;
-			item.total_amount =  paymentTransaction.getAmount() * 100 * (-1);
+			item.total_amount =  paymentTransaction.getAmount() * 100 * ( -1 );
 			item.total_tax_amount = 0;
 
 			context.order_lines.push( item );
 		}
 	}
 	
-	function getGCtotalAmount(basket)
+	function getGCtotalAmount( basket )
 	{
 		var giftCertificatePIs = basket.getGiftCertificatePaymentInstruments().toArray();
 		var gcTotalAmount = 0;
@@ -577,7 +575,7 @@
 		var isInEU = true;
 		var EUCountries = "BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB";
 		
-		if( EUCountries.indexOf( country ) === -1)
+		if( EUCountries.indexOf( country ) === -1 )
 		{
 			isInEU = false;
 		}

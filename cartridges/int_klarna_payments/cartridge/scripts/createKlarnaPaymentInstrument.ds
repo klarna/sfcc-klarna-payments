@@ -13,9 +13,7 @@ importPackage( dw.util );
 importPackage( dw.value );
 importPackage( dw.web );
 
-var SG_CORE = require( '*/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CORE;
-
-importScript(SG_CORE + ':checkout/Utils.ds');
+importScript('checkout/Utils.ds');
 
 function execute( args : PipelineDictionary ) : Number
 {

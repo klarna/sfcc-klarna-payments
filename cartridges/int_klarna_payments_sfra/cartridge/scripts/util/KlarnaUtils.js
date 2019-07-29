@@ -2,7 +2,6 @@
 
 'use strict';
 
-var Site = require('dw/system/Site');
 var TaxMgr = require('dw/order/TaxMgr');
 var PaymentMgr = require('dw/order/PaymentMgr');
 var KlarnaPaymentsConstants = require('*/cartridge/scripts/util/KlarnaPaymentsConstants.js');
@@ -57,7 +56,7 @@ function isEnabledPreassessmentForCountry(country) {
  * Converts null to empty string.
  *
  * @param {Object} obj of any kind.
- * @return {Object|empty string}
+ * @return {string} the result
  */
 function strval(obj) {
     if (obj === null) {

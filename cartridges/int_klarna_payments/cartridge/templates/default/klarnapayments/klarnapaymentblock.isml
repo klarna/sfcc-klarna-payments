@@ -2,34 +2,33 @@
 
 <isif condition="${session.privacy.KlarnaPaymentMethods}">
 
-	<isscript>
-		var SG_CORE = require( '*/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CORE;
-		var Countries = require(SG_CORE + '/cartridge/scripts/util/Countries');
-		var countryCode = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
-			
-		var KlarnaPaymentNotAvailable = "Klarna Payment not available";
-		
-		if( !empty( dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpNotAvailableMessage' ) ) )
-		{
-			var kpNotAvailableJSON = JSON.parse( dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpNotAvailableMessage' ) );
-			if( kpNotAvailableJSON.hasOwnProperty( countryCode ) )
-			{
-				KlarnaPaymentNotAvailable = kpNotAvailableJSON[countryCode.toString()];
-			}
-			else
-			{
-				KlarnaPaymentNotAvailable = kpNotAvailableJSON.default;
-			}			
-		}
-	</isscript>
+    <isscript>
+        var Countries = require('*/cartridge/scripts/util/Countries');
+        var countryCode = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
+            
+        var KlarnaPaymentNotAvailable = "Klarna Payment not available";
+        
+        if( !empty( dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpNotAvailableMessage' ) ) )
+        {
+            var kpNotAvailableJSON = JSON.parse( dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpNotAvailableMessage' ) );
+            if( kpNotAvailableJSON.hasOwnProperty( countryCode ) )
+            {
+                KlarnaPaymentNotAvailable = kpNotAvailableJSON[countryCode.toString()];
+            }
+            else
+            {
+                KlarnaPaymentNotAvailable = kpNotAvailableJSON.default;
+            }			
+        }
+    </isscript>
 
-	<isloop items="${session.privacy.KlarnaPaymentMethods}" var="klarnaPaymentMethod">
-		<div class="payment-method <isif condition="${!empty(pdict.selectedPaymentID) && pdict.selectedPaymentID=='PayPal'}">payment-method-expanded</isif>" data-method="${'klarna_payments_' + klarnaPaymentMethod.identifier}">
-			<div id="${'klarna_payments_' + klarnaPaymentMethod.identifier + '_container'}" style="text-align: center;"></div>
-			<isif condition="${empty(session.privacy.KlarnaPaymentsSessionID)}">
-				<div class="klarna_payments_error" style="text-align: center; font-weight: bold; color: red;"><isprint value="${KlarnaPaymentNotAvailable}"/></div>
-			</isif>
-		</div>
-	</isloop>
+    <isloop items="${session.privacy.KlarnaPaymentMethods}" var="klarnaPaymentMethod">
+        <div class="payment-method <isif condition="${!empty(pdict.selectedPaymentID) && pdict.selectedPaymentID=='PayPal'}">payment-method-expanded</isif>" data-method="${'klarna_payments_' + klarnaPaymentMethod.identifier}">
+            <div id="${'klarna_payments_' + klarnaPaymentMethod.identifier + '_container'}" style="text-align: center;"></div>
+            <isif condition="${empty(session.privacy.KlarnaPaymentsSessionID)}">
+                <div class="klarna_payments_error" style="text-align: center; font-weight: bold; color: red;"><isprint value="${KlarnaPaymentNotAvailable}"/></div>
+            </isif>
+        </div>
+    </isloop>
 
 </isif>

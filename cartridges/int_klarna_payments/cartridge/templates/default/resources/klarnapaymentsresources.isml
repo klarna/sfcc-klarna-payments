@@ -1,47 +1,46 @@
 <iscontent type="text/javascript" charset="UTF-8" compact="true"/>
 
 <isscript>	
-	//determine pre-assesment value
-	var SG_CORE = require( '*/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).SG_CORE;
-	var Countries = require(SG_CORE + '/cartridge/scripts/util/Countries');
-	var country = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
-	
-	var preAssement = false;
-	if ( !isCountryInEU( country ) )
-	{
-		preAssement = true;
-	}
-	
-	function isCountryInEU( country )
-	{
+    //determine pre-assesment value
+    var Countries = require('*/cartridge/scripts/util/Countries');
+    var country = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
+    
+    var preAssement = false;
+    if ( !isCountryInEU( country ) )
+    {
+        preAssement = true;
+    }
+    
+    function isCountryInEU( country )
+    {
 
-		var isInEU = true;
-		var EUCountries = "BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB";
-		
-		if( EUCountries.indexOf( country ) === -1)
-		{
-			isInEU = false;
-		}
+        var isInEU = true;
+        var EUCountries = "BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB";
+        
+        if( EUCountries.indexOf( country ) === -1)
+        {
+            isInEU = false;
+        }
 
-		return isInEU;
-	}	
-	
-	// klarna payments urls
-	var KPurls =  {
+        return isInEU;
+    }	
+    
+    // klarna payments urls
+    var KPurls =  {
         createSession		: URLUtils.https('KLARNA_PAYMENTS-CreateSession').toString(), 
         clearSession		: URLUtils.https('KLARNA_PAYMENTS-ClearSession').toString(),
         saveAuth			: URLUtils.https('KLARNA_PAYMENTS-SaveAuth').toString(), 
         updateSession		: URLUtils.https('KLARNA_PAYMENTS-UpdateSession').toString()
-	};
-	
-	//klarna payments objects 
-	var KPObjects = {
-		sessionID			: pdict.CurrentSession.privacy.KlarnaPaymentsSessionID ? pdict.CurrentSession.privacy.KlarnaPaymentsSessionID.toString() : null,
-		clientToken			: pdict.CurrentSession.privacy.KlarnaPaymentsClientToken ? pdict.CurrentSession.privacy.KlarnaPaymentsClientToken.toString() : null,
-		preassesment		: preAssement
-	};	
+    };
+    
+    //klarna payments objects 
+    var KPObjects = {
+        sessionID			: pdict.CurrentSession.privacy.KlarnaPaymentsSessionID ? pdict.CurrentSession.privacy.KlarnaPaymentsSessionID.toString() : null,
+        clientToken			: pdict.CurrentSession.privacy.KlarnaPaymentsClientToken ? pdict.CurrentSession.privacy.KlarnaPaymentsClientToken.toString() : null,
+        preassesment		: preAssement
+    };	
 </isscript>
 (function(app){
-	window.KlarnaPaymentsUrls = <isprint value="${JSON.stringify(KPurls)}" encoding="on"/>;
-	window.KlarnaPaymentsObjects = <isprint value="${!empty(KPObjects) ? JSON.stringify(KPObjects) : '[]'}" encoding="on"/>;
+    window.KlarnaPaymentsUrls = <isprint value="${JSON.stringify(KPurls)}" encoding="on"/>;
+    window.KlarnaPaymentsObjects = <isprint value="${!empty(KPObjects) ? JSON.stringify(KPObjects) : '[]'}" encoding="on"/>;
 }(window.app = window.app || {}));

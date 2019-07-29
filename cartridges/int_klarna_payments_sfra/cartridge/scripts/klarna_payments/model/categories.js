@@ -1,5 +1,9 @@
 'use strict';
 
+/**
+ *
+ * @param {Object} categories KP categories
+ */
 function KlarnaPaymentsCategories(categories) {
     this.categories = categories;
 }
@@ -7,7 +11,7 @@ function KlarnaPaymentsCategories(categories) {
 KlarnaPaymentsCategories.prototype.findCategoryById = function (categoryId) {
     var cat = null;
 
-    this.categories.toArray().forEach(function (item, index) {
+    this.categories.toArray().forEach(function (item) {
         if (item.identifier === categoryId) {
             cat = item;
             return;

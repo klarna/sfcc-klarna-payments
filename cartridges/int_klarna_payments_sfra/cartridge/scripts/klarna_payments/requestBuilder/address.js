@@ -16,7 +16,7 @@ function Address() {
 Address.prototype = new Builder();
 
 Address.prototype.buildFlat = function (dwAddress) {
-    var flatAddress = "";
+    var flatAddress = '';
 
     if (!empty(dwAddress.firstName)) {
         flatAddress += ' ' + dwAddress.firstName;

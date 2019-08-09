@@ -1,6 +1,6 @@
 var Class = require('*/cartridge/scripts/util/Class').Class;
 var Logger = require('dw/system/Logger');
-var ServiceRegistry = require('dw/svc/ServiceRegistry');
+var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
 var StringUtils = require('dw/util/StringUtils');
 var Site = require('dw/system/Site');
 
@@ -14,7 +14,7 @@ var KlarnaPaymentsHttpService = Class.extend({
     call : function(urlPath: String, httpVerb : String, credentialID : String, requestBody: Object) {
 
         var serviceID : String = Site.getCurrent().getCustomPreferenceValue('kpServiceName');
-        ServiceRegistry.configure(serviceID, {
+        var service : Service = LocalServiceRegistry.createService(serviceID, {
 			createRequest: function(svc, requestBody) {
 				return JSON.stringify(requestBody);
 			},
@@ -23,7 +23,6 @@ var KlarnaPaymentsHttpService = Class.extend({
      		}
  		});
  		
- 		var service : Service = ServiceRegistry.get(serviceID);
  		service.setCredentialID(credentialID);
         service.URL += urlPath;
         service.addHeader('Content-Type', 'application/json');

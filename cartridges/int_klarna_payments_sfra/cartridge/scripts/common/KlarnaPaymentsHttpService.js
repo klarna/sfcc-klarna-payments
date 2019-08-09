@@ -9,7 +9,7 @@
  */
 
 var Logger = require('dw/system/Logger');
-var ServiceRegistry = require('dw/svc/ServiceRegistry');
+var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
 var StringUtils = require('dw/util/StringUtils');
 var Site = require('dw/system/Site');
 var Resource = require('dw/web/Resource');
@@ -41,7 +41,7 @@ KlarnaPaymentsHttpService.prototype.getLastStatusCode = function () {
  */
 KlarnaPaymentsHttpService.prototype.call = function (urlPath, httpVerb, credentialID, requestBody) {
     var serviceID = Site.getCurrent().getCustomPreferenceValue('kpServiceName');
-    ServiceRegistry.configure(serviceID, {
+    var service = LocalServiceRegistry.createService(serviceID, {
         createRequest: function (svc, sRequestBody) {
             return JSON.stringify(sRequestBody);
         },
@@ -50,7 +50,6 @@ KlarnaPaymentsHttpService.prototype.call = function (urlPath, httpVerb, credenti
         }
     });
 
-    var service = ServiceRegistry.get(serviceID);
     service.setCredentialID(credentialID);
     service.URL += urlPath;
     service.addHeader('Content-Type', 'application/json');

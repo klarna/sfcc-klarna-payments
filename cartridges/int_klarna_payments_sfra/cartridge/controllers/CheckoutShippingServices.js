@@ -5,14 +5,11 @@ var server = require('server');
 
 server.extend(page);
 
-server.replace('ToggleMultiShip', server.middleware.https, function (req, res, next) {
+server.append('ToggleMultiShip', server.middleware.https, function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
     var Transaction = require('dw/system/Transaction');
-    var AccountModel = require('*/cartridge/models/account');
-    var OrderModel = require('*/cartridge/models/order');
     var URLUtils = require('dw/web/URLUtils');
     var collections = require('*/cartridge/scripts/util/collections');
-    var Locale = require('dw/util/Locale');
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
     var shippingHelpers = require('*/cartridge/scripts/checkout/shippingHelpers');
@@ -65,43 +62,7 @@ server.replace('ToggleMultiShip', server.middleware.https, function (req, res, n
 
             basketCalculationHelpers.calculateTotals(currentBasket);
         });
-    } else {
-        // combine multiple shipments into a single one
-        Transaction.wrap(function () {
-            collections.forEach(shipments, function (shipment) {
-                if (!shipment.default) {
-                    collections.forEach(shipment.productLineItems, function (lineItem) {
-                        lineItem.setShipment(defaultShipment);
-                    });
-                    currentBasket.removeShipment(shipment);
-                }
-            });
-
-            shippingHelpers.selectShippingMethod(defaultShipment);
-            defaultShipment.createShippingAddress();
-
-            COHelpers.ensureNoEmptyShipments(req);
-
-            if (req.currentCustomer.addressBook && req.currentCustomer.addressBook.preferredAddress) {
-                var preferredAddress = req.currentCustomer.addressBook.preferredAddress;
-                COHelpers.copyCustomerAddressToShipment(preferredAddress);
-            }
-
-            basketCalculationHelpers.calculateTotals(currentBasket);
-        });
     }
-
-    var currentLocale = Locale.getLocale(req.locale.id);
-
-    var basketModel = new OrderModel(
-        currentBasket,
-        { usingMultiShipping: usingMultiShipping, countryCode: currentLocale.country, containerView: 'basket' }
-    );
-
-    res.json({
-        customer: new AccountModel(req.currentCustomer),
-        order: basketModel
-    });
 
     next();
 });

@@ -86,7 +86,7 @@
 
     "accessor-pairs": 1,        // enforces getter/setter pairs in objects (off by default)
     "block-scoped-var": 1,      // treat var statements as if they were block scoped (off by default)
-    "complexity": [1, 5],            // specify the maximum cyclomatic complexity allowed in a program (off by default)
+    "complexity": 0,            // specify the maximum cyclomatic complexity allowed in a program (off by default)
     "consistent-return": 1,     // require return statements to either always or never specify values
     "curly": 1,                 // specify curly brace conventions for all control statements
     "default-case": 1,          // require default case in switch statements (off by default)
@@ -131,7 +131,7 @@
     "no-warning-comments": 1,   // disallow usage of configurable warning terms in comments, e.g. TODO or FIXME (off by default)
     "no-with": 2,               // disallow use of the with statement
     "radix": 1,                 // require use of the second argument for parseInt() (off by default)
-    "vars-on-top": 1,           // requires to declare all vars on top of their containing scope (off by default)
+    "vars-on-top": 0,           // requires to declare all vars on top of their containing scope (off by default)
     "wrap-iife": 1,             // require immediate function invocation to be wrapped in parentheses (off by default)
     "yoda": 1,                  // require or disallow Yoda conditions
 

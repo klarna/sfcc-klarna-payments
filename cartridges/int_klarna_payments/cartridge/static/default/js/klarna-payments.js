@@ -34,13 +34,13 @@
 				Klarna.Payments.load( {
 					container: containerName,
 					payment_method_category: $klarnaPaymentCategory.id
-				}, function( res ) {
-					console.debug( res );
+				}, function( res ) { // eslint-disable-line
+					console.debug( res ); // eslint-disable-line
 				} );
 			}
 
 			if ( klarnaPaymentsObjects.preassesment ) {
-				$klarnaPaymentCategory.addEventListener( "click", function() {
+				$klarnaPaymentCategory.addEventListener( "click", function() { // eslint-disable-line
 					updateBillingAddress( $klarnaPaymentCategory.id );
 				} );
 			}
@@ -75,38 +75,37 @@
 
 			if ( hasShippingAddress ) {
 				Klarna.Payments.authorize( {
-                        payment_method_category: $selectedPaymentMethod.id,
-                        auto_finalize: false
+					payment_method_category: $selectedPaymentMethod.id,
+					auto_finalize: false
 				}, {
-						"billing_address": {
-							"given_name": $firstName.value,
-							"family_name": $lastName.value,
-							"email": $emailAddress.value,
-							"title": "",
-							"street_address": $address1.value,
-							"street_address2": "",
-							"postal_code": $postal.value,
-							"city": $city.value,
-							"region": $state.value,
-							"phone": $phone.value,
-							"country": $country.value.toUpperCase()
-						},
-						"shipping_address": {
-							"given_name": document.querySelectorAll( '#shipping_address_firstName' )[0].value,
-							"family_name": document.querySelectorAll( '#shipping_address_lastName' )[0].value,
-							"title": "",
-							"street_address": document.querySelectorAll( '#shipping_address_address1' )[0].value,
-							"street_address2": "",
-							"postal_code": document.querySelectorAll( '#shipping_address_postalCode' )[0].value,
-							"city": document.querySelectorAll( '#shipping_address_city' )[0].value,
-							"region": document.querySelectorAll( '#shipping_address_stateCode' )[0].value,
-							"phone": document.querySelectorAll( '#shipping_address_phone' )[0].value,
-							"country": document.querySelectorAll( '#shipping_address_countryCode' )[0].value,
-							"email": $emailAddress.value
-						}
+					"billing_address": {
+						"given_name": $firstName.value,
+						"family_name": $lastName.value,
+						"email": $emailAddress.value,
+						"title": "",
+						"street_address": $address1.value,
+						"street_address2": "",
+						"postal_code": $postal.value,
+						"city": $city.value,
+						"region": $state.value,
+						"phone": $phone.value,
+						"country": $country.value.toUpperCase()
 					},
+					"shipping_address": {
+						"given_name": document.querySelectorAll( '#shipping_address_firstName' )[0].value,
+						"family_name": document.querySelectorAll( '#shipping_address_lastName' )[0].value,
+						"title": "",
+						"street_address": document.querySelectorAll( '#shipping_address_address1' )[0].value,
+						"street_address2": "",
+						"postal_code": document.querySelectorAll( '#shipping_address_postalCode' )[0].value,
+						"city": document.querySelectorAll( '#shipping_address_city' )[0].value,
+						"region": document.querySelectorAll( '#shipping_address_stateCode' )[0].value,
+						"phone": document.querySelectorAll( '#shipping_address_phone' )[0].value,
+						"country": document.querySelectorAll( '#shipping_address_countryCode' )[0].value,
+						"email": $emailAddress.value
+					}
+				},
 					function( res ) {
-						console.log( res );
 						if ( res.approved ) {
 							var xhr = new XMLHttpRequest();
 							xhr.open( "GET", klarnaPaymentsUrls.saveAuth, true );
@@ -130,25 +129,24 @@
 					} )
 			} else {
 				Klarna.Payments.authorize( {
-                        payment_method_category: $selectedPaymentMethod.id,
-                        auto_finalize: false
+					payment_method_category: $selectedPaymentMethod.id,
+					auto_finalize: false
 				}, {
-						"billing_address": {
-							"given_name": $firstName.value,
-							"family_name": $lastName.value,
-							"email": $emailAddress.value,
-							"title": "",
-							"street_address": $address1.value,
-							"street_address2": "",
-							"postal_code": $postal.value,
-							"city": $city.value,
-							"region": $state.value,
-							"phone": $phone.value,
-							"country": $country.value.toUpperCase()
-						}
-					},
+					"billing_address": {
+						"given_name": $firstName.value,
+						"family_name": $lastName.value,
+						"email": $emailAddress.value,
+						"title": "",
+						"street_address": $address1.value,
+						"street_address2": "",
+						"postal_code": $postal.value,
+						"city": $city.value,
+						"region": $state.value,
+						"phone": $phone.value,
+						"country": $country.value.toUpperCase()
+					}
+				},
 					function( res ) {
-						console.log( res );
 						if ( res.approved ) {
 							var xhr = new XMLHttpRequest();
 							xhr.open( "GET", klarnaPaymentsUrls.saveAuth, true );
@@ -189,8 +187,7 @@
 			}
 		}
 		return false;
-	};
-
+	}
 
 	/**
 	 * @function
@@ -204,66 +201,65 @@
 
 		if ( hasShippingAddress ) {
 			Klarna.Payments.load( {
-					container: containerName,
-					payment_method_category: paymentCategory
-				}, {
-					"billing_address": {
-						"given_name": $firstName.value,
-						"family_name": $lastName.value,
-						"email": $emailAddress.value,
-						"title": "",
-						"street_address": $address1.value,
-						"street_address2": "",
-						"postal_code": $postal.value,
-						"city": $city.value,
-						"region": $state.value,
-						"phone": $phone.value,
-						"country": $country.value.toUpperCase()
-					},
-					"shipping_address": {
-						"given_name": document.querySelectorAll( '#shipping_address_firstName' )[0].value,
-						"family_name": document.querySelectorAll( '#shipping_address_lastName' )[0].value,
-						"title": "",
-						"street_address": document.querySelectorAll( '#shipping_address_address1' )[0].value,
-						"street_address2": "",
-						"postal_code": document.querySelectorAll( '#shipping_address_postalCode' )[0].value,
-						"city": document.querySelectorAll( '#shipping_address_city' )[0].value,
-						"region": document.querySelectorAll( '#shipping_address_stateCode' )[0].value,
-						"phone": document.querySelectorAll( '#shipping_address_phone' )[0].value,
-						"country": document.querySelectorAll( '#shipping_address_countryCode' )[0].value,
-						"email": $emailAddress.value
-					}
+				container: containerName,
+				payment_method_category: paymentCategory
+			}, {
+				"billing_address": {
+					"given_name": $firstName.value,
+					"family_name": $lastName.value,
+					"email": $emailAddress.value,
+					"title": "",
+					"street_address": $address1.value,
+					"street_address2": "",
+					"postal_code": $postal.value,
+					"city": $city.value,
+					"region": $state.value,
+					"phone": $phone.value,
+					"country": $country.value.toUpperCase()
 				},
+				"shipping_address": {
+					"given_name": document.querySelectorAll( '#shipping_address_firstName' )[0].value,
+					"family_name": document.querySelectorAll( '#shipping_address_lastName' )[0].value,
+					"title": "",
+					"street_address": document.querySelectorAll( '#shipping_address_address1' )[0].value,
+					"street_address2": "",
+					"postal_code": document.querySelectorAll( '#shipping_address_postalCode' )[0].value,
+					"city": document.querySelectorAll( '#shipping_address_city' )[0].value,
+					"region": document.querySelectorAll( '#shipping_address_stateCode' )[0].value,
+					"phone": document.querySelectorAll( '#shipping_address_phone' )[0].value,
+					"country": document.querySelectorAll( '#shipping_address_countryCode' )[0].value,
+					"email": $emailAddress.value
+				}
+			},
 				function( res ) {
-					console.log( res );
 					if ( !res.show_form ) {
 						$continueBtn.disabled = true;
 					}
 				} )
 		} else {
 			Klarna.Payments.load( {
-					container: containerName,
-					payment_method_category: paymentCategory
-				}, {
-					"billing_address": {
-						"given_name": $firstName.value,
-						"family_name": $lastName.value,
-						"email": $emailAddress.value,
-						"title": "",
-						"street_address": $address1.value,
-						"street_address2": "",
-						"postal_code": $postal.value,
-						"city": $city.value,
-						"region": $state.value,
-						"phone": $phone.value,
-						"country": $country.value.toUpperCase()
-					}
-				},
-				function( res ) {
-					if ( !res.show_form ) {
-						$continueBtn.disabled = true;
-					}
-				} )
+				container: containerName,
+				payment_method_category: paymentCategory
+			}, {
+				"billing_address": {
+					"given_name": $firstName.value,
+					"family_name": $lastName.value,
+					"email": $emailAddress.value,
+					"title": "",
+					"street_address": $address1.value,
+					"street_address2": "",
+					"postal_code": $postal.value,
+					"city": $city.value,
+					"region": $state.value,
+					"phone": $phone.value,
+					"country": $country.value.toUpperCase()
+				}
+			},
+			function( res ) {
+				if ( !res.show_form ) {
+					$continueBtn.disabled = true;
+				}
+			} )
 		}
 
 	}

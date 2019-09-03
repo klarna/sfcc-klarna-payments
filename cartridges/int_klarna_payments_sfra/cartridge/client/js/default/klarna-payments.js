@@ -80,7 +80,7 @@ KlarnaCheckout.handleStageChanged = function (newStage) {
                 this.refreshStage(newStage);
             }.bind(this));
         } catch (e) {
-            console.log(e);
+            console.debug(e); // eslint-disable-line
         }
 
         this.initStages[newStage] = true;

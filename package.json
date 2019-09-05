@@ -12,6 +12,7 @@
     "eslint-plugin-sitegenesis": "~1.0.0",
     "node-sass": "^4.11.0",
     "postcss-loader": "^2.1.5",
+    "proxyquire": "1.7.4",
     "sass-loader": "^7.1.0",
     "sgmf-scripts": "^2.3.0",
     "stylelint": "^7.1.0",

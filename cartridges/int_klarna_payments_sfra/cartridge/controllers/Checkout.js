@@ -1,7 +1,7 @@
 var page = module.superModule; // inherits functionality
 var server = require('server');
 var BasketMgr = require('dw/order/BasketMgr');
-var KlarnaSessionManager = require('*/cartridge/scripts/common/KlarnaSessionManager');
+var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');
 var KlarnaLocale = require('*/cartridge/scripts/klarna_payments/locale');
 
 server.extend(page);

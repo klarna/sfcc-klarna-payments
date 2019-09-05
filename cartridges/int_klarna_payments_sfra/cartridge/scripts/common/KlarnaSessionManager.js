@@ -11,9 +11,9 @@ var Logger = require('dw/system/Logger');
 var log = Logger.getLogger('KlarnaPayments');
 var Transaction = require('dw/system/Transaction');
 var StringUtils = require('dw/util/StringUtils');
-var KlarnaPaymentsApiContext = require('*/cartridge/scripts/common/KlarnaPaymentsApiContext');
+var KlarnaPaymentsApiContext = require('*/cartridge/scripts/common/klarnaPaymentsApiContext');
 var KlarnaPayments = {
-    HttpService: require('*/cartridge/scripts/common/KlarnaPaymentsHttpService'),
+    HttpService: require('*/cartridge/scripts/common/klarnaPaymentsHttpService'),
     SessionRequestBuilder: require('*/cartridge/scripts/klarna_payments/requestBuilder/session')
 };
 

@@ -37,7 +37,7 @@ server.prepend('Get', server.middleware.https, function (req, res, next) {
         }
     }
 
-    var KlarnaSessionManager = require('*/cartridge/scripts/common/KlarnaSessionManager');
+    var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');
     var KlarnaLocale = require('*/cartridge/scripts/klarna_payments/locale');
     var userSession = req.session.raw;
 
@@ -52,7 +52,7 @@ server.append(
     function (req, res, next) {
         var Transaction = require('dw/system/Transaction');
         var BasketMgr = require('dw/order/BasketMgr');
-        var KlarnaUtils = require('*/cartridge/scripts/util/KlarnaUtils');
+        var KlarnaUtils = require('*/cartridge/scripts/util/klarnaUtils');
         var StringUtils = require('dw/util/StringUtils');
         var Money = require('dw/value/Money');
 

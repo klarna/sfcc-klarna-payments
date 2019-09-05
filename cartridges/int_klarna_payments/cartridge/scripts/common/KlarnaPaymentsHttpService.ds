@@ -20,9 +20,12 @@ var KlarnaPaymentsHttpService = Class.extend({
 			},
 			parseResponse : function(svc, client) {
 				return client;
-     		}
+     		},
+            filterLogMessage : function(msg) {
+                return msg;
+            }
  		});
- 		
+
  		service.setCredentialID(credentialID);
         service.URL += urlPath;
         service.addHeader('Content-Type', 'application/json');

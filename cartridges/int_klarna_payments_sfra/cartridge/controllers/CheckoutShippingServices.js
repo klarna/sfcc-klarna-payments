@@ -74,7 +74,7 @@ server.prepend(
     'SubmitShipping',
     server.middleware.https,
     function (req, res, next) {
-        var KlarnaSessionManager = require('*/cartridge/scripts/common/KlarnaSessionManager');
+        var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');
         var KlarnaLocale = require('*/cartridge/scripts/klarna_payments/locale');
         var userSession = req.session.raw;
 

@@ -1,5 +1,5 @@
 <isscript>
-    var klarnaPaymentMethodName = require('*/cartridge/scripts/util/KlarnaUtils').getKlarnaPaymentMethodName();
+    var klarnaPaymentMethodName = require('*/cartridge/scripts/util/klarnaUtils').getKlarnaPaymentMethodName();
 </isscript>
 <div class="method-name">
     ${klarnaPaymentMethodName} <br />

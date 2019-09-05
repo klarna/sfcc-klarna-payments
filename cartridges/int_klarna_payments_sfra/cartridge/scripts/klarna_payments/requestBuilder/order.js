@@ -10,8 +10,8 @@
 
     var log = Logger.getLogger('KlarnaPaymentsOrderRequestBuilder.js');
 
-    var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
-    var CONTENT_TYPE = require('*/cartridge/scripts/util/KlarnaPaymentsConstants.js').CONTENT_TYPE;
+    var Builder = require('*/cartridge/scripts/klarna_payments/builder');
+    var CONTENT_TYPE = require('*/cartridge/scripts/util/klarnaPaymentsConstants.js').CONTENT_TYPE;
 
     var KlarnaPaymentsOrderModel = require('*/cartridge/scripts/klarna_payments/model/request/order').KlarnaPaymentsOrderModel;
 
@@ -23,7 +23,7 @@
     var AdditionalCustomerInfoRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/additionalCustomerInfo');
     var OptionsRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/options');
 
-    var isTaxationPolicyNet = require('*/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
+    var isTaxationPolicyNet = require('*/cartridge/scripts/util/klarnaUtils').isTaxationPolicyNet;
 
     /**
      * KP Order Request Builder

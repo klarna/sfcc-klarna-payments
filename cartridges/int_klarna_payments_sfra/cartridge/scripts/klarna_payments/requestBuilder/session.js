@@ -8,10 +8,10 @@
 
     var log = Logger.getLogger('KlarnaPaymentsSessionRequestBuilder.js');
 
-    var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
+    var Builder = require('*/cartridge/scripts/klarna_payments/builder');
     var KlarnaPaymentsSessionModel = require('*/cartridge/scripts/klarna_payments/model/request/session').KlarnaPaymentsSessionModel;
-    var isEnabledPreassessmentForCountry = require('*/cartridge/scripts/util/KlarnaUtils').isEnabledPreassessmentForCountry;
-    var isTaxationPolicyNet = require('*/cartridge/scripts/util/KlarnaUtils').isTaxationPolicyNet;
+    var isEnabledPreassessmentForCountry = require('*/cartridge/scripts/util/klarnaUtils').isEnabledPreassessmentForCountry;
+    var isTaxationPolicyNet = require('*/cartridge/scripts/util/klarnaUtils').isTaxationPolicyNet;
 
     var AddressRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/address');
     var OrderLineItemRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/orderLineItem');

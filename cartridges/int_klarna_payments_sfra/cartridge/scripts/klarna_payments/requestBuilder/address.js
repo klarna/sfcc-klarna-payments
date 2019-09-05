@@ -2,9 +2,9 @@
 
 'use strict';
 
-var Builder = require('*/cartridge/scripts/klarna_payments/Builder');
+var Builder = require('*/cartridge/scripts/klarna_payments/builder');
 var AddressRequestModel = require('*/cartridge/scripts/klarna_payments/model/request/session').Address;
-var strval = require('*/cartridge/scripts/util/KlarnaUtils').strval;
+var strval = require('*/cartridge/scripts/util/klarnaUtils').strval;
 
 /**
  * Address request builder

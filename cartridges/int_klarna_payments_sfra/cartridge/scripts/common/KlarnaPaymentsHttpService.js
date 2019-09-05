@@ -47,6 +47,9 @@ KlarnaPaymentsHttpService.prototype.call = function (urlPath, httpVerb, credenti
         },
         parseResponse: function (svc, client) {
             return client;
+        },
+        filterLogMessage: function (msg) {
+            return msg;
         }
     });
 

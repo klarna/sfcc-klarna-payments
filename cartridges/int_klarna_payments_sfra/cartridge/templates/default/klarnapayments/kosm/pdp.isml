@@ -13,7 +13,7 @@
 
         if (!klarnaOSMJsAdded) {
             assets.addJs(KlarnaOSM.getScriptURL());
-            assets.addJs('js/klarna-osm.js');
+            assets.addJs('js/klarnaOsm.js');
         }
     </isscript>
 

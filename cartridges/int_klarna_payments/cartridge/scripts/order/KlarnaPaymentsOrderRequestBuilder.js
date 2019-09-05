@@ -251,8 +251,8 @@
 		var li = [];
 		var item = {};
 		var quantity = 0;
-		var brand;
-		var categoryPath;
+		var brand = null;
+		var categoryPath = null;
 
 		for ( var i = 0; i < items.length; i++ )
 		{
@@ -287,7 +287,7 @@
 			item = new LineItem();
 			item.quantity = quantity;
 			item.type = itemType;
-			item.name = isGiftCertificate ? 'Gift Certificate' : li.productName.replace( /[^\x00-\x7F]/g, "" );
+			item.name = isGiftCertificate ? 'Gift Certificate' : li.productName;
 			item.reference = itemID;
 			item.unit_price = Math.round( itemPrice / quantity );
 			item.tax_rate = ( country === 'US' ) ? 0 : Math.round( li.taxRate * 10000 );
@@ -336,7 +336,7 @@
 	
 	function _getProductCategoryPath( product )
 	{
-		var path;
+		var path = null;
 		// get category from products primary category
 		var category = product.primaryCategory;
 
@@ -350,7 +350,7 @@
 			path = new ArrayList();
 			while( category.parent !== null )
 			{
-				if( category.online ) path.addAt( 0, category.displayName );
+				if( category.online ) { path.addAt( 0, category.displayName ) }
 				category = category.parent;
 			}
 			path = path.join( ' > ' ).substring( 0, 749 ); //Maximum 750 characters per Klarna's documentation
@@ -367,7 +367,7 @@
 		for ( var i = 0; i < items.length; i++ )
 		{
 			li = items[i];
-			var paymentTransaction  = li.getPaymentTransaction();
+			var paymentTransaction = li.getPaymentTransaction();
 
 			item = new LineItem();
 			item.quantity = 1;
@@ -376,7 +376,7 @@
 			item.reference = li.getMaskedGiftCertificateCode();
 			item.unit_price = paymentTransaction.getAmount() * 100 * ( -1 );
 			item.tax_rate = 0;
-			item.total_amount =  paymentTransaction.getAmount() * 100 * ( -1 );
+			item.total_amount = paymentTransaction.getAmount() * 100 * ( -1 );
 			item.total_tax_amount = 0;
 
 			context.order_lines.push( item );
@@ -406,12 +406,12 @@
 		for ( var i = 0; i < shipments.length; i++ )
 		{
 			var shipment = shipments[i];
-			shipment_unit_price = ( shipment.shippingTotalGrossPrice.available && country !== 'US' ? shipment.shippingTotalGrossPrice.value : shipment.shippingTotalNetPrice.value ) * 100;
+			shipment_unit_price = ( shipment.shippingTotalGrossPrice.available && ( TaxMgr.taxationPolicy !== TaxMgr.TAX_POLICY_NET ) ? shipment.shippingTotalGrossPrice.value : shipment.shippingTotalNetPrice.value ) * 100;
 			shipment_tax_rate = 0;
 
 			if ( !empty( shipment.shippingMethod ) && !empty( shipment.shippingMethod.taxClassID ) && !empty( shipment.shippingAddress ) )
 			{
-				shipment_tax_rate = ( country === 'US' ) ? 0 : ( TaxMgr.getTaxRate( shipment.shippingMethod.taxClassID, TaxMgr.getTaxJurisdictionID( new dw.order.ShippingLocation( shipment.shippingAddress ) ) ) ) * 10000;
+				shipment_tax_rate = ( TaxMgr.taxationPolicy === TaxMgr.TAX_POLICY_NET ) ? 0 : ( shipment.shippingTotalTax.value / shipment.shippingTotalNetPrice.value ) * 10000;
 			}
 
 			if ( !empty( shipment.shippingMethod ) )
@@ -419,12 +419,12 @@
 				var shippingLineItem = new LineItem();
 				shippingLineItem.quantity = 1;
 				shippingLineItem.type = ORDER_LINE_TYPE.SHIPPING_FEE;
-				shippingLineItem.name = shipment.shippingMethod.displayName.replace( /[^\x00-\x7F]/g, "" );
+				shippingLineItem.name = shipment.shippingMethod.displayName;
 				shippingLineItem.reference = shipment.shippingMethod.ID;
 				shippingLineItem.unit_price = Math.round( shipment_unit_price );
 				shippingLineItem.tax_rate = Math.round( shipment_tax_rate );
 				shippingLineItem.total_amount = shippingLineItem.unit_price;
-				shippingLineItem.total_tax_amount = ( country === 'US' ) ? 0 : Math.round( shipment.shippingTotalTax.value * 100 );
+				shippingLineItem.total_tax_amount = ( TaxMgr.taxationPolicy === TaxMgr.TAX_POLICY_NET ) ? 0 : Math.round( shipment.shippingTotalTax.value * 100 );
 
 				addPriceAdjustments( shipment.shippingPriceAdjustments.toArray(), null, null, country, context );
 
@@ -460,7 +460,7 @@
 
 			adjustment.quantity = 1;
 			adjustment.type = ORDER_LINE_TYPE.DISCOUNT;
-			adjustment.name = promoName.replace( /[^\x00-\x7F]/g, "" );
+			adjustment.name = promoName;
 			adjustment.reference = promoId;
 			adjustment.unit_price = Math.round( adjusmentPrice );
 			adjustment.merchant_data = adj.couponLineItem ? adj.couponLineItem.couponCode : '';

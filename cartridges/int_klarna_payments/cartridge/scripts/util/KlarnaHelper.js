@@ -5,17 +5,17 @@
  * @return {dw.value.Money} total order value.
  */
 exports.calculateOrderTotalValue = function( basket ) {
-    // calculate the amount to be charged for the
-    // non-gift certificate payment instrument
-    var Utils = require( '*/cartridge/scripts/checkout/Utils' );
+	// calculate the amount to be charged for the
+	// non-gift certificate payment instrument
+	var Utils = require( '*/cartridge/scripts/checkout/Utils' );
 
-    var orderTotalValue = null;
+	var orderTotalValue = null;
 
-    if ( basket.totalGrossPrice.available ) {
-        orderTotalValue = Utils.calculateNonGiftCertificateAmount( basket );
-    } else {
-        orderTotalValue = basket.getAdjustedMerchandizeTotalPrice( true ).add( basket.giftCertificateTotalPrice );
-    }
+	if ( basket.totalGrossPrice.available ) {
+		orderTotalValue = Utils.calculateNonGiftCertificateAmount( basket );
+	} else {
+		orderTotalValue = basket.getAdjustedMerchandizeTotalPrice( true ).add( basket.giftCertificateTotalPrice );
+	}
 
-    return orderTotalValue;
+	return orderTotalValue;
 };

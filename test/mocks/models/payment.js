@@ -6,7 +6,7 @@ var collections = require('../util/collections');
 function proxyModel() {
     return proxyquire('../../../cartridges/int_klarna_payments_sfra/cartridge/models/payment', {
         '*/cartridge/scripts/util/collections': collections,
-        '*/cartridge/scripts/util/KlarnaPaymentsConstants': require('../../../cartridges/int_klarna_payments_sfra/cartridge/scripts/util/KlarnaPaymentsConstants'),
+        '*/cartridge/scripts/util/klarnaPaymentsConstants': require('../../../cartridges/int_klarna_payments_sfra/cartridge/scripts/util/klarnaPaymentsConstants'),
         'dw/order/PaymentMgr': {
             getApplicablePaymentMethods: function () {
                 return [

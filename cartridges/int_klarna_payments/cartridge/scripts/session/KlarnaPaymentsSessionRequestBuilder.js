@@ -169,7 +169,7 @@
 				this.context.shipping_address.city = shippingAddress.getCity();
 				this.context.shipping_address.region = shippingAddress.getStateCode();
 				this.context.shipping_address.phone = shippingAddress.getPhone();
-				this.context.shipping_address.country = shippingAddress.getCountryCode().toString();
+				this.context.shipping_address.country = shippingAddress.getCountryCode() ? shippingAddress.getCountryCode().getValue() : "";
 
 				return this;
 			}

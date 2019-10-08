@@ -157,6 +157,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+			<attribute-definition attribute-id="kpVCNkeyId">
+                <display-name xml:lang="x-default">VCN Public Key ID</display-name>
+                <description xml:lang="x-default">Unique identifier for the public key used for encryption of the card data</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
 			<attribute-definition attribute-id="vcnPrivateKey">
                 <display-name xml:lang="x-default">VCN Private Key</display-name>
                 <description xml:lang="x-default">Your 4096 bit RSA Private Key</description>
@@ -193,6 +201,7 @@
 				<attribute attribute-id="kpAttachments"/>	
 				<attribute attribute-id="kpNotAvailableMessage"/>
 				<attribute attribute-id="kpVCNEnabled"/>
+				<attribute attribute-id="kpVCNkeyId"/>
 				<attribute attribute-id="vcnPrivateKey"/>
 				<attribute attribute-id="vcnPublicKey"/>
             </attribute-group>

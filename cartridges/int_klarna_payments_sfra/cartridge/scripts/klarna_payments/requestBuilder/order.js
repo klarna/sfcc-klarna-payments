@@ -8,7 +8,7 @@
     var Logger = require('dw/system/Logger');
     var HookMgr = require('dw/system/HookMgr');
 
-    var log = Logger.getLogger('KlarnaPaymentsOrderRequestBuilder.js');
+    var log = Logger.getLogger('KlarnaPayments');
 
     var Builder = require('*/cartridge/scripts/klarna_payments/builder');
     var CONTENT_TYPE = require('*/cartridge/scripts/util/klarnaPaymentsConstants.js').CONTENT_TYPE;

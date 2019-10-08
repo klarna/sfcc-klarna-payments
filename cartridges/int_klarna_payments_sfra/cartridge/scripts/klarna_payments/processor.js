@@ -15,10 +15,9 @@ var OrderMgr = require('dw/order/OrderMgr');
 var Logger = require('dw/system/Logger');
 var StringUtils = require('dw/util/StringUtils');
 var Site = require('dw/system/Site');
-var Cypher = require('dw/crypto/Cipher');
 var Status = require('dw/system/Status');
 var HookMgr = require('dw/system/HookMgr');
-var log = Logger.getLogger('KLARNA_PAYMENTS.js');
+var log = Logger.getLogger('KlarnaPayments');
 
 var KlarnaPaymentsOrderRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/order');
 var KlarnaPaymentsHttpService = require('*/cartridge/scripts/common/klarnaPaymentsHttpService');
@@ -245,24 +244,32 @@ function placeOrder(order, klarnaPaymentsOrderID, localeObject) {
  * @param {Object} cardInfo VCN CC data from Klarna response
  */
 function updateOrderWithVCNCardInfo(order, cardInfo) {
+    var Cipher = require('dw/crypto/Cipher');
+    var Encoding = require('dw/crypto/Encoding');
+    var vcnPrivateKey = Site.getCurrent().getCustomPreferenceValue('vcnPrivateKey');
     var orderForUpdate = order;
-    var VCNPrivateKey = Site.getCurrent().getCustomPreferenceValue('vcnPrivateKey');
-    var cypher = new Cypher();
+    var cipher = new Cipher();
 
-    var panEncrypted = cardInfo.pan;
-    var cscEncrypted = cardInfo.csc;
+    var keyEncryptedBase64 = cardInfo.aes_key;
+    var keyEncryptedBytes = Encoding.fromBase64(keyEncryptedBase64);
+    var keyDecrypted = cipher.decryptBytes(keyEncryptedBytes, vcnPrivateKey, 'RSA/ECB/PKCS1PADDING', null, 0);
+    var keyDecryptedBase64 = Encoding.toBase64(keyDecrypted);
+    var cardDataEncryptedBase64 = cardInfo.pci_data;
+    var cardDataEncryptedBytes = Encoding.fromBase64(cardDataEncryptedBase64);
+    var cardDecrypted = cipher.decryptBytes(cardDataEncryptedBytes, keyDecryptedBase64, 'AES/CTR/NoPadding', cardInfo.iv, 0);
 
-    var panDecrypted = cypher.decrypt(panEncrypted, VCNPrivateKey, 'RSA/ECB/PKCS1PADDING', null, 0);
-    var cscDecrypted = cypher.decrypt(cscEncrypted, VCNPrivateKey, 'RSA/ECB/PKCS1PADDING', null, 0);
+    var cardDecryptedUtf8 = decodeURIComponent(cardDecrypted);
+    var cardObj = JSON.parse(cardDecryptedUtf8);
+    var expiryDateArr = cardObj.expiry_date.split('/');
 
     Transaction.begin();
 
     orderForUpdate.custom.kpVCNBrand = cardInfo.brand;
-    orderForUpdate.custom.kpVCNCSC = cscDecrypted;
-    orderForUpdate.custom.kpVCNExpirationMonth = cardInfo.expiration_month;
-    orderForUpdate.custom.kpVCNExpirationYear = cardInfo.expiration_year;
+    orderForUpdate.custom.kpVCNCSC = cardObj.cvv;
+    orderForUpdate.custom.kpVCNExpirationMonth = expiryDateArr[0];
+    orderForUpdate.custom.kpVCNExpirationYear = expiryDateArr[1];
     orderForUpdate.custom.kpVCNHolder = cardInfo.holder;
-    orderForUpdate.custom.kpVCNPAN = panDecrypted;
+    orderForUpdate.custom.kpVCNPAN = cardObj.pan;
     orderForUpdate.custom.kpIsVCN = true;
 
     Transaction.commit();
@@ -286,11 +293,14 @@ function createVCNSettlement(order, klarnaPaymentsOrderID, localeObject) {
     try {
         klarnaPaymentsHttpService = new KlarnaPaymentsHttpService();
         klarnaApiContext = new KlarnaPaymentsApiContext();
-        requestBody = { order_id: klarnaPaymentsOrderID };
+        requestBody = {
+            order_id: klarnaPaymentsOrderID,
+            key_id: Site.getCurrent().getCustomPreferenceValue('kpVCNkeyId')
+        };
         requestUrl = klarnaApiContext.getFlowApiUrls().get('vcnSettlement');
 
         response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-        if (empty(response.settlement_id)) {
+        if (empty(response.settlement_id) || empty(response.cards)) {
             throw new Error('Could not create a VCN settlement');
         }
 

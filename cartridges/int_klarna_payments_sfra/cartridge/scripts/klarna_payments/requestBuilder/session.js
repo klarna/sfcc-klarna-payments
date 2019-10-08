@@ -6,7 +6,7 @@
     var Site = require('dw/system/Site');
     var Logger = require('dw/system/Logger');
 
-    var log = Logger.getLogger('KlarnaPaymentsSessionRequestBuilder.js');
+    var log = Logger.getLogger('KlarnaPayments');
 
     var Builder = require('*/cartridge/scripts/klarna_payments/builder');
     var KlarnaPaymentsSessionModel = require('*/cartridge/scripts/klarna_payments/model/request/session').KlarnaPaymentsSessionModel;

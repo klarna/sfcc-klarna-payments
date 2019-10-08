@@ -17,7 +17,6 @@ var StringUtils = require( 'dw/util/StringUtils' );
 var Status = require( 'dw/system/Status' );
 var PaymentInstrument = require( 'dw/order/PaymentInstrument' );
 var Site = require( 'dw/system/Site' );
-var Cypher = require( 'dw/crypto/Cipher' );
 
 var COSummary = require( '*/cartridge/controllers/COSummary.js' );
 
@@ -194,7 +193,7 @@ function authorize( args ) // eslint-disable-line complexity
 		if ( isSettlementCreated ) 
 		{
 			//Plug here your Credit Card Processor
-			return require( 'SiteGenesis_controllers/cartridge/scripts/payment/processor/BASIC_CREDIT' ).Authorize( {'OrderNo':args.Order.getOrderNo(),'PaymentInstrument': args.Order.getPaymentInstruments( "Klarna" )[0]} );
+			return require( '*/cartridge/scripts/payment/processor/BASIC_CREDIT' ).Authorize( {'OrderNo':args.Order.getOrderNo(),'PaymentInstrument': args.Order.getPaymentInstruments( "Klarna" )[0]} );
 		}
 
 		_cancelOrder( args.Order,localeObject );
@@ -270,44 +269,53 @@ function _createOrder( order, localeObject )
  */
 function _createVCNSettlement( order, klarnaPaymentsOrderID, localeObject )
 {
+	var Cipher = require( 'dw/crypto/Cipher' );
+	var Encoding = require( 'dw/crypto/Encoding' );
+	var VCNPrivateKey = Site.getCurrent().getCustomPreferenceValue( 'vcnPrivateKey' );
 	var klarnaPaymentsHttpService = {};
 	var klarnaApiContext = {};
 	var requestBody = {};
 	var requestUrl = '';
 	var response = {};
-	var VCNPrivateKey = Site.getCurrent().getCustomPreferenceValue( 'vcnPrivateKey' );
-	var cypher = new Cypher();
-	
+	var cipher = new Cipher();
+
 	try {
 		klarnaPaymentsHttpService = new KlarnaPayments.httpService();
 		klarnaApiContext = new KlarnaPayments.apiContext();
-		requestBody = {'order_id' : klarnaPaymentsOrderID};
 		requestUrl = klarnaApiContext.getFlowApiUrls().get( 'vcnSettlement' );
-		
-		response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );	
-		if( empty( response.settlement_id ) )
+		requestBody = {
+			'order_id' : klarnaPaymentsOrderID,
+			'key_id' : Site.getCurrent().getCustomPreferenceValue( 'kpVCNkeyId' )
+		};
+
+		response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+		if( empty( response.settlement_id ) || empty( response.cards ) )
 		{
 			log.error( 'Error in creating Klarna Payments VCN Settlement: {0}', e );
 			return false;		
 		}
-		//var panEncrypted = response.cards[0].pan;
-		//var cscEncrypted = response.cards[0].csc;
+
 		
-		//mocking pan and csc
-		var panEncrypted = 'U50dpsYfr29a+kZta2A9pYdAPYvp1GnUYEt7BwFF2vWcD+31EHhzUuKHNnns61NQ+pjayXjHMll1v3lNLDehhAVj5/OuJCmAgk20Wx1SI/RYLtK5wA9Iv7ZOnGdwXOseTTUcXCgY1fjpBWtpqlgsBgqobZhaX3Q0KaBk89qwT2o21/Yo5HKiafxnZSAQ0x2lG5GBkRjy/UC/9nfkeCNZATxADQG2L3FnHrqXq/F6CLUmsxPIawWO5wmpYToa4/4UhAuQS/L/3lmvXoBd68gNSQsWSs+gjrNxMejmR5HJvzuwUj+htLZxvGds+FRSFFABZfbU+z1b9HjbzdxdkD55jtVHoWA1diTiFODSguScertk0oCwAFz6AKFC4P7NedfDuko3QFew2ab3CFO76DYQYXDE18itNHAG/PgpkYttS7sS1n1EJMBGh+18BbOmOutyuuAq0z7j3tiUfLl0aXCMs76VeoawGBKQhIY2k6fUTlaRjolSAwcwZbZV7dZZq5TcwIVzhiIBOtz/v3y0AhnEUua5kOeM6r1ulPqdPv2vHRIPPDHwQ6051GB68QpVnIRnvR63UVOqogsXyBduO281MNbXWRlO7c1UbjI3UlJiM0AVsZgZ0uWQxhbF+Xu48dkjhcjvbA4oi79RRtw4UfDHyEOOSX2zaOf/D5KY1GUPwAw=';
-		var cscEncrypted = 'P/jEMDJszBNpVdwNN/OCBHW+yuF3WcXGhX/vwVFjeGjp/YohO//6pHm9ggtY0m6inTzvfA849VZlJxeq8QVpo1p8dUUvC6L6CvmUEC8kUZBU77TkNChJCvzaGYr74pjsntu65A3nipraGCoCkAdYagtrJBZ0gl6jrv8jq2f+OfuH+YZoX0HMqvSh0v1+M+7sHLhxVDPs7Daqn8v6qyuZEajMYk4AZI4uKAu/X3TJTItC4hXa/epGIPDivyQ/EwDMK27P/I8rfw0bY6zxMw2+fYWlVjXbrUtl7Z/WiiUNC3cayrZtysAphD3RLt9re6dC6h1AzCIWBFZxHKCJB1MihDqgALOeLS6B4rxqljbb3bfWAkK6nkbnSEHwlvh628eNyIS9Ga/YWlriy4Z7kcCH7VuFcfKskGiDUE1qozeOmq58dMj6DRwsjgCshnWfd/HXcIdYuvEb0wn/mMygZa7MG2V7Sd2ROLtNpn6JhR0WScgJcwNWVN7sfhmElGy8bcmDYArusU0mDTUfamPmhVeRTbdiWE8xEqSqmIStUoPe1BvxHeKs+Gdw6iQKsxruwOJb+Tz5zzyfbsrVDp3wxsa3nb9nSJOZGTmi3ie7y02a/KuLGsypsIXZR2P1Jjofuh4mvT1nu4W2VJKNG9IuhxIAh8adCCxbZ0Cn70+8P3p42S4=';
-		
-		var panDecrypted = cypher.decrypt( panEncrypted, VCNPrivateKey, "RSA/ECB/PKCS1PADDING", null, 0 );
-		var cscDecrypted = cypher.decrypt( cscEncrypted, VCNPrivateKey, "RSA/ECB/PKCS1PADDING", null, 0 );
-		
+		var keyEncryptedBase64 = response.cards[0].aes_key;
+		var keyEncryptedBytes = Encoding.fromBase64( keyEncryptedBase64 );
+		var keyDecrypted = cipher.decryptBytes( keyEncryptedBytes, VCNPrivateKey, "RSA/ECB/PKCS1PADDING", null, 0 );
+		var keyDecryptedBase64 = Encoding.toBase64( keyDecrypted );
+		var cardDataEncryptedBase64 = response.cards[0].pci_data;
+		var cardDataEncryptedBytes = Encoding.fromBase64( cardDataEncryptedBase64 );
+		var cardDecrypted = cipher.decryptBytes( cardDataEncryptedBytes, keyDecryptedBase64, "AES/CTR/NoPadding", response.cards[0].iv, 0 );
+
+		var cardDecryptedUtf8 = decodeURIComponent( cardDecrypted );
+		var cardObj = JSON.parse( cardDecryptedUtf8 );
+		var expiryDateArr = cardObj.expiry_date.split( "/" );
+
 		Transaction.wrap( function()
 		{
 			order.custom.kpVCNBrand = response.cards[0].brand;
-			order.custom.kpVCNCSC = cscDecrypted;
-			order.custom.kpVCNExpirationMonth = response.cards[0].expiration_month;
-			order.custom.kpVCNExpirationYear = response.cards[0].expiration_year;
+			order.custom.kpVCNCSC = cardObj.cvv;
+			order.custom.kpVCNExpirationMonth = expiryDateArr[0];
+			order.custom.kpVCNExpirationYear = expiryDateArr[1];
 			order.custom.kpVCNHolder = response.cards[0].holder;
-			order.custom.kpVCNPAN = panDecrypted;	
+			order.custom.kpVCNPAN = cardObj.pan;	
 			order.custom.kpIsVCN = true;		
 		} );
 	} catch( e ) 
@@ -534,11 +542,11 @@ function notification()
 	{
 		if ( order.custom.kpIsVCN ) 
 		{
-			var isSettlementCreated = _createVCNSettlement( order, klarnaPaymentsOrderID );
+			var isSettlementCreated = _createVCNSettlement( order, klarnaPaymentsOrderID, localeObject );
 			if ( isSettlementCreated ) 
 			{
 				//Plug here your Credit Card Processor
-				var authObj = require( 'SiteGenesis_controllers/cartridge/scripts/payment/processor/BASIC_CREDIT' ).Authorize( {'OrderNo':order.getOrderNo(),'PaymentInstrument': order.getPaymentInstruments( "Klarna" )[0]} );
+				var authObj = require( '*/cartridge/scripts/payment/processor/BASIC_CREDIT' ).Authorize( {'OrderNo':order.getOrderNo(),'PaymentInstrument': order.getPaymentInstruments( "Klarna" )[0]} );
 				if( authObj.error ) 
 				{
 					Transaction.wrap( function()

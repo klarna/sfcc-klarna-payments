@@ -198,12 +198,56 @@
               <decision-node condition-key="KlarnaPaymentsFraudStatus === 'ACCEPTED' &amp;&amp;  !dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' )" condition-operator="expr"/>
               <node-display x="0" y="1"/>
               <branch basename="b2" source-connector="yes">
-                <transition target-connector="in">
-                  <transition-display>
-                    <bend-point relative-to="source" x="0" y="1"/>
-                  </transition-display>
-                </transition>
+                <transition target-connector="in"/>
                 <segment>
+                  <node>
+                    <decision-node condition-key="dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpAutoCapture' )" condition-operator="expr"/>
+                    <node-display x="0" y="1"/>
+                    <branch basename="b2" source-connector="yes">
+                      <transition target-connector="in"/>
+                      <segment>
+                        <node>
+                          <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                            <config-property key="Transactional" value="true"/>
+                            <config-property key="OnError" value="PIPELET_ERROR"/>
+                            <config-property key="ScriptFile" value="int_klarna_payments:order/KlarnaPaymentsCaptureOrder.js"/>
+                            <key-binding alias="null" key="ScriptLog"/>
+                            <key-binding alias="KlarnaPaymentsOrderID" key="KlarnaOrderID"/>
+                            <key-binding alias="LocaleObject" key="LocaleObject"/>
+                            <key-binding alias="Order" key="Order"/>
+                          </pipelet-node>
+                          <node-display x="0" y="1"/>
+                          <branch basename="b2" source-connector="error">
+                            <transition target-connector="in">
+                              <transition-display>
+                                <bend-point relative-to="source" x="1" y="0"/>
+                              </transition-display>
+                            </transition>
+                            <segment>
+                              <node>
+                                <end-node name="error"/>
+                                <node-display orientation="horizontal" x="1" y="0"/>
+                              </node>
+                            </segment>
+                          </branch>
+                        </node>
+                        <transition target-connector="in1" target-path="../+1"/>
+                      </segment>
+                    </branch>
+                  </node>
+                  <transition target-connector="in1" target-path="./+1">
+                    <transition-display>
+                      <bend-point relative-to="source" x="1" y="0"/>
+                      <bend-point relative-to="target" x="1" y="0"/>
+                    </transition-display>
+                  </transition>
+                </segment>
+                <segment>
+                  <node>
+                    <join-node/>
+                    <node-display x="0" y="2"/>
+                  </node>
+                  <simple-transition/>
                   <node>
                     <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
                       <config-property key="Transactional" value="false"/>
@@ -224,14 +268,14 @@
             </node>
             <transition target-connector="in1" target-path="./+1">
               <transition-display>
-                <bend-point relative-to="source" x="2" y="0"/>
+                <bend-point relative-to="source" x="4" y="0"/>
               </transition-display>
             </transition>
           </segment>
           <segment>
             <node>
               <join-node/>
-              <node-display x="1" y="1"/>
+              <node-display x="2" y="4"/>
             </node>
             <transition target-connector="in1" target-path="./+1">
               <transition-display>
@@ -242,7 +286,7 @@
           <segment>
             <node>
               <join-node/>
-              <node-display x="-1" y="1"/>
+              <node-display x="-2" y="1"/>
             </node>
             <simple-transition/>
             <node>
@@ -809,21 +853,11 @@ a Klarna payments session through Klarna API</description>
         <text-node>
           <description>If for some reason order is not acknowledge with Klarna this is not a reason to fail the order.</description>
         </text-node>
-        <node-display x="4" y="10"/>
+        <node-display x="4" y="13"/>
       </node>
     </segment>
   </branch>
   <branch basename="_ANONYMOUS_BRANCH_13">
-    <segment>
-      <node>
-        <text-node>
-          <description>If VCN is enabled as a payment option create the virtual card and save it in custom properies on Order level</description>
-        </text-node>
-        <node-display x="4" y="15"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="_ANONYMOUS_BRANCH_14">
     <segment>
       <node>
         <text-node>
@@ -833,7 +867,7 @@ a Klarna payments session through Klarna API</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_15">
+  <branch basename="_ANONYMOUS_BRANCH_14">
     <segment>
       <node>
         <text-node>
@@ -1167,7 +1201,7 @@ a Klarna payments session through Klarna API</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_18">
+  <branch basename="_ANONYMOUS_BRANCH_17">
     <segment>
       <node>
         <text-node>
@@ -1268,13 +1302,23 @@ a Klarna payments session through Klarna API</description>
       </node>
     </segment>
   </branch>
+  <branch basename="_ANONYMOUS_BRANCH_19">
+    <segment>
+      <node>
+        <text-node>
+          <description>If VCN is enabled as a payment option create the virtual card and save it in custom properies on Order level</description>
+        </text-node>
+        <node-display x="4" y="18"/>
+      </node>
+    </segment>
+  </branch>
   <branch basename="_ANONYMOUS_BRANCH_20">
     <segment>
       <node>
         <text-node>
           <description>Plug here your Credit Card Processor</description>
         </text-node>
-        <node-display x="4" y="18"/>
+        <node-display x="4" y="21"/>
       </node>
     </segment>
   </branch>
@@ -1383,14 +1427,60 @@ a Klarna payments session through Klarna API</description>
         </pipelet-node>
         <node-display x="0" y="2"/>
         <branch basename="b2" source-connector="error">
-          <transition target-connector="in1" target-path="./b3.1"/>
+          <transition target-connector="in" transaction-control="rollback"/>
+          <segment>
+            <node>
+              <end-node name="error"/>
+              <node-display orientation="horizontal" x="2" y="0"/>
+            </node>
+          </segment>
         </branch>
       </node>
-      <simple-transition>
+      <simple-transition/>
+      <node>
+        <decision-node condition-key="dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpAutoCapture' )" condition-operator="expr"/>
+        <node-display x="0" y="1"/>
+        <branch basename="b3" source-connector="yes">
+          <transition target-connector="in"/>
+          <segment>
+            <node>
+              <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
+                <config-property key="Transactional" value="true"/>
+                <config-property key="OnError" value="PIPELET_ERROR"/>
+                <config-property key="ScriptFile" value="int_klarna_payments:order/KlarnaPaymentsCaptureOrder.js"/>
+                <key-binding alias="null" key="ScriptLog"/>
+                <key-binding alias="Order" key="Order"/>
+                <key-binding alias="KlarnaPaymentsOrderID" key="KlarnaOrderID"/>
+                <key-binding alias="LocaleObject" key="LocaleObject"/>
+              </pipelet-node>
+              <node-display x="0" y="1"/>
+              <branch basename="b2" source-connector="error">
+                <transition target-connector="in" transaction-control="rollback"/>
+                <segment>
+                  <node>
+                    <end-node name="error"/>
+                    <node-display orientation="horizontal" x="2" y="0"/>
+                  </node>
+                </segment>
+              </branch>
+            </node>
+            <transition target-connector="in1" target-path="../+1"/>
+          </segment>
+        </branch>
+      </node>
+      <transition target-connector="in1" target-path="./+1">
         <transition-display>
-          <bend-point relative-to="source" x="0" y="1"/>
+          <bend-point relative-to="source" x="2" y="0"/>
+          <bend-point relative-to="target" x="2" y="0"/>
         </transition-display>
-      </simple-transition>
+      </transition>
+    </segment>
+    <segment>
+      <node>
+        <join-node/>
+        <node-display x="0" y="2"/>
+      </node>
+      <simple-transition/>
       <node>
         <pipelet-node pipelet-name="Script" pipelet-set-identifier="bc_api">
           <config-property key="Transactional" value="true"/>
@@ -1399,21 +1489,12 @@ a Klarna payments session through Klarna API</description>
           <key-binding alias="Order" key="Order"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
-        <branch basename="b3" source-connector="error">
-          <transition target-connector="in2">
-            <transition-display>
-              <bend-point relative-to="source" x="2" y="0"/>
-            </transition-display>
-          </transition>
+        <branch basename="b2" source-connector="error">
+          <transition target-connector="in" transaction-control="rollback"/>
           <segment>
             <node>
-              <join-node/>
-              <node-display x="1" y="-1"/>
-            </node>
-            <simple-transition transaction-control="rollback"/>
-            <node>
               <end-node name="error"/>
-              <node-display orientation="horizontal" x="1" y="0"/>
+              <node-display orientation="horizontal" x="2" y="0"/>
             </node>
           </segment>
         </branch>
@@ -1429,7 +1510,7 @@ a Klarna payments session through Klarna API</description>
           <key-binding alias="LocaleObject" key="LocaleObject"/>
         </pipelet-node>
         <node-display x="0" y="2"/>
-        <branch basename="b4" source-connector="error">
+        <branch basename="b3" source-connector="error">
           <transition target-connector="in2" target-path="./+1">
             <transition-display>
               <bend-point relative-to="source" x="2" y="0"/>
@@ -1515,9 +1596,9 @@ a Klarna payments session through Klarna API</description>
     <segment>
       <node>
         <text-node>
-          <description>Mark order as EXPORT_STATUS_READY and CONFIRMATION_STATUS_CONFIRMED</description>
+          <description>Clear Klarna Payments session and token from current session</description>
         </text-node>
-        <node-display x="10" y="33"/>
+        <node-display width="2" x="4" y="37"/>
       </node>
     </segment>
   </branch>
@@ -1525,19 +1606,9 @@ a Klarna payments session through Klarna API</description>
     <segment>
       <node>
         <text-node>
-          <description>Intentionally left outside transaction. If for some reason order is not acknowledge with Klarna this is not a reason to fail the order.</description>
+          <description>Saves/Updates Klarna Payments authorization token in the current session</description>
         </text-node>
-        <node-display x="10" y="35"/>
-      </node>
-    </segment>
-  </branch>
-  <branch basename="_ANONYMOUS_BRANCH_31">
-    <segment>
-      <node>
-        <text-node>
-          <description>Clear Klarna Payments session and token from current session</description>
-        </text-node>
-        <node-display width="2" x="8" y="38"/>
+        <node-display width="2" x="7" y="37"/>
       </node>
     </segment>
   </branch>
@@ -1545,7 +1616,7 @@ a Klarna payments session through Klarna API</description>
     <segment>
       <node>
         <start-node name="ClearSession" secure="false"/>
-        <node-display x="8" y="39"/>
+        <node-display x="4" y="38"/>
       </node>
       <simple-transition>
         <transition-display>
@@ -1591,21 +1662,11 @@ a Klarna payments session through Klarna API</description>
       </node>
     </segment>
   </branch>
-  <branch basename="_ANONYMOUS_BRANCH_33">
-    <segment>
-      <node>
-        <text-node>
-          <description>Saves/Updates Klarna Payments authorization token in the current session</description>
-        </text-node>
-        <node-display width="2" x="11" y="39"/>
-      </node>
-    </segment>
-  </branch>
   <branch basename="SaveAuth">
     <segment>
       <node>
         <start-node name="SaveAuth" secure="false"/>
-        <node-display x="11" y="40"/>
+        <node-display x="7" y="38"/>
       </node>
       <simple-transition>
         <transition-display>
@@ -1647,6 +1708,26 @@ a Klarna payments session through Klarna API</description>
           <template buffered="true" dynamic="false" name="klarnapayments/http_200"/>
         </interaction-node>
         <node-display x="0" y="1"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_33">
+    <segment>
+      <node>
+        <text-node>
+          <description>Mark order as EXPORT_STATUS_READY and CONFIRMATION_STATUS_CONFIRMED</description>
+        </text-node>
+        <node-display x="10" y="36"/>
+      </node>
+    </segment>
+  </branch>
+  <branch basename="_ANONYMOUS_BRANCH_34">
+    <segment>
+      <node>
+        <text-node>
+          <description>Intentionally left outside transaction. If for some reason order is not acknowledge with Klarna this is not a reason to fail the order.</description>
+        </text-node>
+        <node-display x="10" y="38"/>
       </node>
     </segment>
   </branch>

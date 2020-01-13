@@ -47,7 +47,7 @@ function execute( args : PipelineDictionary ) : Number
 		var Cipher = require( 'dw/crypto/Cipher' );
 		var Encoding = require( 'dw/crypto/Encoding' );
 		var VCNPrivateKey = Site.getCurrent().getCustomPreferenceValue( 'vcnPrivateKey' );
-		var cypher = new Cypher();
+		var cipher = new Cipher();
 
 		var keyEncryptedBase64 = response.cards[0].aes_key;
 		var keyEncryptedBytes = Encoding.fromBase64( keyEncryptedBase64 );

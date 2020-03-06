@@ -159,6 +159,9 @@ function authorize( args ) // eslint-disable-line complexity
 	{
 		return { error: true };
 	}
+
+	session.privacy.KlarnaPaymentsFinalizeRequired = null;
+
 	if( session.privacy.KlarnaPaymentsFraudStatus === 'ACCEPTED' && !Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' ) )
 	{
 
@@ -709,6 +712,7 @@ function saveAuth()
 	Transaction.wrap( function()
 	{
 		session.privacy.KlarnaPaymentsAuthorizationToken = request.httpHeaders['x-auth'];
+		session.privacy.KlarnaPaymentsFinalizeRequired = request.httpHeaders['finalize-required'] == 'true';
 	} ); 
 	
 	response.setStatus( 200 );

@@ -1678,7 +1678,7 @@ a Klarna payments session through Klarna API</description>
           <config-property key="Transactional" value="true"/>
           <key-binding alias="CurrentRequest.httpHeaders['x-auth']" key="From_0"/>
           <key-binding alias="CurrentSession.privacy.KlarnaPaymentsAuthorizationToken" key="To_0"/>
-          <key-binding alias="null" key="From_1"/>
+          <key-binding alias="CurrentRequest.httpHeaders['finalize-required'] == 'true'" key="From_1"/>
           <key-binding alias="null" key="From_2"/>
           <key-binding alias="null" key="To_2"/>
           <key-binding alias="null" key="From_3"/>
@@ -1695,6 +1695,7 @@ a Klarna payments session through Klarna API</description>
           <key-binding alias="null" key="To_8"/>
           <key-binding alias="null" key="From_9"/>
           <key-binding alias="null" key="To_9"/>
+          <key-binding alias="CurrentSession.privacy.KlarnaPaymentsFinalizeRequired" key="To_1"/>
         </pipelet-node>
         <node-display x="0" y="1"/>
       </node>

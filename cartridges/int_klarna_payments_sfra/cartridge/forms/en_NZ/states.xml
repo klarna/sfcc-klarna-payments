@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="stateCode" label="label.input.state" type="string" mandatory="false" binding="stateCode" missing-error="error.message.required" value-error="address.field.invalid">
+		<options>
+			<!-- regular NZ states -->
+			<option optionid="NTL" label="northland" value="NTL" />
+			<option optionid="AUK" label="auckland" value="AUK" />
+			<option optionid="WKO" label="waikato" value="WKO" />
+			<option optionid="BOP" label="bayofplenty" value="BOP" />
+			<option optionid="GIS" label="gisborne" value="GIS" />
+			<option optionid="HKB" label="hawkesbay" value="HKB" />
+			<option optionid="TKI" label="taranaki" value="TKI" />
+			<option optionid="MWT" label="manawatuwanganui" value="MWT" />
+			<option optionid="WGN" label="wellington" value="WGN" />
+			<option optionid="TAS" label="tasman" value="TAS" />
+			<option optionid="NSN" label="nelson" value="NSN" />
+			<option optionid="MBH" label="marlborough" value="MBH" />
+			<option optionid="WTC" label="westcoast" value="WTC" />
+			<option optionid="CAN" label="canterbury" value="CAN" />
+			<option optionid="OTA" label="otago" value="OTA" />
+			<option optionid="STL" label="southland" value="STL" />
+		</options>
+	</field>
+</form>

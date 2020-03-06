@@ -24,6 +24,14 @@ var KlarnaOSM = {
 
         return this.countryCode;
     },
+    getLocale: function () {
+        var currentLocale = Locale.getLocale(request.locale);
+        var resultLocale = currentLocale.language;
+        if (currentLocale.country) {
+            resultLocale = resultLocale + '-' + currentLocale.country;
+        }
+        return resultLocale;
+    },
     loadKlarnaCountriesObject: function () {
         var countryCode = this.getCountryCode();
         var localeObject = CustomObjectMgr.getCustomObject('KlarnaCountries', countryCode);
@@ -80,11 +88,8 @@ var KlarnaOSM = {
         return uci;
     },
     getScriptURL: function () {
-        var currentCountryCode = this.getCountryCode();
-        var uci = this.getUCI();
-        var currentPrefix = this.getLibraryPrefix();
-
-        var url = 'https://' + currentPrefix + '-library.klarnaservices.com/merchant.js?uci=' + uci + '&country=' + currentCountryCode;
+        var localeObject = this.getKlarnaCountriesObject();
+        var url = localeObject.custom.osmLibraryUrl;
 
         return url;
     },

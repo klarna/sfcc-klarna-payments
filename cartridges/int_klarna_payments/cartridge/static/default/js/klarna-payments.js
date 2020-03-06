@@ -41,7 +41,7 @@
 
 			if ( klarnaPaymentsObjects.preassesment ) {
 				$klarnaPaymentCategory.addEventListener( "click", function() { // eslint-disable-line
-					updateBillingAddress( $klarnaPaymentCategory.id );
+					updateBillingAddress( this.id );
 				} );
 			}
 		}
@@ -112,6 +112,7 @@
 
 							xhr.setRequestHeader( "Content-type", "application/json; charset=utf-8" );
 							xhr.setRequestHeader( "X-Auth", res.authorization_token );
+							xhr.setRequestHeader( "Finalize-Required", res.finalize_required );
 
 							xhr.onreadystatechange = function() {
 								if ( xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 ) {

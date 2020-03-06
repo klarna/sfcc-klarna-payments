@@ -67,6 +67,15 @@
                 <externally-managed-flag>false</externally-managed-flag>
 				<default-value></default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="osmLibraryUrl">
+                <display-name xml:lang="x-default">Library URL</display-name>
+                <description xml:lang="x-default">URL to On-Site Messaging Library URL</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </attribute-definitions>
         <group-definitions>
             <attribute-group group-id="custom">
@@ -79,6 +88,7 @@
 				<attribute attribute-id="osmCartTagId"/>
 				<attribute attribute-id="osmPDPEnabled"/>
 				<attribute attribute-id="osmPDPTagId"/>
+				<attribute attribute-id="osmLibraryUrl"/>
             </attribute-group>
         </group-definitions>
     </custom-type>

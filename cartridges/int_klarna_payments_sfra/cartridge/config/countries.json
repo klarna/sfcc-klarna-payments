@@ -22,4 +22,13 @@
 }, {
     "id": "it_IT",
     "currencyCode": "EUR"
+}, {
+    "id": "sv_SE",
+    "currencyCode": "SEK"
+},{
+    "id": "en_AU",
+    "currencyCode": "AUD"
+}, {
+    "id": "en_NZ",
+    "currencyCode": "NZD"
 }]

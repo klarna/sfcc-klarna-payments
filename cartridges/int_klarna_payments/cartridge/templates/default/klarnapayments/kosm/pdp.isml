@@ -13,7 +13,7 @@
 
 <isif condition="${KlarnaOSM.isEnabledPDPPage() && !empty(ProductPrice)}">
 <div class="kosm-pdp">
-	<klarna-placement data-id="${KlarnaOSM.getPDPPagePlacementTagId()}" data-purchase_amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}"></klarna-placement>
+	<klarna-placement data-key="${KlarnaOSM.getPDPPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}"></klarna-placement>
 	<isset name="isKlarnaOSMScriptRequired" value="true" scope="page" />
 </div>
 </isif>

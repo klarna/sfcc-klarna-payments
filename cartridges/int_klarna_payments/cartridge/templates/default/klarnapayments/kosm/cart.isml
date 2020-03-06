@@ -9,7 +9,7 @@
         var orderTotalValue = KlarnaHelper.calculateOrderTotalValue(LineItemCtnr);
     </isscript>
     <div class="kosm-cart">
-        <klarna-placement data-id="${KlarnaOSM.getCartPagePlacementTagId()}" data-purchase_amount="${KlarnaOSM.formatPurchaseAmount(orderTotalValue)}"></klarna-placement>
+        <klarna-placement data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(orderTotalValue)}"></klarna-placement>
         <isset name="isKlarnaOSMScriptRequired" value="true" scope="page" />
     </div>
 </isif>

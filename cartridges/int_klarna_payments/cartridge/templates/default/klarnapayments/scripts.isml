@@ -3,5 +3,5 @@
 </isscript>
 
 <isif condition="${KlarnaOSM.isEnabled()}">
-    <script src="${KlarnaOSM.getScriptURL()}"></script>
+    <script async src="${KlarnaOSM.getScriptURL()}" data-client-id="${KlarnaOSM.getUCI()}"></script>
 </isif>

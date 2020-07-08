@@ -11,7 +11,7 @@ function KlarnaPaymentsCategories(categories) {
 KlarnaPaymentsCategories.prototype.findCategoryById = function (categoryId) {
     var cat = null;
 
-    this.categories.toArray().forEach(function (item) {
+    this.categories.forEach(function (item) {
         if (item.identifier === categoryId) {
             cat = item;
             return;

@@ -28,12 +28,13 @@ function execute( args : PipelineDictionary ) : Number
         var requestUrl = klarnaApiContext.getFlowApiUrls().get('createSession');
         
 		var response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
+		var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify(response.payment_method_categories) : null;
 
 		Transaction.wrap( function()
 		{
 			session.privacy.KlarnaPaymentsSessionID = response.session_id;
 			session.privacy.KlarnaPaymentsClientToken = response.client_token;
-			session.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
+			session.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
 			session.privacy.SelectedKlarnaPaymentMethod = null;
 		} );
 

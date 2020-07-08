@@ -47,8 +47,10 @@
                 <!-- Prices -->
                 <isinclude template="product/components/pricing/setPrice" />
 
-                <isinclude template="klarnapayments/modules.isml"/>
-                <iskosmpdp p_price="${product.price.sales}" />
+                <div class="col-12 col-xl-8 mb-3 mt-2 mx-auto">
+                    <isinclude template="klarnapayments/modules.isml"/>
+                    <iskosmpdp p_price="${product.price.sales}" />
+                </div>
 
                 <!-- Cart and [Optionally] Apple Pay -->
                 <isinclude template="product/components/addToCartGlobal" />

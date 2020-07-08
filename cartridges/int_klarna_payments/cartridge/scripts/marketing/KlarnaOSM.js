@@ -25,14 +25,14 @@ var KlarnaOSM = {
 
 		return this.countryCode;
 	},
-	 getLocale: function () {
-        var currentLocale = Locale.getLocale(request.locale);
-        var resultLocale = currentLocale.language;
-        if (currentLocale.country) {
-            resultLocale = resultLocale + '-' + currentLocale.country;
-        }
-        return resultLocale;
-    },
+	 getLocale: function() {
+		var currentLocale = Locale.getLocale( request.locale );
+		var resultLocale = currentLocale.language;
+		if ( currentLocale.country ) {
+			resultLocale = resultLocale + '-' + currentLocale.country;
+		}
+		return resultLocale;
+ 	},
 	loadKlarnaCountriesObject: function() {
 		var countryCode = this.getCountryCode();
 		var localeObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
@@ -80,10 +80,10 @@ var KlarnaOSM = {
 		return uci;
 	},
 	getScriptURL: function() {
-        var localeObject = this.getKlarnaCountriesObject();
-        var url = localeObject.custom.osmLibraryUrl;
+		var localeObject = this.getKlarnaCountriesObject();
+		var url = localeObject.custom.osmLibraryUrl;
 
-        return url;
+		return url;
 	},
 	formatPurchaseAmount: function( price ) {
 		var formattedAmount = Math.round( price.value * 100 );

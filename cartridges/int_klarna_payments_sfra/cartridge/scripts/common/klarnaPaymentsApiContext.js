@@ -22,6 +22,7 @@ KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function () {
         this.flowApiUrls.put('createSession', 'payments/v1/sessions');
         this.flowApiUrls.put('updateSession', 'payments/v1/sessions/{0}');
         this.flowApiUrls.put('getOrder', '/ordermanagement/v1/orders/{0}');
+        this.flowApiUrls.put('cancelAuthorization', 'payments/v1/authorizations/{0}');
         this.flowApiUrls.put('createOrder', 'payments/v1/authorizations/{0}/order');
         this.flowApiUrls.put('cancelOrder', '/ordermanagement/v1/orders/{0}/cancel');
         this.flowApiUrls.put('getCompletedOrder', '/ordermanagement/v1/orders/{0}');

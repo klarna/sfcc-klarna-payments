@@ -57,6 +57,7 @@ KlarnaPaymentsHttpService.prototype.call = function (urlPath, httpVerb, credenti
     service.URL += urlPath;
     service.addHeader('Content-Type', 'application/json');
     service.addHeader('Accept', 'application/json');
+    service.addHeader('User-Agent', 'SFCC SFRA Klarna Payments 19.1.4');
 
     if (!empty(httpVerb) && this.isValidHttpVerb(httpVerb)) {
         service.setRequestMethod(httpVerb);
@@ -81,7 +82,13 @@ KlarnaPaymentsHttpService.prototype.call = function (urlPath, httpVerb, credenti
 
     if (!empty(result.object.text)) {
         var jsonResponse = result.object.text.replace(/\r?\n|\r/g, ' ');
-        return JSON.parse(jsonResponse);
+        var responseObject = JSON.parse(jsonResponse);
+
+        if (responseObject.external && !responseObject.external.approved) {
+            throw new Error('Klarna service error');
+        } else {
+            return responseObject;
+        }
     }
 
     return result.status;

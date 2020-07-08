@@ -1,0 +1,42 @@
+/**
+ * API call to delete the previous authorization
+ * 
+ * @input KlarnaPaymentsAuthorizationToken : String
+ * @input LocaleObject : dw.object.CustomObject
+ * @output Response : Object
+ *
+ */
+
+var Logger = require( 'dw/system/Logger' );
+var logger = Logger.getLogger( 'KlarnaPaymentsCaptureOrder.js' );
+var KlarnaPayments = {
+	httpService: require( '*/cartridge/scripts/common/KlarnaPaymentsHttpService.ds' ),
+	apiContext: require( '*/cartridge/scripts/common/KlarnaPaymentsApiContext' )
+};
+
+
+function execute( args : PipelineDictionary ) : Number
+{
+	var StringUtils = require( 'dw/util/StringUtils' );
+    var klarnaAuthorizationToken = args.KlarnaPaymentsAuthorizationToken;
+    var localeObject = args.LocaleObject;
+
+    if ( klarnaAuthorizationToken ) {
+		var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+		var klarnaApiContext = new KlarnaPayments.apiContext();
+		var requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'cancelAuthorization' ), klarnaAuthorizationToken );
+
+		try {
+			var response = klarnaPaymentsHttpService.call( requestUrl, 'DELETE', localeObject.custom.credentialID );
+			session.privacy.KlarnaPaymentsAuthorizationToken = null;
+			session.privacy.KlarnaPaymentsFinalizeRequired = null;
+			args.Response = response;
+		} catch ( e ) {
+			logger.error( 'Error in canceling Klarna Payments Authorization: {0}', e.message + e.stack );
+			args.Response = null;
+			return PIPELET_ERROR;
+		}
+	}
+
+   return PIPELET_NEXT;
+}

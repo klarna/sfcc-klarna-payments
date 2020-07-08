@@ -160,6 +160,7 @@ function authorize( args ) // eslint-disable-line complexity
 		return { error: true };
 	}
 
+	session.privacy.KlarnaPaymentsAuthorizationToken = null;
 	session.privacy.KlarnaPaymentsFinalizeRequired = null;
 
 	if( session.privacy.KlarnaPaymentsFraudStatus === 'ACCEPTED' && !Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' ) )
@@ -406,12 +407,13 @@ function createSession() {
 			requestUrl = klarnaApiContext.getFlowApiUrls().get( 'createSession' );
 
 			response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+			var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify( response.payment_method_categories ) : null;
 
 			Transaction.wrap( function()
 			{
 				session.privacy.KlarnaPaymentsSessionID = response.session_id;
 				session.privacy.KlarnaPaymentsClientToken = response.client_token;
-				session.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
+				session.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
 				session.privacy.SelectedKlarnaPaymentMethod = null;
 			} );
 		} catch( e ) 
@@ -488,11 +490,12 @@ function updateSession() {
 
 		// Read updated session
 		response = klarnaPaymentsHttpService.call( requestUrl, 'GET', localeObject.custom.credentialID );
+		var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify( response.payment_method_categories ) : null;
 
 		Transaction.wrap( function()
 		{
 			session.privacy.KlarnaPaymentsClientToken = response.client_token;
-			session.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
+			session.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
 		} );
 
 	} catch( e )
@@ -709,14 +712,45 @@ function clearSession()
  */
 function saveAuth()
 {
+	// Cancel any previous authorizations
+	// cancelAuthorization();
+
 	Transaction.wrap( function()
 	{
 		session.privacy.KlarnaPaymentsAuthorizationToken = request.httpHeaders['x-auth'];
-		session.privacy.KlarnaPaymentsFinalizeRequired = request.httpHeaders['finalize-required'] == 'true';
+		session.privacy.KlarnaPaymentsFinalizeRequired = request.httpHeaders['finalize-required'] === 'true';
 	} ); 
 	
 	response.setStatus( 200 );
 }
+
+/**
+ * Deletes the previous authorization
+ * @param {string} authToken Authorization Token
+ * @return {string} Service call result
+ */
+function cancelAuthorization( authToken ) {
+	var klarnaAuthorizationToken = authToken || session.privacy.KlarnaPaymentsAuthorizationToken;
+
+	if ( klarnaAuthorizationToken ) {
+		var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+		var klarnaApiContext = new KlarnaPayments.apiContext();
+		var requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'cancelAuthorization' ), klarnaAuthorizationToken );
+		var localeObject = getLocale();
+
+		try {
+			var response = klarnaPaymentsHttpService.call( requestUrl, 'DELETE', localeObject.custom.credentialID );
+			session.privacy.KlarnaPaymentsAuthorizationToken = null;
+			session.privacy.KlarnaPaymentsFinalizeRequired = null;
+			return response;
+		} catch ( e ) {
+			log.error( 'Error in canceling Klarna Payments Authorization: {0}', e.message + e.stack );
+		}
+	}
+
+	return null;
+}
+
 /*
  * Module exports
  */
@@ -745,3 +779,4 @@ exports.GetLocale = getLocale;
 exports.CreateSession = createSession;
 exports.Redirect = redirect;
 exports.PendingOrder = pendingOrder;
+exports.CancelAuthorization = cancelAuthorization;

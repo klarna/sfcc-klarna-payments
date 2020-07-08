@@ -6,12 +6,10 @@
     var URLUtils = require('dw/web/URLUtils');
     var Site = require('dw/system/Site');
     var Logger = require('dw/system/Logger');
-    var HookMgr = require('dw/system/HookMgr');
 
     var log = Logger.getLogger('KlarnaPayments');
 
     var Builder = require('*/cartridge/scripts/klarna_payments/builder');
-    var CONTENT_TYPE = require('*/cartridge/scripts/util/klarnaPaymentsConstants.js').CONTENT_TYPE;
 
     var KlarnaPaymentsOrderModel = require('*/cartridge/scripts/klarna_payments/model/request/order').KlarnaPaymentsOrderModel;
 
@@ -197,13 +195,7 @@
     };
 
     KlarnaPaymentsOrderRequestBuilder.prototype.buildAdditionalCustomerInfo = function (order) {
-        if (Site.getCurrent().getCustomPreferenceValue('kpAttachments') && HookMgr.hasHook('extra.merchant.data')) {
-            this.context.attachment = {};
-            this.context.attachment.content_type = CONTENT_TYPE;
-            this.context.attachment.body = 	HookMgr.callHook('extra.merchant.data', 'BuildEMD', {
-                LineItemCtnr: order
-            });
-        }
+        this.context.attachment = this.getAdditionalCustomerInfoRequestBuilder().build(order);
 
         return this;
     };
@@ -233,10 +225,10 @@
         return this;
     };
 
-    KlarnaPaymentsOrderRequestBuilder.prototype.buildMerchantInformation = function ()	{
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildMerchantInformation = function (order)	{
         var country = this.getLocaleObject().country;
 
-        this.context.merchant_urls.confirmation = URLUtils.https('KlarnaPayments-Confirmation', 'klarna_country', country).toString();
+        this.context.merchant_urls.confirmation = URLUtils.https('Order-Confirm', 'ID', order.orderNo, 'token', order.orderToken).toString();
         this.context.merchant_urls.notification = URLUtils.https('KlarnaPayments-Notification', 'klarna_country', country).toString();
 
         return this;

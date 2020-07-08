@@ -12,7 +12,7 @@
         </key-definition>
         <attribute-definitions>
             <attribute-definition attribute-id="klarnaLocale">
-                <display-name xml:lang="x-default">Klarna Locale</display-name>
+                <display-name xml:lang="x-default">On-site Messaging Data Locale</display-name>
                 <type>string</type>
                 <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
@@ -28,7 +28,7 @@
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="osmUCI">
-                <display-name xml:lang="x-default">On-site messaging UCI</display-name>
+                <display-name xml:lang="x-default">On-site messaging Data Client ID</display-name>
                 <type>string</type>
                 <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
@@ -44,8 +44,8 @@
 				<default-value>false</default-value>
             </attribute-definition>
 			<attribute-definition attribute-id="osmCartTagId">
-                <display-name xml:lang="x-default">Cart Placement Tag ID</display-name>
-                <description xml:lang="x-default">ID of On-site messaging placement tag for Cart Page.</description>
+                <display-name xml:lang="x-default">Cart Placement Data Key</display-name>
+                <description xml:lang="x-default">Data Key of On-site messaging placement tag for Cart Page.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -60,8 +60,8 @@
 				<default-value>false</default-value>
             </attribute-definition>
 			<attribute-definition attribute-id="osmPDPTagId">
-                <display-name xml:lang="x-default">PDP Placement Tag ID</display-name>
-                <description xml:lang="x-default">ID of On-site messaging placement tag for PDP Page.</description>
+                <display-name xml:lang="x-default">PDP Placement Data Key</display-name>
+                <description xml:lang="x-default">Data Key of On-site messaging placement tag for PDP Page.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

@@ -25,15 +25,15 @@ function getKlarnaPaymentMethodName() {
  * @param {string} country two-letter country code.
  * @returns {bool} true, if country is in Europe.
  */
-function isCountryInEU(country) {
-    var isInEU = true;
-    var EUCountries = 'BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB';
+function isPreAssementApplicable(country) {
+    var isInList = true;
+    var countriesList = 'BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB, US, CH, NO, CA, AU, NZ';
 
-    if (EUCountries.indexOf(country) === -1) {
-        isInEU = false;
+    if (countriesList.indexOf(country) > -1) {
+        isInList = false;
     }
 
-    return isInEU;
+    return isInList;
 }
 
 /**
@@ -45,7 +45,7 @@ function isCountryInEU(country) {
 function isEnabledPreassessmentForCountry(country) {
     var isPreassessment = false;
 
-    if (!isCountryInEU(country)) {
+    if (isPreAssementApplicable(country)) {
         isPreassessment = true;
     }
 

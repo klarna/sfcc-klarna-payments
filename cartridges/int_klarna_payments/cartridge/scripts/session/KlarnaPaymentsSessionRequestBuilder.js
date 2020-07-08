@@ -50,7 +50,7 @@
 		
 		var country = localeObject.country;
 		var preAssement = false;
-		if ( !isCountryInEU( country ) )
+		if ( isPreAssementApplicable( country ) )
 		{
 			preAssement = true;
 		}
@@ -63,7 +63,7 @@
 			.buildOrderLines( basket, localeObject )
 			.buildTotalAmount( basket, localeObject )
 			.buildTotalTax( basket, localeObject )
-			.buildAdditionalCustomerInfo( basket )
+			.buildAdditionalCustomerInfo( basket, preAssement )
 			.buildOptions();
 
 		return requestBodyObject;
@@ -265,9 +265,9 @@
 		return this;
 	};
 
-	KlarnaPaymentsSessionRequestBuilder.prototype.buildAdditionalCustomerInfo = function( basket )
+	KlarnaPaymentsSessionRequestBuilder.prototype.buildAdditionalCustomerInfo = function( basket, preAssement )
 	{
-		if ( Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' ) && HookMgr.hasHook( 'extra.merchant.data' ) )
+		if ( preAssement && Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' ) && HookMgr.hasHook( 'extra.merchant.data' ) )
 		{			
 			this.context.attachment = new Object();
 			this.context.attachment.content_type = CONTENT_TYPE;
@@ -569,18 +569,18 @@
 		}
 	}	
 	
-	function isCountryInEU( country )
+	function isPreAssementApplicable( country )
 	{
 
-		var isInEU = true;
-		var EUCountries = "BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB";
+		var isInList = true;
+		var countriesList = "BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB, US, CH, NO, CA, AU, NZ";
 		
-		if( EUCountries.indexOf( country ) === -1 )
+		if( countriesList.indexOf( country ) > -1 )
 		{
-			isInEU = false;
+			isInList = false;
 		}
 
-		return isInEU;
+		return isInList;
 	}	
 
 	module.exports = KlarnaPaymentsSessionRequestBuilder;

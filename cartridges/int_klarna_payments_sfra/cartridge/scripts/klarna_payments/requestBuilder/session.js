@@ -346,16 +346,15 @@
         if (preAssement) {
             this.buildBilling(basket);
             this.buildShipping(basket);
+
+            if (kpAttachmentsPreferenceValue) {
+                this.buildAdditionalCustomerInfo(basket);
+            }
         }
 
         this.buildOrderLines(basket);
         this.buildTotalAmount(basket);
         this.buildTotalTax(basket);
-
-        if (kpAttachmentsPreferenceValue) {
-            this.buildAdditionalCustomerInfo(basket);
-        }
-
         this.buildOptions();
 
         return this.context;

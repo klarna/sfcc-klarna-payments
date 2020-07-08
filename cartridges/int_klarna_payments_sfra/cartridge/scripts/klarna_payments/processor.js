@@ -499,6 +499,7 @@ function handleKlarnaOrderCreated(order, paymentInstrument, kpOrderInfo) {
     var localeObject = klarnaLocaleMgr.getLocale();
     var kpFraudStatus = kpOrderInfo.fraud_status;
     var kpOrderId = kpOrderInfo.order_id;
+    var redirectURL = kpOrderInfo.redirect_url;
 
     klarnaSessionManager.removeSession();
 
@@ -515,6 +516,15 @@ function handleKlarnaOrderCreated(order, paymentInstrument, kpOrderInfo) {
         authorizationResult = generateSuccessAuthResult();
     } else {
         authorizationResult = authorizeAcceptedOrder(order, kpOrderId, localeObject);
+    }
+
+    if (!authorizationResult.error) {
+        session.privacy.KlarnaPaymentsAuthorizationToken = '';
+        session.privacy.KPAuthInfo = null;
+
+        if (redirectURL) {
+            session.privacy.KlarnaPaymentsRedirectURL = redirectURL;
+        }
     }
 
     return authorizationResult;
@@ -577,6 +587,34 @@ function notify(order, kpOrderID, kpEventType) {
     }
 }
 
+/**
+ * Deletes the previous authorization
+ * @param {string} authToken Authorization Token
+ * @return {string} Service call result
+ */
+function cancelAuthorization(authToken) {
+    var klarnaAuthorizationToken = authToken || session.privacy.KlarnaPaymentsAuthorizationToken;
+
+    if (klarnaAuthorizationToken) {
+        var klarnaPaymentsHttpService = new KlarnaPaymentsHttpService();
+        var klarnaApiContext = new KlarnaPaymentsApiContext();
+        var requestUrl = StringUtils.format(klarnaApiContext.getFlowApiUrls().get('cancelAuthorization'), klarnaAuthorizationToken);
+        var localeObject = klarnaLocaleMgr.getLocale();
+
+        try {
+            var response = klarnaPaymentsHttpService.call(requestUrl, 'DELETE', localeObject.custom.credentialID);
+            session.privacy.KlarnaPaymentsAuthorizationToken = '';
+            session.privacy.KPAuthInfo = null;
+            return response;
+        } catch (e) {
+            log.error('Error in canceling Klarna Payments Authorization: {0}', e.message + e.stack);
+        }
+    }
+
+    return null;
+}
+
 module.exports.handle = handle;
 module.exports.authorize = authorize;
 module.exports.notify = notify;
+module.exports.cancelAuthorization = cancelAuthorization;

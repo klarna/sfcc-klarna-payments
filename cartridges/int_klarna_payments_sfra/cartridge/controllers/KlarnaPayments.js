@@ -37,10 +37,14 @@ server.post('Notification', function (req, res) {
 server.get('SaveAuth', function (req, res) {
     var KlarnaLocale = require('*/cartridge/scripts/klarna_payments/locale');
     var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');
+    // var processor = require('*/cartridge/scripts/klarna_payments/processor');
 
     var token = req.httpHeaders['x-auth'];
     var finalizeRequired = req.httpHeaders['finalize-required'];
     var userSession = req.session.raw;
+
+    // Cancel any previous authorizations
+    // processor.cancelAuthorization();
 
     var klarnaSessionManager = new KlarnaSessionManager(userSession, new KlarnaLocale());
     klarnaSessionManager.saveAuthorizationToken(token, finalizeRequired);

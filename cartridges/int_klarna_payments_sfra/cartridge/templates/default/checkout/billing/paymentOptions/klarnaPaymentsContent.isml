@@ -18,7 +18,7 @@
         }
     </isscript>
 
-    <isloop items="${session.privacy.KlarnaPaymentMethods}" var="klarnaPaymentMethod">
+    <isloop items="${JSON.parse(session.privacy.KlarnaPaymentMethods)}" var="klarnaPaymentMethod">
         <div class="tab-pane klarna_payments-content klarna_payments_${klarnaPaymentMethod.identifier}" id="${'klarna_payments_' + klarnaPaymentMethod.identifier}" role="tabpanel">
             <fieldset class="payment-form-fields">
                 <input type="hidden" class="form-control" name="isKlarna" value="true" disabled="disabled" />

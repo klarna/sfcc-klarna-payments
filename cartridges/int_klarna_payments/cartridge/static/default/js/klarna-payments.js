@@ -103,7 +103,8 @@
 						"phone": document.querySelectorAll( '#shipping_address_phone' )[0].value,
 						"country": document.querySelectorAll( '#shipping_address_countryCode' )[0].value,
 						"email": $emailAddress.value
-					}
+					},
+					"attachment":  window.KPCustomerInfo.attachment
 				},
 					function( res ) {
 						if ( res.approved ) {
@@ -116,7 +117,7 @@
 
 							xhr.onreadystatechange = function() {
 								if ( xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 ) {
-									document.cookie = "selectedKlarnaPaymentCategory=" + $selectedPaymentMethod.id + "; path=/";
+									document.cookie = "selectedKlarnaPaymentCategory=" + $selectedPaymentMethod.id + "; SameSite=Strict; path=/";
 									$selectedPaymentMethod.value = 'Klarna';
 
 									//submit billing form when Klarna Payments authorization is successfully finished
@@ -157,7 +158,7 @@
 
 							xhr.onreadystatechange = function() {
 								if ( xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 ) {
-									document.cookie = "selectedKlarnaPaymentCategory=" + $selectedPaymentMethod.id + "; path=/";
+									document.cookie = "selectedKlarnaPaymentCategory=" + $selectedPaymentMethod.id + "; SameSite=Strict; path=/";
 									$selectedPaymentMethod.value = 'Klarna';
 
 									//submit billing form when Klarna Payments authorization is successfully finished

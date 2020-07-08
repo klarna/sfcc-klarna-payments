@@ -34,11 +34,12 @@ function execute( args : PipelineDictionary ) : Number
 
 		// Read updated session
 		var response = klarnaPaymentsHttpService.call( requestUrl, 'GET', localeObject.custom.credentialID );
+		var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify(response.payment_method_categories) : null;
 
 		Transaction.wrap( function()
 		{
 			session.privacy.KlarnaPaymentsClientToken = response.client_token;
-			session.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
+			session.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
 		} );
 
 

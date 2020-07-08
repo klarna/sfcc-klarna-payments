@@ -65,16 +65,22 @@ server.append(
             var userSession = req.session.raw;
 
             var paymentCategoryID = klarnaForm.paymentCategory.value;
-            var kpCategories = new KlarnaPaymentsCategoriesModel(userSession.privacy.KlarnaPaymentMethods);
+            var klarnaPaymentMethods = JSON.parse(userSession.privacy.KlarnaPaymentMethods);
+            var kpCategories = new KlarnaPaymentsCategoriesModel(klarnaPaymentMethods);
             var selectedPaymentCategory = kpCategories.findCategoryById(paymentCategoryID);
             var paymentCategoryName = selectedPaymentCategory.name;
 
             this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
                 var vd = res.viewData;
+                var collections = require('*/cartridge/scripts/util/collections');
+                var KLARNA_PAYMENT_METHOD = require('*/cartridge/scripts/util/klarnaPaymentsConstants').PAYMENT_METHOD;
+                var paymentInstrument = collections.find(currentBasket.getPaymentInstruments(), function (item) {
+                    return item.paymentMethod === KLARNA_PAYMENT_METHOD;
+                });
 
                 Transaction.wrap(function () {
-                    currentBasket.paymentInstrument.custom.klarnaPaymentCategoryID = paymentCategoryID;
-                    currentBasket.paymentInstrument.custom.klarnaPaymentCategoryName = paymentCategoryName;
+                    paymentInstrument.custom.klarnaPaymentCategoryID = paymentCategoryID;
+                    paymentInstrument.custom.klarnaPaymentCategoryName = paymentCategoryName;
                 });
 
                 Transaction.wrap(function () {
@@ -85,6 +91,12 @@ server.append(
             });
         }
 
+        if (viewData.paymentMethod.value !== 'KLARNA_PAYMENTS') {
+            // Cancel any previous authorizations
+            var processor = require('*/cartridge/scripts/klarna_payments/processor');
+            processor.cancelAuthorization();
+        }
+
         Transaction.wrap(function () {
             currentBasket.removeAllPaymentInstruments();
         });
@@ -92,5 +104,24 @@ server.append(
         return next();
     }
 );
+
+server.append('PlaceOrder', function (req, res, next) {
+    var redirectURL = req.session.privacyCache.get('KlarnaPaymentsRedirectURL');
+
+    if (redirectURL) {
+        req.session.privacyCache.set('KlarnaPaymentsRedirectURL', null);
+
+        if (!res.viewData.error) {
+            res.setViewData({
+                orderID: null,
+                orderToken: null,
+                error: false,
+                continueUrl: redirectURL
+            });
+        }
+    }
+
+    return next();
+});
 
 module.exports = server.exports();

@@ -365,6 +365,10 @@ KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
                 klarnaRequestData.shipping_address = this.obtainShippingAddressData();
             }
 
+            if (window.KPCustomerInfo && window.KPCustomerInfo.attachment) {
+                klarnaRequestData.attachment = window.KPCustomerInfo.attachment;
+            }
+
             Klarna.Payments.authorize({
                 payment_method_category: this.getKlarnaPaymentMethod(selectedPaymentMethod),
                 auto_finalize: false
@@ -377,7 +381,7 @@ KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
                         },
                         url: this.klarnaPaymentsUrls.saveAuth
                     }).done(function () {
-                        document.cookie = 'selectedKlarnaPaymentCategory=' + selectedPaymentMethod + '; path=/';
+                        document.cookie = 'selectedKlarnaPaymentCategory=' + selectedPaymentMethod + '; SameSite=Strict; path=/';
 
                         $klarnaSubmitPaymentBtn.prop('disabled', true);
 

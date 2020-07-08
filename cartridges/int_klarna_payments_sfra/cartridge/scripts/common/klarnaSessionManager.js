@@ -49,9 +49,9 @@ KlarnaSessionManager.prototype.getKlarnaLocaleMgr = function () {
 KlarnaSessionManager.prototype.saveAuthorizationToken = function (token, finalizeRequired) {
     Transaction.wrap(function (authToken) {
         this.userSession.privacy.KlarnaPaymentsAuthorizationToken = authToken;
-        this.userSession.privacy.KPAuthInfo = {
+        this.userSession.privacy.KPAuthInfo = JSON.stringify({
             FinalizeRequired: finalizeRequired
-        };
+        });
     }.bind(this, token));
 };
 
@@ -62,7 +62,7 @@ KlarnaSessionManager.prototype.saveAuthorizationToken = function (token, finaliz
  */
 KlarnaSessionManager.prototype.loadAuthorizationInfo = function () {
     var authInfo = {};
-    var kpAuthInfo = this.userSession.privacy.KPAuthInfo;
+    var kpAuthInfo = JSON.parse(this.userSession.privacy.KPAuthInfo);
 
     if (!empty(kpAuthInfo)) {
         authInfo = kpAuthInfo;
@@ -124,10 +124,11 @@ KlarnaSessionManager.prototype.refreshSession = function () {
 
 	// Read updated session
     response = klarnaPaymentsHttpService.call(requestUrl, 'GET', localeObject.custom.credentialID);
+    var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify(response.payment_method_categories) : null;
 
     Transaction.wrap(function () {
         instance.userSession.privacy.KlarnaPaymentsClientToken = response.client_token;
-        instance.userSession.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
+        instance.userSession.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
     });
 
     return response;
@@ -156,12 +157,13 @@ KlarnaSessionManager.prototype.createSession = function () {
     requestUrl = klarnaApiContext.getFlowApiUrls().get('createSession');
 
     response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
+    var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify(response.payment_method_categories) : null;
 
     Transaction.wrap(function () {
         instance.userSession.privacy.KlarnaLocale = localeObject.custom.klarnaLocale;
         instance.userSession.privacy.KlarnaPaymentsSessionID = response.session_id;
         instance.userSession.privacy.KlarnaPaymentsClientToken = response.client_token;
-        instance.userSession.privacy.KlarnaPaymentMethods = response.payment_method_categories ? response.payment_method_categories : null;
+        instance.userSession.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
         instance.userSession.privacy.SelectedKlarnaPaymentMethod = null;
     });
 

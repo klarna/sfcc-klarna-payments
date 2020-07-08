@@ -7,6 +7,11 @@
     var country = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
     var preassess = KlarnaUtils.isEnabledPreassessmentForCountry( country );
 
+    var AdditionalCustomerInfoRequestBuilder = require('*/cartridge/scripts/klarna_payments/requestBuilder/additionalCustomerInfo');
+    var additionalCustomerInfoRequestBuilder = new AdditionalCustomerInfoRequestBuilder();
+    var BasketMgr = require('dw/order/BasketMgr');
+    var currentBasket = BasketMgr.getCurrentBasket();
+
     // klarna payments urls
     var KPurls =  {
         saveAuth			: URLUtils.https('KlarnaPayments-SaveAuth').toString(),
@@ -14,14 +19,20 @@
         refreshSession      : URLUtils.https('KlarnaPayments-RefreshSession').toString()
     };
 
-    //klarna payments objects 
+    // klarna payments objects
     var KPObjects = {
         clientToken			: CurrentSession.privacy.KlarnaPaymentsClientToken ? CurrentSession.privacy.KlarnaPaymentsClientToken.toString() : null,
         preassesment		: preassess
+    };
+
+    // klarna customer information
+    var KPCustomerInfo = {
+        attachment          : additionalCustomerInfoRequestBuilder.build(currentBasket) || {}
     };
 </isscript>
 
 (function(app){
     window.KlarnaPaymentsUrls = <isprint value="${JSON.stringify(KPurls)}" encoding="on"/>;
     window.KlarnaPaymentsObjects = <isprint value="${!empty(KPObjects) ? JSON.stringify(KPObjects) : '[]'}" encoding="on"/>;
+    window.KPCustomerInfo = <isprint value="${JSON.stringify(KPCustomerInfo)}" encoding="on"/>;
 }(window.app = window.app || {}));

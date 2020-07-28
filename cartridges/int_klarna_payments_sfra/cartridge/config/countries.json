@@ -20,6 +20,9 @@
     "id": "en_CA",
     "currencyCode": "CAD"
 }, {
+    "id": "fr_CA",
+    "currencyCode": "CAD"
+}, {
     "id": "it_IT",
     "currencyCode": "EUR"
 }, {

@@ -17,6 +17,7 @@ var StringUtils = require( 'dw/util/StringUtils' );
 var Status = require( 'dw/system/Status' );
 var PaymentInstrument = require( 'dw/order/PaymentInstrument' );
 var Site = require( 'dw/system/Site' );
+var Locale = require( 'dw/util/Locale' );
 
 var COSummary = require( '*/cartridge/controllers/COSummary.js' );
 
@@ -357,6 +358,17 @@ function _cancelOrder( order, localeObject )
 	return true;
 }
 
+function buildKlarnaCompatibleLocale() {
+	var requestLocale = Locale.getLocale( request.locale );
+	var resultLocale = requestLocale.language;
+
+	if ( requestLocale.country ) {
+		resultLocale = resultLocale + '-' + requestLocale.country;
+	}
+
+	return resultLocale.toLowerCase();
+}
+
 /**
  * Gets Klarna Payments Locale object
  * 
@@ -366,14 +378,31 @@ function _cancelOrder( order, localeObject )
  */
 function getLocale( currentCountry ) {
 	var localeObject = {};
-	var countryCode = '';
-	if ( empty( currentCountry ) )
-	{
-		currentCountry = Countries.getCurrent( {CurrentRequest: request} ).countryCode; // eslint-disable-line no-param-reassign
-	}   
+	var countryCode = currentCountry;
 
-	localeObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', currentCountry );
-	
+	if ( empty( countryCode ) )
+	{
+		countryCode = Countries.getCurrent( {CurrentRequest: request} ).countryCode; // eslint-disable-line no-param-reassign
+	}
+	else
+	{
+		countryCode = 'default';
+	}
+
+	var customlocaleObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
+	if ( customlocaleObject )
+	{
+		localeObject.custom = {};
+		Object.keys( customlocaleObject.custom ).forEach( function( key ) {
+			localeObject.custom[key] = customlocaleObject.custom[key];
+		} );
+
+		if ( countryCode !== 'default' )
+		{
+			localeObject.custom.klarnaLocale = buildKlarnaCompatibleLocale();
+		}
+	}
+
 	return localeObject;
 }
 
@@ -522,6 +551,36 @@ function confirmation() {
 	return COSummary.ShowConfirmation( order );
 }
 
+
+/**
+ * Call Klarna Payments API to get an order
+ * @param {string} klarnaPaymentsOrderID Klarna Payments Order ID
+ * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
+ *
+ * @return {Object} Klarna order
+ */
+function _getKlarnaOrder( klarnaPaymentsOrderID )
+{
+	var klarnaHttpService = {};
+	var klarnaApiContext = {};
+	var klarnaOrderID = klarnaPaymentsOrderID;
+	var localeObject = getLocale();
+	var requestUrl = '';
+
+	try {
+		klarnaHttpService = new KlarnaPayments.httpService();
+		klarnaApiContext = new KlarnaPayments.apiContext();
+		requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'getOrder' ), klarnaOrderID );
+
+		return klarnaHttpService.call( requestUrl, 'GET', localeObject.custom.credentialID );
+	} catch( e )
+	{
+		log.error( 'Error while retrieving order: {0}', e );
+	}
+
+	return null;
+}
+
 /**
  * Entry point for notifications on pending orders
  * 
@@ -529,32 +588,47 @@ function confirmation() {
  */
 function notification()
 {
+	var currentCountry = request.httpParameterMap.klarna_country.value;
+	var localeObject = getLocale( currentCountry );
+	var FRAUD_STATUS_MAP = require( '*/cartridge/scripts/util/KlarnaPaymentsConstants.js' ).FRAUD_STATUS_MAP;
+
 	var klarnaPaymentsFraudDecisionObject = JSON.parse( request.httpParameterMap.requestBodyAsString );
 	var klarnaPaymentsOrderID = klarnaPaymentsFraudDecisionObject.order_id;
 	var klarnaPaymentsFraudDecision = klarnaPaymentsFraudDecisionObject.event_type;
-	var currentCountry = request.httpParameterMap.klarna_country.value;
-	var localeObject = getLocale( currentCountry );
-	var order = OrderMgr.queryOrder( "custom.kpOrderID ={0}", klarnaPaymentsOrderID );
 
-	if( empty( order ) )
+	var klarnaOrder = _getKlarnaOrder( klarnaPaymentsOrderID );
+	if ( klarnaOrder && FRAUD_STATUS_MAP[klarnaOrder.fraud_status] && FRAUD_STATUS_MAP[klarnaOrder.fraud_status] === klarnaPaymentsFraudDecision )
 	{
-		return response.setStatus( 200 );
-	}
-	Transaction.wrap( function()
-	{
-		order.getPaymentInstruments( "Klarna" )[0].paymentTransaction.custom.kpFraudStatus = klarnaPaymentsFraudDecision;
-	} );
-	if( klarnaPaymentsFraudDecision === 'FRAUD_RISK_ACCEPTED' )
-	{
-		if ( order.custom.kpIsVCN ) 
+		var order = OrderMgr.queryOrder( "custom.kpOrderID ={0}", klarnaPaymentsOrderID );
+		if( empty( order ) )
 		{
-			var isSettlementCreated = _createVCNSettlement( order, klarnaPaymentsOrderID, localeObject );
-			if ( isSettlementCreated ) 
+			return response.setStatus( 200 );
+		}
+		Transaction.wrap( function()
+		{
+			order.getPaymentInstruments( "Klarna" )[0].paymentTransaction.custom.kpFraudStatus = klarnaPaymentsFraudDecision;
+		} );
+		if( klarnaPaymentsFraudDecision === 'FRAUD_RISK_ACCEPTED' )
+		{
+			if ( order.custom.kpIsVCN )
 			{
-				//Plug here your Credit Card Processor
-				var authObj = require( '*/cartridge/scripts/payment/processor/BASIC_CREDIT' ).Authorize( {'OrderNo':order.getOrderNo(),'PaymentInstrument': order.getPaymentInstruments( "Klarna" )[0]} );
-				if( authObj.error ) 
+				var isSettlementCreated = _createVCNSettlement( order, klarnaPaymentsOrderID, localeObject );
+				if ( isSettlementCreated )
 				{
+					//Plug here your Credit Card Processor
+					var authObj = require( '*/cartridge/scripts/payment/processor/BASIC_CREDIT' ).Authorize( {'OrderNo':order.getOrderNo(),'PaymentInstrument': order.getPaymentInstruments( "Klarna" )[0]} );
+					if( authObj.error )
+					{
+						Transaction.wrap( function()
+						{
+							OrderMgr.failOrder( order );
+						} );
+						return response.setStatus( 200 );
+					}
+				}
+				else
+				{
+					_cancelOrder( order, localeObject );
 					Transaction.wrap( function()
 					{
 						OrderMgr.failOrder( order );
@@ -562,25 +636,17 @@ function notification()
 					return response.setStatus( 200 );
 				}
 			}
-			else 
-			{
-				_cancelOrder( order, localeObject );
-				Transaction.wrap( function()
-				{
-					OrderMgr.failOrder( order );
-				} );
-				return response.setStatus( 200 );
-			}
+			placeOrder( order, klarnaPaymentsOrderID, localeObject );
+	
 		}
-		placeOrder( order, klarnaPaymentsOrderID, localeObject );
-		
-	} else
-	{
-		Transaction.wrap( function()
+		else
 		{
-			OrderMgr.failOrder( order );
-		} );
-	}	
+			Transaction.wrap( function()
+			{
+				OrderMgr.failOrder( order );
+			} );
+		}
+	}
 	return response.setStatus( 200 );
 }
 

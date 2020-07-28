@@ -10,8 +10,8 @@ module.exports = [{
 	mode: 'production',
 	name: 'js',
 	entry: {
-		'klarnaPayments': path.join( __dirname, cartridgePath + '/client/js/default/klarnaPayments.js' ),
-		'klarnaOsm': path.join( __dirname, cartridgePath + '/client/js/default/klarnaOsm.js' )
+		'klarnaPayments': path.join( __dirname, cartridgePath + '/client/default/js/klarnaPayments.js' ),
+		'klarnaOsm': path.join( __dirname, cartridgePath + '/client/default/js/klarnaOsm.js' )
 	},
 	output: {
 		path: path.resolve( cartridgePath + './static/default/js/' ),
@@ -25,7 +25,7 @@ module.exports = [{
 	mode: 'production',
 	name: 'scss',
 	entry: {
-		'klarnaPayments': path.join( __dirname, cartridgePath + '/client/scss/default/klarnaPayments.scss' )
+		'klarnaPayments': path.join( __dirname, cartridgePath + '/client/default/scss/klarnaPayments.scss' )
 	},
 	output: {
 		path: path.resolve( cartridgePath + './static/default/css/' ),

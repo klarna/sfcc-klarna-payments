@@ -12,7 +12,7 @@
         </key-definition>
         <attribute-definitions>
             <attribute-definition attribute-id="klarnaLocale">
-                <display-name xml:lang="x-default">On-site Messaging Data Locale</display-name>
+                <display-name xml:lang="x-default">On-site Messaging Data Default Locale</display-name>
                 <type>string</type>
                 <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>

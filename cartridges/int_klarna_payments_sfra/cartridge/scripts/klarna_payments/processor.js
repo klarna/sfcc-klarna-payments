@@ -588,6 +588,33 @@ function notify(order, kpOrderID, kpEventType) {
 }
 
 /**
+ * Call Klarna Payments API to get an order
+ * @param {string} klarnaPaymentsOrderID Klarna Payments Order ID
+ * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
+ *
+ * @return {Object} Klarna order
+ */
+function getKlarnaOrder(klarnaPaymentsOrderID) {
+    var klarnaHttpService = {};
+    var klarnaApiContext = {};
+    var klarnaOrderID = klarnaPaymentsOrderID;
+    var localeObject = klarnaLocaleMgr.getLocale();
+    var requestUrl = '';
+
+    try {
+        klarnaHttpService = new KlarnaPaymentsHttpService();
+        klarnaApiContext = new KlarnaPaymentsApiContext();
+        requestUrl = StringUtils.format(klarnaApiContext.getFlowApiUrls().get('getOrder'), klarnaOrderID);
+
+        return klarnaHttpService.call(requestUrl, 'GET', localeObject.custom.credentialID);
+    } catch (e) {
+        log.error('Error while retrieving order: {0}', e);
+    }
+
+    return null;
+}
+
+/**
  * Deletes the previous authorization
  * @param {string} authToken Authorization Token
  * @return {string} Service call result
@@ -618,3 +645,4 @@ module.exports.handle = handle;
 module.exports.authorize = authorize;
 module.exports.notify = notify;
 module.exports.cancelAuthorization = cancelAuthorization;
+module.exports.getKlarnaOrder = getKlarnaOrder;

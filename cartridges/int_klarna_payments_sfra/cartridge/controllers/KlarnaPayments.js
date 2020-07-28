@@ -6,9 +6,9 @@ var Logger = require('dw/system/Logger');
 var log = Logger.getLogger('KlarnaPayments');
 
 server.post('Notification', function (req, res) {
-    var StringUtils = require('dw/util/StringUtils');
     var OrderMgr = require('dw/order/OrderMgr');
     var processor = require('*/cartridge/scripts/klarna_payments/processor');
+    var FRAUD_STATUS_MAP = require('*/cartridge/scripts/util/klarnaPaymentsConstants').FRAUD_STATUS_MAP;
 
     var requestParams = req.form;
 
@@ -17,18 +17,17 @@ server.post('Notification', function (req, res) {
     var kpOrderID = klarnaPaymentsFraudDecisionObject.order_id;
     var kpEventType = klarnaPaymentsFraudDecisionObject.event_type;
     var currentCountry = requestParams.klarna_country;
-    var order = OrderMgr.queryOrder('custom.kpOrderID = {0}', kpOrderID);
 
-    StringUtils.format('Notification received: requestBody=[{0}]', req.body);
-
-    if (!order) {
-        res.setStatusCode(200);
-    }
+    res.setStatusCode(200);
 
     try {
-        processor.notify(order, kpOrderID, kpEventType, currentCountry);
-
-        res.setStatusCode(200);
+        var klarnaOrder = processor.getKlarnaOrder(kpOrderID);
+        if (klarnaOrder && FRAUD_STATUS_MAP[klarnaOrder.fraud_status] && FRAUD_STATUS_MAP[klarnaOrder.fraud_status] === kpEventType) {
+            var order = OrderMgr.queryOrder('custom.kpOrderID = {0}', kpOrderID);
+            if (order) {
+                processor.notify(order, kpOrderID, kpEventType, currentCountry);
+            }
+        }
     } catch (e) {
         log.error(e);
     }

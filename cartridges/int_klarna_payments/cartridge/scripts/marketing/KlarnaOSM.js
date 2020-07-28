@@ -25,7 +25,7 @@ var KlarnaOSM = {
 
 		return this.countryCode;
 	},
-	 getLocale: function() {
+	getLocale: function() {
 		var currentLocale = Locale.getLocale( request.locale );
 		var resultLocale = currentLocale.language;
 		if ( currentLocale.country ) {

@@ -18,6 +18,17 @@ KlarnaLocale.prototype.getRequestLocaleCountryCode = function () {
     return requestLocale.country;
 };
 
+KlarnaLocale.prototype.buildKlarnaCompatibleLocale = function () {
+    var requestLocale = Locale.getLocale(request.locale);
+    var resultLocale = requestLocale.language;
+
+    if (requestLocale.country) {
+        resultLocale = resultLocale + '-' + requestLocale.country;
+    }
+
+    return resultLocale.toLowerCase();
+};
+
 /**
  * Gets KlarnaCountries Locale object by country code
  *
@@ -34,9 +45,20 @@ KlarnaLocale.prototype.getLocale = function (kcCountryCode) {
 
     if (empty(countryCode)) {
         countryCode = this.getRequestLocaleCountryCode();
+    } else {
+        countryCode = 'default';
     }
 
-    localeObject = CustomObjectMgr.getCustomObject('KlarnaCountries', countryCode);
+    var customlocaleObject = CustomObjectMgr.getCustomObject('KlarnaCountries', countryCode);
+    if (customlocaleObject) {
+        localeObject.custom = {};
+        Object.keys(customlocaleObject.custom).forEach(function (key) {
+            localeObject.custom[key] = customlocaleObject.custom[key];
+        });
+        if (countryCode !== 'default') {
+            localeObject.custom.klarnaLocale = this.buildKlarnaCompatibleLocale();
+        }
+    }
 
     return localeObject;
 };

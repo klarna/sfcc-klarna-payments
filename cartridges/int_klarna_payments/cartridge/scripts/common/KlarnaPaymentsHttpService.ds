@@ -30,7 +30,7 @@ var KlarnaPaymentsHttpService = Class.extend({
         service.URL += urlPath;
         service.addHeader('Content-Type', 'application/json');
         service.addHeader('Accept', 'application/json');
-        service.addHeader('User-Agent', 'SFCC SG Klarna Payments 19.1.4');
+        service.addHeader('User-Agent', 'SFCC SG Klarna Payments 19.1.5');
 
         if (!empty(httpVerb) && this.isValidHttpVerb(httpVerb)) {
         	service.setRequestMethod(httpVerb);

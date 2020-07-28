@@ -91,15 +91,15 @@
 }, {
 	"countryCode": "DE",
 	"name": {
-        "en_GB": "Germany",
+		"en_GB": "Germany",
 		"de_DE": "Deutschland"
 	},
 	"continent": "europe",
 	"locales": ["de_DE"],
 	"currencyCode": "EUR",
 	"taxation": {
-        "type": "gross",
-        "rate": 0.19
+		"type": "gross",
+		"rate": 0.19
 	},
 	"priceBooks": [
 		"eur-list-prices",
@@ -183,15 +183,15 @@
 }, {
 	"countryCode": "AT",
 	"name": {
-        "en_GB": "Austria",
-		"de_DE": "Austria"
+		"en_AT": "Austria",
+		"de_AT": "Austria"
 	},
 	"continent": "europe",
 	"locales": ["de_AT"],
 	"currencyCode": "EUR",
 	"taxation": {
-        "type": "gross",
-        "rate": 0.19
+		"type": "gross",
+		"rate": 0.19
 	},
 	"priceBooks": [
 		"eur-list-prices",
@@ -676,10 +676,11 @@
 }, {
 	"countryCode": "CA",
 	"name": {
-		"en_CA": "Canada"
+		"en_CA": "Canada",
+		"fr_CA": "Canada"
 	},
 	"continent": "northamerica",
-	"locales": ["en_CA"],
+	"locales": ["en_CA", "fr_CA"],
 	"currencyCode": "CAD",
 	"taxation": {
 		"type": "gross",

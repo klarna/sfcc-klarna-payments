@@ -1,0 +1,20 @@
+<isset name="ProductPrice" value="${pdict.p_price}" scope="page"/>
+
+<isscript>
+    var KlarnaOSM = require('~/cartridge/scripts/klarna_payments/osm');
+</isscript>
+
+<isif condition="${KlarnaOSM.isEnabledPDPPage()}">
+    <div class="kosm-pdp">
+        <klarna-placement data-key="${KlarnaOSM.getPDPPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}" data-inline="true"></klarna-placement>
+    </div>
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+
+        if (!klarnaOSMJsAdded) {
+            assets.addJs('js/klarnaOsm.js');
+        }
+    </isscript>
+
+    <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
+</isif>

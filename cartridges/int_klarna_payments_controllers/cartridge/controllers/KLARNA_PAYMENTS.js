@@ -274,15 +274,11 @@ function _createOrder( order, localeObject )
  */
 function _createVCNSettlement( order, klarnaPaymentsOrderID, localeObject )
 {
-	var Cipher = require( 'dw/crypto/Cipher' );
-	var Encoding = require( 'dw/crypto/Encoding' );
-	var VCNPrivateKey = Site.getCurrent().getCustomPreferenceValue( 'vcnPrivateKey' );
 	var klarnaPaymentsHttpService = {};
 	var klarnaApiContext = {};
 	var requestBody = {};
 	var requestUrl = '';
 	var response = {};
-	var cipher = new Cipher();
 
 	try {
 		klarnaPaymentsHttpService = new KlarnaPayments.httpService();
@@ -297,31 +293,18 @@ function _createVCNSettlement( order, klarnaPaymentsOrderID, localeObject )
 		if( empty( response.settlement_id ) || empty( response.cards ) )
 		{
 			log.error( 'Error in creating Klarna Payments VCN Settlement: {0}', e );
-			return false;		
+			return false;
 		}
-
-		
-		var keyEncryptedBase64 = response.cards[0].aes_key;
-		var keyEncryptedBytes = Encoding.fromBase64( keyEncryptedBase64 );
-		var keyDecrypted = cipher.decryptBytes( keyEncryptedBytes, VCNPrivateKey, "RSA/ECB/PKCS1PADDING", null, 0 );
-		var keyDecryptedBase64 = Encoding.toBase64( keyDecrypted );
-		var cardDataEncryptedBase64 = response.cards[0].pci_data;
-		var cardDataEncryptedBytes = Encoding.fromBase64( cardDataEncryptedBase64 );
-		var cardDecrypted = cipher.decryptBytes( cardDataEncryptedBytes, keyDecryptedBase64, "AES/CTR/NoPadding", response.cards[0].iv, 0 );
-
-		var cardDecryptedUtf8 = decodeURIComponent( cardDecrypted );
-		var cardObj = JSON.parse( cardDecryptedUtf8 );
-		var expiryDateArr = cardObj.expiry_date.split( "/" );
 
 		Transaction.wrap( function()
 		{
 			order.custom.kpVCNBrand = response.cards[0].brand;
-			order.custom.kpVCNCSC = cardObj.cvv;
-			order.custom.kpVCNExpirationMonth = expiryDateArr[0];
-			order.custom.kpVCNExpirationYear = expiryDateArr[1];
 			order.custom.kpVCNHolder = response.cards[0].holder;
-			order.custom.kpVCNPAN = cardObj.pan;	
-			order.custom.kpIsVCN = true;		
+			order.custom.kpVCNCardID = response.cards[0].card_id;
+			order.custom.kpVCNPCIData = response.cards[0].pci_data;
+			order.custom.kpVCNIV = response.cards[0].iv;
+			order.custom.kpVCNAESKey = response.cards[0].aes_key;
+			order.custom.kpIsVCN = true;
 		} );
 	} catch( e ) 
 	{

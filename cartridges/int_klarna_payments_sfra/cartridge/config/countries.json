@@ -23,9 +23,6 @@
     "id": "fr_CA",
     "currencyCode": "CAD"
 }, {
-    "id": "it_IT",
-    "currencyCode": "EUR"
-}, {
     "id": "sv_SE",
     "currencyCode": "SEK"
 },{
@@ -41,7 +38,13 @@
     "id": "en_IT",
     "currencyCode": "EUR"
 }, {
+    "id": "it_IT",
+    "currencyCode": "EUR"
+}, {
     "id": "en_ES",
+    "currencyCode": "EUR"
+}, {
+    "id": "es_ES",
     "currencyCode": "EUR"
 }, {
     "id": "en_BE",

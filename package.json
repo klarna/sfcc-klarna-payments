@@ -1,7 +1,7 @@
 {
   "init": [],
   "name": "klarna",
-  "version": "19.1.5",
+  "version": "19.1.6",
   "description": "Salesforce Commerce Cloud | Klarna Payment Integration",
   "main": "Gruntfile.js",
   "dependencies": {
@@ -48,6 +48,10 @@
     {
       "name": "Nikolay Kunev",
       "email": "Nikolay.Kynev@tryzens.com"
+    },
+	{
+      "name": "Antonia Dimitrova",
+      "email": "Antonia.Dimitrova@tryzens.com"
     }
   ],
   "license": ""

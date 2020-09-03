@@ -244,32 +244,16 @@ function placeOrder(order, klarnaPaymentsOrderID, localeObject) {
  * @param {Object} cardInfo VCN CC data from Klarna response
  */
 function updateOrderWithVCNCardInfo(order, cardInfo) {
-    var Cipher = require('dw/crypto/Cipher');
-    var Encoding = require('dw/crypto/Encoding');
-    var vcnPrivateKey = Site.getCurrent().getCustomPreferenceValue('vcnPrivateKey');
     var orderForUpdate = order;
-    var cipher = new Cipher();
-
-    var keyEncryptedBase64 = cardInfo.aes_key;
-    var keyEncryptedBytes = Encoding.fromBase64(keyEncryptedBase64);
-    var keyDecrypted = cipher.decryptBytes(keyEncryptedBytes, vcnPrivateKey, 'RSA/ECB/PKCS1PADDING', null, 0);
-    var keyDecryptedBase64 = Encoding.toBase64(keyDecrypted);
-    var cardDataEncryptedBase64 = cardInfo.pci_data;
-    var cardDataEncryptedBytes = Encoding.fromBase64(cardDataEncryptedBase64);
-    var cardDecrypted = cipher.decryptBytes(cardDataEncryptedBytes, keyDecryptedBase64, 'AES/CTR/NoPadding', cardInfo.iv, 0);
-
-    var cardDecryptedUtf8 = decodeURIComponent(cardDecrypted);
-    var cardObj = JSON.parse(cardDecryptedUtf8);
-    var expiryDateArr = cardObj.expiry_date.split('/');
 
     Transaction.begin();
 
     orderForUpdate.custom.kpVCNBrand = cardInfo.brand;
-    orderForUpdate.custom.kpVCNCSC = cardObj.cvv;
-    orderForUpdate.custom.kpVCNExpirationMonth = expiryDateArr[0];
-    orderForUpdate.custom.kpVCNExpirationYear = expiryDateArr[1];
     orderForUpdate.custom.kpVCNHolder = cardInfo.holder;
-    orderForUpdate.custom.kpVCNPAN = cardObj.pan;
+    orderForUpdate.custom.kpVCNCardID = cardInfo.card_id;
+    orderForUpdate.custom.kpVCNPCIData = cardInfo.pci_data;
+    orderForUpdate.custom.kpVCNIV = cardInfo.iv;
+    orderForUpdate.custom.kpVCNAESKey = cardInfo.aes_key;
     orderForUpdate.custom.kpIsVCN = true;
 
     Transaction.commit();

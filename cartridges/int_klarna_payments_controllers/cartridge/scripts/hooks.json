@@ -1,8 +1,8 @@
 {
-	"hooks": [        
-		{
-			"name": "app.payment.processor.KLARNA_PAYMENTS",
-			"script": "../controllers/KLARNA_PAYMENTS"
-		}
-	]
+    "hooks": [
+        {
+            "name": "app.payment.processor.KLARNA_PAYMENTS",
+            "script": "../controllers/KlarnaPayments"
+        }
+    ]
 }

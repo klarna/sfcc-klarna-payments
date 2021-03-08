@@ -1,0 +1,28 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="state" label="resource.state" type="string" mandatory="false" binding="stateCode" missing-error="address.state.missing" value-error="address.field.invalid">
+		<options>
+			<option optionid="" 	label="resource.select" 				value=""/>
+
+			<!-- regular DE states -->
+			<option optionid="BW" 	label="state.de.baden" 				value="BW"/>
+			<option optionid="BY"	label="state.de.bavaria"			value="BY"/>
+			<option optionid="BE"	label="state.de.berlin"				value="BE"/>
+			<option optionid="BB"	label="state.de.brandenburg"		value="BB"/>
+			<option optionid="HB"	label="state.de.bremen"				value="HB"/>
+			<option optionid="HH"	label="state.de.hamburg"			value="HH"/>
+			<option optionid="HE"	label="state.de.hesse"				value="HE"/>
+			<option optionid="NI"	label="state.de.lowersaxony"		value="NI"/>
+			<option optionid="MV"	label="state.de.mecklenburg"		value="MV"/>
+			<option optionid="NW"	label="state.de.northrhine"			value="NW"/>
+			<option optionid="RP"	label="state.de.rhineland"			value="RP"/>
+			<option optionid="SL"	label="state.de.saarland"			value="SL"/>
+			<option optionid="SN"	label="state.de.saxony"				value="SN"/>
+			<option optionid="ST"	label="state.de.saxonyanhalt"		value="ST"/>
+			<option optionid="SH"	label="state.de.schleswig"			value="SH"/>
+			<option optionid="TH"	label="state.de.thuringia"			value="TH"/>
+
+
+		</options>
+	</field>
+</form>

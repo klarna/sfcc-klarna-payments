@@ -1,8 +1,5 @@
 <isset name="OrigProduct" value="${pdict.p_product}" scope="page"/>
-
-<isscript>
-	var KlarnaOSM = require('~/cartridge/scripts/marketing/KlarnaOSM');
-</isscript>
+<isset name="KlarnaOSM" value="${require('~/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
 <isif condition="${!empty(pdict.ProductSetStandardPrice) && !empty(pdict.ProductSetSalesPrice)}">
 	<isset name="currencyCode" value="${session.getCurrency().getCurrencyCode()}" scope="page"/>

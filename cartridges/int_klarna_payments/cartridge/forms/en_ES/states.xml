@@ -5,7 +5,25 @@
 			<option optionid="" 	label="resource.select" 				value=""/>
 
 			<!-- regular ES states -->
-			<option optionid="MD" 	label="state.es.madrid" 		value="MD"/>
+			<option optionid="AN" label="state.es.an" value="AN"/>
+			<option optionid="AR" label="state.es.ar" value="AR"/>
+			<option optionid="AS" label="state.es.as" value="AS"/>
+			<option optionid="CN" label="state.es.cn" value="CN"/>
+			<option optionid="CB" label="state.es.cb" value="CB"/>
+			<option optionid="CL" label="state.es.cl" value="CL"/>
+			<option optionid="CM" label="state.es.cm" value="CM"/>
+			<option optionid="CT" label="state.es.ct" value="CT"/>
+			<option optionid="CE" label="state.es.ce" value="CE"/>
+			<option optionid="EX" label="state.es.ex" value="EX"/>
+			<option optionid="GA" label="state.es.ga" value="GA"/>
+			<option optionid="IB" label="state.es.ib" value="IB"/>
+			<option optionid="RI" label="state.es.ri" value="RI"/>
+			<option optionid="MD" label="state.es.md" value="MD"/>
+			<option optionid="ML" label="state.es.ml" value="ML"/>
+			<option optionid="MC" label="state.es.mc" value="MC"/>
+			<option optionid="NC" label="state.es.nc" value="NC"/>
+			<option optionid="PV" label="state.es.pv" value="PV"/>
+			<option optionid="VC" label="state.es.vc" value="VC"/>
 		</options>
 	</field>
 </form>

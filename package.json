@@ -1,7 +1,7 @@
 {
   "init": [],
   "name": "klarna",
-  "version": "19.1.6",
+  "version": "21.1.0",
   "description": "Salesforce Commerce Cloud | Klarna Payment Integration",
   "main": "Gruntfile.js",
   "dependencies": {
@@ -54,5 +54,9 @@
       "email": "Antonia.Dimitrova@tryzens.com"
     }
   ],
-  "license": ""
+  "license": "",
+  "packageName": "int_klarna_payments_sfra",
+  "paths": {
+    "base": "../storefront-reference-architecture/cartridges/app_storefront_base/"
+  }
 }

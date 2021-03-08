@@ -1,0 +1,8 @@
+<isset name="KlarnaOSM" value="${require('~/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+
+<isif condition="${KlarnaOSM.isEnabledFooter()}">
+    <div class="kosm-footer">
+        <klarna-placement data-key="${KlarnaOSM.getFooterPlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}"></klarna-placement>
+        <isset name="isKlarnaOSMScriptRequired" value="${true}" scope="page" />
+    </div>
+</isif>

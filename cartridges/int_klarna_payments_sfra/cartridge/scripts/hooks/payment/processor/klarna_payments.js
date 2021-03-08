@@ -2,7 +2,7 @@
 
 /* global dw */
 
-var KlarnaPaymentsProcessor = require('*/cartridge/scripts/klarna_payments/processor');
+var KlarnaPaymentsProcessor = require('*/cartridge/scripts/payments/processor');
 
 /**
  * Handle entry point for SG integration

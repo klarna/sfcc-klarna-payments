@@ -9,7 +9,7 @@ var base = module.superModule;
  */
 function getKlarnaTotal(lineItemContainer) {
     var totalGrossPrice = lineItemContainer.getTotalGrossPrice();
-    var KlarnaOSM = require('*/cartridge/scripts/klarna_payments/osm');
+    var KlarnaOSM = require('*/cartridge/scripts/marketing/klarnaOSM');
 
     return KlarnaOSM.formatPurchaseAmount(totalGrossPrice);
 }

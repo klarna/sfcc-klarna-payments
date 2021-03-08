@@ -1,0 +1,11 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="state" label="resource.state" type="string" mandatory="false" binding="stateCode" missing-error="address.state.missing" value-error="address.field.invalid">
+		<options>
+			<option optionid="" label="resource.select" value=""/>
+
+			<!-- regular BE states -->
+			<option optionid="AB"	label="state.ab.stockholm"	value="AB"/>
+		</options>
+	</field>
+</form>

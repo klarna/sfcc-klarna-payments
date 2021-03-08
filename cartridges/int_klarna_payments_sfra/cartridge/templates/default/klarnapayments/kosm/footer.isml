@@ -1,0 +1,16 @@
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+
+<isif condition="${KlarnaOSM.isEnabledFooter()}">
+    <div class="kosm-footer">
+        <klarna-placement data-key="${KlarnaOSM.getFooterPlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}"></klarna-placement>
+    </div>
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+
+        if (!klarnaOSMJsAdded) {
+            assets.addJs('js/klarnaOsm.js');
+        }
+    </isscript>
+
+    <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
+</isif>

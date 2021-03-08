@@ -1,57 +1,11 @@
 <iscontent type="text/javascript" charset="UTF-8" compact="true"/>
 
-<isscript>	
-    //determine pre-assesment value
-    var Countries = require('*/cartridge/scripts/util/Countries');
-    var country = Countries.getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode;
+<isset name="country" value="${require('*/cartridge/scripts/locale/klarnaPaymentsGetCountryFromLocale').getCountryFromLocale(pdict.CurrentRequest).countryCode}" scope="page" />
+<isset name="klarnaResources" value="${require('*/cartridge/scripts/util/klarnaHelper').getKlarnaResources(country)}" scope="page" />
 
-    var OrderRequestBuilder = require('*/cartridge/scripts/order/KlarnaPaymentsOrderRequestBuilder');
-    var orderRequestBuilder = new OrderRequestBuilder();
-    var BasketMgr = require('dw/order/BasketMgr');
-    var currentBasket = BasketMgr.getCurrentBasket();
-
-    var preAssement = false;
-    if ( isPreAssementApplicable( country ) )
-    {
-        preAssement = true;
-    }
-    
-    function isPreAssementApplicable( country )
-    {
-
-        var isInList = true;
-        var countriesList = "BE, BG, CZ, DK, DE, EE, IE, EL, ES, FR, HR, IT, CY, LV, LT, LU, HU, MT, NL, AT, PL, PT, RO, SI, SK, FI, SE, UK, GB, US, CH, NO, CA, AU, NZ";
-        
-        if( countriesList.indexOf( country ) > -1)
-        {
-            isInList = false;
-        }
-
-        return isInList;
-    }	
-    
-    // klarna payments urls
-    var KPurls =  {
-        createSession		: URLUtils.https('KLARNA_PAYMENTS-CreateSession').toString(), 
-        clearSession		: URLUtils.https('KLARNA_PAYMENTS-ClearSession').toString(),
-        saveAuth			: URLUtils.https('KLARNA_PAYMENTS-SaveAuth').toString(), 
-        updateSession		: URLUtils.https('KLARNA_PAYMENTS-UpdateSession').toString()
-    };
-    
-    // klarna payments objects
-    var KPObjects = {
-        sessionID			: pdict.CurrentSession.privacy.KlarnaPaymentsSessionID ? pdict.CurrentSession.privacy.KlarnaPaymentsSessionID.toString() : null,
-        clientToken			: pdict.CurrentSession.privacy.KlarnaPaymentsClientToken ? pdict.CurrentSession.privacy.KlarnaPaymentsClientToken.toString() : null,
-        preassesment		: preAssement
-    };
-
-    // klarna customer information
-    var KPCustomerInfo = {
-        attachment          : orderRequestBuilder.init().buildAdditionalCustomerInfo(currentBasket).context.attachment
-    };
-</isscript>
 (function(app){
-    window.KlarnaPaymentsUrls = <isprint value="${JSON.stringify(KPurls)}" encoding="on"/>;
-    window.KlarnaPaymentsObjects = <isprint value="${!empty(KPObjects) ? JSON.stringify(KPObjects) : '[]'}" encoding="on"/>;
-    window.KPCustomerInfo = <isprint value="${JSON.stringify(KPCustomerInfo)}" encoding="on"/>;
+    window.KlarnaPaymentsUrls = <isprint value="${klarnaResources.KPurls}" encoding="on"/>;
+    window.KlarnaPaymentsObjects = <isprint value="${!empty(klarnaResources.KPObjects) ? klarnaResources.KPObjects : '[]'}" encoding="on"/>;
+    window.KPCustomerInfo = <isprint value="${klarnaResources.KPCustomerInfo}" encoding="on"/>;
+    window.KPConstants = <isprint value="${klarnaResources.KPConstants}" encoding="on"/>;
 }(window.app = window.app || {}));

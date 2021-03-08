@@ -2,15 +2,16 @@
 <form xmlns="http://www.demandware.com/xml/form/2008-04-19">
 	<field formid="stateCode" label="label.input.state" type="string" mandatory="false" binding="stateCode" missing-error="error.message.required" value-error="address.field.invalid">
 		<options>
+			<option optionid="" label="resource.select" value=""/>
 			<!-- regular AU states -->
-			<option optionid="NSW" label="New South Wales" value="NSW"/>
-            <option optionid="ACT" label="Australia Capital Territory" value="ACT"/>
-            <option optionid="VIC" label="Victoria" value="VIC"/>
-            <option optionid="QLD" label="Queensland" value="QLD"/>
-            <option optionid="SA" label="South Australia" value="SA"/>
-            <option optionid="WA" label="Western Australia" value="WA"/>
-            <option optionid="TAS" label="Tasmania" value="TAS"/>
-            <option optionid="NT" label="Northern Territory" value="NT"/>
+			<option optionid="NSW" label="state.au.nsw" value="NSW"/>
+			<option optionid="ACT" label="state.au.act" value="ACT"/>
+			<option optionid="VIC" label="state.au.vic" value="VIC"/>
+			<option optionid="QLD" label="state.au.qld" value="QLD"/>
+			<option optionid="SA" label="state.au.sa" value="SA"/>
+			<option optionid="WA" label="state.au.wa" value="WA"/>
+			<option optionid="TAS" label="state.au.tas" value="TAS"/>
+			<option optionid="NT" label="state.au.nt" value="NT"/>
 		</options>
 	</field>
 </form>

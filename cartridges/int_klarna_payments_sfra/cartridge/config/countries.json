@@ -8,11 +8,20 @@
     "id": "de_DE",
     "currencyCode": "EUR"
 }, {
+    "id": "en_AT",
+    "currencyCode": "EUR"
+}, {
+    "id": "de_AT",
+    "currencyCode": "EUR"
+}, {
     "id": "ja_JP",
     "currencyCode": "JPY"
 }, {
     "id": "zh_CN",
     "currencyCode": "CNY"
+}, {
+    "id": "en_FR",
+    "currencyCode": "EUR"
 }, {
     "id": "fr_FR",
     "currencyCode": "EUR"
@@ -32,9 +41,6 @@
     "id": "en_NZ",
     "currencyCode": "NZD"
 }, {
-    "id": "en_FR",
-    "currencyCode": "EUR"
-}, {
     "id": "en_IT",
     "currencyCode": "EUR"
 }, {
@@ -48,5 +54,14 @@
     "currencyCode": "EUR"
 }, {
     "id": "en_BE",
+    "currencyCode": "EUR"
+}, {
+    "id": "nl_BE",
+    "currencyCode": "EUR"
+}, {
+    "id": "fr_BE",
+    "currencyCode": "EUR"
+}, {
+    "id": "nb_NO",
     "currencyCode": "EUR"
 }]

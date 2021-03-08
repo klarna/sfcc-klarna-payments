@@ -1,29 +1,29 @@
 ( function()
 {
-	'use strict';
+    'use strict';
 
-	var Builder = function() {};
+    var Builder = function() {};
 
-	var log = function( name )
-	{
-		return 'Abstract method "' + name + '" must be override';
-	};
+    var log = function( name )
+    {
+        return 'Abstract method "' + name + '" must be override';
+    };
 
-	Builder.prototype.buildRequest = function( params )
-	{
-		throw new Error( log( 'buildRequest' ) );
-	};
+    Builder.prototype.buildRequest = function( params )
+    {
+        throw new Error( log( 'buildRequest' ) );
+    };
 
-	Builder.prototype.buildResponse = function( params )
-	{
-		throw new Error( log( 'buildResponse' ) );
-	};
+    Builder.prototype.buildResponse = function( params )
+    {
+        throw new Error( log( 'buildResponse' ) );
+    };
 
-	Builder.prototype.get = function()
-	{
-		throw new Error( log( 'get' ) );
-	};
+    Builder.prototype.get = function()
+    {
+        throw new Error( log( 'get' ) );
+    };
 
-	module.exports = Builder;
+    module.exports = Builder;
 
 }() );

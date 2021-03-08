@@ -1,0 +1,66 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<library xmlns="http://www.demandware.com/xml/impex/library/2006-10-31" library-id="SiteGenesisSharedLibrary">
+
+    <content content-id="footer-about">
+        <display-name xml:lang="x-default">Footer About Links</display-name>
+        <display-name xml:lang="fr-FR">Liens À propos en pied de page</display-name>
+        <display-name xml:lang="it-IT">Link Informazioni su a piè di pagina </display-name>
+        <display-name xml:lang="ja-JP">フッターの企業情報リンク</display-name>
+        <display-name xml:lang="zh-CN">页脚关于链接</display-name>
+        <online-flag>true</online-flag>
+        <searchable-flag>false</searchable-flag>
+        <page-attributes/>
+        <custom-attributes>
+            <custom-attribute attribute-id="body" xml:lang="x-default">&lt;h3&gt;About&lt;/h3&gt;&#13;
+                &lt;ul class="menu-footer menu pipe"&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'about-us')$" title="Go to About Us"&gt;About Us&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'privacy-policy')$" title="Go to Privacy"&gt;Privacy&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'terms')$" title="Go to Terms"&gt;Terms&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'jobs-landing')$"title="Go to Jobs"&gt;Jobs&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('KlarnaPayments-InfoPage')$" title="Go to Klarna Info"&gt;Klarna Info&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;/ul&gt;&lt;!-- END: footer_about --&gt;</custom-attribute>
+            <custom-attribute attribute-id="body" xml:lang="fr-FR">&lt;h3&gt;À propos&lt;/h3&gt;&#13;
+                &lt;ul class="menu-footer menu pipe"&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'about-us')$" title="Aller à À propos de nous"&gt;À propos de nous&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'privacy-policy')$" title="Aller à Déclaration de confidentialité"&gt;Confidentialité&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'terms')$" title="Aller à Conditions générales"&gt;Conditions générales&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'jobs-landing')$" title="Aller à Carrières"&gt;Carrières&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('KlarnaPayments-InfoPage')$" title="Aller à Klarna Info"&gt;Klarna Info&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;/ul&gt;&lt;!-- END: footer_about --&gt;</custom-attribute>
+            <custom-attribute attribute-id="body" xml:lang="it-IT">&lt;h3&gt;Informazioni su&lt;/h3&gt;&#13;
+                &lt;ul class="menu-footer menu pipe"&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'about-us')$" title="Vai a Chi siamo"&gt;Chi siamo&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'privacy-policy')$" title="Vai a Privacy"&gt;Privacy&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'terms')$" title="Vai a Termini"&gt;Termini&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'jobs-landing')$" title="Vai a Lavora con noi"&gt;Lavora con noi&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('KlarnaPayments-InfoPage')$" title="Vai a Klarna Info"&gt;Klarna Info&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;/ul&gt;&lt;!-- END: footer_about --&gt;</custom-attribute>
+            <custom-attribute attribute-id="body" xml:lang="ja-JP">&lt;h3&gt;企業情報&lt;/h3&gt;&#13;
+                &lt;ul class="menu-footer menu pipe"&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'about-us')$" title="「Salesforce Commerce Cloud について」に移動する"&gt;Salesforce Commerce Cloud について&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'privacy-policy')$" title="「プライバシー」に移動する"&gt;プライバシー&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'terms')$" title="「利用条件」に移動する"&gt;利用条件&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'jobs-landing')$" title="「採用情報」に移動する"&gt;採用情報&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;/ul&gt;&lt;!-- END: footer_about --&gt;</custom-attribute>
+            <custom-attribute attribute-id="body" xml:lang="zh-CN">&lt;h3&gt;关于&lt;/h3&gt;&#13;
+                &lt;ul class="menu-footer menu pipe"&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'about-us')$" title="前往关于我们"&gt;公司&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'privacy-policy')$" title="前往隐私"&gt;隐私政策&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'terms')$" title="前往条款"&gt;条款&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;li&gt;&lt;a href="$url('Page-Show', 'cid', 'jobs-landing')$" title="前往招聘"&gt;招聘&lt;/a&gt;&lt;/li&gt;&#13;
+                &lt;/ul&gt;&lt;!-- END: footer_about --&gt;</custom-attribute>
+        </custom-attributes>
+    </content>
+
+    <content content-id="klarna-email-info">
+        <display-name xml:lang="x-default">klarna-email-info</display-name>
+        <online-flag>true</online-flag>
+        <searchable-flag>false</searchable-flag>
+        <page-attributes/>
+        <custom-attributes>
+            <custom-attribute attribute-id="body" xml:lang="x-default">&lt;span&gt;Please review in the &lt;a href="https://app.klarna.com/login"&gt;Klarna App&lt;/a&gt; your payment details and instructions for your order.&lt;/span&gt; &lt;br /&gt;&#13;
+&lt;span&gt;To contact Klarna customer support team directly, follow the link here &lt;a href="https://www.klarna.com/uk/customer-service/"&gt;Klarna Customer Service&lt;/a&gt;&lt;/span&gt;</custom-attribute>
+        </custom-attributes>
+    </content>
+
+</library>

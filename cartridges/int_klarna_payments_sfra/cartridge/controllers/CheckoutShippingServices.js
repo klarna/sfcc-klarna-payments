@@ -69,17 +69,18 @@ server.append('ToggleMultiShip', server.middleware.https, function (req, res, ne
 
 /**
  * Handle Ajax shipping form submit
+ * Logic should be executed on append & 'route:BeforeComplete' event when basket is re-calculated
  */
-server.prepend(
+server.append(
     'SubmitShipping',
     server.middleware.https,
     function (req, res, next) {
-        var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');
-        var KlarnaLocale = require('*/cartridge/scripts/klarna_payments/locale');
-        var userSession = req.session.raw;
+        this.on('route:BeforeComplete', function () { // eslint-disable-line no-shadow
+            var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');
 
-        var klarnaSessionManager = new KlarnaSessionManager(userSession, new KlarnaLocale());
-        klarnaSessionManager.createOrUpdateSession();
+            var klarnaSessionManager = new KlarnaSessionManager();
+            klarnaSessionManager.createOrUpdateSession();
+        });
 
         return next();
     }

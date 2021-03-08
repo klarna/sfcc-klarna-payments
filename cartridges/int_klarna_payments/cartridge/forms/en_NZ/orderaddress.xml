@@ -1,0 +1,45 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="firstname" label="profile.firstname" type="string" mandatory="true" binding="firstName" max-length="50" value-error="address.firstname.missing" />
+	<field formid="lastname" label="profile.lastname" type="string" mandatory="true" binding="lastName" max-length="50" value-error="address.lastname.missing" />
+	<field formid="address1" label="resource.address1" type="string" mandatory="true" binding="address1" max-length="50" value-error="resource.addresserror" />
+	<field formid="address2" label="resource.address2" type="string" mandatory="false" binding="address2" max-length="50" />
+	<field formid="city" label="resource.city" type="string" mandatory="true" binding="city" min-length="2" max-length="50" value-error="address.city.missing" />
+	<field formid="state" label="resource.state" type="string" mandatory="true" binding="stateCode" value-error="address.state.missing">
+		<options>
+			<option optionid="NTL" label="state.au.ntl" value="NTL" />
+			<option optionid="AUK" label="state.au.auk" value="AUK" />
+			<option optionid="WKO" label="state.au.wko" value="WKO" />
+			<option optionid="BOP" label="state.au.bop" value="BOP" />
+			<option optionid="GIS" label="state.au.gis" value="GIS" />
+			<option optionid="HKB" label="state.au.hkb" value="HKB" />
+			<option optionid="TKI" label="state.au.tki" value="TKI" />
+			<option optionid="MWT" label="state.au.mwt" value="MWT" />
+			<option optionid="WGN" label="state.au.wgn" value="WGN" />
+			<option optionid="TAS" label="state.au.tas" value="TAS" />
+			<option optionid="NSN" label="state.au.nsn" value="NSN" />
+			<option optionid="MBH" label="state.au.mbh" value="MBH" />
+			<option optionid="WTC" label="state.au.wtc" value="WTC" />
+			<option optionid="CAN" label="state.au.can" value="CAN" />
+			<option optionid="OTA" label="state.au.ota" value="OTA" />
+			<option optionid="STL" label="state.au.stl" value="STL" />
+		</options>
+	</field>
+	<field formid="postal" label="resource.zipcode" type="string" mandatory="true" min-length="4" max-length="10" regexp="(^([0-9]{4}))" binding="postalCode" missing-error="resource.errorzip" description="address.postalcode.example"/>
+
+	<field formid="country" label="resource.country" type="string" mandatory="true" binding="countryCode" value-error="address.country.missing">
+		<options>
+			<option optionid="nz" 	label="country.nz"	value="nz"/>
+		</options>
+	</field>
+	
+	<!-- use global state list -->
+	<include formid="states" name="states"/>
+	
+	<!-- we provide both a mandatory and an optional phone field - either one can be used
+		 depending on the specific requirements -->
+	<field formid="phone" label="profile.phone" description="address.phone.example" type="string" mandatory="true" binding="phone" max-length="20" missing-error="address.phone.missing" range-error="address.field.invalid" />
+	<!-- all possible actions performed on an address -->
+	<action formid="cancel" valid-form="false"/>
+	<action formid="confirm" valid-form="true"/>
+</form>

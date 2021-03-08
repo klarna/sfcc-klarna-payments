@@ -1,4 +1,4 @@
-/* globals empty */
+/* globals empty, session */
 
 /**
 * Klarna Session Manager
@@ -10,12 +10,6 @@ var BasketMgr = require('dw/order/BasketMgr');
 var Logger = require('dw/system/Logger');
 var log = Logger.getLogger('KlarnaPayments');
 var Transaction = require('dw/system/Transaction');
-var StringUtils = require('dw/util/StringUtils');
-var KlarnaPaymentsApiContext = require('*/cartridge/scripts/common/klarnaPaymentsApiContext');
-var KlarnaPayments = {
-    HttpService: require('*/cartridge/scripts/common/klarnaPaymentsHttpService'),
-    SessionRequestBuilder: require('*/cartridge/scripts/klarna_payments/requestBuilder/session')
-};
 
 /**
  * @constructor
@@ -23,18 +17,25 @@ var KlarnaPayments = {
  * @param {dw.system.Session} userSession - User session.
  * @param {KlarnaLocale} klarnaLocaleMgr - KlarnaLocale instance.
  */
-function KlarnaSessionManager(userSession, klarnaLocaleMgr) {
-    this.userSession = userSession;
-    this.klarnaLocaleMgr = klarnaLocaleMgr;
-}
+function KlarnaSessionManager() {}
 
 /**
  * Returns the KlarnaLocale instance passed when constructing this manager.
  *
- * @returns {KlarnaLocale} KlarnaLocale instance
+ * @param {string} currentCountry current country locale
+ *
+ * @return {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
  */
-KlarnaSessionManager.prototype.getKlarnaLocaleMgr = function () {
-    return this.klarnaLocaleMgr;
+KlarnaSessionManager.prototype.getLocale = function (currentCountry) {
+    var localeObject = {};
+    var getKlarnaPaymentsLocale = require('*/cartridge/scripts/locale/klarnaPaymentsGetLocale');
+    var localeObjectResult = getKlarnaPaymentsLocale.getLocaleObject(currentCountry);
+
+    if (localeObjectResult.success) {
+        localeObject = localeObjectResult.localeObject;
+    }
+
+    return localeObject;
 };
 
 /**
@@ -48,8 +49,8 @@ KlarnaSessionManager.prototype.getKlarnaLocaleMgr = function () {
  */
 KlarnaSessionManager.prototype.saveAuthorizationToken = function (token, finalizeRequired) {
     Transaction.wrap(function (authToken) {
-        this.userSession.privacy.KlarnaPaymentsAuthorizationToken = authToken;
-        this.userSession.privacy.KPAuthInfo = JSON.stringify({
+        session.privacy.KlarnaPaymentsAuthorizationToken = authToken;
+        session.privacy.KPAuthInfo = JSON.stringify({
             FinalizeRequired: finalizeRequired
         });
     }.bind(this, token));
@@ -62,32 +63,13 @@ KlarnaSessionManager.prototype.saveAuthorizationToken = function (token, finaliz
  */
 KlarnaSessionManager.prototype.loadAuthorizationInfo = function () {
     var authInfo = {};
-    var kpAuthInfo = JSON.parse(this.userSession.privacy.KPAuthInfo);
+    var kpAuthInfo = JSON.parse(session.privacy.KPAuthInfo);
 
     if (!empty(kpAuthInfo)) {
         authInfo = kpAuthInfo;
     }
 
     return authInfo;
-};
-
-/**
- * Creates a Klarna payments session through Klarna API
- * @param {dw.order.Basket} 		basket			SCC Basket object
- * @param {dw.object.CustomObject} 	localeObject 	corresponding to the locale Custom Object from KlarnaCountries
- *
- * @private
- * @return {Object} requestObject Klarna Payments request object
- */
-KlarnaSessionManager.prototype.getSessionRequestBody = function (basket, localeObject) {
-    var sessionRequestBuilder = new KlarnaPayments.SessionRequestBuilder();
-
-    sessionRequestBuilder.setParams({
-        basket: basket,
-        localeObject: localeObject
-    });
-
-    return sessionRequestBuilder.build();
 };
 
 /**
@@ -100,38 +82,10 @@ KlarnaSessionManager.prototype.getSessionRequestBody = function (basket, localeO
  * @returns {Object} Response from the GET call.
  */
 KlarnaSessionManager.prototype.refreshSession = function () {
-    var instance = this;
-
-    var localeObject = this.getKlarnaLocaleMgr().getLocale();
-    var klarnaPaymentsHttpService = {};
-    var klarnaApiContext = new KlarnaPaymentsApiContext();
-    var requestBody = {};
-    var requestUrl = '';
-    var response = {};
-    var klarnaSessionID = this.userSession.privacy.KlarnaPaymentsSessionID;
-    // eslint-disable-next-line no-trailing-spaces
-    
-    klarnaPaymentsHttpService = new KlarnaPayments.HttpService();
-    requestBody = this.getSessionRequestBody(BasketMgr.getCurrentBasket(), localeObject);
-    requestUrl = StringUtils.format(klarnaApiContext.getFlowApiUrls().get('updateSession'), klarnaSessionID);
-
-    try {
-        // Update session
-        klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-    } catch (e) {
-        return this.createSession();
-    }
-
-	// Read updated session
-    response = klarnaPaymentsHttpService.call(requestUrl, 'GET', localeObject.custom.credentialID);
-    var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify(response.payment_method_categories) : null;
-
-    Transaction.wrap(function () {
-        instance.userSession.privacy.KlarnaPaymentsClientToken = response.client_token;
-        instance.userSession.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
-    });
-
-    return response;
+    var localeObject = this.getLocale();
+    var updateSessionHelper = require('*/cartridge/scripts/session/klarnaPaymentsUpdateSession');
+    var updateSessionResponse = updateSessionHelper.updateSession(session.privacy.KlarnaPaymentsSessionID, BasketMgr.getCurrentBasket(), localeObject);
+    return updateSessionResponse.response;
 };
 
 /**
@@ -143,38 +97,18 @@ KlarnaSessionManager.prototype.refreshSession = function () {
  * @returns {Object} Klarna API call response.
  */
 KlarnaSessionManager.prototype.createSession = function () {
-    var instance = this;
-
-    var localeObject = this.getKlarnaLocaleMgr().getLocale();
-    var klarnaPaymentsHttpService = {};
-    var klarnaApiContext = new KlarnaPaymentsApiContext();
-    var requestBody = {};
-    var requestUrl = '';
-    var response = {};
-
-    klarnaPaymentsHttpService = new KlarnaPayments.HttpService();
-    requestBody = this.getSessionRequestBody(BasketMgr.getCurrentBasket(), localeObject);
-    requestUrl = klarnaApiContext.getFlowApiUrls().get('createSession');
-
-    response = klarnaPaymentsHttpService.call(requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
-    var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify(response.payment_method_categories) : null;
-
-    Transaction.wrap(function () {
-        instance.userSession.privacy.KlarnaLocale = localeObject.custom.klarnaLocale;
-        instance.userSession.privacy.KlarnaPaymentsSessionID = response.session_id;
-        instance.userSession.privacy.KlarnaPaymentsClientToken = response.client_token;
-        instance.userSession.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
-        instance.userSession.privacy.SelectedKlarnaPaymentMethod = null;
-    });
-
-    return response;
+    var localeObject = this.getLocale();
+    var createSessionHelper = require('*/cartridge/scripts/session/klarnaPaymentsCreateSession');
+    var createSessionResponse = createSessionHelper.createSession(BasketMgr.currentBasket, localeObject);
+    return createSessionResponse.response;
 };
 
+/**
+ * Removes Klarna Session
+ */
 KlarnaSessionManager.prototype.removeSession = function () {
-    var instance = this;
-
     Transaction.wrap(function () {
-        instance.userSession.privacy.KlarnaPaymentsSessionID = null;
+        session.privacy.KlarnaPaymentsSessionID = null;
     });
 };
 
@@ -184,10 +118,10 @@ KlarnaSessionManager.prototype.removeSession = function () {
  * @returns {bool} true, if the session is valid.
  */
 KlarnaSessionManager.prototype.hasValidSession = function () {
-    var localeObject = this.getKlarnaLocaleMgr().getLocale();
-    var localesMatch = (localeObject.custom.klarnaLocale === this.userSession.privacy.KlarnaLocale);
+    var localeObject = this.getLocale();
+    var localesMatch = (localeObject.custom.klarnaLocale === session.privacy.KlarnaLocale);
 
-    return (!empty(this.userSession.privacy.KlarnaPaymentsSessionID) && localesMatch);
+    return (!empty(session.privacy.KlarnaPaymentsSessionID) && localesMatch);
 };
 
 /**
@@ -196,10 +130,8 @@ KlarnaSessionManager.prototype.hasValidSession = function () {
  * @returns {Object} Last API call's response; on error - null
  */
 KlarnaSessionManager.prototype.createOrUpdateSession = function () {
-    var instance = this;
-
     try {
-        if (instance.hasValidSession()) {
+        if (this.hasValidSession()) {
             return this.refreshSession();
         }
 
@@ -208,10 +140,10 @@ KlarnaSessionManager.prototype.createOrUpdateSession = function () {
         log.error('Error in handling Klarna Payments Session: {0}', e.message + e.stack);
 
         Transaction.wrap(function () {
-            instance.userSession.privacy.KlarnaPaymentsSessionID = null;
-            instance.userSession.privacy.KlarnaPaymentsClientToken = null;
-            instance.userSession.privacy.KlarnaPaymentMethods = null;
-            instance.userSession.privacy.SelectedKlarnaPaymentMethod = null;
+            session.privacy.KlarnaPaymentsSessionID = null;
+            session.privacy.KlarnaPaymentsClientToken = null;
+            session.privacy.KlarnaPaymentMethods = null;
+            session.privacy.SelectedKlarnaPaymentMethod = null;
         });
 
         return null;

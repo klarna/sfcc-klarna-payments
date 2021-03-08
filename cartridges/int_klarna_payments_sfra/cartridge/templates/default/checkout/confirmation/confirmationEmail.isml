@@ -105,12 +105,14 @@
                     </div>
                 </isif>
                 <isif condition="${payment.paymentMethod === 'KLARNA_PAYMENTS'}">
-                    <isscript>
-                        var klarnaPaymentMethodName = require('*/cartridge/scripts/util/klarnaUtils').getKlarnaPaymentMethodName();
-                    </isscript>
+                    <isset name="klarnaPaymentMethodName" value="${require('*/cartridge/scripts/util/klarnaHelper').getKlarnaPaymentMethodName()}" scope="page" />
+                    <isset name="confirmationAsset" value="${require('*/cartridge/scripts/util/klarnaHelper').getConfirmationEmailAsset()}" scope="page" />
+
                     <div class="row payment-method">
                         <span class="method-name">${klarnaPaymentMethodName}</span> <br />
-                        <span class="payment-category-name">${payment.categoryName}</span>
+                        <span class="payment-category-name">${payment.categoryName}</span> <br/><br/>
+                        <span class="payment-reference">${Resource.msg('email.order.reference', 'klarnapayments', null)}: ${pdict.order.klarnaOrderId}</span> <br/>
+                        <span><isprint value="${confirmationAsset}" encoding="off" /></span>
                     </div>
                 </isif>
             </isloop>

@@ -6,6 +6,7 @@
         <storage-scope>site</storage-scope>
         <key-definition attribute-id="country">
             <display-name xml:lang="x-default">Country Code</display-name>
+            <description xml:lang="x-default">Two-letter country code</description>
             <type>string</type>
             <min-length>0</min-length>
             <field-length>0</field-length>
@@ -13,6 +14,7 @@
         <attribute-definitions>
             <attribute-definition attribute-id="klarnaLocale">
                 <display-name xml:lang="x-default">On-site Messaging Data Default Locale</display-name>
+                <description xml:lang="x-default">Fallback, if the request locale can’t be dynamically resolved, i.e., when using “default” SFCC locale</description>
                 <type>string</type>
                 <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
@@ -21,6 +23,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="credentialID">
                 <display-name xml:lang="x-default">Service Credential ID</display-name>
+                <description xml:lang="x-default">The ID of service credentials for this locale</description>
                 <type>string</type>
                 <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
@@ -29,47 +32,86 @@
             </attribute-definition>
             <attribute-definition attribute-id="osmUCI">
                 <display-name xml:lang="x-default">On-site messaging Data Client ID</display-name>
+                <description xml:lang="x-default">The Klarna On-site Messaging “data-client-id” applicable for a given country</description>
                 <type>string</type>
                 <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="osmCartEnabled">
+            <attribute-definition attribute-id="osmCartEnabled">
                 <display-name xml:lang="x-default">Cart Placement Tag Enabled</display-name>
-                <description xml:lang="x-default">Whether Cart Placement Tag is Enabled</description>
+                <description xml:lang="x-default">To enable Cart Placement for a given locale.</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-				<default-value>false</default-value>
             </attribute-definition>
-			<attribute-definition attribute-id="osmCartTagId">
+            <attribute-definition attribute-id="osmCartTagId">
                 <display-name xml:lang="x-default">Cart Placement Data Key</display-name>
-                <description xml:lang="x-default">Data Key of On-site messaging placement tag for Cart Page.</description>
+                <description xml:lang="x-default">The Klarna On-site Messaging “data-key” of placement applicable for Cart Page for a given locale.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-				<default-value></default-value>
             </attribute-definition>
-			<attribute-definition attribute-id="osmPDPEnabled">
+            <attribute-definition attribute-id="osmPDPEnabled">
                 <display-name xml:lang="x-default">PDP Placement Tag Enabled</display-name>
-                <description xml:lang="x-default">Whether PDP Placement Tag is Enabled</description>
+                <description xml:lang="x-default">To enable PDP Placement for a given locale.</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-				<default-value>false</default-value>
             </attribute-definition>
-			<attribute-definition attribute-id="osmPDPTagId">
+            <attribute-definition attribute-id="osmPDPTagId">
                 <display-name xml:lang="x-default">PDP Placement Data Key</display-name>
-                <description xml:lang="x-default">Data Key of On-site messaging placement tag for PDP Page.</description>
+                <description xml:lang="x-default">The Klarna On-site Messaging “data-key” of placement applicable for Product Display page for a given locale</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-				<default-value></default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmHeaderEnabled">
+                <display-name xml:lang="x-default">Header Placement Tag Enabled</display-name>
+                <description xml:lang="x-default">To enable Klarna Header Placement in a given storefront</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmHeaderTagId">
+                <display-name xml:lang="x-default">Header Placement Data Key</display-name>
+                <description xml:lang="x-default">The Klarna On-site Messaging “data-key” of placement applicable for the Header</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmFooterEnabled">
+                <display-name xml:lang="x-default">Footer Placement Tag Enabled</display-name>
+                <description xml:lang="x-default">To enable Klarna footer Placement in a given storefront</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmFooterTagId">
+                <display-name xml:lang="x-default">Footer Placement Data Key</display-name>
+                <description xml:lang="x-default">The Klarna On-site Messaging “data-key” of placement applicable for the footer.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmInfoPageEnabled">
+                <display-name xml:lang="x-default">Info Page Placement Tag Enabled</display-name>
+                <description xml:lang="x-default">To enable Klarna Info Page Placement in a given storefront</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmInfoPageTagId">
+                <display-name xml:lang="x-default">Info Page Placement Data Key</display-name>
+                <description xml:lang="x-default">The Klarna On-site Messaging “data-key” of placement applicable for the Info Page .</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="osmLibraryUrl">
-                <display-name xml:lang="x-default">Library URL</display-name>
-                <description xml:lang="x-default">URL to On-Site Messaging Library URL</description>
+                <display-name xml:lang="x-default">URL to On-Site Messaging Library URL</display-name>
+                <description xml:lang="x-default">URL to On-Site Messaging Library URL, applicable for testing and production</description>
                 <type>string</type>
                 <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
@@ -84,11 +126,17 @@
                 <attribute attribute-id="klarnaLocale"/>
                 <attribute attribute-id="credentialID"/>
                 <attribute attribute-id="osmUCI"/>
-				<attribute attribute-id="osmCartEnabled"/>
-				<attribute attribute-id="osmCartTagId"/>
-				<attribute attribute-id="osmPDPEnabled"/>
-				<attribute attribute-id="osmPDPTagId"/>
-				<attribute attribute-id="osmLibraryUrl"/>
+                <attribute attribute-id="osmCartEnabled"/>
+                <attribute attribute-id="osmCartTagId"/>
+                <attribute attribute-id="osmPDPEnabled"/>
+                <attribute attribute-id="osmPDPTagId"/>
+                <attribute attribute-id="osmHeaderEnabled"/>
+                <attribute attribute-id="osmHeaderTagId"/>
+                <attribute attribute-id="osmFooterEnabled"/>
+                <attribute attribute-id="osmFooterTagId"/>
+                <attribute attribute-id="osmInfoPageEnabled"/>
+                <attribute attribute-id="osmInfoPageTagId"/>
+                <attribute attribute-id="osmLibraryUrl"/>
             </attribute-group>
         </group-definitions>
     </custom-type>

@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="state" label="resource.state" type="string" mandatory="false" binding="stateCode" missing-error="address.state.missing" value-error="address.field.invalid">
+		<options>
+			<option optionid=""   label="resource.select" value=""/>
+			<!-- regular AU states -->
+			<option optionid="NSW" label="state.au.nsw" value="NSW"/>
+			<option optionid="ACT" label="state.au.act" value="ACT"/>
+			<option optionid="VIC" label="state.au.vic" value="VIC"/>
+			<option optionid="QLD" label="state.au.qld" value="QLD"/>
+			<option optionid="SA" label="state.au.sa" value="SA"/>
+			<option optionid="WA" label="state.au.wa" value="WA"/>
+			<option optionid="TAS" label="state.au.tas" value="TAS"/>
+			<option optionid="NT" label="state.au.nt" value="NT"/>
+		</options>
+	</field>
+</form>

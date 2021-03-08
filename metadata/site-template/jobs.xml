@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<jobs xmlns="http://www.demandware.com/xml/impex/jobs/2015-07-01">
+    <job job-id="OrderCleanUp" priority="0">
+        <description>Clean up exported VCN orders and remove sensitive card data</description>
+        <parameters/>
+        <flow>
+            <context site-id="RefArch"/>
+            <step step-id="execute" type="ExecuteScriptModule" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="ExecuteScriptModule.Module">int_klarna_payments/cartridge/scripts/job/OrderCleanUpJob.js</parameter>
+                    <parameter name="ExecuteScriptModule.FunctionName">execute</parameter>
+                    <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2020-09-09Z</date>
+                <time>06:52:39.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+</jobs>

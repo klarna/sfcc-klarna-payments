@@ -2,10 +2,19 @@
 <form xmlns="http://www.demandware.com/xml/form/2008-04-19">
 	<field formid="stateCode" label="label.input.state" type="string" mandatory="true" binding="stateCode" missing-error="address.state.missing" value-error="address.field.invalid" parse-error="error.message.required">
 		<options>
-			<option optionid="" 	label="resource.select" 		value=""/>
+			<option optionid="" label="resource.select" value=""/>
 
 			<!-- regular SE states -->
-			<option optionid="ON" 	label="state.ca.ontario" 		value="ON"/>
+			<option optionid='ON' label='state.ca.on' value='ON'/>
+			<option optionid='QC' label='state.ca.qc' value='QC'/>
+			<option optionid='NS' label='state.ca.ns' value='NS'/>
+			<option optionid='NB' label='state.ca.nb' value='NB'/>
+			<option optionid='MB' label='state.ca.mb' value='MB'/>
+			<option optionid='BC' label='state.ca.bc' value='BC'/>
+			<option optionid='PE' label='state.ca.pe' value='PE'/>
+			<option optionid='SK' label='state.ca.sk' value='SK'/>
+			<option optionid='AB' label='state.ca.ab' value='AB'/>
+			<option optionid='NL' label='state.ca.nl' value='NL'/>
 		</options>
 	</field>
 </form>

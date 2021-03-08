@@ -11,7 +11,7 @@
 	<field formid="postal" label="resource.zipcode" type="string" mandatory="true" min-length="4" max-length="10" binding="postalCode" missing-error="resource.errorzip"/>
 		
 	<!-- use set of supported billing countries -->
-	<field formid="country" label="resource.country" type="string" default="ca" mandatory="true" binding="countryCode" missing-error="address.country.missing" value-error="address.field.invalid">
+	<field formid="country" label="resource.country" type="string" default="be" mandatory="true" binding="countryCode" missing-error="address.country.missing" value-error="address.field.invalid">
 		<options>
 			<option optionid="be" label="country.belgium" value="be"/>
 		</options>

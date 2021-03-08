@@ -38,10 +38,8 @@ server.prepend('Get', server.middleware.https, function (req, res, next) {
     }
 
     var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');
-    var KlarnaLocale = require('*/cartridge/scripts/klarna_payments/locale');
-    var userSession = req.session.raw;
 
-    var klarnaSessionManager = new KlarnaSessionManager(userSession, new KlarnaLocale());
+    var klarnaSessionManager = new KlarnaSessionManager();
     klarnaSessionManager.createOrUpdateSession();
 
     return next();
@@ -52,7 +50,7 @@ server.append(
     function (req, res, next) {
         var Transaction = require('dw/system/Transaction');
         var BasketMgr = require('dw/order/BasketMgr');
-        var KlarnaUtils = require('*/cartridge/scripts/util/klarnaUtils');
+        var KlarnaUtils = require('*/cartridge/scripts/util/klarnaHelper');
         var StringUtils = require('dw/util/StringUtils');
         var Money = require('dw/value/Money');
 
@@ -61,7 +59,7 @@ server.append(
         var currentBasket = BasketMgr.getCurrentBasket();
 
         if (empty(viewData.error) && !viewData.error && viewData.paymentMethod.value === 'KLARNA_PAYMENTS') {
-            var KlarnaPaymentsCategoriesModel = require('*/cartridge/scripts/klarna_payments/model/categories');
+            var KlarnaPaymentsCategoriesModel = require('*/cartridge/scripts/payments/model/categories');
             var userSession = req.session.raw;
 
             var paymentCategoryID = klarnaForm.paymentCategory.value;
@@ -93,7 +91,7 @@ server.append(
 
         if (viewData.paymentMethod.value !== 'KLARNA_PAYMENTS') {
             // Cancel any previous authorizations
-            var processor = require('*/cartridge/scripts/klarna_payments/processor');
+            var processor = require('*/cartridge/scripts/payments/processor');
             processor.cancelAuthorization();
         }
 

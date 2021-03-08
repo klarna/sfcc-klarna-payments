@@ -1,8 +1,5 @@
 <isset name="ProductPrice" value="${pdict.p_price}" scope="page"/>
-
-<isscript>
-    var KlarnaOSM = require('~/cartridge/scripts/klarna_payments/osm');
-</isscript>
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
 <isif condition="${KlarnaOSM.isEnabledPDPPage()}">
     <div class="kosm-pdp">

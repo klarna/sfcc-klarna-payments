@@ -1,6 +1,4 @@
-<isscript>
-    var KlarnaOSM = require('~/cartridge/scripts/marketing/KlarnaOSM');
-</isscript>
+<isset name="KlarnaOSM" value="${require('~/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
 <isif condition="${KlarnaOSM.isEnabled()}">
     <script async src="${KlarnaOSM.getScriptURL()}" data-client-id="${KlarnaOSM.getUCI()}"></script>

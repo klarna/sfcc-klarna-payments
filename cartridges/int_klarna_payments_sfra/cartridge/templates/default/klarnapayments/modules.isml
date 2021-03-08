@@ -9,4 +9,12 @@
 	attribute="p_price"
 />
 
+<ismodule template="klarnapayments/kosm/footer.isml"
+	name="kosmfooter"
+/>
+
+<ismodule template="klarnapayments/kosm/header.isml"
+	name="kosmheader"
+/>
+
 <isset name="klarnaOSMJsAdded" value="${false}" scope="page" />

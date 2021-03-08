@@ -1,0 +1,8 @@
+<isset name="KlarnaOSM" value="${require('~/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+
+<isif condition="${KlarnaOSM.isEnabledInfoPage()}">
+    <div class="kosm-info">
+        <klarna-placement data-key="${KlarnaOSM.getInfoPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}"></klarna-placement>
+        <isset name="isKlarnaOSMScriptRequired" value="${true}" scope="page" />
+    </div>
+</isif>

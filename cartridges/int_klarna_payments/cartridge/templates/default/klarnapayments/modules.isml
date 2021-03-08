@@ -5,6 +5,7 @@
 <ismodule template="klarnapayments/shippingaddresshelper.isml"
 	name="kpaddresshelper"
 	attribute="p_address"
+	attribute="p_shipment"
 />
 
 <ismodule template="klarnapayments/kosm/cart.isml"
@@ -15,4 +16,12 @@
 <ismodule template="klarnapayments/kosm/pdp.isml"
 	name="kosmpdp"
 	attribute="p_product"
+/>
+
+<ismodule template="klarnapayments/kosm/footer.isml"
+	name="kosmfooter"
+/>
+
+<ismodule template="klarnapayments/kosm/header.isml"
+	name="kosmheader"
 />

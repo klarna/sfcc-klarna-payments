@@ -1,10 +1,18 @@
 <iscontent type="text/html" charset="UTF-8" compact="true"/>
 
-<input type="hidden" value="${pdict.p_address.firstName}" id="shipping_address_firstName" />
-<input type="hidden" value="${pdict.p_address.lastName}" id="shipping_address_lastName" />
-<input type="hidden" value="${pdict.p_address.address1}" id="shipping_address_address1" />
-<input type="hidden" value="${pdict.p_address.city}" id="shipping_address_city" />
-<input type="hidden" value="${pdict.p_address.stateCode}" id="shipping_address_stateCode" />
-<input type="hidden" value="${pdict.p_address.postalCode}" id="shipping_address_postalCode" />
-<input type="hidden" value="${pdict.p_address.countryCode}" id="shipping_address_countryCode" />
-<input type="hidden" value="${pdict.p_address.phone}" id="shipping_address_phone" />
+<isset name="shipmentType" value="home" scope="page"/>
+<isif condition="${!empty(pdict.p_shipment.custom.fromStoreId)}" >
+    <isset name="shipmentType" value="instore" scope="page"/>
+</isif>
+
+<div class="klarna_payments_shipment_data" data-shipment-type="${shipmentType}">
+    <input type="hidden" value="${empty(pdict.p_shipment.custom.fromStoreId) ? pdict.p_address.firstName : ''}" id="shipping_address_firstName" />
+    <input type="hidden" value="${empty(pdict.p_shipment.custom.fromStoreId) ? pdict.p_address.lastName : ''}" id="shipping_address_lastName" />
+    <input type="hidden" value="${pdict.p_address.address1 || ''}" id="shipping_address_address1" />
+    <input type="hidden" value="${pdict.p_address.address2 || ''}" id="shipping_address_address2" />
+    <input type="hidden" value="${pdict.p_address.city || ''}" id="shipping_address_city" />
+    <input type="hidden" value="${pdict.p_address.stateCode || ''}" id="shipping_address_stateCode" />
+    <input type="hidden" value="${pdict.p_address.postalCode || ''}" id="shipping_address_postalCode" />
+    <input type="hidden" value="${pdict.p_address.countryCode.value.toUpperCase() || ''}" id="shipping_address_countryCode" />
+    <input type="hidden" value="${pdict.p_address.phone || ''}" id="shipping_address_phone" />
+</div>

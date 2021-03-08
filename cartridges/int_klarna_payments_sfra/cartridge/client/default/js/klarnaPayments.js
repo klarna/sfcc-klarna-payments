@@ -1,5 +1,7 @@
 /* globals $, Klarna */
 
+var summaryHelpers = require('base/checkout/summary');
+
 /**
  * Checkout enhancements for Klarna support.
  *
@@ -11,6 +13,7 @@ var KlarnaCheckout = {
     currentStage: null,
     klarnaPaymentsUrls: null,
     klarnaPaymentsObjects: null,
+    klarnaPaymentsConstants: null,
     prefix: 'klarna'
 };
 
@@ -46,6 +49,7 @@ KlarnaCheckout.getCookie = function (name) {
 KlarnaCheckout.init = function (config) {
     this.klarnaPaymentsUrls = config.urls;
     this.klarnaPaymentsObjects = config.objects;
+    this.klarnaPaymentsConstants = config.constants;
 
     setInterval(function () {
         var currentStage = $('.data-checkout-stage').attr('data-checkout-stage');
@@ -188,6 +192,8 @@ KlarnaCheckout.refreshKlarnaPaymentOptions = function () {
     $klarnaPaymentCategories.each(function (index, el) {
         var $el = $(el);
         var klarnaPaymentCategoryId = this.getKlarnaPaymentMethod($el.attr('data-method-id'));
+        this.displayPaymentCategory(klarnaPaymentCategoryId, true);
+        this.greyoutPaymentCategory(klarnaPaymentCategoryId, false);
 
         if (klarnaPaymentCategoryId === selectedPaymentOptionId) {
             $el.click();
@@ -208,7 +214,7 @@ KlarnaCheckout.handleUpdateCheckoutView = function (data) {
     var order = data.order;
 
     if (!order.billing.payment || !order.billing.payment.selectedPaymentInstruments
-		|| !order.billing.payment.selectedPaymentInstruments.length > 0) {
+        || !order.billing.payment.selectedPaymentInstruments.length > 0) {
         return;
     }
 
@@ -217,6 +223,10 @@ KlarnaCheckout.handleUpdateCheckoutView = function (data) {
 
 KlarnaCheckout.getKlarnaPaymentOptionTabs = function () {
     return $('.klarna-payment-item');
+};
+
+KlarnaCheckout.getPaymentOptionTabs = function () {
+    return $('.payment-options .nav-item');
 };
 
 /**
@@ -255,14 +265,23 @@ KlarnaCheckout.initPaymentOptionsTabs = function () {
  * based on current billing and shipping address information.
  */
 KlarnaCheckout.bindListenersToPaymentCategories = function () {
-    var $klarnaPaymentCategories = this.getKlarnaPaymentOptionTabs();
+    var $paymentCategories = this.getPaymentOptionTabs();
 
-    $klarnaPaymentCategories.each(function (index, el) {
-        var $klarnaPaymentCategory = $(el);
-        var klarnaPaymentCategoryId = this.getKlarnaPaymentMethod($klarnaPaymentCategory.attr('data-method-id'));
+    $paymentCategories.each(function (index, el) {
+        var $paymentCategory = $(el);
+        var paymentMethodId = this.getKlarnaPaymentMethod($paymentCategory.attr('data-method-id'));
+        var isKlarnaMethod = this.isKlarnaPaymentCategory(paymentMethodId);
 
-        $klarnaPaymentCategory.on('click', function () {
-            this.loadPaymentData(klarnaPaymentCategoryId);
+        $paymentCategory.on('click', function () {
+            var $tabContent = $($paymentCategory.find('.nav-link').attr('href'));
+
+            $tabContent.find('input, textarea, select').removeAttr('disabled', 'disabled');
+
+            if (isKlarnaMethod) {
+                this.submitPaymentMethod($tabContent, this.loadPaymentData(paymentMethodId));
+            } else {
+                this.submitPaymentMethod($tabContent);
+            }
         }.bind(this));
     }.bind(this));
 };
@@ -357,20 +376,30 @@ KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
         };
 
         if (this.isKlarnaPaymentCategory(selectedPaymentMethod)) {
+            var klarnaPaymentMethod = this.getKlarnaPaymentMethod(selectedPaymentMethod);
             event.preventDefault(); // prevent form submission until authorize call is done
 
             $klarnaSubmitPaymentBtn.prop('disabled', true);
 
             if (this.userHasEnteredShippingAddress()) {
-                klarnaRequestData.shipping_address = this.obtainShippingAddressData();
+                klarnaRequestData.shipping_address = this.obtainShippingAddressData(klarnaRequestData.billing_address);
             }
 
             if (window.KPCustomerInfo && window.KPCustomerInfo.attachment) {
-                klarnaRequestData.attachment = window.KPCustomerInfo.attachment;
+                this.useMultiShipping();
+                var kpAttachment = window.KPCustomerInfo.attachment;
+
+                var kpAttachmentBody = JSON.parse(kpAttachment.body);
+                var otherAddresses = this.getMultiShipOtherAddresses(klarnaRequestData.billing_address);
+
+                kpAttachmentBody.other_delivery_address = otherAddresses;
+                kpAttachment.body = JSON.stringify(kpAttachmentBody);
+
+                klarnaRequestData.attachment = kpAttachment;
             }
 
             Klarna.Payments.authorize({
-                payment_method_category: this.getKlarnaPaymentMethod(selectedPaymentMethod),
+                payment_method_category: klarnaPaymentMethod,
                 auto_finalize: false
             }, klarnaRequestData, function (res) {
                 if (res.approved) {
@@ -385,12 +414,24 @@ KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
 
                         $klarnaSubmitPaymentBtn.prop('disabled', true);
 
-						// call the click event on the original checkout button
-						// to trigger checkout stage processing
+                        // call the click event on the original checkout button
+                        // to trigger checkout stage processing
                         $submitPaymentBtn.click();
                     });
                 } else if (res.show_form) {
                     $klarnaSubmitPaymentBtn.prop('disabled', false);
+                } else if (!res.show_form && this.klarnaPaymentsObjects.hideRejectedPayments === 'hide') {
+                    this.hidePaymentCategory(selectedPaymentMethod);
+
+                    var $firstItem = $('.payment-options .nav-item:not(.d-none) a[data-toggle="tab"]').first();
+
+                    if ($firstItem.length > 0) {
+                        $firstItem.click();
+                        $klarnaSubmitPaymentBtn.prop('disabled', false);
+                    }
+                } else if (!res.show_form && this.klarnaPaymentsObjects.hideRejectedPayments === 'greyout') {
+                    this.greyoutPaymentCategory(selectedPaymentMethod, true);
+                    $klarnaSubmitPaymentBtn.prop('disabled', true);
                 }
             }.bind(this));
         }
@@ -410,6 +451,8 @@ KlarnaCheckout.handlePaymentNeedsPreassesment = function () {
     var $billingAddressFormElements = $billingAddressElementsFields.find('input, select');
 
     $billingAddressForm.on('change', function () {
+        var tabContentId = $('.payment-options .nav-link.active').attr('href');
+        var $tabContent = $(tabContentId);
         var selectedPaymentMethod = this.getSelectedPaymentMethod();
 
         var formValid = true;
@@ -424,7 +467,9 @@ KlarnaCheckout.handlePaymentNeedsPreassesment = function () {
         });
 
         if (formValid && this.isKlarnaPaymentCategory(selectedPaymentMethod)) {
-            this.loadPaymentData(selectedPaymentMethod);
+            this.submitPaymentMethod($tabContent, this.loadPaymentData(selectedPaymentMethod));
+        } else {
+            this.submitPaymentMethod($tabContent);
         }
     }.bind(this));
 };
@@ -450,14 +495,14 @@ KlarnaCheckout.updatePaymentSummary = function (order) {
         htmlToAppend += '</div>';
     } else {
         htmlToAppend += '<span>' + order.resources.cardType + ' '
-			+ firstPaymentInstrument.type
-			+ '</span><div>'
-			+ firstPaymentInstrument.maskedCreditCardNumber
-			+ '</div><div><span>'
-			+ order.resources.cardEnding + ' '
-			+ firstPaymentInstrument.expirationMonth
-			+ '/' + firstPaymentInstrument.expirationYear
-			+ '</span></div>';
+            + firstPaymentInstrument.type
+            + '</span><div>'
+            + firstPaymentInstrument.maskedCreditCardNumber
+            + '</div><div><span>'
+            + order.resources.cardEnding + ' '
+            + firstPaymentInstrument.expirationMonth
+            + '/' + firstPaymentInstrument.expirationYear
+            + '</span></div>';
     }
 
     $paymentSummary.empty().append(htmlToAppend);
@@ -498,7 +543,7 @@ KlarnaCheckout.obtainBillingAddressData = function () {
         address.region = $billingAddressFieldset.find('.billingState').val();
         address.postal_code = $billingAddressFieldset.find('.billingZipCode').val();
         address.country = $billingAddressFieldset.find('.billingCountry').val();
-        address.phone = $billingAddressFieldset.find('.billingPhoneNumber').val();
+        address.phone = $contactInfoBlock.find('.phone').val();
         address.email = $contactInfoBlock.find('.email').val();
     } else {
         var $addressSelectorElement = $paymentForm.find('.addressSelector');
@@ -512,7 +557,7 @@ KlarnaCheckout.obtainBillingAddressData = function () {
         address.region = $selectedOption.attr('data-state-code');
         address.postal_code = $selectedOption.attr('data-postal-code');
         address.country = $selectedOption.attr('data-country-code');
-        address.phone = $selectedOption.attr('data-phone');
+        address.phone = $contactInfoBlock.find('.phone').val();
         address.email = $contactInfoBlock.find('.email').val();
     }
 
@@ -523,11 +568,13 @@ KlarnaCheckout.obtainBillingAddressData = function () {
  * Obtain shipping address information on submit payment stage.
  *
  * Shipping address information is taken from the shipping address
- * block.
+ * block. In case of multi-shipping we will return the first home address if
+ * possible or the pickup one.
  *
+ * @param {Object} billingAddress The order billing address
  * @returns {Object} - Klarna shipping address.
  */
-KlarnaCheckout.obtainShippingAddressData = function () {
+KlarnaCheckout.obtainShippingAddressData = function (billingAddress) {
     var address = {
         given_name: '',
         family_name: '',
@@ -543,19 +590,161 @@ KlarnaCheckout.obtainShippingAddressData = function () {
 
     var $shippingAddressBlock = $('.single-shipping .shipping-address-block');
     var $contactInfoBlock = $('.contact-info-block');
+    var useMultiShip = this.useMultiShipping();
 
-    address.given_name = $shippingAddressBlock.find('.shippingFirstName').val();
-    address.family_name = $shippingAddressBlock.find('.shippingLastName').val();
-    address.street_address = $shippingAddressBlock.find('.shippingAddressOne').val();
-    address.street_address2 = $shippingAddressBlock.find('.shippingAddressTwo').val();
-    address.city = $shippingAddressBlock.find('.shippingAddressCity').val();
-    address.region = $shippingAddressBlock.find('.shippingState').val();
-    address.postal_code = $shippingAddressBlock.find('.shippingZipCode').val();
-    address.country = $shippingAddressBlock.find('.shippingCountry').val();
-    address.phone = $shippingAddressBlock.find('.shippingPhoneNumber').val();
+    if (!useMultiShip) {
+        // If we have only one shipping - it can still be store pickup. In which case
+        // we should retirieve the names from billing form
+        var $shippingForm = $('.multi-shipping .shipping-form');
+        var $selctedShippingMethod = $('input[name$="_shippingAddress_shippingMethodID"]:checked', $shippingForm);
+        // eslint-disable-next-line eqeqeq
+        var isStorePickup = ($selctedShippingMethod.length === 1) ? $selctedShippingMethod.attr('data-pickup') == 'true' : false;
+
+        address = this.buildShippingAddressData($shippingAddressBlock, isStorePickup ? billingAddress : null);
+    } else {
+        address = this.getMultiShipDefaultAddress(billingAddress);
+    }
+
     address.email = $contactInfoBlock.find('.email').val();
 
     return address;
+};
+
+/**
+ * Builds the shipping address object.
+ *
+ * Shipping address information is taken from the shipping address block. If the
+ * billing object is passed, then the billing first & last name will be used.
+ *
+ * @param {Object} $addressBlock The HTML element that contains the address details
+ * @param {Object} billingAddress The order billing address
+ * @returns {Object} - Klarna shipping address.
+ */
+KlarnaCheckout.buildShippingAddressData = function ($addressBlock, billingAddress) {
+    var address = {
+        given_name: $addressBlock.find('.shippingFirstName').val(),
+        family_name: $addressBlock.find('.shippingLastName').val(),
+        street_address: $addressBlock.find('.shippingAddressOne').val(),
+        street_address2: $addressBlock.find('.shippingAddressTwo').val(),
+        city: $addressBlock.find('.shippingAddressCity').val(),
+        postal_code: $addressBlock.find('.shippingZipCode').val(),
+        region: $addressBlock.find('.shippingState').val(),
+        country: $addressBlock.find('.shippingCountry').val(),
+        phone: $addressBlock.find('.shippingPhoneNumber').val()
+    };
+
+    if (billingAddress) {
+        if (billingAddress.given_name !== '') {
+            address.given_name = billingAddress.given_name;
+        }
+
+        if (billingAddress.family_name !== '') {
+            address.family_name = billingAddress.family_name;
+        }
+    }
+
+    return address;
+};
+
+/**
+ * Builds the additional store pickup address object
+ *
+ * Shipping address information is taken from the shipping address block. If the
+ * billing object is passed, then the billing first & last name will be used.
+ *
+ * @param {Object} $addressBlock The HTML element that contains the address details
+ * @param {Object} billingAddress The order billing address
+ * @returns {Object} - Klarna pickup shipping address.
+ */
+KlarnaCheckout.buildOtherAddressData = function ($addressBlock, billingAddress) {
+    var address = {
+        shipping_method: this.klarnaPaymentsConstants.SHIPPING_METHOD_TYPE.STORE,
+        shipping_type: this.klarnaPaymentsConstants.SHIPPING_TYPE.NORMAL,
+        first_name: $addressBlock.find('.shippingFirstName').val(),
+        last_name: $addressBlock.find('.shippingLastName').val(),
+        street_address: $addressBlock.find('.shippingAddressOne').val(),
+        street_number: $addressBlock.find('.shippingAddressTwo').val(),
+        city: $addressBlock.find('.shippingAddressCity').val(),
+        postal_code: $addressBlock.find('.shippingZipCode').val(),
+        country: $addressBlock.find('.shippingCountry').val()
+    };
+
+    if (billingAddress) {
+        if (billingAddress.given_name !== '') {
+            address.first_name = billingAddress.given_name;
+        }
+
+        if (billingAddress.family_name !== '') {
+            address.last_name = billingAddress.family_name;
+        }
+    }
+
+    return address;
+};
+
+/**
+ * Retrieves the multi-shipping default address
+ *
+ * If we have more that one home delivery address or only pickup ones, we
+ * should return the first address in the list.
+ *
+ * @param {Object} billingAddress The order billing address
+ * @returns {Object} - Klarna default shipping address.
+ */
+KlarnaCheckout.getMultiShipDefaultAddress = function (billingAddress) {
+    var $multishippingForms = $('.multi-shipping .shipping-form');
+    var $multishippingAddressBlock = $('.multi-shipping .shipping-address-block');
+    var address = this.buildShippingAddressData($multishippingAddressBlock.first(), billingAddress);
+
+    // eslint-disable-next-line consistent-return
+    $multishippingForms.each(function (i, form) {
+        var $form = $(form);
+        var $selctedShippingMethod = $('input[name$="_shippingAddress_shippingMethodID"]:checked', $form);
+
+        if ($selctedShippingMethod.length === 1) {
+            var isStorePickup = $selctedShippingMethod.attr('data-pickup') === 'true';
+
+            if (!isStorePickup) {
+                address = this.buildShippingAddressData($('.shipping-address-block', $form));
+                return false;
+            }
+        }
+    }.bind(this));
+
+    return address;
+};
+
+/**
+ * Returns the multi-shipping additional pickup addresses
+ *
+ * The array is populated only if we have more than one store pickup. Otherwise,
+ * it will be returned empty.
+ *
+ * @param {Object} billingAddress The order billing address
+ * @returns {Array} - Klarna pickup shipping addresses list.
+ */
+KlarnaCheckout.getMultiShipOtherAddresses = function (billingAddress) {
+    var addressesArr = [];
+    var useMultiShip = this.useMultiShipping();
+    var $multishippingForms = $(useMultiShip ? '.multi-shipping .shipping-form' : '.single-shipping .shipping-form');
+
+    if ($multishippingForms.length > 0) {
+        $multishippingForms.each(function (i, form) {
+            var $form = $(form);
+            var $selctedShippingMethod = $('input[name$="_shippingAddress_shippingMethodID"]:checked', $form);
+
+            if ($selctedShippingMethod.length === 1) {
+                var isStorePickup = $selctedShippingMethod.attr('data-pickup') === 'true';
+
+                if (isStorePickup) {
+                    var address = this.buildOtherAddressData($('.shipping-address-block', $form), billingAddress);
+                    addressesArr.push(address);
+                }
+            }
+        }.bind(this));
+    }
+
+    return addressesArr;
 };
 
 KlarnaCheckout.getFormSelectedPaymentMethod = function () {
@@ -582,10 +771,10 @@ KlarnaCheckout.getSelectPaymentMethodElement = function () {
     return $selectPaymentMethod;
 };
 
-KlarnaCheckout.getSelectedPaymentMethod = function () {
-    var methodId = this.getSelectPaymentMethodElement().attr('data-method-id');
+KlarnaCheckout.getSelectedPaymentMethod = function (methodId) {
+    var paymentMethodId = methodId || this.getSelectPaymentMethodElement().attr('data-method-id');
 
-    var klarnaMethodId = methodId.replace(this.prefix + '_', '');
+    var klarnaMethodId = paymentMethodId.replace(this.prefix + '_', '');
 
     return klarnaMethodId;
 };
@@ -624,6 +813,13 @@ KlarnaCheckout.userHasEnteredShippingAddress = function () {
     return ($shipmentUUIDElement.value !== '');
 };
 
+KlarnaCheckout.useMultiShipping = function () {
+    var $multiShipCheck = $('#multiShipCheck');
+    var useMultiShip = $multiShipCheck.length > 0 ? $multiShipCheck.is(':checked') : false;
+
+    return useMultiShip;
+};
+
 /**
  * Execute a Klarna API call to Load payment data for a specified Klarna payment category.
  *
@@ -633,6 +829,11 @@ KlarnaCheckout.userHasEnteredShippingAddress = function () {
  */
 KlarnaCheckout.loadPaymentData = function (paymentCategory) {
     var klarnaPaymentMethod = this.getKlarnaPaymentMethod(paymentCategory);
+    var $klarnaTab = this.getSelectedKlarnaPaymentTab(paymentCategory);
+
+    if ($klarnaTab.hasClass('klarna-grayed-tab')) {
+        return;
+    }
 
     var containerName = '#klarna_payments_' + klarnaPaymentMethod + '_container';
 
@@ -641,7 +842,7 @@ KlarnaCheckout.loadPaymentData = function (paymentCategory) {
     };
 
     if (this.userHasEnteredShippingAddress()) {
-        updateData.shipping_address = this.obtainShippingAddressData();
+        updateData.shipping_address = this.obtainShippingAddressData(updateData.billing_address);
     }
 
     Klarna.Payments.load({
@@ -650,6 +851,63 @@ KlarnaCheckout.loadPaymentData = function (paymentCategory) {
     }, updateData, function (res) {
         var $klarnaSubmitPaymentBtn = this.getKlarnaSubmitPaymentBtn();
         $klarnaSubmitPaymentBtn.prop('disabled', !res.show_form);
+    }.bind(this));
+};
+
+KlarnaCheckout.getSelectedKlarnaPaymentTab = function (klarnaPaymentMethod) {
+    return $('#klarna_payments_' + klarnaPaymentMethod + '_nav');
+};
+
+KlarnaCheckout.getSelectedKlarnaPaymentContainer = function (klarnaPaymentMethod) {
+    return $('.klarna_payments-content.klarna_payments_' + klarnaPaymentMethod);
+};
+
+/**
+ * Hide payment option in case of hard reject
+ *
+ * @param {string} klarnaPaymentMethod Klarna payment method.
+ */
+KlarnaCheckout.hidePaymentCategory = function (klarnaPaymentMethod) {
+    var $klarnaTab = this.getSelectedKlarnaPaymentTab(klarnaPaymentMethod);
+    var $klarnaContainer = this.getSelectedKlarnaPaymentContainer(klarnaPaymentMethod);
+
+    $klarnaTab.removeClass('active').addClass('d-none');
+    $klarnaContainer.removeClass('active').addClass('d-none');
+};
+
+KlarnaCheckout.displayPaymentCategory = function (klarnaPaymentMethod, flag) {
+    var $klarnaTab = this.getSelectedKlarnaPaymentTab(klarnaPaymentMethod);
+    var $klarnaContainer = this.getSelectedKlarnaPaymentContainer(klarnaPaymentMethod);
+
+    $klarnaTab.toggleClass('d-none', !flag);
+    $klarnaContainer.toggleClass('d-none', !flag);
+};
+
+KlarnaCheckout.greyoutPaymentCategory = function (klarnaPaymentMethod, flag) {
+    var $klarnaTab = this.getSelectedKlarnaPaymentTab(klarnaPaymentMethod);
+    var $klarnaContainer = this.getSelectedKlarnaPaymentContainer(klarnaPaymentMethod);
+
+    $klarnaTab.toggleClass('klarna-grayed-tab', flag);
+    $klarnaContainer.toggleClass('klarna-grayed-content', flag);
+};
+
+KlarnaCheckout.submitPaymentMethod = function ($tabContent, callback) {
+    var $paymentInfoFields = $tabContent.find('.payment-form-fields :input');
+    var paymentFormData = $paymentInfoFields.serialize();
+
+    $.ajax({
+        url: this.klarnaPaymentsUrls.selectPaymentMethod,
+        method: 'POST',
+        data: paymentFormData
+    }).done(function (data) {
+        if (!data.error && data.updateSummary) {
+            summaryHelpers.updateTotals(data.order.totals);
+            summaryHelpers.updateOrderProductSummaryInformation(data.order, data.options);
+            this.updatePaymentSummary(data.order, data.options);
+        }
+
+        // always execute the KP options loading
+        if (typeof callback === 'function') callback();
     }.bind(this));
 };
 
@@ -667,7 +925,8 @@ window.klarnaAsyncCallback = function () {
 
         KlarnaCheckout.init({
             urls: window.KlarnaPaymentsUrls,
-            objects: window.KlarnaPaymentsObjects
+            objects: window.KlarnaPaymentsObjects,
+            constants: window.KPConstants
         });
     });
 };

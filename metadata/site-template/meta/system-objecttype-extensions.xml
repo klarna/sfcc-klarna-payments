@@ -2,15 +2,15 @@
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
-			<attribute-definition attribute-id="kpAutoCapture">
+            <attribute-definition attribute-id="kpAutoCapture">
                 <display-name xml:lang="x-default">Autocapture</display-name>
-                <description xml:lang="x-default">If enabled, a full capture will be attempted automatically prior to order acknowledge. If disabled, the merchant needs to manually capture the order amount from the KP dashboard.</description>
+                <description xml:lang="x-default">When enabled “Yes”, a full order capture will be attempted automatically. The standalone order management API capture request will include total order amount value for “captured_amount”</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-				<default-value>false</default-value>
+                <default-value>false</default-value>
             </attribute-definition>
-			<attribute-definition attribute-id="kpServiceName">
+            <attribute-definition attribute-id="kpServiceName">
                 <display-name xml:lang="x-default">Klarna Payments Service Name</display-name>
                 <description xml:lang="x-default">The service name used for the current site</description>
                 <type>string</type>
@@ -18,25 +18,26 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
                 <default-value>klarna.http.defaultendpoint</default-value>
-            </attribute-definition>			
-			<attribute-definition attribute-id="sendProductAndImageURLs">
+            </attribute-definition>
+            <attribute-definition attribute-id="sendProductAndImageURLs">
                 <display-name xml:lang="x-default">Send product_url and image_url</display-name>
-                <description xml:lang="x-default">If set to true product_url and image_url fields in Klarna Payments create session call will be included in API call, otherwise product_url and image_url fields will not be populated</description>
+                <description xml:lang="x-default">If set to true, product_url and image_url fields will be included in the Klarna session and order API calls. This enhances shopper experience post purchase</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
             </attribute-definition>
-			<attribute-definition attribute-id="merchant_reference2_mapping">
+            <attribute-definition attribute-id="merchant_reference2_mapping">
                 <display-name xml:lang="x-default">Merchant Reference 2 Mapping</display-name>
-                <description xml:lang="x-default">The field from SCC order (basket) object that is mapped to merchant_reference2 field from klarna API request. Has to be a string corresponding to one of SCC LineItemCtnr class attributes. Note that for complex data structures result may not always be as expected.</description>
+                <description xml:lang="x-default">The field from SCC order (basket) object that is mapped to merchant_reference2 field from klarna API request. Has to be one of the class attributes of SCC LineItemCtnr. Note that for complex data structures result may vary</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			  <attribute-definition attribute-id="kpColorBorder">
+            <attribute-definition attribute-id="kpColorBorder">
                 <display-name xml:lang="x-default">Border Color Preference</display-name>
-                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">CSS (hex value) color set for Border in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -44,7 +45,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpColorBorderSelected">
                 <display-name xml:lang="x-default">Border Selected Color Preference</display-name>
-                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">CSS (hex value) color set for selected element Border in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -52,7 +53,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpColorButton">
                 <display-name xml:lang="x-default">Button Color Preference</display-name>
-                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">CSS (hex value) color set for Button in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -60,7 +61,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpColorButtonText">
                 <display-name xml:lang="x-default">Button Text Color Preference</display-name>
-                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">CSS (hex value) color set for Button text in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -68,7 +69,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpColorCheckbox">
                 <display-name xml:lang="x-default">Checkbox Color Preference</display-name>
-                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">CSS (hex value) color set for Checkbox in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -76,7 +77,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpColorCheckboxCheckmark">
                 <display-name xml:lang="x-default">Checkbox Checkmark Color Preference</display-name>
-                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">CSS (hex value) color set for checkbox checked(selected) in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -84,7 +85,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpColorDetails">
                 <display-name xml:lang="x-default">Details Color Preference</display-name>
-                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">CSS (hex value) color set for details in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -92,7 +93,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpColorHeader">
                 <display-name xml:lang="x-default">Header Color Preference</display-name>
-                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">CSS (hex value) color set for Header in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -100,7 +101,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpColorLink">
                 <display-name xml:lang="x-default">Link Color Preference</display-name>
-                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">CSS (hex value) color set for link in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -108,7 +109,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpColorText">
                 <display-name xml:lang="x-default">Text Color Preference</display-name>
-                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">CSS (hex value) color set for text in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -116,29 +117,29 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpColorTextSecondary">
                 <display-name xml:lang="x-default">Secondary Text Color Preference</display-name>
-                <description xml:lang="x-default">CSS hex color to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">CSS (hex value) color set for secondary text in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="kpRadiusBorder">
+            <attribute-definition attribute-id="kpRadiusBorder">
                 <display-name xml:lang="x-default">Border Radius Preference</display-name>
-                <description xml:lang="x-default">Size (in pixels) of the border radius to be used in Klarna Payments iFrame</description>
+                <description xml:lang="x-default">Value (in pixels) of the border radius to be used in Klarna Payments iFrame</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="kpAttachments">
+            <attribute-definition attribute-id="kpAttachments">
                 <display-name xml:lang="x-default">Attachments</display-name>
-                <description xml:lang="x-default">Flag to swicth on/off the using of attachments when creating a session</description>
+                <description xml:lang="x-default">Toggle (Yes/No) for the inclusion of attachments when creating an order. Specific to inclusion of EMD (customer_account_info, other_delivery_address) when applicable</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-				<default-value>false</default-value>
+                <default-value>false</default-value>
             </attribute-definition>
-			<attribute-definition attribute-id="kpNotAvailableMessage">
+            <attribute-definition attribute-id="kpNotAvailableMessage">
                 <display-name xml:lang="x-default">Not available message on billing page</display-name>
                 <description xml:lang="x-default">The Klarna Payments not available message on billing page. JSON string holding country code and corresponding message string. For example:&#13;
 {  &#13;
@@ -148,86 +149,135 @@
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>			
-			<attribute-definition attribute-id="kpVCNEnabled">
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNEnabled">
                 <display-name xml:lang="x-default">Virtual Card Number Enabled</display-name>
-                <description xml:lang="x-default">If set to true SFCC will create Virtual Card Number settlement from every Klarna order. Default is false</description>
+                <description xml:lang="x-default">If this option is set to “Yes”, Klarna settlement request will generate  a Virtual Card Number for every Klarna order.</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
-			<attribute-definition attribute-id="kpVCNkeyId">
+            <attribute-definition attribute-id="kpVCNkeyId">
                 <display-name xml:lang="x-default">VCN Public Key ID</display-name>
-                <description xml:lang="x-default">Unique identifier for the public key used for encryption of the card data</description>
+                <description xml:lang="x-default">UUIDv4 value corresponding to the key pair. Shared with Klarna respectively for Production &amp; Playground (test) env.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="vcnPrivateKey">
+            <attribute-definition attribute-id="vcnPrivateKey">
                 <display-name xml:lang="x-default">VCN Private Key</display-name>
-                <description xml:lang="x-default">Your 4096 bit RSA Private Key</description>
+                <description xml:lang="x-default">SSL private key used only to decode Virtual Card information (used with kpVCNEnabled).</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="vcnPublicKey">
                 <display-name xml:lang="x-default">VCN Public Key</display-name>
-                <description xml:lang="x-default">Your 4096 bit RSA Public Key</description>
+                <description xml:lang="x-default">SSL public key used with Virtual Card integration(used with kpVCNEnabled).</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
-		</custom-attribute-definitions>				
-		<group-definitions>
-			<attribute-group group-id="Klarna_Payments">
+            <attribute-definition attribute-id="kpPromoTaxation">
+                <display-name xml:lang="x-default">Promotion Price Taxation</display-name>
+                <description xml:lang="x-default">Only use "Based on Adjusted Price" value if you have enabled the corresponding value in “Merchant Tools >  Site Preferences >  Promotions > Discount Taxation” and use gross taxation.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Based on Price</display>
+                        <value>price</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Based on Adjusted Price</display>
+                        <value>adjustment</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpRejectedMethodDisplay">
+                <display-name xml:lang="x-default">Hide Payment Methods on Deny</display-name>
+                <description xml:lang="x-default">If set to value other than "No", the Klarna payment method options on the checkout will be greyed out or not displayed to customer in the current view when Klarna authorization request is rejected in the response (.i.e hard reject - "show_form" and "approved" values are both "false")</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">No</display>
+                        <value>no</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Hide</display>
+                        <value>hide</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Grey Out</display>
+                        <value>greyout</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNRetryEnabled">
+                <display-name xml:lang="x-default">VCN Settlement Retry Enabled</display-name>
+                <description xml:lang="x-default">If set to “Yes”, SFCC will retry the VCN settlement once again in case of service error. Default is “No”</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="Klarna_Payments">
                 <display-name xml:lang="x-default">Klarna Payments</display-name>
                 <attribute attribute-id="kpAutoCapture"/>
-				<attribute attribute-id="sendProductAndImageURLs"/>
-				<attribute attribute-id="merchant_reference2_mapping"/>
-				<attribute attribute-id="kpColorDetails"/>
-				<attribute attribute-id="kpColorButton"/>
-				<attribute attribute-id="kpColorButtonText"/>
-				<attribute attribute-id="kpColorCheckbox"/>
-				<attribute attribute-id="kpColorCheckboxCheckmark"/>
-				<attribute attribute-id="kpColorHeader"/>
-				<attribute attribute-id="kpColorLink"/>
-				<attribute attribute-id="kpColorBorder"/>
-				<attribute attribute-id="kpColorBorderSelected"/>
-				<attribute attribute-id="kpColorText"/>
-				<attribute attribute-id="kpColorTextSecondary"/>
-				<attribute attribute-id="kpRadiusBorder"/>
-				<attribute attribute-id="kpAttachments"/>	
-				<attribute attribute-id="kpNotAvailableMessage"/>
-				<attribute attribute-id="kpVCNEnabled"/>
-				<attribute attribute-id="kpVCNkeyId"/>
-				<attribute attribute-id="vcnPrivateKey"/>
-				<attribute attribute-id="vcnPublicKey"/>
+                <attribute attribute-id="sendProductAndImageURLs"/>
+                <attribute attribute-id="merchant_reference2_mapping"/>
+                <attribute attribute-id="kpColorDetails"/>
+                <attribute attribute-id="kpColorButton"/>
+                <attribute attribute-id="kpColorButtonText"/>
+                <attribute attribute-id="kpColorCheckbox"/>
+                <attribute attribute-id="kpColorCheckboxCheckmark"/>
+                <attribute attribute-id="kpColorHeader"/>
+                <attribute attribute-id="kpColorLink"/>
+                <attribute attribute-id="kpColorBorder"/>
+                <attribute attribute-id="kpColorBorderSelected"/>
+                <attribute attribute-id="kpColorText"/>
+                <attribute attribute-id="kpColorTextSecondary"/>
+                <attribute attribute-id="kpRadiusBorder"/>
+                <attribute attribute-id="kpAttachments"/>
+                <attribute attribute-id="kpNotAvailableMessage"/>
+                <attribute attribute-id="kpVCNEnabled"/>
+                <attribute attribute-id="kpVCNkeyId"/>
+                <attribute attribute-id="vcnPrivateKey"/>
+                <attribute attribute-id="vcnPublicKey"/>
+                <attribute attribute-id="kpVCNRetryEnabled"/>
+                <attribute attribute-id="kpPromoTaxation"/>
+                <attribute attribute-id="kpRejectedMethodDisplay"/>
             </attribute-group>
         </group-definitions>
-	</type-extension>
+    </type-extension>
 
-	<type-extension type-id="Order">
-		<custom-attribute-definitions>
+    <type-extension type-id="Order">
+        <custom-attribute-definitions>
             <attribute-definition attribute-id="kpOrderID">
                 <display-name xml:lang="x-default">Klarna Payments Order ID</display-name>
-                <description xml:lang="x-default">Klarna Payments Order ID</description>
+                <description xml:lang="x-default">The Klarna payments Order ID for Klarna payment method selected by customer</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-			<attribute-definition attribute-id="kpIsVCN">
+            <attribute-definition attribute-id="kpIsVCN">
                 <display-name xml:lang="x-default">Is VCN Used</display-name>
-                <description xml:lang="x-default">True if VCN is used for payment of the order, otherwise false</description>
+                <description xml:lang="x-default">True if virtual card is enabled &amp; used for payment of the order, otherwise false</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="kpVCNBrand">
                 <display-name xml:lang="x-default">VCN Brand</display-name>
-                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Number card Brand</description>
+                <description xml:lang="x-default">Klarna Payments virtual card scheme name</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -235,7 +285,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpVCNHolder">
                 <display-name xml:lang="x-default">VCN Holder</display-name>
-                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Number card holder name</description>
+                <description xml:lang="x-default">Klarna Payments virtual card holder name</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -243,14 +293,14 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpVCNAESKey">
                 <display-name xml:lang="x-default">VCN AES Key</display-name>
-                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Number AES Key</description>
+                <description xml:lang="x-default">Klarna Payments Virtual Card AES Key</description>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="kpVCNCardID">
                 <display-name xml:lang="x-default">VCN Card ID</display-name>
-                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Number Card ID</description>
+                <description xml:lang="x-default">Klarna Payments Virtual Card - Card ID</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -258,7 +308,7 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpVCNIV">
                 <display-name xml:lang="x-default">VCN Initialization Vector</display-name>
-                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Number Initialization Vector</description>
+                <description xml:lang="x-default">Klarna Payments Virtual Card Initialization Vector</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -266,27 +316,27 @@
             </attribute-definition>
             <attribute-definition attribute-id="kpVCNPCIData">
                 <display-name xml:lang="x-default">VCN PCI Data</display-name>
-                <description xml:lang="x-default">Holding the Klarna Payments Virtual Card Number Encrypted Card Data</description>
+                <description xml:lang="x-default">Klarna Payments Virtual Card PCI Data in encrypted format</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
         </custom-attribute-definitions>
-		<group-definitions>
+        <group-definitions>
             <attribute-group group-id="Klarna_Payments">
                 <attribute attribute-id="kpOrderID"/>
                 <attribute attribute-id="kpIsVCN"/>
                 <attribute attribute-id="kpVCNCardID"/>
             </attribute-group>
         </group-definitions>
-	</type-extension>
+    </type-extension>
 
-	<type-extension type-id="OrderPaymentInstrument">
+    <type-extension type-id="OrderPaymentInstrument">
         <custom-attribute-definitions>
             <attribute-definition attribute-id="klarnaPaymentCategoryID">
                 <display-name xml:lang="x-default">Klarna Payment Category ID</display-name>
-                <description xml:lang="x-default">Holding the ID of selected Klarna Payments Option</description>
+                <description xml:lang="x-default">ID of Klarna payment category</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -294,14 +344,14 @@
             </attribute-definition>
             <attribute-definition attribute-id="klarnaPaymentCategoryName">
                 <display-name xml:lang="x-default">Klarna Payment Category Name</display-name>
-                <description xml:lang="x-default">Holding the name of selected Klarna Payments Option</description>
+                <description xml:lang="x-default">Name of Klarna payment category</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
         </custom-attribute-definitions>
-		<group-definitions>
+        <group-definitions>
             <attribute-group group-id="Klarna_Payments">
                 <attribute attribute-id="klarnaPaymentCategoryID"/>
                 <attribute attribute-id="klarnaPaymentCategoryName"/>
@@ -309,8 +359,8 @@
         </group-definitions>
     </type-extension>
 
-	<type-extension type-id="PaymentTransaction">
-		<custom-attribute-definitions>
+    <type-extension type-id="PaymentTransaction">
+        <custom-attribute-definitions>
             <attribute-definition attribute-id="kpFraudStatus">
                 <display-name xml:lang="x-default">Fraud Status</display-name>
                 <description xml:lang="x-default">Klarna Payments order fraud status</description>
@@ -320,11 +370,11 @@
                 <min-length>0</min-length>
             </attribute-definition>
         </custom-attribute-definitions>
-		<group-definitions>
+        <group-definitions>
             <attribute-group group-id="Custom">
                 <display-name xml:lang="x-default">Custom</display-name>
                 <attribute attribute-id="kpFraudStatus"/>
             </attribute-group>
         </group-definitions>
-	</type-extension>
+    </type-extension>
 </metadata>

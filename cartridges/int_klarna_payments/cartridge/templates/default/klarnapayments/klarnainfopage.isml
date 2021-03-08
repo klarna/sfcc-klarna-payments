@@ -1,0 +1,4 @@
+<!--- TEMPLATENAME: infopage.isml --->
+<isdecorate template="content/content/pt_content">
+    <isinclude template="klarnapayments/kosm/info"/>
+</isdecorate>

@@ -1,11 +1,7 @@
 <div class="kosm-cart">
-    <isscript>
-        var BasketMgr = require('dw/order/BasketMgr');
-        var currentBasket = BasketMgr.getCurrentBasket();
-        var totalGrossPrice = currentBasket.getTotalGrossPrice();
+    <isset name="totalGrossPrice" value="${require('dw/order/BasketMgr').getCurrentBasket().getTotalGrossPrice()}" scope="page" />
+    <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
-        var KlarnaOSM = require('~/cartridge/scripts/klarna_payments/osm');
-    </isscript>
     <isif condition="${KlarnaOSM.isEnabledCartPage()}">
         <klarna-placement data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(totalGrossPrice)}"></klarna-placement>
 

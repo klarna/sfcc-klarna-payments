@@ -1,11 +1,11 @@
 {
-	"hooks": [
+    "hooks": [
         {
             "name": "app.payment.processor.klarna_payments",
-			"script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
-		}, {
-			"name": "app.payment.form.processor.klarna_payments",
             "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
-		}
-	]
+        }, {
+            "name": "app.payment.form.processor.klarna_payments",
+            "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
+        }
+    ]
 }

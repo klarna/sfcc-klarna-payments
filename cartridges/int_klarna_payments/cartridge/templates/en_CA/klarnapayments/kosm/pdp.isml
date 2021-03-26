@@ -9,8 +9,10 @@
 </isif>
 
 <isif condition="${KlarnaOSM.isEnabledPDPPage() && !empty(ProductPrice)}">
-<div class="kosm-pdp">
-	<klarna-placement data-key="${KlarnaOSM.getPDPPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}" data-inline="true"></klarna-placement>
-	<isset name="isKlarnaOSMScriptRequired" value="true" scope="page" />
-</div>
+	<div class="kosm-pdp">
+		<klarna-placement data-key="${KlarnaOSM.getPDPPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" 
+		data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}" 
+		<isif condition="${KlarnaOSM.isEnabledDataInline()}">data-inline="true"</isif>></klarna-placement>
+		<isset name="isKlarnaOSMScriptRequired" value="true" scope="page" />
+	</div>
 </isif>

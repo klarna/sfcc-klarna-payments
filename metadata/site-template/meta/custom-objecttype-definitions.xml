@@ -109,6 +109,13 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="osmDataInlineEnabled">
+                <display-name xml:lang="x-default">Data Inline Enabled on PDP/Cart placement (Canada only)</display-name>
+                <description xml:lang="x-default">Enable this when using PayBright payment method in Canada</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="osmLibraryUrl">
                 <display-name xml:lang="x-default">URL to On-Site Messaging Library URL</display-name>
                 <description xml:lang="x-default">URL to On-Site Messaging Library URL, applicable for testing and production</description>

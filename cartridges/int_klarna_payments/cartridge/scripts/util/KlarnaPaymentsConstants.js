@@ -48,7 +48,7 @@ var KLARNA_PAYMENT_URLS = {
     NOTIFICATION: 'KlarnaPayments-Notification'
 }
 
-var SERVICE_HEADER = 'SFCC SG Klarna Payments 21.1.0';
+var SERVICE_HEADER = 'SFCC SG Klarna Payments 21.1.1';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.PAYMENT_METHOD = PAYMENT_METHOD;

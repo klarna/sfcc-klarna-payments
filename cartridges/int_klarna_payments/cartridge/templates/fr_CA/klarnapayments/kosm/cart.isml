@@ -5,7 +5,9 @@
     <isset name="orderTotalValue" value="${KlarnaHelper.calculateOrderTotalValue(LineItemCtnr)}" scope="page" />
 
     <div class="kosm-cart">
-        <klarna-placement data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(orderTotalValue)}" data-inline="true"></klarna-placement>
+        <klarna-placement data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" 
+        data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(orderTotalValue)}" 
+        <isif condition="${KlarnaOSM.isEnabledDataInline()}">data-inline="true"</isif>></klarna-placement>
         <isset name="isKlarnaOSMScriptRequired" value="true" scope="page" />
     </div>
 </isif>

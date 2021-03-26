@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 21.1.1
+### Added
+* New On-Site Messaging configuratoin setting for Canada
+* New locale tempates for Norway
+
+### Removed
+* Not required locale templates in SG - ES & BE
+
 ## 21.1.0
 ### Added
 * New country locales - CA, IT, FR & NZ

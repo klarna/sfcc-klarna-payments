@@ -281,17 +281,17 @@
 
     function obtainBillingAddressData() {
         var address = {
-            given_name: $firstName.value,
-            family_name: $lastName.value,
-            email: $emailAddress.value,
+            given_name: !!$firstName ? $firstName.value : '',
+            family_name: !!$lastName ? $lastName.value : '',
+            email: !!$emailAddress ? $emailAddress.value : '',
             title: '',
-            street_address: $address1.value,
-            street_address2: $address2.value,
-            postal_code: $postal.value,
-            city: $city.value,
-            region: $state.value,
-            phone: $phone.value,
-            country: $country.value.toUpperCase()
+            street_address: !!$address1 ? $address1.value : '',
+            street_address2: !!$address2 ? $address2.value : '',
+            postal_code: !!$postal ? $postal.value : '',
+            city: !!$city ? $city.value : '',
+            region: !!$state ? $state.value : '',
+            phone: !!$phone ? $phone.value : '',
+            country: !!$country ? $country.value.toUpperCase() : ''
         };
 
         return address;

@@ -3,7 +3,7 @@
 # Klarna Payments 2017-2021 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 21.1.0
+The latest version of this cartridge is 21.1.1.
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/

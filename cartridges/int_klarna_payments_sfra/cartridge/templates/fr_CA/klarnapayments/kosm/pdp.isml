@@ -3,7 +3,9 @@
 
 <isif condition="${KlarnaOSM.isEnabledPDPPage()}">
     <div class="kosm-pdp">
-        <klarna-placement data-key="${KlarnaOSM.getPDPPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}" data-inline="true"></klarna-placement>
+        <klarna-placement data-key="${KlarnaOSM.getPDPPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" 
+        data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}" 
+        <isif condition="${KlarnaOSM.isEnabledDataInline()}">data-inline="true"</isif>></klarna-placement>
     </div>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');

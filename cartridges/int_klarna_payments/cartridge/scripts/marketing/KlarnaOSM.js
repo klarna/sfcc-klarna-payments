@@ -180,6 +180,16 @@ var KlarnaOSM = {
         return value;
     },
     /**
+     * Function that checks if OSM attribute "data-inline" is enabled for PDP/Cart placements
+     * @return {boolean} enable status
+     */
+    isEnabledDataInline: function() {
+        var localeObject = this.getKlarnaCountriesObject();
+        var value = localeObject.custom.osmDataInlineEnabled;
+
+        return value;
+    },
+    /**
      * Function that returns OSM client ID
      * @return {string} clientID
      */

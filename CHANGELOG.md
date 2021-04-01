@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 21.1.2
+* Fixed core file naming convention issues in 21.1.0 and 21.1.1
+* Removed deprecated “scripts/util/Builder.js” file
+
 ## 21.1.1
 ### Added
 * New On-Site Messaging configuratoin setting for Canada

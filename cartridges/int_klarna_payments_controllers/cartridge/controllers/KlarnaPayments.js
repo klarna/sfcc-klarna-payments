@@ -18,6 +18,7 @@ var Site = require( 'dw/system/Site' );
 /* Script Modules */
 var log = Logger.getLogger( 'KlarnaPayments.js' );
 var guard = require( '*/cartridge/scripts/guard' );
+var app = require( '*/cartridge/scripts/app' );
 
 /**
  * Creates a Klarna payment instrument for the given basket
@@ -172,8 +173,13 @@ function getLocale( currentCountry ) {
  * @return {Object} Last API call's response; on error - null
  */
 function createOrUpdateSession() {
+    var basket = BasketMgr.getCurrentBasket();
+    if (empty(basket)) {
+        return null;
+    }
+
     try {
-        if( !empty( session.privacy.KlarnaPaymentsSessionID ) ) {
+        if( !empty( basket.custom.kpSessionId ) ) {
             var updateResult = updateSession();
             var currentCookies = request.getHttpCookies();
             if ( currentCookies.hasOwnProperty( 'selectedKlarnaPaymentCategory' ) ) {
@@ -186,10 +192,11 @@ function createOrUpdateSession() {
     } catch( e ) {
         log.error( 'Error in creating or updating Klarna Payments Session: {0}', e );
         Transaction.wrap( function() {
-            session.privacy.KlarnaPaymentsSessionID = null;
-            session.privacy.KlarnaPaymentsClientToken = null;
             session.privacy.KlarnaPaymentMethods = null;
             session.privacy.SelectedKlarnaPaymentMethod = null;
+
+            basket.custom.kpSessionId = null;
+            basket.custom.kpClientToken = null;
         } );
 
         return null;
@@ -205,8 +212,13 @@ function createOrUpdateSession() {
  * @returns {Object} Klarna API call response, or null if error occurs.
  */
 function createSession() {
+    var basket = BasketMgr.getCurrentBasket();
+    if (empty(basket)) {
+        return null;
+    }
+
     var createSessionHelper = require( '*/cartridge/scripts/session/klarnaPaymentsCreateSession' );
-    var createSessionResponse = createSessionHelper.createSession( BasketMgr.currentBasket, getLocale() );
+    var createSessionResponse = createSessionHelper.createSession( basket, getLocale() );
     return createSessionResponse.response;
 }
 
@@ -220,8 +232,13 @@ function createSession() {
  * @returns {Object} Response from the GET call.
  */
 function updateSession() {
+    var basket = BasketMgr.getCurrentBasket();
+    if (empty(basket)) {
+        return null;
+    }
+
     var updateSessionHelper = require( '*/cartridge/scripts/session/klarnaPaymentsUpdateSession' );
-    var updateSessionResponse = updateSessionHelper.updateSession( session.privacy.KlarnaPaymentsSessionID, BasketMgr.getCurrentBasket(), getLocale() );
+    var updateSessionResponse = updateSessionHelper.updateSession( basket.custom.kpSessionId, basket, getLocale() );
     if ( updateSessionResponse.success && !empty( updateSessionResponse.response ) ) {
         return updateSessionResponse.response;
     }
@@ -339,10 +356,9 @@ function placeOrder( order, klarnaPaymentsOrderID, localeObject ) {
  */
 function redirect() {
     Transaction.wrap( function() {
-        session.privacy.KlarnaPaymentsSessionID = null;
-        session.privacy.KlarnaPaymentsClientToken = null;
         session.privacy.KlarnaPaymentMethods = null;
         session.privacy.SelectedKlarnaPaymentMethod = null;
+        session.privacy.KlarnaExpressCategory = null;
     } );
 
     if( !empty( session.privacy.KlarnaPaymentsRedirectURL ) ) {
@@ -368,11 +384,17 @@ function pendingOrder( order ) {
  * @return {void}
  */
 function clearSession() {
+    var basket = BasketMgr.getCurrentBasket();
+
     Transaction.wrap( function() {
-        session.privacy.KlarnaPaymentsSessionID = null;
-        session.privacy.KlarnaPaymentsClientToken = null;
         session.privacy.KlarnaPaymentMethods = null;
         session.privacy.SelectedKlarnaPaymentMethod = null;
+        session.privacy.KlarnaExpressCategory = null;
+
+        if (!empty(basket)) {
+            basket.custom.kpSessionId = null;
+            basket.custom.kpClientToken = null;
+        }
     } );
 }
 
@@ -409,7 +431,6 @@ function cancelAuthorization( authToken ) {
  * @return {void}
  */
 function infoPage() {
-    var app = require( '*/cartridge/scripts/app' );
     app.getView().render( 'klarnapayments/klarnainfopage' );
 }
 
@@ -419,7 +440,6 @@ function infoPage() {
  * @return {Object} JSON containing error status and update summary
  */
 function selectPaymentMethod() {
-    var app = require( '*/cartridge/scripts/app' );
     var responseUtils = require( '*/cartridge/scripts/util/Response' );
     var cart = app.getModel( 'Cart' ).get();
     var paymentMethodID = app.getForm( 'billing' ).object.paymentMethods.selectedPaymentMethodID.value;
@@ -483,6 +503,129 @@ function selectPaymentMethod() {
     } );
 }
 
+function expressCheckout() {
+    var URLUtils = require( 'dw/web/URLUtils' );
+    var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
+    var PAYMENT_METHOD = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).PAYMENT_METHOD;
+
+    var cart = app.getModel( 'Cart' ).get();
+    var expressForm = app.getForm( 'klarnaexpresscheckout' ).object;
+    var klarnaDetails = KlarnaHelper.getExpressFormDetails(expressForm);
+    var step = 'COBilling-Start';
+
+    if ( !cart ) {
+        response.redirect( URLUtils.https( 'Cart-Show' ) );
+        return;
+    }
+
+    // Clear all payment forms before we handle KEB
+    app.getForm('billing').object.paymentMethods.clearFormElement();
+
+    // Set billing address & email
+    KlarnaHelper.setExpressBilling( cart, klarnaDetails );
+
+    // We only have gift certificates in the basket
+    if ( cart.getProductLineItems().size() === 0 && cart.getGiftCertificateLineItems().size() > 0 ) {
+        handleExpressRedirect( cart, PAYMENT_METHOD );
+        return;
+    }
+
+    // Prepare shipments info
+    app.getController( 'COShipping' ).PrepareShipments();
+
+    var physicalShipments = cart.getPhysicalShipments();
+    var hasMultipleShipments = Site.getCurrent().getCustomPreferenceValue( 'enableMultiShipping' ) && physicalShipments && physicalShipments.size() > 1;
+
+    var hasShippingMethod = true;
+    var shipments = cart.getShipments();
+    for ( var i = 0; i < shipments.length; i++ ) {
+        var shipment = shipments[i];
+
+        // Do not process gift certificate shipments as part of mixed orders
+        // Do not process shipment without goods as well
+        if ( shipment.getGiftCertificateLineItems().size() > 0 ) {
+            continue;
+        }
+
+        // Fix issue with empty default shipment with null shipping address
+        // validation in COPlaceOrder-Start
+        if ( shipment.default && !shipment.shippingAddress && shipment.getProductLineItems().size() === 0 ) {
+            Transaction.wrap( function() {
+                cart.createShipmentShippingAddress( shipment.getID() );
+            } );
+            continue;
+        }
+
+        // Pre-populate address details if not already present
+        // Don't update it on store pickup shipments as this is the store address
+        if ( ( !shipment.shippingAddress || !shipment.shippingAddress.address1 ) && empty( shipment.custom.fromStoreId ) ) {
+            KlarnaHelper.setExpressShipping( shipment, klarnaDetails );
+        }
+
+        var applicableShippingMethods = KlarnaHelper.filterApplicableShippingMethods( shipment, shipment.shippingAddress );
+        var hasShippingMethodSet = !!shipment.shippingMethod;
+
+        // Check if the selected method is still applicable
+        if ( hasShippingMethodSet ) {
+            hasShippingMethodSet = applicableShippingMethods.contains( shipment.shippingMethod );
+        }
+
+        // If we have no shipping method or it's no longer applicable - try to select the first one
+        if ( !hasShippingMethodSet ) {
+            var shippingMethod = applicableShippingMethods.iterator().next();
+            if ( shippingMethod ) {
+                Transaction.wrap( function() {
+                    cart.updateShipmentShippingMethod( shipment.getID(), shippingMethod.getID(), null, applicableShippingMethods );
+                } );
+            } else {
+                hasShippingMethod = false;
+            }
+        }
+    }
+
+    Transaction.wrap( function() {
+        cart.calculate();
+    } );
+
+    if ( !hasShippingMethod ) {
+        if ( hasMultipleShipments ) {
+            response.redirect( URLUtils.https( 'COShippingMultiple-Start' ) );
+            return;
+        }
+
+        response.redirect( URLUtils.https( 'COShipping-Start' ) );
+        return;
+    }
+
+    session.forms.singleshipping.fulfilled.value = true;
+
+    handleExpressRedirect( cart, PAYMENT_METHOD );
+    return;
+}
+
+function handleExpressRedirect( cart, paymentMethodId ) {
+    var URLUtils = require( 'dw/web/URLUtils' );
+    var KlarnaOSM = require('*/cartridge/scripts/marketing/klarnaOSM');
+    var EXPRESS_CATEGORY = KlarnaOSM.getExpressButtonCategory();
+
+    session.privacy.KlarnaExpressCategory = EXPRESS_CATEGORY;
+    session.forms.billing.paymentMethods.selectedPaymentMethodID.value = paymentMethodId;
+
+    // Handle the selection of this payment method - calculate if any payment promotions are available
+    var result = app.getModel( 'PaymentProcessor' ).handle( cart.object, paymentMethodId );
+
+    Transaction.wrap( function() {
+        cart.calculate();
+    } );
+
+    // Re-direct to cart if we have any processor handling issues
+    if ( result.error ) {
+        response.redirect( URLUtils.https( 'Cart-Show' ) );
+    }
+
+    response.redirect( URLUtils.https( 'COBilling-Start' ) );
+}
+
 /*
  * Module exports
  */
@@ -507,6 +650,8 @@ exports.SaveAuth = guard.ensure( ['get'], saveAuth );
 exports.InfoPage = guard.ensure( ['get'], infoPage );
 /** Saves the selected payment method */
 exports.SelectPaymentMethod = guard.ensure( ['post'], selectPaymentMethod );
+/** Triggers the express checkout flow */
+exports.ExpressCheckout = guard.ensure( ['post'], expressCheckout );
 
 /*
  * Local methods

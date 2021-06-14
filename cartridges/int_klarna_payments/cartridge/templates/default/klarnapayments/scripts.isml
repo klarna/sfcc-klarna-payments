@@ -3,3 +3,10 @@
 <isif condition="${KlarnaOSM.isEnabled()}">
     <script async src="${KlarnaOSM.getScriptURL()}" data-client-id="${KlarnaOSM.getUCI()}"></script>
 </isif>
+
+<isif condition="${KlarnaOSM.isEnabledExpress()}" >
+    <link rel="stylesheet" href="${URLUtils.staticURL('/css/klarna-express.css')}" />
+    <script type="text/javascript" src="${URLUtils.staticURL('/js/klarna-express-button.js')}"></script>
+    <script src="${KlarnaOSM.getExpressButtonScriptURL()}" data-id="${KlarnaOSM.getExpressButtonMID()}" 
+        data-environment="${KlarnaOSM.getExpressButtonEnvironment()}" async></script>
+</isif>

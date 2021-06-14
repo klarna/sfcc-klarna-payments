@@ -24,6 +24,8 @@
 >
     <isset name="klarnaForm" value="${pdict.klarnaForm}" scope="page"/>
 
+    <input type="hidden" id="klarna-express-category" value="${session.privacy.KlarnaExpressCategory || ''}" />
+
     <ul class="nav nav-tabs nav-fill payment-options" role="tablist">
         <isinclude template="checkout/billing/paymentOptions/paymentOptionsTabs" />
     </ul>

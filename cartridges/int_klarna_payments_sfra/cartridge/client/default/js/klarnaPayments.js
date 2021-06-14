@@ -149,6 +149,14 @@ KlarnaCheckout.initPaymentStage = function (defer) {
         this.handlePaymentNeedsPreassesment();
     }
 
+    setTimeout(function () {
+        var expressCategory = this.getExpressCategory();
+        if (expressCategory) {
+            var $expressMethod = $('#klarna_payments_' + expressCategory + '_nav a[data-toggle="tab"]');
+            $expressMethod.click();
+        }
+    }.bind(this), 100);
+
     defer.resolve();
 };
 
@@ -747,22 +755,6 @@ KlarnaCheckout.getMultiShipOtherAddresses = function (billingAddress) {
     return addressesArr;
 };
 
-KlarnaCheckout.getFormSelectedPaymentMethod = function () {
-    var methodId = $('.payment-information').attr('data-payment-method-id');
-
-    return methodId;
-};
-
-KlarnaCheckout.getFormSelectedPaymentCategory = function () {
-    var categoryId = $('.payment-information').attr('data-payment-category-id');
-
-    return categoryId;
-};
-
-KlarnaCheckout.setFormSelectedPaymentCategory = function (categoryId) {
-    $('.payment-information').attr('data-payment-category-id', categoryId);
-};
-
 KlarnaCheckout.getSelectPaymentMethodElement = function () {
     var $selectPaymentMethodInner = $('.payment-options .nav-link.active');
 
@@ -909,6 +901,11 @@ KlarnaCheckout.submitPaymentMethod = function ($tabContent, callback) {
         // always execute the KP options loading
         if (typeof callback === 'function') callback();
     }.bind(this));
+};
+
+KlarnaCheckout.getExpressCategory = function () {
+    var expressCategory = $('#klarna-express-category').val();
+    return expressCategory;
 };
 
 /**

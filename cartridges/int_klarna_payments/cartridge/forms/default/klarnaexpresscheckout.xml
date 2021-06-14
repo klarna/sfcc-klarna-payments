@@ -1,0 +1,23 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+    <field formid="email" label="profile.email" type="string" mandatory="true" binding="email" />
+    <field formid="phone" label="profile.phone" description="address.phone.example" type="string" mandatory="true"
+           binding="phone" min-length="10" max-length="20" />
+
+    <field formid="firstName" label="label.input.firstname.profile" type="string" mandatory="true" binding="firstName"
+           max-length="50" />
+    <field formid="lastName" label="label.input.lastname.profile" type="string" mandatory="true" binding="lastName" 
+           max-length="50" />
+    <field formid="address1" label="label.input.address1" type="string" mandatory="true" binding="address1" 
+           max-length="50" />
+    <field formid="address2" label="label.input.address2" type="string" mandatory="false" binding="address2"
+           max-length="50" />
+    <field formid="city" label="label.input.city" type="string" mandatory="true" binding="city" min-length="2"
+           max-length="50" />
+    <field formid="stateCode" label="label.input.state" type="string" mandatory="true" binding="stateCode" />
+    <field formid="postalCode" label="label.input.zipcode" type="string" mandatory="true" min-length="5" max-length="10"
+           binding="postalCode" />
+    <field formid="countryCode" label="label.input.country" type="string" mandatory="true" binding="countryCode" />
+    
+    <action formid="submitMe" valid-form="true"/>
+</form>

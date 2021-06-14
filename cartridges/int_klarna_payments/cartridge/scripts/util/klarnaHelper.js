@@ -153,10 +153,12 @@ function strval( obj ) {
 }
 
 /**
- * Checks whether a country code maps to a Country in Europe.
+ * Checks whether a country code falls under the PII/Privacy concerns across markets.
+ * If a country does not falls under the PII concern - sensitive information (i.e. billing & 
+ * shipping data) will be sent with the initial session request.
  *
  * @param {string} country two-letter country code.
- * @returns {bool} true, if country is in Europe.
+ * @returns {bool} true, if the country is not PII sensitive.
  */
 function isPreAssementApplicable( country ) {
     var isInList = true;
@@ -209,13 +211,14 @@ function getKlarnaResources( countryCode ) {
         updateSession: URLUtils.https( KLARNA_PAYMENT_URLS.UPDATE_SESSION ).toString(),
         clearSession: URLUtils.https( KLARNA_PAYMENT_URLS.CLEAR_SESSION ).toString(),
         saveAuth: URLUtils.https( KLARNA_PAYMENT_URLS.SAVE_AUTH ).toString(),
-        selectPaymentMethod: URLUtils.https( KLARNA_PAYMENT_URLS.SELECT_PAYMENT_METHOD ).toString()
+        selectPaymentMethod: URLUtils.https( KLARNA_PAYMENT_URLS.SELECT_PAYMENT_METHOD ).toString(),
+        summaryUpdate: URLUtils.https( KLARNA_PAYMENT_URLS.MINISUMMARY_UPDATE ).toString()
     };
 
     // klarna payments objects
     var KPObjects = {
-        sessionID: session.privacy.KlarnaPaymentsSessionID ? session.privacy.KlarnaPaymentsSessionID.toString() : null,
-        clientToken: session.privacy.KlarnaPaymentsClientToken ? session.privacy.KlarnaPaymentsClientToken.toString() : null,
+        sessionID: currentBasket.custom.kpSessionId ? currentBasket.custom.kpSessionId : null,
+        clientToken: currentBasket.custom.kpClientToken ? currentBasket.custom.kpClientToken : null,
         preassesment: preAssement,
         hideRejectedPayments: hideRejectedPaymentsValue
     };
@@ -238,6 +241,156 @@ function getKlarnaResources( countryCode ) {
     }
 }
 
+/**
+ * Converts address to object
+ *
+ * @param {dw.order.OrderAddress} address The Klarna or SFCC address
+ * @return {Object} addressObj The converted address
+ */
+function convAddressObj( address ) {
+    var addressObj;
+
+    if ( address instanceof dw.order.OrderAddress ) {
+        addressObj = {
+            firstName: address.firstName,
+            lastName: address.lastName,
+            address1: address.address1,
+            address2: address.address2,
+            city: address.city,
+            postalCode: address.postalCode,
+            stateCode: address.stateCode,
+            countryCode: address.countryCode.value
+        };
+    } else if ( address instanceof Object ) {
+        addressObj = address;
+    }
+
+    return addressObj;
+}
+
+/**
+ * Retrieves the applicable shipping methods by address
+ *
+ * @param  {dw.order.Shipment} shipment SFCC shipment
+ * @param  {dw.order.OrderAddress} address the Klarna address
+ * @returns {dw.util.ArrayList} applicableShippingMethods List of shipping methods
+ */
+function getAppplicableShippingMethods( shipment, address ) {
+    var ShippingMgr = require( 'dw/order/ShippingMgr' );
+
+    var shipmentModel = ShippingMgr.getShipmentShippingModel( shipment );
+    var applicableShippingMethods = address ? shipmentModel.getApplicableShippingMethods( address ) :
+        shipmentModel.applicableShippingMethods;
+
+    return applicableShippingMethods;
+}
+
+/**
+ * Filters the applicable shipping methods by address
+ *
+ * @param  {dw.order.Shipment} shipment SFCC shipment
+ * @param  {dw.order.OrderAddress} address the Klarna address
+ * @return {dw.util.ArrayList} filteredMethods Llist of shipment methods
+ */
+function filterApplicableShippingMethods( shipment, address ) {
+    var addressObj = convAddressObj( address );
+    var allShippingMethods = getAppplicableShippingMethods( shipment, addressObj );
+    var filteredMethods = new dw.util.ArrayList();
+
+    var shippingMethod;
+    for ( var i = 0; i < allShippingMethods.length; i++ ) {
+        shippingMethod = allShippingMethods[i];
+        if ( shipment.custom.fromStoreId && shippingMethod.custom.storePickupEnabled ) {
+            filteredMethods.push( shippingMethod );
+        } else if ( !shipment.custom.fromStoreId && !shippingMethod.custom.storePickupEnabled ) {
+            filteredMethods.push( shippingMethod );
+        }
+    }
+
+    return filteredMethods;
+}
+
+/**
+ * Retrieves the Express Button form details
+ * 
+ * @param {dw.web.Form} expressForm The express form definition
+ * @return {Object} klarnaDetails The KEB details
+ */
+function getExpressFormDetails(expressForm) {
+    var klarnaDetails = {
+        email: expressForm.email.value || '',
+        phone: expressForm.phone.value || '',
+        firstName: expressForm.firstName.value || '',
+        lastName: expressForm.lastName.value || '',
+        address1: expressForm.address1.value || '',
+        address2: expressForm.address2.value || '',
+        city: expressForm.city.value || '',
+        stateCode: expressForm.stateCode.value || '',
+        postalCode: expressForm.postalCode.value || '',
+        countryCode: {value: expressForm.countryCode.value.toLowerCase() || ''}
+    };
+
+    return klarnaDetails;
+}
+
+/**
+ * Sets the cart billing address to Klarna one
+ *
+ * @param {dw.order.LineItemCtnr} cart SFCC LineItemCtnr
+ * @param {Object} klarnaAddress The Klarna address
+ * @return {void}
+ */
+function setExpressBilling( cart, klarnaAddress ) {
+    var Transaction = require( 'dw/system/Transaction' );
+    var billingAddress = cart.getBillingAddress();
+
+    Transaction.wrap( function() {
+        if ( !billingAddress ) {
+            billingAddress = cart.createBillingAddress();
+        }
+
+        billingAddress.setFirstName( klarnaAddress.firstName );
+        billingAddress.setLastName( klarnaAddress.lastName );
+        billingAddress.setAddress1( klarnaAddress.address1 );
+        billingAddress.setAddress2( klarnaAddress.address2 );
+        billingAddress.setCity( klarnaAddress.city );
+        billingAddress.setPostalCode( klarnaAddress.postalCode );
+        billingAddress.setStateCode( klarnaAddress.stateCode );
+        billingAddress.setCountryCode( klarnaAddress.countryCode.value );
+        billingAddress.setPhone( klarnaAddress.phone );
+
+        cart.setCustomerEmail( klarnaAddress.email );
+    } );
+}
+
+/**
+ * Sets the Klarna address to shipment
+ *
+ * @param  {dw.order.Shipment} shipment SFCC Shipment
+ * @param  {Object} klarnaAddress the Klarna address
+ * @returns {void}
+ */
+function setExpressShipping( shipment, klarnaAddress ) {
+    var Transaction = require( 'dw/system/Transaction' );
+    var shippingAddress = shipment.getShippingAddress();
+
+    Transaction.wrap( function() {
+        if ( !shippingAddress ) {
+            shippingAddress = shipment.createShippingAddress();
+
+            shippingAddress.setFirstName( klarnaAddress.firstName );
+            shippingAddress.setLastName( klarnaAddress.lastName );
+            shippingAddress.setAddress1( klarnaAddress.address1 );
+            shippingAddress.setAddress2( klarnaAddress.address2 );
+            shippingAddress.setCity( klarnaAddress.city );
+            shippingAddress.setPostalCode( klarnaAddress.postalCode );
+            shippingAddress.setStateCode( klarnaAddress.stateCode );
+            shippingAddress.setCountryCode( klarnaAddress.countryCode.value );
+            shippingAddress.setPhone( klarnaAddress.phone );
+        }
+    } );
+}
+
 exports.calculateOrderTotalValue = calculateOrderTotalValue;
 exports.getKlarnaPaymentMethodName = getKlarnaPaymentMethodName;
 exports.getDiscountsTaxation = getDiscountsTaxation;
@@ -249,4 +402,10 @@ exports.getShippment = getShippment;
 exports.isPreAssementApplicable = isPreAssementApplicable;
 exports.isEnabledPreassessmentForCountry = isEnabledPreassessmentForCountry;
 exports.getKlarnaResources = getKlarnaResources;
+exports.convAddressObj = convAddressObj;
+exports.getAppplicableShippingMethods = getAppplicableShippingMethods;
+exports.filterApplicableShippingMethods = filterApplicableShippingMethods;
+exports.getExpressFormDetails = getExpressFormDetails;
+exports.setExpressBilling = setExpressBilling;
+exports.setExpressShipping = setExpressShipping;
 exports.strval = strval;

@@ -51,10 +51,11 @@ var KLARNA_PAYMENT_URLS = {
     LOAD_AUTH: 'KlarnaPayments-LoadAuth',
     SELECT_PAYMENT_METHOD: 'KlarnaPayments-SelectPaymentMethod',
     CONFIRMATION: 'Order-Confirm',
-    NOTIFICATION: 'KlarnaPayments-Notification'
+    NOTIFICATION: 'KlarnaPayments-Notification',
+    MINISUMMARY_UPDATE: ''
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Klarna Payments 21.1.2';
+var SERVICE_HEADER = 'SFCC SFRA Klarna Payments 21.2.0';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.NOTIFY_EVENT_TYPES = NOTIFY_EVENT_TYPES;

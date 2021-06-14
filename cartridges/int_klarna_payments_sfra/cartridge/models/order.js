@@ -12,8 +12,19 @@ function OrderModel(lineItemContainer, options) {
     base.call(this, lineItemContainer, options);
 
     this.klarnaOrderId = '';
+    this.klarnaSessionId = '';
+    this.klarnaClientToken = '';
+
     if (lineItemContainer && 'kpOrderID' in lineItemContainer.custom) {
         this.klarnaOrderId = lineItemContainer.custom.kpOrderID;
+    }
+
+    if (lineItemContainer && 'kpSessionId' in lineItemContainer.custom) {
+        this.klarnaSessionId = lineItemContainer.custom.kpSessionId;
+    }
+
+    if (lineItemContainer && 'kpClientToken' in lineItemContainer.custom) {
+        this.klarnaClientToken = lineItemContainer.custom.kpClientToken;
     }
 }
 

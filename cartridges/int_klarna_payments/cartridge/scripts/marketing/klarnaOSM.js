@@ -219,6 +219,40 @@ var KlarnaOSM = {
         var formattedAmount = Math.round( price.value * 100 );
 
         return formattedAmount;
+    },
+
+    getExpressButtonScriptURL: function() {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.kebLibraryUrl;
+    },
+
+    getExpressButtonMID: function() {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.kebMerchantID;
+    },
+
+    isEnabledExpressButtonCart: function() {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.kebCartEnabled || false;
+    },
+
+    isEnabledExpress: function() {
+        return this.isEnabledExpressButtonCart();
+    },
+
+    getExpressButtonTheme: function() {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.kebTheme.value || 'default';
+    },
+
+    getExpressButtonEnvironment: function() {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.kebEnvironment.value || 'playground';
+    },
+
+    getExpressButtonCategory: function() {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.kebCategory || '';
     }
 };
 

@@ -1,4 +1,4 @@
-/* globals empty, session, request */
+/* globals empty, session, request, dw */
 
 'use strict';
 
@@ -56,8 +56,8 @@ superMdl.getKlarnaResources = function () {
 
     // klarna payments objects
     var KPObjects = {
-        sessionID: session.privacy.KlarnaPaymentsSessionID ? session.privacy.KlarnaPaymentsSessionID.toString() : null,
-        clientToken: session.privacy.KlarnaPaymentsClientToken ? session.privacy.KlarnaPaymentsClientToken.toString() : null,
+        sessionID: currentBasket.custom.kpSessionId ? currentBasket.custom.kpSessionId : null,
+        clientToken: currentBasket.custom.kpClientToken ? currentBasket.custom.kpClientToken : null,
         preassesment: preassess,
         hideRejectedPayments: hideRejectedPaymentsValue
     };
@@ -80,5 +80,32 @@ superMdl.getKlarnaResources = function () {
         KPConstants: JSON.stringify(KPConstants)
     };
 };
+
+/**
+ * Filters the applicable shipping methods by address
+ *
+ * @param {dw.order.Shipment} shipment SFCC shipment
+ * @param {dw.order.OrderAddress} address The Klarna address
+ * @return {dw.util.ArrayList} filteredMethods List of shipment methods
+ */
+function filterApplicableShippingMethods(shipment, address) {
+    var addressObj = superMdl.convAddressObj(address);
+    var allShippingMethods = superMdl.getAppplicableShippingMethods(shipment, addressObj);
+    var collections = require('*/cartridge/scripts/util/collections');
+    var ShippingMethodModel = require('*/cartridge/models/shipping/shippingMethod');
+
+    var filteredMethods = new dw.util.ArrayList();
+    collections.forEach(allShippingMethods, function (shippingMethod) {
+        if (shipment.custom.fromStoreId && shippingMethod.custom.storePickupEnabled) {
+            filteredMethods.push(new ShippingMethodModel(shippingMethod, shipment));
+        } else if (!shipment.custom.fromStoreId && !shippingMethod.custom.storePickupEnabled) {
+            filteredMethods.push(new ShippingMethodModel(shippingMethod, shipment));
+        }
+    });
+
+    return filteredMethods;
+}
+
+superMdl.filterApplicableShippingMethods = filterApplicableShippingMethods;
 
 module.exports = superMdl;

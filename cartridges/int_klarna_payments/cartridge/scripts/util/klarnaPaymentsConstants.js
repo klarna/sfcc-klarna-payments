@@ -45,10 +45,11 @@ var KLARNA_PAYMENT_URLS = {
     LOAD_AUTH: '',
     SELECT_PAYMENT_METHOD: 'KlarnaPayments-SelectPaymentMethod',
     CONFIRMATION: 'KlarnaPayments-Confirmation',
-    NOTIFICATION: 'KlarnaPayments-Notification'
+    NOTIFICATION: 'KlarnaPayments-Notification',
+    MINISUMMARY_UPDATE: 'COBilling-UpdateSummary'
 }
 
-var SERVICE_HEADER = 'SFCC SG Klarna Payments 21.1.2';
+var SERVICE_HEADER = 'SFCC SG Klarna Payments 21.2.0';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.PAYMENT_METHOD = PAYMENT_METHOD;

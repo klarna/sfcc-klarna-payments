@@ -1,0 +1,16 @@
+<!--- TEMPLATENAME: klarnapayments/keb/buttoncart.isml --->
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+
+<isif condition="${KlarnaOSM.isEnabledExpressButtonCart()}">
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets.js');
+        assets.addJs('js/klarnaExpressButton.js');
+        assets.addCss('css/klarnaExpress.css');
+    </isscript>
+    <div class="mb-sm-3 keb-cart">
+        <klarna-express-button class="klarna-express-btn-cart"
+            data-locale="${KlarnaOSM.getLocale()}" data-theme="${KlarnaOSM.getExpressButtonTheme()}"/>
+        <script src="${KlarnaOSM.getExpressButtonScriptURL()}" data-id="${KlarnaOSM.getExpressButtonMID()}" 
+            data-environment="${KlarnaOSM.getExpressButtonEnvironment()}" async></script>
+    </div>
+</isif>

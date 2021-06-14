@@ -2,7 +2,7 @@
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
     <custom-type type-id="KlarnaCountries">
         <display-name xml:lang="x-default">Klarna Countries</display-name>
-        <staging-mode>source-to-target</staging-mode>
+        <staging-mode>no-staging</staging-mode>
         <storage-scope>site</storage-scope>
         <key-definition attribute-id="country">
             <display-name xml:lang="x-default">Country Code</display-name>
@@ -125,13 +125,85 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="kebEnvironment">
+                <display-name xml:lang="x-default">Express Button Environment</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Playground</display>
+                        <value>playground</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Production</display>
+                        <value>production</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kebMerchantID">
+                <display-name xml:lang="x-default">Express Button Merchant ID</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kebLibraryUrl">
+                <display-name xml:lang="x-default">Express Button Library URL</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kebCartEnabled">
+                <display-name xml:lang="x-default">Express Button Cart Enabled</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kebTheme">
+                <display-name xml:lang="x-default">Express Button Theme</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Default</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Light</display>
+                        <value>light</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dark</display>
+                        <value>dark</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kebCategory">
+                <display-name xml:lang="x-default">Express Button Category</display-name>
+                <description xml:lang="x-default">The Klarna Express Button category to be pre-selected on Checkout Page</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </attribute-definitions>
         <group-definitions>
             <attribute-group group-id="custom">
-                <display-name xml:lang="x-default">custom</display-name>
+                <display-name xml:lang="x-default">General</display-name>
                 <attribute attribute-id="country"/>
                 <attribute attribute-id="klarnaLocale"/>
                 <attribute attribute-id="credentialID"/>
+            </attribute-group>
+            <attribute-group group-id="osm">
+                <display-name xml:lang="x-default">On-site Messaging</display-name>
                 <attribute attribute-id="osmUCI"/>
                 <attribute attribute-id="osmCartEnabled"/>
                 <attribute attribute-id="osmCartTagId"/>
@@ -143,7 +215,17 @@
                 <attribute attribute-id="osmFooterTagId"/>
                 <attribute attribute-id="osmInfoPageEnabled"/>
                 <attribute attribute-id="osmInfoPageTagId"/>
+                <attribute attribute-id="osmDataInlineEnabled"/>
                 <attribute attribute-id="osmLibraryUrl"/>
+            </attribute-group>
+            <attribute-group group-id="expressButton">
+                <display-name xml:lang="x-default">Express Button</display-name>
+                <attribute attribute-id="kebMerchantID"/>
+                <attribute attribute-id="kebEnvironment"/>
+                <attribute attribute-id="kebTheme"/>
+                <attribute attribute-id="kebCartEnabled"/>
+                <attribute attribute-id="kebLibraryUrl"/>
+                <attribute attribute-id="kebCategory"/>
             </attribute-group>
         </group-definitions>
     </custom-type>

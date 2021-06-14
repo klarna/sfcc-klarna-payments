@@ -41,17 +41,17 @@
             // load options on page initial load or refresh
             if ( isKlarnaCategory ) {
                 if ( $selectedPaymentMethod.id === $paymentMethod.id ) {
-                    updateBillingAddress( $selectedPaymentMethod.id );
+                    updateBillingAddress( $selectedPaymentMethod.id )
                 } else {
                     var containerName = '#klarna_payments_' + $paymentMethod.id + '_container';
                     var paymentCategory = $paymentMethod.id;
-                    loadPaymentData( containerName, paymentCategory );
+                    loadPaymentData( containerName, paymentCategory )
                 }
             }
 
             // attach click events on all options
             // eslint-disable-next-line no-loop-func
-            $paymentMethod.addEventListener( "click" , function( event ) {
+            $paymentMethod.addEventListener( 'click' , function( event ) {
                 isKlarnaCategory = isKlarnaPaymentCategory( this.id );
 
                 if ( isKlarnaCategory ) {
@@ -64,7 +64,7 @@
     };
 
     if ( klarnaPaymentsObjects.preassesment ) {
-        $billingAddressForm.addEventListener( "change" , function() {
+        $billingAddressForm.addEventListener( 'change' , function() {
             var elements = $billingAddressFormElements;
             var $selectedPaymentMethod = $selectPaymentMethod.querySelectorAll( ':checked' )[0];
             var formValid = true;
@@ -83,7 +83,7 @@
         } )
     }
 
-    $continueBtn.addEventListener( "click" , function( event ) {
+    $continueBtn.addEventListener( 'click' , function( event ) {
         var $selectedPaymentMethod = $selectPaymentMethod.querySelectorAll( ':checked' )[0];
 
         if ( isKlarnaPaymentCategory( $selectedPaymentMethod.id ) ) {
@@ -117,15 +117,15 @@
             }, klarnaRequestData , function( res ) {
                 if ( res.approved ) {
                     var xhr = new XMLHttpRequest();
-                    xhr.open( "GET", klarnaPaymentsUrls.saveAuth, true );
+                    xhr.open( 'GET', klarnaPaymentsUrls.saveAuth, true );
 
-                    xhr.setRequestHeader( "Content-type", "application/json; charset=utf-8" );
-                    xhr.setRequestHeader( "X-Auth", res.authorization_token );
-                    xhr.setRequestHeader( "Finalize-Required", res.finalize_required );
+                    xhr.setRequestHeader( 'Content-type', 'application/json; charset=utf-8' );
+                    xhr.setRequestHeader( 'X-Auth', res.authorization_token );
+                    xhr.setRequestHeader( 'Finalize-Required', res.finalize_required );
 
                     xhr.onreadystatechange = function() {
                         if ( xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 ) {
-                            document.cookie = "selectedKlarnaPaymentCategory=" + $selectedPaymentMethod.id + "; SameSite=Strict; path=/";
+                            document.cookie = 'selectedKlarnaPaymentCategory=' + $selectedPaymentMethod.id + '; SameSite=Strict; path=/';
                             $selectedPaymentMethod.value = 'Klarna';
 
                             //submit billing form when Klarna Payments authorization is successfully finished
@@ -189,7 +189,7 @@
         toggleClass( $klarnaTab, 'klarna-grayed-tab', flag );
         toggleClass( $klarnaContainer, 'klarna-grayed-content', flag );
     }
-    
+
     function selectFirstPayment() {
         var $firstItem = $( '.payment-method-options .form-row:not(.hide) input[type="radio"]' ).first();
         $firstItem.trigger( 'click' );
@@ -199,7 +199,7 @@
         var hasShippingAddress = document.querySelectorAll( '#shipping_address_firstName' )[0] ? true : false;
         return hasShippingAddress;
     }
-    
+
     function useMultiShipping() {
         return $( '.klarna_payments_shipment_data' ).length > 1;
     }
@@ -235,7 +235,7 @@
 
         return address;
     }
-    
+
     function getMultiShipOtherAddresses( billingAddress ) {
         var addressesArr = [];
         var $multiShippingAddresses = document.querySelectorAll( '.klarna_payments_shipment_data' );
@@ -252,7 +252,7 @@
 
         return addressesArr;
     }
-    
+
     function buildOtherAddressData( $addressBlock, billingAddress ) {
         var address = {
             shipping_method: klarnaPaymentsConstants.SHIPPING_METHOD_TYPE.STORE,
@@ -322,7 +322,7 @@
 
         loadPaymentData( containerName, paymentCategory, klarnaRequestData );
     }
-    
+
     function loadPaymentData( containerName, paymentCategory, requestData ) {
         Klarna.Payments.load( {
             container: containerName,
@@ -340,15 +340,15 @@
         var formData = 'dwfrm_billing_paymentMethods_selectedPaymentMethodID=';
 
         if ( isKlarnaCategory ) {
-            document.cookie = "selectedKlarnaPaymentCategory=" + $paymentMethod.id + "; SameSite=Strict; path=/";
+            document.cookie = 'selectedKlarnaPaymentCategory=' + $paymentMethod.id + '; SameSite=Strict; path=/';
             formData += 'Klarna';
         } else {
             formData += $paymentMethod.value;
         }
 
         var xhr = new XMLHttpRequest();
-        xhr.open( "POST", klarnaPaymentsUrls.selectPaymentMethod, false );
-        xhr.setRequestHeader( "Content-type", "application/x-www-form-urlencoded" );
+        xhr.open( 'POST', klarnaPaymentsUrls.selectPaymentMethod, false );
+        xhr.setRequestHeader( 'Content-type', 'application/x-www-form-urlencoded' );
 
         xhr.onreadystatechange = function() {
             if ( xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 ) {
@@ -365,7 +365,7 @@
                 }
 
                 // always execute the KP options loading
-                if ( typeof callback === "function" ) {
+                if ( typeof callback === 'function' ) {
                     callback();
                 }
             }
@@ -375,15 +375,20 @@
     }
 
     function updateSummary() {
-        var $summary = $( '#secondary.summary' );
-
         // load the updated summary area
-        $summary.load( Urls.summaryRefreshURL, function() {
-            // hide edit shipping method link
-            $summary.fadeIn( 'fast' );
-            $summary.find( '.checkout-mini-cart .minishipment .header a' ).hide();
-            $summary.find( '.order-totals-table .order-shipping .label a' ).hide();
-        } );
+        var $summary = document.getElementById( 'secondary' );
+
+        var xhrSm = new XMLHttpRequest();
+        xhrSm.open( 'GET', klarnaPaymentsUrls.summaryUpdate, false );
+        xhrSm.setRequestHeader( 'Content-type', 'text/html' );
+
+        xhrSm.onreadystatechange = function() {
+            if ( xhrSm.readyState === XMLHttpRequest.DONE && xhrSm.status === 200 ) {
+                $summary.innerHTML = xhrSm.responseText;
+            }
+        }
+
+        xhrSm.send();
     }
 
     function hasClass( el, className ) {

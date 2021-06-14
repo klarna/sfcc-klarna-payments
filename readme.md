@@ -3,7 +3,7 @@
 # Klarna Payments 2017-2021 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 21.1.2.
+The latest version of this cartridge is 21.2.0.
 
 This version includes fixes around core file naming convention issues in 21.1.0 and 21.1.1. Please upgrade to the latest version if you are currently using 21.1.0 or 21.1.1.
 
@@ -35,6 +35,7 @@ This repository is also pipeleines compliant. For more information contact Klarn
 * Support for Klarna Payment Method based promotions
 * Support for adjusted price promotions with Gross Tax Policy
 * Handling of rejected payment method - hide or gray out
+* Klarna Express Button for convenient checkout experience
 
 
 ### SiteGenesis Javascript Controller (SGJC)

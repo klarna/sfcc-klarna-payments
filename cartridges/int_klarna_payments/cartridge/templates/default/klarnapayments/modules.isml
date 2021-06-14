@@ -25,3 +25,11 @@
 <ismodule template="klarnapayments/kosm/header.isml"
 	name="kosmheader"
 />
+
+<ismodule template="klarnapayments/keb/buttoncart.isml"
+	name="kebcart"
+/>
+
+<ismodule template="klarnapayments/keb/form.isml"
+	name="kebform"
+/>

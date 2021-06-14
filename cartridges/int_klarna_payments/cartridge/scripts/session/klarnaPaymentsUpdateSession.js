@@ -77,16 +77,18 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
         var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify( response.payment_method_categories ) : null;
 
         Transaction.wrap( function() {
-            session.privacy.KlarnaPaymentsClientToken = response.client_token;
             session.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
+
+            basket.custom.kpClientToken = response.client_token;
         } );
     } catch ( e ) {
         dw.system.Logger.error( 'Error in updating Klarna Payments Session: {0}', e.message + e.stack );
         Transaction.wrap( function() {
-            session.privacy.KlarnaPaymentsSessionID = null;
-            session.privacy.KlarnaPaymentsClientToken = null;
             session.privacy.KlarnaPaymentMethods = null;
             session.privacy.SelectedKlarnaPaymentMethod = null;
+
+            basket.custom.kpSessionId = null;
+            basket.custom.kpClientToken = null;
         } );
         return {
             success: false,

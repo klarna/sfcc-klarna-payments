@@ -1,0 +1,25 @@
+<!--- TEMPLATENAME: klarnapayments/keb/form.isml --->
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+<isset name="klarnaForm" value="${session.forms['klarnaexpresscheckout']}" scope="page" />
+
+<isif condition="${KlarnaOSM.isEnabledExpress()}">
+    <div class="klarna-express-checkout d-none">
+        <form class="klarna-express-form" action="${URLUtils.https('KlarnaPayments-ExpressCheckout')}" method="post" novalidate >
+            <input type="hidden" class="klarna-express-input" name="${klarnaForm.email.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${klarnaForm.phone.htmlName}" value="" />
+
+            <input type="hidden" class="klarna-express-input" name="${klarnaForm.firstName.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${klarnaForm.lastName.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${klarnaForm.address1.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${klarnaForm.address2.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${klarnaForm.city.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${klarnaForm.stateCode.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${klarnaForm.postalCode.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${klarnaForm.countryCode.htmlName}" value="" />
+
+            <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+
+            <button class="klarna-express-button hidden d-none" type="submit">Submit</button>
+        </form>
+    </div>
+</isif>

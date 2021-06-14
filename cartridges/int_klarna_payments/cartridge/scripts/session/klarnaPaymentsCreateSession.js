@@ -59,6 +59,7 @@ function _getRequestBody( basket, localeObject ) {
 function createSession( basket, localeObject ) {
     var Transaction = require( 'dw/system/Transaction' );
     var response = null;
+
     try {
         var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
@@ -70,19 +71,21 @@ function createSession( basket, localeObject ) {
 
         Transaction.wrap( function() {
             session.privacy.KlarnaLocale = localeObject.custom.klarnaLocale;
-            session.privacy.KlarnaPaymentsSessionID = response.session_id;
-            session.privacy.KlarnaPaymentsClientToken = response.client_token;
             session.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
             session.privacy.SelectedKlarnaPaymentMethod = null;
+
+            basket.custom.kpSessionId = response.session_id;
+            basket.custom.kpClientToken = response.client_token;
         } );
     } catch ( e ) {
         dw.system.Logger.error( 'Error in creating Klarna Payments Session: {0}', e.message + e.stack );
         Transaction.wrap( function() {
             session.privacy.KlarnaLocale = null;
-            session.privacy.KlarnaPaymentsSessionID = null;
-            session.privacy.KlarnaPaymentsClientToken = null;
             session.privacy.KlarnaPaymentMethods = null;
             session.privacy.SelectedKlarnaPaymentMethod = null;
+
+            basket.custom.kpSessionId = null;
+            basket.custom.kpClientToken = null;
         } );
         return {
             success: false,

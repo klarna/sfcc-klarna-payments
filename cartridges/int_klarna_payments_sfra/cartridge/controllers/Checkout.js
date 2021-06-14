@@ -5,13 +5,18 @@ var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionMana
 
 server.extend(page);
 
+server.prepend('Begin', function (req, res, next) {
+    // Create or update session before base call, 
+    // as we'll need the token & ID form basket object
+    var klarnaSessionManager = new KlarnaSessionManager();
+    klarnaSessionManager.createOrUpdateSession();
+
+    return next();
+});
+
 server.append('Begin', function (req, res, next) {
     var currentBasket = BasketMgr.getCurrentBasket();
     var viewData = res.getViewData();
-
-    var klarnaSessionManager = new KlarnaSessionManager();
-
-    klarnaSessionManager.createOrUpdateSession();
 
     viewData.klarna = {
         currency: currentBasket.getCurrencyCode()

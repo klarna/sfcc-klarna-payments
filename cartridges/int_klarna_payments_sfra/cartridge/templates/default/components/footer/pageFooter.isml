@@ -1,3 +1,5 @@
+<isinclude template="klarnapayments/modules.isml"/>
+
 <footer id="footercontent">
     <div class="container">
         <div class="footer-container row">
@@ -30,10 +32,13 @@
             </div>
             <div class="col-lg-4 col-sm-4 klarna-footer">
                 <!-- Klarna OSM footer -->
-                <isinclude template="klarnapayments/modules.isml"/>
                 <iskosmfooter />
                 <!-- Klarna OSM footer -->
             </div>
         </div>
     </div>
 </footer>
+
+<!-- Klarna KEB form -->
+<iskebform />
+<!-- Klarna KEB form -->

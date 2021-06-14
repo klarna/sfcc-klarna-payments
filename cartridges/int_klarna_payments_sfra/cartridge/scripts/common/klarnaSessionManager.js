@@ -82,9 +82,14 @@ KlarnaSessionManager.prototype.loadAuthorizationInfo = function () {
  * @returns {Object} Response from the GET call.
  */
 KlarnaSessionManager.prototype.refreshSession = function () {
+    var basket = BasketMgr.getCurrentBasket();
+    if (empty(basket)) {
+        return null;
+    }
+
     var localeObject = this.getLocale();
     var updateSessionHelper = require('*/cartridge/scripts/session/klarnaPaymentsUpdateSession');
-    var updateSessionResponse = updateSessionHelper.updateSession(session.privacy.KlarnaPaymentsSessionID, BasketMgr.getCurrentBasket(), localeObject);
+    var updateSessionResponse = updateSessionHelper.updateSession(basket.custom.kpSessionId, basket, localeObject);
     return updateSessionResponse.response;
 };
 
@@ -97,9 +102,14 @@ KlarnaSessionManager.prototype.refreshSession = function () {
  * @returns {Object} Klarna API call response.
  */
 KlarnaSessionManager.prototype.createSession = function () {
+    var basket = BasketMgr.getCurrentBasket();
+    if (empty(basket)) {
+        return null;
+    }
+
     var localeObject = this.getLocale();
     var createSessionHelper = require('*/cartridge/scripts/session/klarnaPaymentsCreateSession');
-    var createSessionResponse = createSessionHelper.createSession(BasketMgr.currentBasket, localeObject);
+    var createSessionResponse = createSessionHelper.createSession(basket, localeObject);
     return createSessionResponse.response;
 };
 
@@ -107,8 +117,12 @@ KlarnaSessionManager.prototype.createSession = function () {
  * Removes Klarna Session
  */
 KlarnaSessionManager.prototype.removeSession = function () {
+    var basket = BasketMgr.getCurrentBasket();
+
     Transaction.wrap(function () {
-        session.privacy.KlarnaPaymentsSessionID = null;
+        if (!empty(basket)) {
+            basket.custom.kpSessionId = null;
+        }
     });
 };
 
@@ -118,10 +132,15 @@ KlarnaSessionManager.prototype.removeSession = function () {
  * @returns {bool} true, if the session is valid.
  */
 KlarnaSessionManager.prototype.hasValidSession = function () {
+    var basket = BasketMgr.getCurrentBasket();
+    if (empty(basket)) {
+        return false;
+    }
+
     var localeObject = this.getLocale();
     var localesMatch = (localeObject.custom.klarnaLocale === session.privacy.KlarnaLocale);
 
-    return (!empty(session.privacy.KlarnaPaymentsSessionID) && localesMatch);
+    return (!empty(basket.custom.kpSessionId) && localesMatch);
 };
 
 /**
@@ -130,20 +149,26 @@ KlarnaSessionManager.prototype.hasValidSession = function () {
  * @returns {Object} Last API call's response; on error - null
  */
 KlarnaSessionManager.prototype.createOrUpdateSession = function () {
+    var basket = BasketMgr.getCurrentBasket();
+    if (empty(basket)) {
+        return null;
+    }
+
     try {
-        if (this.hasValidSession()) {
-            return this.refreshSession();
+        if (this.hasValidSession(basket)) {
+            return this.refreshSession(basket);
         }
 
-        return this.createSession();
+        return this.createSession(basket);
     } catch (e) {
         log.error('Error in handling Klarna Payments Session: {0}', e.message + e.stack);
 
         Transaction.wrap(function () {
-            session.privacy.KlarnaPaymentsSessionID = null;
-            session.privacy.KlarnaPaymentsClientToken = null;
             session.privacy.KlarnaPaymentMethods = null;
             session.privacy.SelectedKlarnaPaymentMethod = null;
+
+            basket.custom.kpSessionId = null;
+            basket.custom.kpClientToken = null;
         });
 
         return null;

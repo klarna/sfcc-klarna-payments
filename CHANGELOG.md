@@ -1,5 +1,15 @@
 # CHANGELOG
 
+## 21.2.0
+### Added
+* Klarna Express Button on Cart Page
+
+### Changed
+* Moved Klarna session ID & client token from SFCC session privacy to Basket attributes
+* Changed KlarnaCountries definition to not replicable
+* Code Cleanup
+* Documentation updates
+
 ## 21.1.2
 * Fixed core file naming convention issues in 21.1.0 and 21.1.1
 * Removed deprecated “scripts/util/Builder.js” file

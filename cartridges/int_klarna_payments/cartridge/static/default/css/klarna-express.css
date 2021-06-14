@@ -1,0 +1,26 @@
+.keb-cart {
+    display: inline-block;
+    margin-right: 0.3rem;
+    width: 9.8rem;
+    height: 2.32rem;
+}
+
+klarna-express-button.klarna-express-btn-cart {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+@media (max-width: 20rem) {
+    .keb-cart {
+       margin: 0.3rem 0;
+    }
+    .pt_cart .cart-actions {
+        text-align: center;
+    }
+}
+
+@media (max-width: 30rem) {
+    .pt_cart .cart-action-continue-shopping fieldset{
+        text-align: center;
+    }
+}

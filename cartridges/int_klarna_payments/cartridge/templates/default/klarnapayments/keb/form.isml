@@ -1,0 +1,24 @@
+<!--- TEMPLATENAME: klarnapayments/keb/form.isml --->
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+
+<isif condition="${KlarnaOSM.isEnabledExpress()}">
+    <div class="klarna-express-checkout visually-hidden">
+        <form class="klarna-express-form" action="${URLUtils.https('KlarnaPayments-ExpressCheckout')}" method="post" novalidate >
+            <input type="hidden" class="klarna-express-input" name="${pdict.CurrentForms.klarnaexpresscheckout.email.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${pdict.CurrentForms.klarnaexpresscheckout.phone.htmlName}" value="" />
+
+            <input type="hidden" class="klarna-express-input" name="${pdict.CurrentForms.klarnaexpresscheckout.firstName.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${pdict.CurrentForms.klarnaexpresscheckout.lastName.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${pdict.CurrentForms.klarnaexpresscheckout.address1.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${pdict.CurrentForms.klarnaexpresscheckout.address2.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${pdict.CurrentForms.klarnaexpresscheckout.city.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${pdict.CurrentForms.klarnaexpresscheckout.stateCode.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${pdict.CurrentForms.klarnaexpresscheckout.postalCode.htmlName}" value="" />
+            <input type="hidden" class="klarna-express-input" name="${pdict.CurrentForms.klarnaexpresscheckout.countryCode.htmlName}" value="" />
+
+            <input type="hidden" name="${dw.web.CSRFProtection.getTokenName()}" value="${dw.web.CSRFProtection.generateToken()}"/>
+
+            <button class="klarna-express-button visually-hidden" type="submit">Submit</button>
+        </form>
+    </div>
+</isif>

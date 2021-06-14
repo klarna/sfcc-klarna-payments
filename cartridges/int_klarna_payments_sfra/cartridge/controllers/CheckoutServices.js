@@ -52,11 +52,23 @@ server.append(
         var BasketMgr = require('dw/order/BasketMgr');
         var KlarnaUtils = require('*/cartridge/scripts/util/klarnaHelper');
         var StringUtils = require('dw/util/StringUtils');
+        var URLUtils = require('dw/web/URLUtils');
         var Money = require('dw/value/Money');
 
         var viewData = res.viewData;
         var klarnaForm = server.forms.getForm('klarna');
         var currentBasket = BasketMgr.getCurrentBasket();
+
+        if (!currentBasket) {
+            res.json({
+                error: true,
+                cartError: true,
+                fieldErrors: [],
+                serverErrors: [],
+                redirectUrl: URLUtils.url('Cart-Show').toString()
+            });
+            return next();
+        }
 
         if (empty(viewData.error) && !viewData.error && viewData.paymentMethod.value === 'KLARNA_PAYMENTS') {
             var KlarnaPaymentsCategoriesModel = require('*/cartridge/scripts/payments/model/categories');
@@ -89,7 +101,7 @@ server.append(
             });
         }
 
-        if (viewData.paymentMethod.value !== 'KLARNA_PAYMENTS') {
+        if (empty(viewData.error) && !viewData.error && viewData.paymentMethod.value !== 'KLARNA_PAYMENTS') {
             // Cancel any previous authorizations
             var processor = require('*/cartridge/scripts/payments/processor');
             processor.cancelAuthorization();
@@ -118,6 +130,9 @@ server.append('PlaceOrder', function (req, res, next) {
             });
         }
     }
+
+    // clear KEB method
+    req.session.privacyCache.set('KlarnaExpressCategory', null);
 
     return next();
 });

@@ -258,6 +258,24 @@
         </group-definitions>
     </type-extension>
 
+    <type-extension type-id="Basket">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="kpClientToken">
+                <display-name xml:lang="x-default">Klarna Client Token</display-name>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSessionId">
+                <display-name xml:lang="x-default">Klarna Session ID</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+    </type-extension>
+
     <type-extension type-id="Order">
         <custom-attribute-definitions>
             <attribute-definition attribute-id="kpOrderID">
@@ -317,6 +335,19 @@
             <attribute-definition attribute-id="kpVCNPCIData">
                 <display-name xml:lang="x-default">VCN PCI Data</display-name>
                 <description xml:lang="x-default">Klarna Payments Virtual Card PCI Data in encrypted format</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpClientToken">
+                <display-name xml:lang="x-default">Klarna Client Token</display-name>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSessionId">
+                <display-name xml:lang="x-default">Klarna Session ID</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>

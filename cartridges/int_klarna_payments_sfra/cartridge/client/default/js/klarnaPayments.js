@@ -378,71 +378,85 @@ KlarnaCheckout.initKlarnaSubmitPaymentButton = function () {
     $submitPaymentBtn.hide();
 
     $klarnaSubmitPaymentBtn.on('click', function (event) {
-        var selectedPaymentMethod = this.getSelectedPaymentMethod();
-        var klarnaRequestData = {
-            billing_address: this.obtainBillingAddressData()
-        };
-
-        if (this.isKlarnaPaymentCategory(selectedPaymentMethod)) {
-            var klarnaPaymentMethod = this.getKlarnaPaymentMethod(selectedPaymentMethod);
-            event.preventDefault(); // prevent form submission until authorize call is done
-
-            $klarnaSubmitPaymentBtn.prop('disabled', true);
-
-            if (this.userHasEnteredShippingAddress()) {
-                klarnaRequestData.shipping_address = this.obtainShippingAddressData(klarnaRequestData.billing_address);
-            }
-
-            if (window.KPCustomerInfo && window.KPCustomerInfo.attachment) {
-                this.useMultiShipping();
-                var kpAttachment = window.KPCustomerInfo.attachment;
-
-                var kpAttachmentBody = JSON.parse(kpAttachment.body);
-                var otherAddresses = this.getMultiShipOtherAddresses(klarnaRequestData.billing_address);
-
-                kpAttachmentBody.other_delivery_address = otherAddresses;
-                kpAttachment.body = JSON.stringify(kpAttachmentBody);
-
-                klarnaRequestData.attachment = kpAttachment;
-            }
-
-            Klarna.Payments.authorize({
-                payment_method_category: klarnaPaymentMethod,
-                auto_finalize: false
-            }, klarnaRequestData, function (res) {
-                if (res.approved) {
-                    $.ajax({
-                        headers: {
-                            'X-Auth': res.authorization_token,
-                            'Finalize-Required': res.finalize_required
-                        },
-                        url: this.klarnaPaymentsUrls.saveAuth
-                    }).done(function () {
-                        document.cookie = 'selectedKlarnaPaymentCategory=' + selectedPaymentMethod + '; SameSite=Strict; path=/';
-
-                        $klarnaSubmitPaymentBtn.prop('disabled', true);
-
-                        // call the click event on the original checkout button
-                        // to trigger checkout stage processing
-                        $submitPaymentBtn.click();
-                    });
-                } else if (res.show_form) {
-                    $klarnaSubmitPaymentBtn.prop('disabled', false);
-                } else if (!res.show_form && this.klarnaPaymentsObjects.hideRejectedPayments === 'hide') {
-                    this.hidePaymentCategory(selectedPaymentMethod);
-
-                    var $firstItem = $('.payment-options .nav-item:not(.d-none) a[data-toggle="tab"]').first();
-
-                    if ($firstItem.length > 0) {
-                        $firstItem.click();
-                        $klarnaSubmitPaymentBtn.prop('disabled', false);
-                    }
-                } else if (!res.show_form && this.klarnaPaymentsObjects.hideRejectedPayments === 'greyout') {
-                    this.greyoutPaymentCategory(selectedPaymentMethod, true);
-                    $klarnaSubmitPaymentBtn.prop('disabled', true);
-                }
-            }.bind(this));
+        // Update Klarna payment according to the current session data
+        // before submitting the payment.
+        var selectedPayMethod = this.getSelectedPaymentMethod();
+        var isKlarnaMethod = this.isKlarnaPaymentCategory(selectedPayMethod);
+        if (isKlarnaMethod) {
+            event.preventDefault();
+            event.stopPropagation();
         }
+        var $paymentCategory = $('.js-klarna-payment-item');
+        var $tabContent = $($paymentCategory.find('.nav-link').attr('href'));
+        var paymentMethodId = this.getKlarnaPaymentMethod($paymentCategory.attr('data-method-id'));
+        this.submitPaymentMethod($tabContent, function () {
+            this.loadPaymentData(paymentMethodId);
+
+            var selectedPaymentMethod = this.getSelectedPaymentMethod();
+            var klarnaRequestData = {
+                billing_address: this.obtainBillingAddressData()
+            };
+
+            if (this.isKlarnaPaymentCategory(selectedPaymentMethod)) {
+                var klarnaPaymentMethod = this.getKlarnaPaymentMethod(selectedPaymentMethod);
+                event.preventDefault(); // prevent form submission until authorize call is done
+                $klarnaSubmitPaymentBtn.prop('disabled', true);
+
+                if (this.userHasEnteredShippingAddress()) {
+                    klarnaRequestData.shipping_address = this.obtainShippingAddressData(klarnaRequestData.billing_address);
+                }
+
+                if (window.KPCustomerInfo && window.KPCustomerInfo.attachment) {
+                    this.useMultiShipping();
+                    var kpAttachment = window.KPCustomerInfo.attachment;
+
+                    var kpAttachmentBody = JSON.parse(kpAttachment.body);
+                    var otherAddresses = this.getMultiShipOtherAddresses(klarnaRequestData.billing_address);
+
+                    kpAttachmentBody.other_delivery_address = otherAddresses;
+                    kpAttachment.body = JSON.stringify(kpAttachmentBody);
+
+                    klarnaRequestData.attachment = kpAttachment;
+                }
+
+                Klarna.Payments.authorize({
+                    payment_method_category: klarnaPaymentMethod,
+                    auto_finalize: false
+                }, klarnaRequestData, function (res) {
+                    if (res.approved) {
+                        $.ajax({
+                            headers: {
+                                'X-Auth': res.authorization_token,
+                                'Finalize-Required': res.finalize_required
+                            },
+                            url: this.klarnaPaymentsUrls.saveAuth
+                        }).done(function () {
+                            document.cookie = 'selectedKlarnaPaymentCategory=' + selectedPaymentMethod + '; SameSite=Strict; path=/';
+
+                            $klarnaSubmitPaymentBtn.prop('disabled', true);
+
+                            // call the click event on the original checkout button
+                            // to trigger checkout stage processing
+                            $submitPaymentBtn.click();
+                        });
+                    } else if (res.show_form) {
+                        $klarnaSubmitPaymentBtn.prop('disabled', false);
+                    } else if (!res.show_form && this.klarnaPaymentsObjects.hideRejectedPayments === 'hide') {
+                        this.hidePaymentCategory(selectedPaymentMethod);
+
+                        var $firstItem = $('.payment-options .nav-item:not(.d-none) a[data-toggle="tab"]').first();
+
+                        if ($firstItem.length > 0) {
+                            $firstItem.click();
+                            $klarnaSubmitPaymentBtn.prop('disabled', false);
+                        }
+                    } else if (!res.show_form && this.klarnaPaymentsObjects.hideRejectedPayments === 'greyout') {
+                        this.greyoutPaymentCategory(selectedPaymentMethod, true);
+                        $klarnaSubmitPaymentBtn.prop('disabled', true);
+                    }
+                }.bind(this));
+            }
+        }.bind(this));
     }.bind(this));
 };
 
@@ -842,7 +856,13 @@ KlarnaCheckout.loadPaymentData = function (paymentCategory) {
         payment_method_category: klarnaPaymentMethod
     }, updateData, function (res) {
         var $klarnaSubmitPaymentBtn = this.getKlarnaSubmitPaymentBtn();
-        $klarnaSubmitPaymentBtn.prop('disabled', !res.show_form);
+        var disableCheckoutBtn = !res.show_form;
+        if (res.error && res.error.invalid_fields && res.error.invalid_fields.length) {
+            disableCheckoutBtn = true;
+        } else if (!res.error) {
+            disableCheckoutBtn = false;
+        }
+        $klarnaSubmitPaymentBtn.prop('disabled', disableCheckoutBtn);
     }.bind(this));
 };
 
@@ -897,7 +917,12 @@ KlarnaCheckout.submitPaymentMethod = function ($tabContent, callback) {
             summaryHelpers.updateOrderProductSummaryInformation(data.order, data.options);
             this.updatePaymentSummary(data.order, data.options);
         }
-
+        var selectedPaymentMethod = this.getSelectedPaymentMethod();
+        var isKlarnaMethod = this.isKlarnaPaymentCategory(selectedPaymentMethod);
+        if (!isKlarnaMethod) {
+            var $klarnaSubmitPaymentBtn = this.getKlarnaSubmitPaymentBtn();
+            $klarnaSubmitPaymentBtn.prop('disabled', false);
+        }
         // always execute the KP options loading
         if (typeof callback === 'function') callback();
     }.bind(this));

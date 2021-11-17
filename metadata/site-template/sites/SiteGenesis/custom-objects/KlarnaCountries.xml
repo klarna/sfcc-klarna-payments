@@ -44,5 +44,10 @@
         <object-attribute attribute-id="credentialID">klarna.http.dkcredentials</object-attribute>
         <object-attribute attribute-id="klarnaLocale">da-DK</object-attribute>
     </custom-object>
+
+    <custom-object type-id="KlarnaCountries" object-id="PL">
+        <object-attribute attribute-id="credentialID">klarna.http.plcredentials</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">pl-PL</object-attribute>
+    </custom-object>
 	
 </custom-objects>

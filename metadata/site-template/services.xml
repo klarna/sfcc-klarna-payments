@@ -25,6 +25,12 @@
         <password encrypted="true" encryption-type="common.export"></password>
     </service-credential>
 
+    <service-credential service-credential-id="klarna.http.plcredentials">
+        <url>https://api.playground.klarna.com/</url>
+        <user-id>your Merchant ID</user-id>
+        <password encrypted="true" encryption-type="common.export"></password>
+    </service-credential>
+
     <service-credential service-credential-id="klarna.http.gbcredentials">
         <url>https://api.playground.klarna.com/</url>
         <user-id>your Merchant ID</user-id>

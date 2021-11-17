@@ -1,0 +1,27 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="stateCode" label="label.input.state" type="string" mandatory="true" binding="stateCode" missing-error="address.state.missing" value-error="address.field.invalid" parse-error="error.message.required">
+		<options>
+			<option optionid="" 	label="resource.select" 		value=""/>
+
+			<!-- regular PL states -->
+			<option optionid="DS" label="state.pl.ds" value="DS"/>
+			<option optionid="KP" label="state.pl.kp" value="KP"/>
+			<option optionid="LL" label="state.pl.ll" value="LL"/>
+			<option optionid="LM" label="state.pl.lm" value="LM"/>
+			<option optionid="LU" label="state.pl.lu" value="LU"/>
+			<option optionid="MA" label="state.pl.ma" value="MA"/>
+			<option optionid="MZ" label="state.pl.mz" value="MZ"/>
+			<option optionid="OP" label="state.pl.op" value="OP"/>
+			<option optionid="PK" label="state.pl.pk" value="PK"/>
+			<option optionid="PD" label="state.pl.pd" value="PD"/>
+			<option optionid="PM" label="state.pl.pm" value="PM"/>
+			<option optionid="SL" label="state.pl.sl" value="SL"/>
+			<option optionid="SK" label="state.pl.sk" value="SK"/>
+			<option optionid="WN" label="state.pl.wn" value="WN"/>
+			<option optionid="WP" label="state.pl.wp" value="WP"/>
+			<option optionid="ZP" label="state.pl.zp" value="ZP"/>
+
+		</options>
+	</field>
+</form>

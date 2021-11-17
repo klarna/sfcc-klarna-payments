@@ -201,9 +201,10 @@ server.post('SelectPaymentMethod', function (req, res, next) {
 
         var accountModel = new AccountModel(req.currentCustomer);
 
-        if (currentBasketTotal !== newBasketTotal && paymentMethodID === PAYMENT_METHOD) {
-            // update Klarna session details only if we have different new totals, i.e. promotions applied
-            // and if we have selected Klarna option.
+        if (paymentMethodID === PAYMENT_METHOD) {
+            // Update Klarna session details if we have selected Klarna option,
+            // before placing order in order to get the correct order number
+            // including taxation and discount.
             // We don't want to update the session if we are going to continue with non-Klarna payment
             // as cancellation will be issued later
             var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');

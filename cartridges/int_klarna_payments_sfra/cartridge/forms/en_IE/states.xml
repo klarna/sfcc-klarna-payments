@@ -1,0 +1,34 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="stateCode" label="label.input.state" type="string" mandatory="true" binding="stateCode" missing-error="address.state.missing" value-error="address.field.invalid" parse-error="error.message.required">
+		<options>
+            <option optionid="" value="">Please Select</option>
+            <option optionid="Carlow" value="Carlow">Carlow</option>
+            <option optionid="Cavan" value="Cavan">Cavan</option>
+            <option optionid="Clare" value="Clare">Clare</option>
+            <option optionid="Cork" value="Cork">Cork</option>
+            <option optionid="Donegal" value="Donegal">Donegal</option>
+            <option optionid="Dublin" value="Dublin">Dublin</option>
+            <option optionid="Galway" value="Galway">Galway</option>
+            <option optionid="Kerry" value="Kerry">Kerry</option>
+            <option optionid="Kildare" value="Kildare">Kildare</option>
+            <option optionid="Kilkenny" value="Kilkenny">Kilkenny</option>
+            <option optionid="Laois" value="Laois">Laois</option>
+            <option optionid="Leitrim" value="Leitrim">Leitrim</option>
+            <option optionid="Limerick" value="Limerick">Limerick</option>
+            <option optionid="Longford" value="Longford">Longford</option>
+            <option optionid="Louth" value="Louth">Louth</option>
+            <option optionid="Mayo" value="Mayo">Mayo</option>
+            <option optionid="Meath" value="Meath">Meath</option>
+            <option optionid="Monaghan" value="Monaghan">Monaghan</option>
+            <option optionid="Offaly" value="Offaly">Offaly</option>
+            <option optionid="Roscommon" value="Roscommon">Roscommon</option>
+            <option optionid="Sligo" value="Sligo">Sligo</option>
+            <option optionid="Tipperary" value="Tipperary">Tipperary</option>
+            <option optionid="Waterford" value="Waterford">Waterford</option>
+            <option optionid="Westmeath" value="Westmeath">Westmeath</option>
+            <option optionid="Wexford" value="Wexford">Wexford</option>
+            <option optionid="Wicklow" value="Wicklow">Wicklow</option>
+		</options>
+	</field>
+</form>

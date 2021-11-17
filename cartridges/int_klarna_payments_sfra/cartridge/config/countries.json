@@ -64,4 +64,13 @@
 }, {
     "id": "nb_NO",
     "currencyCode": "EUR"
+}, {
+    "id": "pl_PL",
+    "currencyCode": "PLN"
+}, {
+    "id": "en_PL",
+    "currencyCode": "PLN"
+},{
+    "id": "en_IE",
+    "currencyCode": "EUR"
 }]

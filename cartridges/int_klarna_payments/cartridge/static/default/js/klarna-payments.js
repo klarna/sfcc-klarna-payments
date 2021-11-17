@@ -89,61 +89,67 @@
         if ( isKlarnaPaymentCategory( $selectedPaymentMethod.id ) ) {
             event.preventDefault(); //prevent form submission until authorize call is done
             $continueBtn.disabled = true;
-            var hasShippingAddress = document.querySelectorAll( '#shipping_address_firstName' )[0] ? true : false;
+            // Update Klarna payment according to the current session data
+            // before submitting the payment.
+            var el = $( '.js-klarna-payment-item' )[0];
+            submitPaymentMethod( el, function() {
+                loadPaymentData( '#klarna_payments_' + el.id + '_container', el.id );
 
-            var klarnaRequestData = {
-                billing_address: obtainBillingAddressData()
-            };
+                var hasShippingAddress = document.querySelectorAll( '#shipping_address_firstName' )[0] ? true : false;
 
-            if ( hasShippingAddress ) {
-                klarnaRequestData.shipping_address = obtainShippingAddressData( klarnaRequestData.billing_address );
-            }
+                var klarnaRequestData = {
+                    billing_address: obtainBillingAddressData()
+                };
 
-            if ( window.KPCustomerInfo && window.KPCustomerInfo.attachment ) {
-                var kpAttachment = window.KPCustomerInfo.attachment;
-
-                var kpAttachmentBody = JSON.parse( kpAttachment.body );
-                var otherAddresses = getMultiShipOtherAddresses( klarnaRequestData.billing_address );
-
-                kpAttachmentBody.other_delivery_address = otherAddresses;
-                kpAttachment.body = JSON.stringify( kpAttachmentBody );
-
-                klarnaRequestData.attachment = kpAttachment;
-            }
-
-            Klarna.Payments.authorize( {
-                payment_method_category: $selectedPaymentMethod.id,
-                auto_finalize: false
-            }, klarnaRequestData , function( res ) {
-                if ( res.approved ) {
-                    var xhr = new XMLHttpRequest();
-                    xhr.open( 'GET', klarnaPaymentsUrls.saveAuth, true );
-
-                    xhr.setRequestHeader( 'Content-type', 'application/json; charset=utf-8' );
-                    xhr.setRequestHeader( 'X-Auth', res.authorization_token );
-                    xhr.setRequestHeader( 'Finalize-Required', res.finalize_required );
-
-                    xhr.onreadystatechange = function() {
-                        if ( xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 ) {
-                            document.cookie = 'selectedKlarnaPaymentCategory=' + $selectedPaymentMethod.id + '; SameSite=Strict; path=/';
-                            $selectedPaymentMethod.value = 'Klarna';
-
-                            //submit billing form when Klarna Payments authorization is successfully finished
-                            document.querySelectorAll( '#dwfrm_billing' )[0].submit();
-                        }
-                    };
-                    xhr.send();
-                } else if ( !res.show_form && klarnaPaymentsObjects.hideRejectedPayments === 'hide' ) {
-                    hidePaymentCategory( $selectedPaymentMethod.id );
-                    selectFirstPayment();
-                } else if ( !res.show_form && klarnaPaymentsObjects.hideRejectedPayments === 'greyout' ) {
-                    greyoutPaymentCategory( $selectedPaymentMethod.id, true );
-                    $continueBtn.disabled = true;
-                } else {
-                    $continueBtn.disabled = false;
+                if ( hasShippingAddress ) {
+                    klarnaRequestData.shipping_address = obtainShippingAddressData( klarnaRequestData.billing_address );
                 }
-            } );
 
+                if ( window.KPCustomerInfo && window.KPCustomerInfo.attachment ) {
+                    var kpAttachment = window.KPCustomerInfo.attachment;
+
+                    var kpAttachmentBody = JSON.parse( kpAttachment.body );
+                    var otherAddresses = getMultiShipOtherAddresses( klarnaRequestData.billing_address );
+
+                    kpAttachmentBody.other_delivery_address = otherAddresses;
+                    kpAttachment.body = JSON.stringify( kpAttachmentBody );
+
+                    klarnaRequestData.attachment = kpAttachment;
+                }
+
+                Klarna.Payments.authorize( {
+                    payment_method_category: $selectedPaymentMethod.id,
+                    auto_finalize: false
+                }, klarnaRequestData , function( res ) {
+                    if ( res.approved ) {
+                        var xhr = new XMLHttpRequest();
+                        xhr.open( 'GET', klarnaPaymentsUrls.saveAuth, true );
+
+                        xhr.setRequestHeader( 'Content-type', 'application/json; charset=utf-8' );
+                        xhr.setRequestHeader( 'X-Auth', res.authorization_token );
+                        xhr.setRequestHeader( 'Finalize-Required', res.finalize_required );
+
+                        xhr.onreadystatechange = function() {
+                            if ( xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 ) {
+                                document.cookie = 'selectedKlarnaPaymentCategory=' + $selectedPaymentMethod.id + '; SameSite=Strict; path=/';
+                                $selectedPaymentMethod.value = 'Klarna';
+
+                                //submit billing form when Klarna Payments authorization is successfully finished
+                                document.querySelectorAll( '#dwfrm_billing' )[0].submit();
+                            }
+                        };
+                        xhr.send();
+                    } else if ( !res.show_form && klarnaPaymentsObjects.hideRejectedPayments === 'hide' ) {
+                        hidePaymentCategory( $selectedPaymentMethod.id );
+                        selectFirstPayment();
+                    } else if ( !res.show_form && klarnaPaymentsObjects.hideRejectedPayments === 'greyout' ) {
+                        greyoutPaymentCategory( $selectedPaymentMethod.id, true );
+                        $continueBtn.disabled = true;
+                    } else {
+                        $continueBtn.disabled = false;
+                    }
+                } );
+            } );
         }
     } );
     

@@ -1242,4 +1242,164 @@
             }
         }
     }
+}, {
+    "countryCode": "PL",
+    "name": {
+        "en_PL": "Poland",
+        "pl_PL": "Polska"
+    },
+    "continent": "europe",
+    "locales": ["pl_PL", "en_PL"],
+    "currencyCode": "PLN",
+    "taxation": {
+        "type": "gross",
+        "rate": 0.23
+    },
+    "priceBooks": [
+        "pln-list-prices",
+        "pln-sale-prices"
+    ],
+    "dynamicForms": {
+        "addressDetails": {
+            "country": {
+                "type": "select"
+            },
+            "states": [{
+                "fieldName": "state",
+                "type": "text",
+                "required": false
+            }],
+            "phone": {
+                "help": {
+                    "cid": "help-telephone",
+                    "label": {
+                        "property": "singleshipping.phonerequired",
+                        "file": "checkout"
+                    }
+                }
+            }
+        },
+        "giftRegistryEvent" : {
+            "eventaddress": [{
+                "fieldName": "country",
+                "type": "select"
+            }, {
+                "fieldName": "states.state",
+                "type": "select",
+                "required": true
+            }],
+            "type": {
+                "type": "select"
+            }
+        },
+        "giftRegistrySearch": {
+            "simple": {
+                "eventType": {
+                    "type": "select"
+                }
+            },
+            "advanced": {
+                "eventMonth": {
+                    "type": "select"
+                },
+                "eventYear": {
+                    "type": "select"
+                },
+                "eventAddress": [{
+                    "fieldName": "states.state",
+                    "type": "select"
+                }, {
+                    "fieldName": "country",
+                    "type": "select"
+                }]
+            }
+        },
+        "expirationInfo": {
+            "year" : {
+                "type" : "select",
+                "rowclass": "year"
+            },
+            "month" : {
+                "type" : "select",
+                "rowclass": "month"
+            }
+        }
+    }
+},{
+    "countryCode": "IE",
+    "name": {
+        "en_IE": "Ireland"
+    },
+    "continent": "europe",
+    "locales": ["en_IE"],
+    "currencyCode": "EUR",
+    "taxation": {
+        "type": "gross"
+    },
+    "priceBooks": [
+        "gbp-list-prices",
+        "gbp-sale-prices"
+    ],
+    "dynamicForms": {
+        "addressDetails": {
+            "country": {
+                "type": "select"
+            },
+            "states": [{
+                "fieldName": "state",
+                "type": "input"
+            }],
+            "phone": {
+                "help": {
+                    "cid": "help-telephone",
+                    "label": {
+                        "property": "singleshipping.phonerequired",
+                        "file": "checkout"
+                    }
+                }
+            }
+        },
+        "giftRegistryEvent" : {
+            "eventaddress": [{
+                "fieldName": "country",
+                "type": "select"
+            }, {
+                "fieldName": "states.state"
+            }],
+            "type": {
+                "type": "select"
+            }
+        },
+        "giftRegistrySearch": {
+            "simple": {
+                "eventType": {
+                    "type": "select"
+                }
+            },
+            "advanced": {
+                "eventMonth": {
+                    "type": "select"
+                },
+                "eventYear": {
+                    "type": "select"
+                },
+                "eventAddress": [{
+                    "fieldName": "states.state"
+                }, {
+                    "fieldName": "country",
+                    "type": "select"
+                }]
+            }
+        },
+        "expirationInfo": {
+            "year" : {
+                "type" : "select",
+                "rowclass": "year"
+            },
+            "month" : {
+                "type" : "select",
+                "rowclass": "month"
+            }
+        }
+    }
 }]

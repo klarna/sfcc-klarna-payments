@@ -310,6 +310,25 @@
         return this;
     };
 
+    KlarnaPaymentsSessionRequestBuilder.prototype.validateBuildAmounts = function() {
+        var orderAmount = this.context.order_amount;
+        var orderTaxAmount = this.context.order_tax_amount;
+        var orderLines = this.context.order_lines;
+        var orderLinesTotals = 0;
+        // Calculate total amount without tax
+        for ( var i = 0; i < orderLines.length; i++ ) {
+            orderLinesTotals += orderLines[i].total_amount;
+        }
+
+        // Check if total amount is equal to order amount incl. tax
+        if ( orderAmount !== orderLinesTotals) {
+            Logger.error( 'KlarnaPaymentsSessionRequestBuilder.validateBuildAmounts: Order amount or tax amount DO NOT match.' );
+            // Otherwise, adjust order amount and tax amount
+            this.context.order_tax_amount = this.context.order_tax_amount + (orderAmount - orderLinesTotals);
+            this.context.order_amount = orderLinesTotals;
+        }
+    };
+
     KlarnaPaymentsSessionRequestBuilder.prototype.buildItem = function( li ) {
         var item = this.getOrderLineItemRequestBuilder().build( li );
 
@@ -449,6 +468,9 @@
         this.buildTotalAmount( basket );
         this.buildTotalTax( basket );
         this.buildOptions();
+
+        // Validate the built data using the context and line items
+        this.validateBuildAmounts();
 
         return this.context;
     };

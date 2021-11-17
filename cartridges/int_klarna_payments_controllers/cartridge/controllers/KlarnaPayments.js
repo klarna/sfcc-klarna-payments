@@ -486,7 +486,10 @@ function selectPaymentMethod() {
 
     var newBasketTotal = cart.getTotalGrossPrice().getValue();
 
-    if ( currentBasketTotal !== newBasketTotal && paymentMethodID === PAYMENT_METHOD ) {
+    if ( paymentMethodID === PAYMENT_METHOD ) {
+        // Update Klarna session details if we have selected Klarna option,
+        // before placing order in order to get the correct order number
+        // including taxation and discount.
         result = createOrUpdateSession();
 
         if ( empty( result ) ) {

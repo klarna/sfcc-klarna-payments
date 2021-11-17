@@ -368,7 +368,7 @@
                 continue;
             }
 
-            if ( !empty( shipment.shippingMethod ) && !empty( shipment.shippingAddress ) ) {
+            if ( !empty( shipment.shippingMethod ) ) {
                 shippingLineItem = this.getShipmentItemRequestBuilder().build( shipment );
 
                 if ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' ) ) {

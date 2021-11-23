@@ -1,11 +1,20 @@
 # CHANGELOG
 
+## 21.3.1
+### Changed
+* Documentation updates
+
+## 21.3.0
+### Added
+* Minor bug fixes for create_session
+* New locale tempates for Poland
+
 ## 21.2.0
 ### Added
 * Klarna Express Button on Cart Page
+* Moved Klarna session ID & client token from SFCC session privacy to Basket attributes.
 
 ### Changed
-* Moved Klarna session ID & client token from SFCC session privacy to Basket attributes
 * Changed KlarnaCountries definition to not replicable
 * Code Cleanup
 * Documentation updates

@@ -88,12 +88,13 @@ function createVCNSettlement( order, klarnaPaymentsOrderID, localeObject ) {
         klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         klarnaApiContext = new KlarnaPayments.apiContext();
         requestUrl = klarnaApiContext.getFlowApiUrls().get( 'vcnSettlement' );
+        var serviceID = klarnaApiContext.getFlowApiIds().get( 'vcnSettlement' );
         requestBody = {
             'order_id' : klarnaPaymentsOrderID,
             'key_id' : Site.getCurrent().getCustomPreferenceValue( 'kpVCNkeyId' )
         };
 
-        response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+        response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
         if( empty( response.settlement_id ) || empty( response.cards ) ) {
             log.error( 'Error in creating Klarna Payments VCN Settlement: {0}', e );
             return false;

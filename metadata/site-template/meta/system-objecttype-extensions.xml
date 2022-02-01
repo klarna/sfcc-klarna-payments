@@ -2,9 +2,25 @@
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
+            <attribute-definition attribute-id="kpCreateNewSessionWhenExpires">
+                <display-name xml:lang="x-default">Klarna Payment Create New Session When Expires</display-name>
+                <description xml:lang="x-default">Klarna Payment Create New Session When Klarna existing Session Expires</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="kpAutoCapture">
                 <display-name xml:lang="x-default">Autocapture</display-name>
                 <description xml:lang="x-default">When enabled “Yes”, a full order capture will be attempted automatically. The standalone order management API capture request will include total order amount value for “captured_amount”</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpRateLimitByOperation">
+                <display-name xml:lang="x-default">Rate Limit By Operation</display-name>
+                <description xml:lang="x-default">Klarna Payment Rate Limit By Operation</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -254,6 +270,8 @@
                 <attribute attribute-id="kpVCNRetryEnabled"/>
                 <attribute attribute-id="kpPromoTaxation"/>
                 <attribute attribute-id="kpRejectedMethodDisplay"/>
+                <attribute attribute-id="kpCreateNewSessionWhenExpires"/>
+                <attribute attribute-id="kpRateLimitByOperation"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

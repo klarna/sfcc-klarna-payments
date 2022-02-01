@@ -41,8 +41,8 @@ function cancelOrder( localeObject, order ) {
         var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'cancelOrder' ), order.custom.kpOrderID );
-
-        klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, null );
+        var serviceID = klarnaApiContext.getFlowApiIds().get( 'cancelOrder' );
+        klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, null );
     } catch ( e ) {
         logger.error( 'Error in cancelling Klarna Payments Order: {0}', e );
         return {

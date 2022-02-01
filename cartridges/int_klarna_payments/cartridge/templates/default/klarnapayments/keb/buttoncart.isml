@@ -5,6 +5,6 @@
     
     <div class="keb-cart">
         <klarna-express-button class="klarna-express-btn-cart"
-            data-locale="${KlarnaOSM.getLocale()}" data-theme="${KlarnaOSM.getExpressButtonTheme()}"/>
+            data-locale="${KlarnaOSM.getLocale()}" data-theme="${KlarnaOSM.getExpressButtonTheme()}" data-shape="${KlarnaOSM.getExpressButtonShape()}"/>
     </div>
 </isif>

@@ -192,13 +192,6 @@ server.post('SelectPaymentMethod', function (req, res, next) {
             usingMultiShipping = false;
         }
 
-        var currentLocale = Locale.getLocale(req.locale.id);
-        var basketModel = new OrderModel(currentBasket, {
-            usingMultiShipping: usingMultiShipping,
-            countryCode: currentLocale.country,
-            containerView: 'basket'
-        });
-
         var accountModel = new AccountModel(req.currentCustomer);
 
         if (paymentMethodID === PAYMENT_METHOD) {
@@ -212,7 +205,12 @@ server.post('SelectPaymentMethod', function (req, res, next) {
             var klarnaSessionManager = new KlarnaSessionManager();
             klarnaSessionManager.createOrUpdateSession();
         }
-
+        var currentLocale = Locale.getLocale(req.locale.id);
+        var basketModel = new OrderModel(currentBasket, {
+            usingMultiShipping: usingMultiShipping,
+            countryCode: currentLocale.country,
+            containerView: 'basket'
+        });
         res.json({
             order: basketModel,
             customer: accountModel,

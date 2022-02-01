@@ -10,3 +10,11 @@
     <script src="${KlarnaOSM.getExpressButtonScriptURL()}" data-id="${KlarnaOSM.getExpressButtonMID()}" 
         data-environment="${KlarnaOSM.getExpressButtonEnvironment()}" async></script>
 </isif>
+
+<isif condition="${KlarnaOSM.isEnabledMCExpressButton()}">
+    <div class="visually-hidden" id="miniCartKEB">
+        <isinclude template="util/modules"/>
+        <isinclude template="klarnapayments/modules.isml"/>
+        <ismckeb />
+    </div>
+</isif>

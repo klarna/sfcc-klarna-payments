@@ -507,7 +507,7 @@ KlarnaCheckout.updatePaymentSummary = function (order) {
     var $paymentSummary = $('.payment-details');
     var htmlToAppend = '';
 
-    if (firstPaymentInstrument.paymentMethod === 'KLARNA_PAYMENTS') {
+    if (firstPaymentInstrument && firstPaymentInstrument.paymentMethod === 'KLARNA_PAYMENTS') {
         htmlToAppend += '<div class="payment">';
         htmlToAppend += '<div class="method-name">' + firstPaymentInstrument.name + '</div>';
         htmlToAppend += '<div class="category-name">' + firstPaymentInstrument.categoryName + '</div>';
@@ -912,6 +912,9 @@ KlarnaCheckout.submitPaymentMethod = function ($tabContent, callback) {
         method: 'POST',
         data: paymentFormData
     }).done(function (data) {
+        Klarna.Payments.init({
+            "client_token": data.order.klarnaClientToken
+        });
         if (!data.error && data.updateSummary) {
             summaryHelpers.updateTotals(data.order.totals);
             summaryHelpers.updateOrderProductSummaryInformation(data.order, data.options);

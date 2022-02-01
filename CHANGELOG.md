@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 22.1.0
+### Changed
+* Improvements for create and update session errors
+* Added Klarna Express Button in minicart
+* Support for long running basket
+* Rate-limits by operations
+
 ## 21.3.1
 ### Changed
 * Documentation updates

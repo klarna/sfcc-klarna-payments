@@ -76,8 +76,8 @@ function createOrder( order, localeObject, klarnaAuthorizationToken ) {
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody( order, localeObject );
         var requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'createOrder' ), klarnaAuthorizationToken );
-
-        var response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+        var serviceID = klarnaApiContext.getFlowApiIds().get( 'createOrder' );
+        var response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
         return {
             success: true,
             order_id: response.order_id,

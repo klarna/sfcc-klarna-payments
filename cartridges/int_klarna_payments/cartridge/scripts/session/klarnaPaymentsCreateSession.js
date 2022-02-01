@@ -15,6 +15,7 @@ var KlarnaPayments = {
     apiContext : require( '*/cartridge/scripts/common/klarnaPaymentsApiContext' ),
     sessionRequestBuilder : require( '*/cartridge/scripts/payments/requestBuilder/session' )
 };
+var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
 
 /**
  * Function that can be called by pipelines
@@ -65,10 +66,10 @@ function createSession( basket, localeObject ) {
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody( basket, localeObject );
         var requestUrl = klarnaApiContext.getFlowApiUrls().get( 'createSession' );
+        var serviceID = klarnaApiContext.getFlowApiIds().get( 'createSession' );
 
-        response = klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+        response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
         var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify( response.payment_method_categories ) : null;
-
         Transaction.wrap( function() {
             session.privacy.KlarnaLocale = localeObject.custom.klarnaLocale;
             session.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
@@ -76,17 +77,10 @@ function createSession( basket, localeObject ) {
 
             basket.custom.kpSessionId = response.session_id;
             basket.custom.kpClientToken = response.client_token;
-        } );
+        });
     } catch ( e ) {
         dw.system.Logger.error( 'Error in creating Klarna Payments Session: {0}', e.message + e.stack );
-        Transaction.wrap( function() {
-            session.privacy.KlarnaLocale = null;
-            session.privacy.KlarnaPaymentMethods = null;
-            session.privacy.SelectedKlarnaPaymentMethod = null;
-
-            basket.custom.kpSessionId = null;
-            basket.custom.kpClientToken = null;
-        } );
+        KlarnaHelper.clearSessionRef(basket);
         return {
             success: false,
             response: null

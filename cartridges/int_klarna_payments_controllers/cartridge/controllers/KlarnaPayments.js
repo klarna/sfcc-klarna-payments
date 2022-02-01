@@ -19,6 +19,7 @@ var Site = require( 'dw/system/Site' );
 var log = Logger.getLogger( 'KlarnaPayments.js' );
 var guard = require( '*/cartridge/scripts/guard' );
 var app = require( '*/cartridge/scripts/app' );
+var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
 
 /**
  * Creates a Klarna payment instrument for the given basket
@@ -191,14 +192,7 @@ function createOrUpdateSession() {
         return createSession();
     } catch( e ) {
         log.error( 'Error in creating or updating Klarna Payments Session: {0}', e );
-        Transaction.wrap( function() {
-            session.privacy.KlarnaPaymentMethods = null;
-            session.privacy.SelectedKlarnaPaymentMethod = null;
-
-            basket.custom.kpSessionId = null;
-            basket.custom.kpClientToken = null;
-        } );
-
+        KlarnaHelper.clearSessionRef(basket);
         return null;
     }
 }
@@ -385,17 +379,7 @@ function pendingOrder( order ) {
  */
 function clearSession() {
     var basket = BasketMgr.getCurrentBasket();
-
-    Transaction.wrap( function() {
-        session.privacy.KlarnaPaymentMethods = null;
-        session.privacy.SelectedKlarnaPaymentMethod = null;
-        session.privacy.KlarnaExpressCategory = null;
-
-        if (!empty(basket)) {
-            basket.custom.kpSessionId = null;
-            basket.custom.kpClientToken = null;
-        }
-    } );
+    KlarnaHelper.clearSessionRef(basket);
 }
 
 /**

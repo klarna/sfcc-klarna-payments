@@ -25,5 +25,9 @@
     name="kebform"
 />
 
+<ismodule template="klarnapayments/keb/minicartbutton.isml"
+	name="mckeb"
+/>
+
 <isset name="klarnaOSMJsAdded" value="${false}" scope="page" />
 <isset name="klarnaEBJsAdded" value="${false}" scope="page" />

@@ -76,12 +76,15 @@
                         <isinclude template="cart/cartShippingMethodSelection" />
                     </div>
                     <isinclude template="cart/cartTotals" />
-                    <div class="row">
+                    <div class="row-12">
                         <div class="col-12 checkout-continue">
-                            <isinclude template="klarnapayments/modules.isml"/>
-                            <iskebcart />
-
-                            <isinclude template="cart/checkoutButtons" />
+                            <div class="row-6">
+                                <isinclude template="klarnapayments/modules.isml"/>
+                                <iskebcart />
+                            </div>
+                            <div class="row-6">
+                                <isinclude template="cart/checkoutButtons" />
+                            </div>
                         </div>
                     </div>
                 </div>

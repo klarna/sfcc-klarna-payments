@@ -23,3 +23,22 @@
         </form>
     </div>
 </isif>
+
+
+<isif condition="${KlarnaOSM.isEnabledMCExpressButton()}">
+    <div class="keb-hide" id="miniCartKEB">
+        <isinclude template="components/modules"/>
+        <isinclude template="klarnapayments/modules.isml"/>
+        <ismckeb />
+    </div>
+</isif>
+
+<isif condition="${KlarnaOSM.isEnabledExpressButtonCart() || KlarnaOSM.isEnabledMCExpressButton()}">
+    <script src="${KlarnaOSM.getExpressButtonScriptURL()}"
+        data-id="${KlarnaOSM.getExpressButtonMID()}" 
+        data-environment="${KlarnaOSM.getExpressButtonEnvironment()}"
+        async="async"
+    ></script>
+    <script src="${URLUtils.staticURL('/js/klarnaExpressButton.js')}" defer="defer"></script>
+    <link rel="stylesheet" href="${URLUtils.staticURL('/css/klarnaExpress.css')}" />
+</isif>

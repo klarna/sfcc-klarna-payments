@@ -194,6 +194,76 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+
+            <attribute-definition attribute-id="kebMCEnabled">
+                <display-name xml:lang="x-default">MiniCart Express Button Enabled</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kebMCTheme">
+                <display-name xml:lang="x-default">MiniCart Express Button Theme</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Default</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Light</display>
+                        <value>light</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dark</display>
+                        <value>dark</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kebShape">
+                <display-name xml:lang="x-default">Express Button Shape</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Regular</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Rectangle</display>
+                        <value>rect</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Pill</display>
+                        <value>pill</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kebMiniCartShape">
+                <display-name xml:lang="x-default">Minicart Express Button Shape</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Regular</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Rectangle</display>
+                        <value>rect</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Pill</display>
+                        <value>pill</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
         </attribute-definitions>
         <group-definitions>
             <attribute-group group-id="custom">
@@ -223,9 +293,16 @@
                 <attribute attribute-id="kebMerchantID"/>
                 <attribute attribute-id="kebEnvironment"/>
                 <attribute attribute-id="kebTheme"/>
+                <attribute attribute-id="kebShape"/>
                 <attribute attribute-id="kebCartEnabled"/>
                 <attribute attribute-id="kebLibraryUrl"/>
                 <attribute attribute-id="kebCategory"/>
+            </attribute-group>
+            <attribute-group group-id="expressMCButton">
+                <display-name xml:lang="x-default">MiniCart Express Button</display-name>
+                <attribute attribute-id="kebMCEnabled"/>
+                <attribute attribute-id="kebMCTheme"/>
+                <attribute attribute-id="kebMiniCartShape"/>
             </attribute-group>
         </group-definitions>
     </custom-type>

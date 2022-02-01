@@ -28,6 +28,25 @@ superMdl.getShippment = function (lineItemCtnr) {
 };
 
 /**
+ * Clear klarna session and basket attribute
+ * @param  {dw.order.LineItemCtnr} lineItemCtnr basket or order
+ */
+superMdl.clearSessionRef = function (lineItemCtnr) {
+    var Site = require( 'dw/system/Site' );
+    var Transaction = require('dw/system/Transaction');
+    if (Site.getCurrent().getCustomPreferenceValue('kpCreateNewSessionWhenExpires')) {  
+        Transaction.wrap( function() {
+            session.privacy.KlarnaLocale = null;
+            session.privacy.KlarnaPaymentMethods = null;
+            session.privacy.SelectedKlarnaPaymentMethod = null;
+            session.privacy.KlarnaExpressCategory = null;
+            lineItemCtnr.custom.kpSessionId = null;
+            lineItemCtnr.custom.kpClientToken = null;
+        });
+    }
+};
+
+/**
  * Fetches the Klarna Payments Resources
  *
  * @return {Object} Object containing resources

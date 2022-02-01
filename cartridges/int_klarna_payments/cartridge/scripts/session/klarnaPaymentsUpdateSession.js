@@ -14,6 +14,7 @@ var KlarnaPayments = {
     apiContext : require( '*/cartridge/scripts/common/klarnaPaymentsApiContext' ),
     sessionRequestBuilder : require( '*/cartridge/scripts/payments/requestBuilder/session' )
 };
+var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
 
 /**
  * Function that can be called by pipelines
@@ -57,6 +58,7 @@ function _getRequestBody( basket, localeObject ) {
  */
 function updateSession( klarnaSessionID, basket, localeObject ) {
     var Transaction = require( 'dw/system/Transaction' );
+    var Site = require( 'dw/system/Site' );
     var response = null;
     var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
 
@@ -64,16 +66,20 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody( basket, localeObject );
         requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'updateSession' ), klarnaSessionID );
-
+        var serviceID = klarnaApiContext.getFlowApiIds().get( 'updateSession' );
         // Update session
-        klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+        klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody, klarnaSessionID );
     } catch ( e ) {
-        return require( '*/cartridge/scripts/session/klarnaPaymentsCreateSession' ).createSession( basket, localeObject );
+        var errorMsg = e.message;
+        var errorMsgObj = JSON.parse(errorMsg);
+        if (Site.getCurrent().getCustomPreferenceValue('kpCreateNewSessionWhenExpires') && errorMsgObj.error === 404) {
+            return require( '*/cartridge/scripts/session/klarnaPaymentsCreateSession' ).createSession( basket, localeObject );
+        }
     }
 
     try {
         // Read updated session
-        response = klarnaPaymentsHttpService.call( requestUrl, 'GET', localeObject.custom.credentialID );
+        response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'GET', localeObject.custom.credentialID, null, klarnaSessionID );
         var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify( response.payment_method_categories ) : null;
 
         Transaction.wrap( function() {
@@ -83,13 +89,7 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
         } );
     } catch ( e ) {
         dw.system.Logger.error( 'Error in updating Klarna Payments Session: {0}', e.message + e.stack );
-        Transaction.wrap( function() {
-            session.privacy.KlarnaPaymentMethods = null;
-            session.privacy.SelectedKlarnaPaymentMethod = null;
-
-            basket.custom.kpSessionId = null;
-            basket.custom.kpClientToken = null;
-        } );
+        KlarnaHelper.clearSessionRef(basket);
         return {
             success: false,
             response: null

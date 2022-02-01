@@ -43,9 +43,14 @@ KlarnaPaymentsHttpService.prototype.getLastStatusCode = function() {
  * @param {Object} requestBody - optional, JSON body.
  * @returns {string} Parsed JSON response; if not available - response status code.
  */
-KlarnaPaymentsHttpService.prototype.call = function( urlPath, httpVerb, credentialID, requestBody ) {
-    var serviceID = Site.getCurrent().getCustomPreferenceValue( 'kpServiceName' );
-    var service = LocalServiceRegistry.createService( serviceID, {
+KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVerb, credentialID, requestBody, klarnaSessionID ) {
+    var serviceId = serviceID;
+    var useKpRateLimit = Site.getCurrent().getCustomPreferenceValue( 'kpRateLimitByOperation' );
+    if (!useKpRateLimit){
+        serviceId = Site.getCurrent().getCustomPreferenceValue( 'kpServiceName' );
+    }
+
+    var service = LocalServiceRegistry.createService( serviceId, {
         createRequest: function( svc, sRequestBody ) {
             return JSON.stringify( sRequestBody );
         },
@@ -86,7 +91,7 @@ KlarnaPaymentsHttpService.prototype.call = function( urlPath, httpVerb, credenti
     }
 
     this.logResponseData( urlPath, httpVerb, requestBody, result );
-    this.detectErrorResponse( result, httpVerb, service.URL, requestBody );
+    this.detectErrorResponse( result, httpVerb, service.URL, requestBody, klarnaSessionID );
 
     if ( !empty( result.object.text ) ) {
         var jsonResponse = result.object.text.replace( /\r?\n|\r/g, ' ' );
@@ -127,10 +132,13 @@ KlarnaPaymentsHttpService.prototype.isValidHttpVerb = function( httpVerb ) {
  * @param {JSON} requestBody - optional, JSON body.
  * @returns {void}
  */
-KlarnaPaymentsHttpService.prototype.detectErrorResponse = function( result, httpVerb, requestUrl, requestBody ) {
+KlarnaPaymentsHttpService.prototype.detectErrorResponse = function( result, httpVerb, requestUrl, requestBody, klarnaSessionID ) {
     if ( empty( result ) ) {
         this.logger.error( 'result was empty' );
         throw new Error( this.getErrorResponse( 'default' ) );
+    } else if ( result.error == 404 ) {
+        this.logErrorResponse( result, requestUrl, requestBody, klarnaSessionID );
+        throw new Error( result );
     } else if ( result.error !== 0 || result.status === 'ERROR' || result.status === 'SERVICE_UNAVAILABLE' ) {
         this.logErrorResponse( result, requestUrl, requestBody );
         throw new Error( result.errorMessage );
@@ -154,7 +162,7 @@ KlarnaPaymentsHttpService.prototype.getErrorResponse = function() {
  * @param {Object} requestBody - Request body of the last service call.
  * @returns {void}
  */
-KlarnaPaymentsHttpService.prototype.logErrorResponse = function( result, requestUrl, requestBody ) {
+KlarnaPaymentsHttpService.prototype.logErrorResponse = function( result, requestUrl, requestBody, klarnaSessionID ) {
     var content = 'result.error=[' + result.error;
     content += '], result.status=[' + result.status;
     content += '], result.errorMessage=[' + result.errorMessage + ']';
@@ -165,6 +173,10 @@ KlarnaPaymentsHttpService.prototype.logErrorResponse = function( result, request
 
     if ( !empty( requestUrl ) ) {
         content += ', requestUrl=[' + requestUrl + ']';
+    }
+
+    if (result.error == 404 && !empty(klarnaSessionID)) {
+        this.logger.error('Klarna Session Update Or Klarna Session expiration: {0}', klarnaSessionID);
     }
 
     if ( !empty( requestBody ) ) {

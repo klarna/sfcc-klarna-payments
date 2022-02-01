@@ -244,7 +244,6 @@ var KlarnaOSM = {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebTheme.value || 'default';
     },
-
     getExpressButtonEnvironment: function() {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebEnvironment.value || 'playground';
@@ -253,6 +252,23 @@ var KlarnaOSM = {
     getExpressButtonCategory: function() {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebCategory || '';
+    },
+
+    isEnabledMCExpressButton: function() {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.kebMCEnabled || false;
+    },
+    getMCExpressButtonTheme: function() {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.kebMCTheme.value || 'default';
+    },
+    getExpressButtonShape: function() {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.kebShape.value || 'default';
+    },
+    getMiniCartExpressButtonShape: function() {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.kebMiniCartShape.value || 'default';
     }
 };
 

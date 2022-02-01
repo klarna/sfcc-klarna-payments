@@ -1,0 +1,10 @@
+<!--- TEMPLATENAME: klarnapayments/keb/minicartbutton.isml --->
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+
+<isif condition="${KlarnaOSM.isEnabledMCExpressButton()}">
+    <div class="mb-sm-3 keb-cart">
+        <klarna-express-button class="klarna-express-btn-cart"
+            data-locale="${KlarnaOSM.getLocale()}" data-theme="${KlarnaOSM.getMCExpressButtonTheme()}" data-shape="${KlarnaOSM.getMiniCartExpressButtonShape()}"/>
+    </div>
+</isif>
+

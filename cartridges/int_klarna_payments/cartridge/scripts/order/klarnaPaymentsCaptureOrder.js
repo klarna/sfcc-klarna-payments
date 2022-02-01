@@ -29,11 +29,12 @@ function _createCapture( klarnaOrderID, localeObject, captureData ) {
     var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
     var klarnaApiContext = new KlarnaPayments.apiContext();
     var requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'createCapture' ), klarnaOrderID );
+    var serviceID = klarnaApiContext.getFlowApiIds().get( 'createCapture' );
     var requestBody = {
         captured_amount: captureData.amount
     };
 
-    klarnaPaymentsHttpService.call( requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+    klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
 }
 
 /**

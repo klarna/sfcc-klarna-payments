@@ -33,3 +33,7 @@
 <ismodule template="klarnapayments/keb/form.isml"
 	name="kebform"
 />
+
+<ismodule template="klarnapayments/keb/minicartbutton.isml"
+	name="mckeb"
+/>

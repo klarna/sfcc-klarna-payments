@@ -43,9 +43,9 @@ function cancelAuthorization( klarnaAuthorizationToken, localeObject ) {
         var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'cancelAuthorization' ), klarnaAuthorizationToken );
-
+        var serviceID = klarnaApiContext.getFlowApiIds().get( 'cancelAuthorization' );
         try {
-            var response = klarnaPaymentsHttpService.call( requestUrl, 'DELETE', localeObject.custom.credentialID );
+            var response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'DELETE', localeObject.custom.credentialID );
             session.privacy.KlarnaPaymentsAuthorizationToken = null;
             session.privacy.KlarnaPaymentsFinalizeRequired = null;
             return response;

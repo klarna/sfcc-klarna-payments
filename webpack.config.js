@@ -12,7 +12,8 @@ module.exports = [{
 	entry: {
 		'klarnaPayments': path.join( __dirname, cartridgePath + '/client/default/js/klarnaPayments.js' ),
 		'klarnaOsm': path.join( __dirname, cartridgePath + '/client/default/js/klarnaOsm.js' ),
-		'klarnaExpressButton': path.join( __dirname, cartridgePath + '/client/default/js/klarnaExpressButton.js' )
+		'klarnaExpressButton': path.join( __dirname, cartridgePath + '/client/default/js/klarnaExpressButton.js' ),
+		'klarnaMiniCart': path.join( __dirname, cartridgePath + '/client/default/js/klarnaMiniCart.js' )
 	},
 	output: {
 		path: path.resolve( cartridgePath + './static/default/js/' ),

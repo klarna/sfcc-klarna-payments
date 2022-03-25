@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<form xmlns="http://www.demandware.com/xml/form/2008-04-19">
+	<field formid="stateCode" label="label.input.state" type="string" mandatory="true" binding="stateCode" missing-error="address.state.missing" value-error="address.field.invalid" parse-error="error.message.required">
+		<options>
+            <option optionid="" value="">Please Select</option>
+            <option optionid="Coahuila" value="Coahuila">Coahuila</option>
+            <option optionid="Michoacan" value="Michoacan">Michoacan</option>
+            <option optionid="San Luis Potosi" value="San Luis Potosi">San Luis Potosi</option>
+            <option optionid="Chiapas" value="Chiapas">Chiapas</option>
+            <option optionid="Baja California Norte" value="Baja California Norte">Baja California Norte</option>
+            <option optionid="Queretaro" value="Queretaro">Queretaro</option>
+            <option optionid="Baja California Sur" value="Baja California Sur">Baja California Sur</option>
+            <option optionid="Puebla" value="Puebla">Puebla</option>
+            <option optionid="Yucatan" value="Yucatan">Yucatan</option>
+            <option optionid="Veracruz" value="Veracruz">Veracruz</option>
+            <option optionid="Guanajuato" value="Guanajuato">Guanajuato</option>
+            <option optionid="Sonora" value="Sonora">Sonora</option>
+            <option optionid="Nayarit" value="Nayarit">Nayarit</option>
+            <option optionid="Morelos" value="Morelos">Morelos</option>
+            <option optionid="Oaxaca" value="Oaxaca">Oaxaca</option>
+            <option optionid="Guerrero" value="Guerrero">Guerrero</option>
+            <option optionid="Aguascalientes" value="Aguascalientes">Aguascalientes</option>
+            <option optionid="Hidalgo" value="Hidalgo">Hidalgo</option>
+            <option optionid="Chihuahua" value="Chihuahua">Chihuahua</option>
+            <option optionid="Tlaxcala" value="Tlaxcala">Tlaxcala</option>
+            <option optionid="Estado de Mexico" value="Estado de Mexico">Estado de Mexico</option>
+            <option optionid="Nuevo León" value="Nuevo León">Nuevo León</option>
+            <option optionid="Durango" value="Durango">Durango</option>
+            <option optionid="Tabasco" value="Tabasco">Tabasco</option>
+            <option optionid="Sinaloa" value="Sinaloa">Sinaloa</option>
+            <option optionid="Quintana Roo" value="Quintana Roo">Quintana Roo</option>
+            <option optionid="Campeche" value="Campeche">Campeche</option>
+            <option optionid="Ciudad de Mexico" value="Ciudad de Mexico">Ciudad de Mexico</option>
+            <option optionid="Jalisco" value="Jalisco">Jalisco</option>
+            <option optionid="Zacatecas" value="Zacatecas">Zacatecas</option>
+            <option optionid="Colima" value="Colima">Colima</option>
+            <option optionid="Tamaulipas" value="Tamaulipas">Tamaulipas</option>
+		</options>
+	</field>
+</form>

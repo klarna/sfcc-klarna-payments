@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 22.2.0
+### Changed
+* SFRA ver 6.0.0 support
+* One Klarna Optimisation
+* Mexico locale support
+
 ## 22.1.0
 ### Changed
 * Improvements for create and update session errors

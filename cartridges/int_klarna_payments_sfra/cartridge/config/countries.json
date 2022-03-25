@@ -73,4 +73,7 @@
 },{
     "id": "en_IE",
     "currencyCode": "EUR"
+},{
+    "id": "es_MX",
+    "currencyCode": "MXN"
 }]

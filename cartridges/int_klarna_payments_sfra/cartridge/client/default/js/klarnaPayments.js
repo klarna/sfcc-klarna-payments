@@ -137,9 +137,11 @@ KlarnaCheckout.initShippingStage = function (defer) {
 };
 
 KlarnaCheckout.initPaymentStage = function (defer) {
-    Klarna.Payments.init({
-        client_token: this.klarnaPaymentsObjects.clientToken
-    });
+    if (this.klarnaPaymentsObjects.clientToken) {
+        Klarna.Payments.init({
+            client_token: this.klarnaPaymentsObjects.clientToken
+        });
+    }
 
     this.initPaymentOptionsTabs();
 
@@ -161,9 +163,11 @@ KlarnaCheckout.initPaymentStage = function (defer) {
 };
 
 KlarnaCheckout.initPlaceOrderStage = function (defer) {
-    Klarna.Payments.init({
-        client_token: this.klarnaPaymentsObjects.clientToken
-    });
+    if (this.klarnaPaymentsObjects.clientToken) {
+        Klarna.Payments.init({
+            client_token: this.klarnaPaymentsObjects.clientToken
+        });
+    }
 
     this.initKlarnaPlaceOrderButton();
 
@@ -912,9 +916,11 @@ KlarnaCheckout.submitPaymentMethod = function ($tabContent, callback) {
         method: 'POST',
         data: paymentFormData
     }).done(function (data) {
-        Klarna.Payments.init({
-            "client_token": data.order.klarnaClientToken
-        });
+        if (data.order.klarnaClientToken){
+            Klarna.Payments.init({
+                "client_token": data.order.klarnaClientToken
+            });
+        }
         if (!data.error && data.updateSummary) {
             summaryHelpers.updateTotals(data.order.totals);
             summaryHelpers.updateOrderProductSummaryInformation(data.order, data.options);

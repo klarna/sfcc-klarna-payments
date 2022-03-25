@@ -58,6 +58,7 @@ function _getRequestBody( basket, localeObject ) {
  */
 function updateSession( klarnaSessionID, basket, localeObject ) {
     var Transaction = require( 'dw/system/Transaction' );
+    var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
     var Site = require( 'dw/system/Site' );
     var response = null;
     var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
@@ -80,8 +81,7 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
     try {
         // Read updated session
         response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'GET', localeObject.custom.credentialID, null, klarnaSessionID );
-        var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify( response.payment_method_categories ) : null;
-
+        var klarnaPaymentMethods = KlarnaHelper.parseKlarnaResponse(response);
         Transaction.wrap( function() {
             session.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;
 

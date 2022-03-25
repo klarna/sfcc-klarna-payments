@@ -31,6 +31,10 @@ Options.prototype.build = function( preferences ) {
         this.item.color_button = preferences.kpColorButton;
     }
 
+    if ( preferences.kpVatRemoved ) {
+        this.item.vat_removed = preferences.kpVatRemoved;
+    }
+
     if ( preferences.kpColorButtonText ) {
         this.item.color_button_text = preferences.kpColorButtonText;
     }

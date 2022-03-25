@@ -6,7 +6,11 @@
         <user-id>your Merchant ID</user-id>
         <password encrypted="true" encryption-type="common.export"></password>
     </service-credential>
-
+    <service-credential service-credential-id="klarna.http.mxcredentials">
+        <url>https://api-na.playground.klarna.com/</url>
+        <user-id>your Merchant ID</user-id>
+        <password encrypted="true" encryption-type="common.export"></password>
+    </service-credential>
     <service-credential service-credential-id="klarna.http.ficredentials">
         <url>https://api.playground.klarna.com/</url>
         <user-id>your Merchant ID</user-id>

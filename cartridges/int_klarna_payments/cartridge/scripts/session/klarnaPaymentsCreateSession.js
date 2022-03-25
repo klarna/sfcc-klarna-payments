@@ -59,6 +59,7 @@ function _getRequestBody( basket, localeObject ) {
  */
 function createSession( basket, localeObject ) {
     var Transaction = require( 'dw/system/Transaction' );
+    var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
     var response = null;
 
     try {
@@ -69,7 +70,7 @@ function createSession( basket, localeObject ) {
         var serviceID = klarnaApiContext.getFlowApiIds().get( 'createSession' );
 
         response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
-        var klarnaPaymentMethods = response.payment_method_categories ? JSON.stringify( response.payment_method_categories ) : null;
+        var klarnaPaymentMethods = KlarnaHelper.parseKlarnaResponse(response);
         Transaction.wrap( function() {
             session.privacy.KlarnaLocale = localeObject.custom.klarnaLocale;
             session.privacy.KlarnaPaymentMethods = klarnaPaymentMethods;

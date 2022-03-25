@@ -78,7 +78,7 @@ server.append(
             var klarnaPaymentMethods = JSON.parse(userSession.privacy.KlarnaPaymentMethods);
             var kpCategories = new KlarnaPaymentsCategoriesModel(klarnaPaymentMethods);
             var selectedPaymentCategory = kpCategories.findCategoryById(paymentCategoryID);
-            var paymentCategoryName = selectedPaymentCategory.name;
+            var paymentCategoryName = selectedPaymentCategory && selectedPaymentCategory.name;
 
             this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
                 var vd = res.viewData;

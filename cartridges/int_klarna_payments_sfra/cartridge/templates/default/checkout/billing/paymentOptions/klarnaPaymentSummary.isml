@@ -2,7 +2,9 @@
 
 <div class="method-name">
     ${klarnaPaymentMethodName} <br />
-    ${payment.categoryName}
+    <isif condition="${!empty(payment.categoryName)}">
+        ${payment.categoryName}    
+    </isif>
 </div>
 <div class="amount">
     ${dw.util.StringUtils.formatMoney(new dw.value.Money(payment.amount, pdict.klarna.currency))}

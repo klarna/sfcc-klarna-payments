@@ -13,14 +13,13 @@
     </isif>
 
     <isloop items="${JSON.parse(session.privacy.KlarnaPaymentMethods)}" var="klarnaPaymentMethod">
-        <isset name="identifier" value="${klarnaPaymentMethod.identifier ? klarnaPaymentMethod.identifier : ''}" scope="page" />
-        <div class="tab-pane klarna_payments-content klarna_payments_${identifier}" id="${'klarna_payments_' + identifier}" role="tabpanel">
+        <div class="tab-pane klarna_payments-content klarna_payments_${klarnaPaymentMethod.identifier}" id="${'klarna_payments_' + klarnaPaymentMethod.identifier}" role="tabpanel">
             <fieldset class="payment-form-fields">
                 <input type="hidden" class="form-control" name="isKlarna" value="true" disabled="disabled" />
                 <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="KLARNA_PAYMENTS" disabled="disabled" />
-                <input type="hidden" class="form-control" name="${pdict.klarnaForm.paymentCategory.htmlName}" value="${identifier}" disabled="disabled" />
+                <input type="hidden" class="form-control" name="${pdict.klarnaForm.paymentCategory.htmlName}" value="${klarnaPaymentMethod.identifier}" disabled="disabled" />
 
-                <div id="${'klarna_payments_' + identifier + '_container'}" style="text-align: center;"></div>
+                <div id="${'klarna_payments_' + klarnaPaymentMethod.identifier + '_container'}" style="text-align: center;"></div>
                 <isif condition="${empty(pdict.order.klarnaSessionId)}">
                     <div class="klarna_payments_error" style="text-align: center; font-weight: bold; color: red;"><isprint value="${KlarnaPaymentNotAvailable}"/></div>
                 </isif>

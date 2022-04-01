@@ -391,36 +391,6 @@ function setExpressShipping( shipment, klarnaAddress ) {
     } );
 }
 
-/**
- * Parse klarna response
- * @param  {Object} responseObj the Klarna response obj
- * @returns {Object} klarnaPaymentMethods the Klarna payment methods
- */
-
- function parseKlarnaResponse( responseObj ) {
-    var Site = require( 'dw/system/Site' );
-    var useOneKlarna = Site.getCurrent().getCustomPreferenceValue('kpUseOneKlarnaFlow');
-    var klarnaPaymentMethods = responseObj.payment_method_categories ? JSON.stringify(responseObj.payment_method_categories) : null;
-    if (useOneKlarna) {
-        klarnaPaymentMethods = responseObj.descriptor ? JSON.stringify(responseObj.descriptor) : JSON.stringify(responseObj.payment_method_categories);
-    }
-    if (useOneKlarna && responseObj && responseObj.descriptor) {
-        session.custom.klarnaDescriptor = klarnaPaymentMethods;
-        var kpPaymentMethods = [];
-        var descriptor = responseObj.descriptor;
-        descriptor.name = descriptor.tagline;
-        kpPaymentMethods.push(descriptor);
-        klarnaPaymentMethods = kpPaymentMethods ? JSON.stringify( kpPaymentMethods ) : null;
-    } else if (useOneKlarna && session.custom.klarnaDescriptor) {
-        var kpPaymentMethods = [];
-        var descriptor = JSON.parse(session.custom.klarnaDescriptor);
-        descriptor.name = descriptor.tagline;
-        kpPaymentMethods.push(descriptor);
-        klarnaPaymentMethods = kpPaymentMethods ? JSON.stringify( kpPaymentMethods ) : null;
-    }
-    return klarnaPaymentMethods;
-}
-
 exports.calculateOrderTotalValue = calculateOrderTotalValue;
 exports.getKlarnaPaymentMethodName = getKlarnaPaymentMethodName;
 exports.getDiscountsTaxation = getDiscountsTaxation;
@@ -436,7 +406,6 @@ exports.convAddressObj = convAddressObj;
 exports.getAppplicableShippingMethods = getAppplicableShippingMethods;
 exports.filterApplicableShippingMethods = filterApplicableShippingMethods;
 exports.getExpressFormDetails = getExpressFormDetails;
-exports.parseKlarnaResponse = parseKlarnaResponse;
 exports.setExpressBilling = setExpressBilling;
 exports.setExpressShipping = setExpressShipping;
 exports.strval = strval;

@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 22.2.1
+### Changed
+* Rollback of One Klarna Optimisation
+
 ## 22.2.0
 ### Changed
 * SFRA ver 6.0.0 support

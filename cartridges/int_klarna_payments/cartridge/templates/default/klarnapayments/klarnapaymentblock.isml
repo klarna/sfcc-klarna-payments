@@ -13,9 +13,8 @@
     </isif>
 
     <isloop items="${JSON.parse(session.privacy.KlarnaPaymentMethods)}" var="klarnaPaymentMethod">
-        <isset name="identifier" value="${klarnaPaymentMethod.identifier ? klarnaPaymentMethod.identifier : ''}" scope="page" />
-        <div class="payment-method" data-method="${'klarna_payments_' + identifier}">
-            <div id="${'klarna_payments_' + identifier + '_container'}" style="text-align: center;"></div>
+        <div class="payment-method" data-method="${'klarna_payments_' + klarnaPaymentMethod.identifier}">
+            <div id="${'klarna_payments_' + klarnaPaymentMethod.identifier + '_container'}" style="text-align: center;"></div>
             <isif condition="${empty(pdict.Basket.custom.kpSessionId)}">
                 <div class="klarna_payments_error" style="text-align: center; font-weight: bold; color: red;"><isprint value="${KlarnaPaymentNotAvailable}"/></div>
             </isif>

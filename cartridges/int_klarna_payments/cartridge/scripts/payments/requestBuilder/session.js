@@ -300,8 +300,7 @@
             kpColorBorderSelected: currentSite.getCustomPreferenceValue( 'kpColorBorderSelected' ),
             kpColorText: currentSite.getCustomPreferenceValue( 'kpColorText' ),
             kpColorTextSecondary: currentSite.getCustomPreferenceValue( 'kpColorTextSecondary' ),
-            kpRadiusBorder: currentSite.getCustomPreferenceValue( 'kpRadiusBorder' ),
-            kpVatRemoved: currentSite.getCustomPreferenceValue( 'kpVatRemoved' )
+            kpRadiusBorder: currentSite.getCustomPreferenceValue( 'kpRadiusBorder' )
         };
 
         var options = this.getOptionsRequestBuilder().build( preferences );

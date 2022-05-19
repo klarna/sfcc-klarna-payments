@@ -317,8 +317,43 @@ KlarnaCheckout.handleFinalizeRequired = function () {
             }).done(function () {
                 // call the click event on the original checkout button
                 // to trigger checkout stage processing
-                $placeOrderBtn.click();
-            });
+                $('body').trigger('checkout:disableButton', '.next-step-button button');
+                    $.ajax({
+                        url: $('.place-order').data('action'),
+                        method: 'POST',
+                        success: function (data) {
+                            // enable the placeOrder button here
+                            $('body').trigger('checkout:enableButton', '.next-step-button button');
+                            if (data.error) {
+                                if (data.cartError) {
+                                    window.location.href = data.redirectUrl;
+                                    defer.reject();
+                                } else {
+                                    // go to appropriate stage and display error message
+                                    defer.reject(data);
+                                }
+                            } else {
+                                var continueUrl = data.continueUrl;
+                                var urlParams = {
+                                    ID: data.orderID,
+                                    token: data.orderToken
+                                };
+
+                                continueUrl += (continueUrl.indexOf('?') !== -1 ? '&' : '?') +
+                                    Object.keys(urlParams).map(function (key) {
+                                        return key + '=' + encodeURIComponent(urlParams[key]);
+                                    }).join('&');
+
+                                window.location.href = continueUrl;
+                                defer.resolve(data);
+                            }
+                        },
+                        error: function () {
+                            // enable the placeOrder button here
+                            $('body').trigger('checkout:enableButton', $('.next-step-button button'));
+                        }
+                    });
+                });
         } else {
             $klarnaPlaceOrderBtn.prop('disabled', false);
         }
@@ -332,7 +367,42 @@ KlarnaCheckout.handleLoadAuthResponse = function (res) {
     if (finalizeRequired === 'true') {
         this.handleFinalizeRequired();
     } else {
-        $placeOrderBtn.click();
+        $('body').trigger('checkout:disableButton', '.next-step-button button');
+        $.ajax({
+            url: $('.place-order').data('action'),
+            method: 'POST',
+            success: function (data) {
+                // enable the placeOrder button here
+                $('body').trigger('checkout:enableButton', '.next-step-button button');
+                if (data.error) {
+                    if (data.cartError) {
+                        window.location.href = data.redirectUrl;
+                        defer.reject();
+                    } else {
+                        // go to appropriate stage and display error message
+                        defer.reject(data);
+                    }
+                } else {
+                    var continueUrl = data.continueUrl;
+                    var urlParams = {
+                        ID: data.orderID,
+                        token: data.orderToken
+                    };
+
+                    continueUrl += (continueUrl.indexOf('?') !== -1 ? '&' : '?') +
+                        Object.keys(urlParams).map(function (key) {
+                            return key + '=' + encodeURIComponent(urlParams[key]);
+                        }).join('&');
+
+                    window.location.href = continueUrl;
+                    defer.resolve(data);
+                }
+            },
+            error: function () {
+                // enable the placeOrder button here
+                $('body').trigger('checkout:enableButton', $('.next-step-button button'));
+            }
+        });
     }
 };
 
@@ -555,6 +625,8 @@ KlarnaCheckout.obtainBillingAddressData = function () {
     var $paymentForm = $('.payment-form');
     var $billingAddressFieldset = $('.billing-address');
     var $contactInfoBlock = $('.contact-info-block');
+    var $customerInformationBlock = $('.customer-information-block');
+    var emailFromOrderSummary = $('.order-summary-email').text();
 
     if ($billingAddressFieldset.is(':visible')) {
         address.given_name = $billingAddressFieldset.find('.billingFirstName').val();
@@ -566,7 +638,6 @@ KlarnaCheckout.obtainBillingAddressData = function () {
         address.postal_code = $billingAddressFieldset.find('.billingZipCode').val();
         address.country = $billingAddressFieldset.find('.billingCountry').val();
         address.phone = $contactInfoBlock.find('.phone').val();
-        address.email = $contactInfoBlock.find('.email').val();
     } else {
         var $addressSelectorElement = $paymentForm.find('.addressSelector');
         var $selectedOption = $addressSelectorElement.find(':selected');
@@ -580,7 +651,12 @@ KlarnaCheckout.obtainBillingAddressData = function () {
         address.postal_code = $selectedOption.attr('data-postal-code');
         address.country = $selectedOption.attr('data-country-code');
         address.phone = $contactInfoBlock.find('.phone').val();
-        address.email = $contactInfoBlock.find('.email').val();
+    }
+
+    if (emailFromOrderSummary.length) {
+        address.email = emailFromOrderSummary;
+    } else {
+        address.email = $contactInfoBlock.find('.email').length ? $contactInfoBlock.find('.email').val() : $customerInformationBlock.find('.email').val();
     }
 
     return address;
@@ -612,7 +688,9 @@ KlarnaCheckout.obtainShippingAddressData = function (billingAddress) {
 
     var $shippingAddressBlock = $('.single-shipping .shipping-address-block');
     var $contactInfoBlock = $('.contact-info-block');
+    var $customerInformationBlock = $('.customer-information-block');
     var useMultiShip = this.useMultiShipping();
+    var emailFromOrderSummary = $('.order-summary-email').text();
 
     if (!useMultiShip) {
         // If we have only one shipping - it can still be store pickup. In which case
@@ -627,7 +705,11 @@ KlarnaCheckout.obtainShippingAddressData = function (billingAddress) {
         address = this.getMultiShipDefaultAddress(billingAddress);
     }
 
-    address.email = $contactInfoBlock.find('.email').val();
+    if (emailFromOrderSummary.length) {
+        address.email = emailFromOrderSummary;
+    } else {
+        address.email = $contactInfoBlock.find('.email').length ? $contactInfoBlock.find('.email').val() : $customerInformationBlock.find('.email').val();
+    }
 
     return address;
 };

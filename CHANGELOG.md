@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 22.3.1
+### Changed
+* Fix User-agent version sent to Klarna services
+
 ## 22.3.0
 ### Changed
 * SFRA ver. 6.0.0 support

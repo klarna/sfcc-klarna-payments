@@ -49,7 +49,7 @@ var KLARNA_PAYMENT_URLS = {
     MINISUMMARY_UPDATE: 'COBilling-UpdateSummary'
 }
 
-var SERVICE_HEADER = 'SFCC SG Klarna Payments 21.2.0';
+var SERVICE_HEADER = 'SFCC SG Klarna Payments 22.3.1';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.PAYMENT_METHOD = PAYMENT_METHOD;

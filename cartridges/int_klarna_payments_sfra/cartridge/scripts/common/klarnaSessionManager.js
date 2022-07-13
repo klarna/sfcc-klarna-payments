@@ -10,8 +10,8 @@ var BasketMgr = require('dw/order/BasketMgr');
 var Logger = require('dw/system/Logger');
 var log = Logger.getLogger('KlarnaPayments');
 var Transaction = require('dw/system/Transaction');
-var Site = require( 'dw/system/Site' );
-var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
+var Site = require('dw/system/Site');
+var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
 
 /**
  * @constructor
@@ -138,7 +138,7 @@ KlarnaSessionManager.prototype.getSession = function (basket, localeObject) {
         return true;
     }
     var getSessionResponse = getSessionHelper.getSession(kpSessionId, basket, localeObject);
-    if (Site.getCurrent().getCustomPreferenceValue('kpCreateNewSessionWhenExpires') && !getSessionResponse.success) {  
+    if (Site.getCurrent().getCustomPreferenceValue('kpCreateNewSessionWhenExpires') && !getSessionResponse.success) {
         log.error('Klarna Session Update Or Klarna Session expiration: {0}', kpSessionId);
         return true;
     } else if (!getSessionResponse.success) {
@@ -159,7 +159,7 @@ KlarnaSessionManager.prototype.hasValidSession = function () {
     if (empty(basket)) {
         return false;
     }
-    this.getSession(basket, localeObject);  
+    this.getSession(basket, localeObject);
     var localesMatch = (localeObject.custom.klarnaLocale === session.privacy.KlarnaLocale);
     return (!empty(basket.custom.kpSessionId) && localesMatch);
 };

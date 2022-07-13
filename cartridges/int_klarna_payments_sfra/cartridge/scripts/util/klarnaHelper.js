@@ -3,7 +3,7 @@
 'use strict';
 
 var superMdl = module.superModule;
-
+var Site = require('dw/system/Site');
 /**
  * Returns shipment if it contains store ID or returns the default shipment
  *
@@ -32,10 +32,9 @@ superMdl.getShippment = function (lineItemCtnr) {
  * @param  {dw.order.LineItemCtnr} lineItemCtnr basket or order
  */
 superMdl.clearSessionRef = function (lineItemCtnr) {
-    var Site = require( 'dw/system/Site' );
     var Transaction = require('dw/system/Transaction');
-    if (Site.getCurrent().getCustomPreferenceValue('kpCreateNewSessionWhenExpires')) {  
-        Transaction.wrap( function() {
+    if (Site.getCurrent().getCustomPreferenceValue('kpCreateNewSessionWhenExpires')) {
+        Transaction.wrap(function () {
             session.privacy.KlarnaLocale = null;
             session.privacy.KlarnaPaymentMethods = null;
             session.privacy.SelectedKlarnaPaymentMethod = null;
@@ -92,11 +91,17 @@ superMdl.getKlarnaResources = function () {
         SHIPPING_TYPE: KlarnaPaymentsConstants.SHIPPING_TYPE
     };
 
+    // klarna sitePreferences obj
+    var KPPreferences = {
+        kpUseAlternativePaymentFlow: Site.getCurrent().getCustomPreferenceValue('kpUseAlternativePaymentFlow') || false
+    };
+
     return {
         KPurls: JSON.stringify(KPurls),
         KPObjects: JSON.stringify(KPObjects),
         KPCustomerInfo: JSON.stringify(KPCustomerInfo),
-        KPConstants: JSON.stringify(KPConstants)
+        KPConstants: JSON.stringify(KPConstants),
+        KPPreferences: JSON.stringify(KPPreferences)
     };
 };
 

@@ -1,0 +1,15 @@
+<iscontent type="text/html" charset="UTF-8" compact="true"/>
+
+<div class="klarna_payments_billing_data">
+    <input type="hidden" value="${pdict.p_address.firstName || ''}" id="billing_address_firstName" />
+    <input type="hidden" value="${pdict.p_address.lastName || ''}" id="billing_address_lastName" />
+    <input type="hidden" value="${pdict.p_address.address1 || ''}" id="billing_address_address1" />
+    <input type="hidden" value="${pdict.p_address.address2 || ''}" id="billing_address_address2" />
+    <input type="hidden" value="${pdict.p_address.city || ''}" id="billing_address_city" />
+    <input type="hidden" value="${pdict.p_address.stateCode || ''}" id="billing_address_stateCode" />
+    <input type="hidden" value="${pdict.p_address.postalCode || ''}" id="billing_address_postalCode" />
+    <input type="hidden" value="${pdict.p_address.countryCode.value.toUpperCase() || ''}" id="billing_address_countryCode" />
+    <input type="hidden" value="${pdict.p_address.phone || ''}" id="billing_address_phone" />
+    <input type="hidden" value="${pdict.p_email || ''}" id="billing_address_email" />
+    <input type="hidden" value="${session.privacy.KlarnaPaymentMethods}" id="klarna-payment-categories" />
+</div>

@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 22.4.0
+### Changed
+* Intent field addition in Klarna Payment session creation
+* Combine Klarna Authorization and Create Order in Checkout Review Step
+
 ## 22.3.1
 ### Changed
 * Fix User-agent version sent to Klarna services

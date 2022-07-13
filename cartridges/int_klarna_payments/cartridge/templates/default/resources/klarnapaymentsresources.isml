@@ -8,4 +8,5 @@
     window.KlarnaPaymentsObjects = <isprint value="${!empty(klarnaResources.KPObjects) ? klarnaResources.KPObjects : '[]'}" encoding="on"/>;
     window.KPCustomerInfo = <isprint value="${klarnaResources.KPCustomerInfo}" encoding="on"/>;
     window.KPConstants = <isprint value="${klarnaResources.KPConstants}" encoding="on"/>;
+    window.KPPreferences = <isprint value="${klarnaResources.KPPreferences}" encoding="on"/>;
 }(window.app = window.app || {}));

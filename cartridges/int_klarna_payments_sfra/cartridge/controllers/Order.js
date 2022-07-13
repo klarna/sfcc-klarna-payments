@@ -1,5 +1,6 @@
 var page = module.superModule; // inherits functionality
 var server = require('server');
+var URLUtils = require('dw/web/URLUtils');
 var Resource = require('dw/web/Resource');
 
 server.extend(page);
@@ -39,7 +40,7 @@ server.replace('Confirm', function (req, res, next) {
     var passwordForm;
 
     var reportingURLs = reportingUrlsHelper.getOrderReportingURLs(order);
-    
+
     var viewData = res.getViewData();
     viewData.klarna = {
         currency: order.getCurrencyCode()
@@ -64,7 +65,7 @@ server.replace('Confirm', function (req, res, next) {
         });
     }
     req.session.raw.custom.orderID = req.querystring.ID; // eslint-disable-line no-param-reassign
-     
+
     return next();
 });
 

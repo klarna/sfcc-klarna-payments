@@ -228,16 +228,23 @@ function getKlarnaResources( countryCode ) {
         attachment: additionalCustomerInfoRequestBuilder.build( currentBasket ) || {}
     };
 
+    // klarna constants obj
     var KPConstants = {
         SHIPPING_METHOD_TYPE: KlarnaConstants.SHIPPING_METHOD_TYPE,
         SHIPPING_TYPE: KlarnaConstants.SHIPPING_TYPE
+    };
+
+    //klarna sitePreferences obj
+    var KPPreferences = {
+        kpUseAlternativePaymentFlow: dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpUseAlternativePaymentFlow' ) || false
     };
 
     return {
         KPurls: JSON.stringify( KPurls ),
         KPObjects: JSON.stringify( KPObjects ),
         KPCustomerInfo: JSON.stringify( KPCustomerInfo ),
-        KPConstants: JSON.stringify( KPConstants )
+        KPConstants: JSON.stringify( KPConstants ),
+        KPPreferences: JSON.stringify( KPPreferences )
     }
 }
 
@@ -316,7 +323,7 @@ function filterApplicableShippingMethods( shipment, address ) {
  * @param {dw.web.Form} expressForm The express form definition
  * @return {Object} klarnaDetails The KEB details
  */
-function getExpressFormDetails(expressForm) {
+function getExpressFormDetails( expressForm ) {
     var klarnaDetails = {
         email: expressForm.email.value || '',
         phone: expressForm.phone.value || '',

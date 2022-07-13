@@ -71,8 +71,8 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
         klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody, klarnaSessionID );
     } catch ( e ) {
         var errorMsg = e.message;
-        var errorMsgObj = JSON.parse(errorMsg);
-        if (Site.getCurrent().getCustomPreferenceValue('kpCreateNewSessionWhenExpires') && errorMsgObj.error === 404) {
+        var errorMsgObj = JSON.parse( errorMsg );
+        if ( Site.getCurrent().getCustomPreferenceValue( 'kpCreateNewSessionWhenExpires' ) || errorMsgObj.error === 404 || errorMsgObj.error_code === 'INVALID_OPERATION') {
             return require( '*/cartridge/scripts/session/klarnaPaymentsCreateSession' ).createSession( basket, localeObject );
         }
     }
@@ -89,7 +89,7 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
         } );
     } catch ( e ) {
         dw.system.Logger.error( 'Error in updating Klarna Payments Session: {0}', e.message + e.stack );
-        KlarnaHelper.clearSessionRef(basket);
+        KlarnaHelper.clearSessionRef( basket );
         return {
             success: false,
             response: null

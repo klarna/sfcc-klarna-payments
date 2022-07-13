@@ -77,10 +77,10 @@ function createSession( basket, localeObject ) {
 
             basket.custom.kpSessionId = response.session_id;
             basket.custom.kpClientToken = response.client_token;
-        });
+        } );
     } catch ( e ) {
         dw.system.Logger.error( 'Error in creating Klarna Payments Session: {0}', e.message + e.stack );
-        KlarnaHelper.clearSessionRef(basket);
+        KlarnaHelper.clearSessionRef( basket );
         return {
             success: false,
             response: null

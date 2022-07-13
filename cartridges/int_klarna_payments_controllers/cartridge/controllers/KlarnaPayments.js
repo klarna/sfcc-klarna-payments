@@ -175,7 +175,7 @@ function getLocale( currentCountry ) {
  */
 function createOrUpdateSession() {
     var basket = BasketMgr.getCurrentBasket();
-    if (empty(basket)) {
+    if ( empty( basket ) ) {
         return null;
     }
 
@@ -192,7 +192,7 @@ function createOrUpdateSession() {
         return createSession();
     } catch( e ) {
         log.error( 'Error in creating or updating Klarna Payments Session: {0}', e );
-        KlarnaHelper.clearSessionRef(basket);
+        KlarnaHelper.clearSessionRef( basket );
         return null;
     }
 }
@@ -207,7 +207,7 @@ function createOrUpdateSession() {
  */
 function createSession() {
     var basket = BasketMgr.getCurrentBasket();
-    if (empty(basket)) {
+    if ( empty( basket ) ) {
         return null;
     }
 
@@ -227,7 +227,7 @@ function createSession() {
  */
 function updateSession() {
     var basket = BasketMgr.getCurrentBasket();
-    if (empty(basket)) {
+    if ( empty ( basket ) ) {
         return null;
     }
 
@@ -379,7 +379,7 @@ function pendingOrder( order ) {
  */
 function clearSession() {
     var basket = BasketMgr.getCurrentBasket();
-    KlarnaHelper.clearSessionRef(basket);
+    KlarnaHelper.clearSessionRef( basket );
 }
 
 /**
@@ -492,12 +492,11 @@ function selectPaymentMethod() {
 
 function expressCheckout() {
     var URLUtils = require( 'dw/web/URLUtils' );
-    var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
     var PAYMENT_METHOD = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).PAYMENT_METHOD;
 
     var cart = app.getModel( 'Cart' ).get();
     var expressForm = app.getForm( 'klarnaexpresscheckout' ).object;
-    var klarnaDetails = KlarnaHelper.getExpressFormDetails(expressForm);
+    var klarnaDetails = KlarnaHelper.getExpressFormDetails( expressForm );
     var step = 'COBilling-Start';
 
     if ( !cart ) {
@@ -506,7 +505,7 @@ function expressCheckout() {
     }
 
     // Clear all payment forms before we handle KEB
-    app.getForm('billing').object.paymentMethods.clearFormElement();
+    app.getForm( 'billing' ).object.paymentMethods.clearFormElement();
 
     // Set billing address & email
     KlarnaHelper.setExpressBilling( cart, klarnaDetails );
@@ -592,7 +591,7 @@ function expressCheckout() {
 
 function handleExpressRedirect( cart, paymentMethodId ) {
     var URLUtils = require( 'dw/web/URLUtils' );
-    var KlarnaOSM = require('*/cartridge/scripts/marketing/klarnaOSM');
+    var KlarnaOSM = require( '*/cartridge/scripts/marketing/klarnaOSM' );
     var EXPRESS_CATEGORY = KlarnaOSM.getExpressButtonCategory();
 
     session.privacy.KlarnaExpressCategory = EXPRESS_CATEGORY;

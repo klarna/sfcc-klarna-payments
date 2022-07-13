@@ -35,7 +35,7 @@ var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
         response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'GET', localeObject.custom.credentialID, null, klarnaSessionID );
     } catch ( e ) {
         dw.system.Logger.error( 'Error in getting Klarna Payments Session: {0}', e.message + e.stack );
-        KlarnaHelper.clearSessionRef(basket);
+        KlarnaHelper.clearSessionRef( basket );
         return {
             success: false,
             response: null

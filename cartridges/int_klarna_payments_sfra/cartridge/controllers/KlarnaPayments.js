@@ -123,6 +123,7 @@ server.post('SelectPaymentMethod', function (req, res, next) {
         var currentBasket = BasketMgr.getCurrentBasket();
         var billingData = res.getViewData();
         var paymentMethodID = billingData.paymentMethod.value;
+        var paymentInstruments = currentBasket.getPaymentInstruments(PAYMENT_METHOD);
         var result;
 
         // if we have no basket or there is no selected payment option and balance is greater than zero
@@ -135,24 +136,26 @@ server.post('SelectPaymentMethod', function (req, res, next) {
 
         // if the selected payment matches Klarna
         if (paymentMethodID === PAYMENT_METHOD) {
-            var processor = PaymentMgr.getPaymentMethod(paymentMethodID).getPaymentProcessor();
-            if (HookMgr.hasHook('app.payment.processor.' + processor.ID.toLowerCase())) {
-                result = HookMgr.callHook('app.payment.processor.' + processor.ID.toLowerCase(),
-                    'Handle',
-                    currentBasket,
-                    billingData.paymentInformation,
-                    paymentMethodID,
-                    req
-                );
-            } else {
-                result = HookMgr.callHook('app.payment.processor.default', 'Handle');
-            }
+            if (paymentInstruments.length === 0) {
+                var processor = PaymentMgr.getPaymentMethod(paymentMethodID).getPaymentProcessor();
+                if (HookMgr.hasHook('app.payment.processor.' + processor.ID.toLowerCase())) {
+                    result = HookMgr.callHook('app.payment.processor.' + processor.ID.toLowerCase(),
+                        'Handle',
+                        currentBasket,
+                        billingData.paymentInformation,
+                        paymentMethodID,
+                        req
+                    );
+                } else {
+                    result = HookMgr.callHook('app.payment.processor.default', 'Handle');
+                }
 
-            if (result.error) {
-                res.json({
-                    error: true
-                });
-                return;
+                if (result.error) {
+                    res.json({
+                        error: true
+                    });
+                    return;
+                }
             }
         } else {
             // To handle Credit Cards we need to receive the card details, which are unavailable with just clicking on tabs.

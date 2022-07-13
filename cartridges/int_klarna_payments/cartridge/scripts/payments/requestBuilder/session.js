@@ -321,10 +321,10 @@
         }
 
         // Check if total amount is equal to order amount incl. tax
-        if ( orderAmount !== orderLinesTotals) {
+        if ( orderAmount !== orderLinesTotals ) {
             Logger.error( 'KlarnaPaymentsSessionRequestBuilder.validateBuildAmounts: Order amount or tax amount DO NOT match.' );
             // Otherwise, adjust order amount and tax amount
-            this.context.order_tax_amount = this.context.order_tax_amount + (orderAmount - orderLinesTotals);
+            this.context.order_tax_amount = this.context.order_tax_amount + ( orderAmount - orderLinesTotals );
             this.context.order_amount = orderLinesTotals;
         }
     };
@@ -444,16 +444,27 @@
         }
     };
 
+    KlarnaPaymentsSessionRequestBuilder.prototype.setPaymentIntent = function() {
+        this.context.intent = Site.getCurrent().getCustomPreferenceValue( 'kpPaymentIntent' ).value;
+        
+        return this;
+    };
+
     KlarnaPaymentsSessionRequestBuilder.prototype.build = function() {
         var basket = this.params.basket;
         var preAssement = isEnabledPreassessmentForCountry( this.getLocaleObject().country );
         var kpAttachmentsPreferenceValue = Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' );
+        var kpPaymentIntentPreferenceValue = Site.getCurrent().getCustomPreferenceValue( 'kpPaymentIntent' );
 
         this.init( preAssement );
 
         this.setMerchantReference( basket );
 
         this.buildLocale( basket );
+
+        if (kpPaymentIntentPreferenceValue && kpPaymentIntentPreferenceValue.value !== 'No') {
+            this.setPaymentIntent ();
+        }
 
         if ( preAssement ) {
             this.buildBilling( basket );

@@ -8,6 +8,12 @@
 	attribute="p_shipment"
 />
 
+<ismodule template="klarnapayments/billingaddresshelper.isml"
+	name="kpbillingaddresshelper"
+	attribute="p_address"
+	attribute="p_email"
+/>
+
 <ismodule template="klarnapayments/kosm/cart.isml"
 	name="kosmcart"
 	attribute="p_lineitemctnr"

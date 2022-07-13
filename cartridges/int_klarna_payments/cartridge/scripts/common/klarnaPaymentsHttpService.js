@@ -46,7 +46,7 @@ KlarnaPaymentsHttpService.prototype.getLastStatusCode = function() {
 KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVerb, credentialID, requestBody, klarnaSessionID ) {
     var serviceId = serviceID;
     var useKpRateLimit = Site.getCurrent().getCustomPreferenceValue( 'kpRateLimitByOperation' );
-    if (!useKpRateLimit){
+    if ( !useKpRateLimit ) {
         serviceId = Site.getCurrent().getCustomPreferenceValue( 'kpServiceName' );
     }
 
@@ -175,8 +175,8 @@ KlarnaPaymentsHttpService.prototype.logErrorResponse = function( result, request
         content += ', requestUrl=[' + requestUrl + ']';
     }
 
-    if (result.error == 404 && !empty(klarnaSessionID)) {
-        this.logger.error('Klarna Session Update Or Klarna Session expiration: {0}', klarnaSessionID);
+    if ( result.error == 404 && !empty( klarnaSessionID ) ) {
+        this.logger.error( 'Klarna Session Update Or Klarna Session expiration: {0}', klarnaSessionID );
     }
 
     if ( !empty( requestBody ) ) {

@@ -104,7 +104,8 @@
                         <span>${Resource.msg('msg.card.type.ending', 'confirmation', null)} ${payment.expirationMonth}/${payment.expirationYear}</span>
                     </div>
                 </isif>
-                <isif condition="${payment.paymentMethod === 'KLARNA_PAYMENTS'}">
+                <isset name="KLARNA_PAYMENT_DEFAULT" value="${require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).PAYMENT_METHOD}" scope="page" />
+                <isif condition="${payment.paymentMethod.indexOf(KLARNA_PAYMENT_DEFAULT) >= 0}">
                     <isset name="klarnaPaymentMethodName" value="${require('*/cartridge/scripts/util/klarnaHelper').getKlarnaPaymentMethodName()}" scope="page" />
                     <isset name="confirmationAsset" value="${require('*/cartridge/scripts/util/klarnaHelper').getConfirmationEmailAsset()}" scope="page" />
 

@@ -55,7 +55,7 @@ var KLARNA_PAYMENT_URLS = {
     MINISUMMARY_UPDATE: ''
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Klarna Payments 22.4.0';
+var SERVICE_HEADER = 'SFCC SFRA Klarna Payments 22.5.0';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.NOTIFY_EVENT_TYPES = NOTIFY_EVENT_TYPES;

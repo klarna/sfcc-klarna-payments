@@ -3,9 +3,10 @@
 # Klarna Payments 2017-2022 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 22.4.0.
+The latest version of this cartridge is 22.5.0.
 
-This version includes Intent field addition in Klarna Payment session creation and Combine Klarna Authorization and Create Order in Checkout Review Step.
+This version includes support of SalesForce Order Management System (OMS).
+
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/

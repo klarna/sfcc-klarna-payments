@@ -4,7 +4,8 @@
 
 var KlarnaPaymentsConstants = require('*/cartridge/scripts/util/klarnaPaymentsConstants');
 
-var PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
+var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
 var CREDIT_CARD_PROCESSOR_ID = KlarnaPaymentsConstants.CREDIT_CARD_PROCESSOR_ID;
 var NOTIFY_EVENT_TYPES = KlarnaPaymentsConstants.NOTIFY_EVENT_TYPES;
 var KLARNA_FRAUD_STATUSES = KlarnaPaymentsConstants.FRAUD_STATUS;

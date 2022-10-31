@@ -2,6 +2,7 @@
 
 <isif condition="${session.privacy.KlarnaPaymentMethods}">
     <isset name="countryCode" value="${require('*/cartridge/scripts/util/countries').getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode}" scope="page" />
+    <isset name="klarnaPaymentMethodID" value="${require('*/cartridge/scripts/util/klarnaHelper').getPaymentMethod()}" scope="page" />
     <isset name="KlarnaPaymentNotAvailable" value="${Resource.msg('error.klarna.notavailable', 'klarnapayments', null)}" scope="page" />
     <isif condition="${!empty(dw.system.Site.getCurrent().getCustomPreferenceValue('kpNotAvailableMessage'))}">
         <isset name="kpNotAvailableJSON" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('kpNotAvailableMessage'))}" scope="page" />
@@ -16,7 +17,7 @@
         <div class="tab-pane klarna_payments-content klarna_payments_${klarnaPaymentMethod.identifier}" id="${'klarna_payments_' + klarnaPaymentMethod.identifier}" role="tabpanel">
             <fieldset class="payment-form-fields">
                 <input type="hidden" class="form-control" name="isKlarna" value="true" disabled="disabled" />
-                <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="KLARNA_PAYMENTS" disabled="disabled" />
+                <input type="hidden" class="form-control" name="${pdict.forms.billingForm.paymentMethod.htmlName}" value="${klarnaPaymentMethodID}" disabled="disabled" />
                 <input type="hidden" class="form-control" name="${pdict.klarnaForm.paymentCategory.htmlName}" value="${klarnaPaymentMethod.identifier}" disabled="disabled" />
 
                 <div id="${'klarna_payments_' + klarnaPaymentMethod.identifier + '_container'}" style="text-align: center;"></div>

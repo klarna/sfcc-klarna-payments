@@ -89,9 +89,9 @@ server.get('InfoPage', function (req, res, next) {
 server.post('SelectPaymentMethod', function (req, res, next) {
     var PaymentManager = require('dw/order/PaymentMgr');
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-    var KlarnaPaymentsConstants = require('*/cartridge/scripts/util/klarnaPaymentsConstants');
+    var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+    var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
 
-    var PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
     var paymentForm = server.forms.getForm('billing');
     var paymentMethodIdValue = paymentForm.paymentMethod.value;
 

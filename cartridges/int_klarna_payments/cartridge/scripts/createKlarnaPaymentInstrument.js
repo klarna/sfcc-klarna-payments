@@ -47,7 +47,7 @@ function createPaymentIntrument( args ) {
     var amount = KlarnaHelper.calculateOrderTotalValue( basket );
 
     // create a payment instrument for this payment instrument
-    var PAYMENT_METHOD = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).PAYMENT_METHOD;
+    var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
     var paymentInstr = basket.createPaymentInstrument( PAYMENT_METHOD, amount );
 
     paymentInstr = KlarnaHelper.setPaymentCategoryDetails( paymentInstr );

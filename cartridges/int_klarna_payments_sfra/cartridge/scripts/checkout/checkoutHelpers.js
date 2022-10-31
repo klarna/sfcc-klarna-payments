@@ -5,7 +5,8 @@ var superMdl = module.superModule;
 var placeOrderParent = superMdl.placeOrder;
 var KlarnaPaymentsConstants = require('*/cartridge/scripts/util/klarnaPaymentsConstants');
 
-var KLARNA_PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
+var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+var KLARNA_PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
 var KLARNA_FRAUD_STATUSES = KlarnaPaymentsConstants.FRAUD_STATUS;
 
 var Transaction = require('dw/system/Transaction');

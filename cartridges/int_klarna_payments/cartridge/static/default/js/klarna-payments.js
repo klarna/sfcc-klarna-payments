@@ -368,8 +368,9 @@
         var formData = 'dwfrm_billing_paymentMethods_selectedPaymentMethodID=';
 
         if ( isKlarnaCategory ) {
+            var methodId = $( '.klarna-payment-form-row' ).data( 'method-id' );
             document.cookie = 'selectedKlarnaPaymentCategory=' + $paymentMethod.id + '; SameSite=Strict; path=/';
-            formData += 'Klarna';
+            formData += methodId;
         } else {
             formData += $paymentMethod.value;
         }

@@ -27,8 +27,7 @@ function calculateOrderTotalValue( basket ) {
  */
 function getKlarnaPaymentMethodName() {
     var PaymentMgr = require( 'dw/order/PaymentMgr' );
-    var KlarnaPaymentsConstants = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' );
-    var paymentMethodId = KlarnaPaymentsConstants.PAYMENT_METHOD;
+    var paymentMethodId = getPaymentMethod();
 
     var paymentMethod = PaymentMgr.getPaymentMethod( paymentMethodId );
 
@@ -231,7 +230,8 @@ function getKlarnaResources( countryCode ) {
     // klarna constants obj
     var KPConstants = {
         SHIPPING_METHOD_TYPE: KlarnaConstants.SHIPPING_METHOD_TYPE,
-        SHIPPING_TYPE: KlarnaConstants.SHIPPING_TYPE
+        SHIPPING_TYPE: KlarnaConstants.SHIPPING_TYPE,
+        KLARNA_PAYMENT_DEFAULT: KlarnaConstants.PAYMENT_METHOD
     };
 
     //klarna sitePreferences obj
@@ -398,6 +398,64 @@ function setExpressShipping( shipment, klarnaAddress ) {
     } );
 }
 
+/**
+ * Clear klarna session and basket attribute
+ * @param  {dw.order.LineItemCtnr} lineItemCtnr basket or order
+ */
+ function clearSessionRef( lineItemCtnr ) {
+    var Transaction = require( 'dw/system/Transaction' );
+    var Site = require( 'dw/system/Site' );
+
+    if ( Site.getCurrent().getCustomPreferenceValue( 'kpCreateNewSessionWhenExpires' ) ) {
+        Transaction.wrap( function () {
+            session.privacy.KlarnaLocale = null;
+            session.privacy.KlarnaPaymentMethods = null;
+            session.privacy.SelectedKlarnaPaymentMethod = null;
+            session.privacy.KlarnaExpressCategory = null;
+            lineItemCtnr.custom.kpSessionId = null;
+            lineItemCtnr.custom.kpClientToken = null;
+        });
+    }
+};
+
+/**
+ * Is OMS enabled
+ */
+ function isOMSEnabled() {
+    return dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpOMSEnabled' );
+}
+/**
+ * Gets Klarna Payments Locale object
+ *
+ * @param {string} currentCountry current country locale
+ *
+ * @return {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
+ */
+function getLocale( currentCountry ) {
+    var localeObject = {};
+    var getKlarnaPaymentsLocale = require( '*/cartridge/scripts/locale/klarnaPaymentsGetLocale' );
+    var localeObjectResult = getKlarnaPaymentsLocale.getLocaleObject( currentCountry );
+    if ( localeObjectResult.success ) {
+        localeObject = localeObjectResult.localeObject;
+    }
+    return localeObject;
+}
+/**
+ * Gets Klarna Payments Method from custom object
+ *
+ * @param {string} currentCountry current country locale
+ *
+ * @return {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
+ */
+function getPaymentMethod( ) {
+    var localeObject = getLocale();
+    var PAYMENT_METHOD = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).PAYMENT_METHOD;
+    if (isOMSEnabled() && !empty(localeObject) && !empty(localeObject.custom.paymentMethodID) && localeObject.custom.paymentMethodID != '') {
+        PAYMENT_METHOD = localeObject.custom.paymentMethodID;
+    }
+    return PAYMENT_METHOD;
+}
+
 exports.calculateOrderTotalValue = calculateOrderTotalValue;
 exports.getKlarnaPaymentMethodName = getKlarnaPaymentMethodName;
 exports.getDiscountsTaxation = getDiscountsTaxation;
@@ -416,3 +474,7 @@ exports.getExpressFormDetails = getExpressFormDetails;
 exports.setExpressBilling = setExpressBilling;
 exports.setExpressShipping = setExpressShipping;
 exports.strval = strval;
+exports.clearSessionRef = clearSessionRef;
+exports.isOMSEnabled = isOMSEnabled;
+exports.getLocale = getLocale;
+exports.getPaymentMethod = getPaymentMethod;

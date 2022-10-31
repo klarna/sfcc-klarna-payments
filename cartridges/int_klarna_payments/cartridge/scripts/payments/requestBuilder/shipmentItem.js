@@ -1,6 +1,7 @@
 /* globals empty */
 
 'use strict';
+var Transaction = require( 'dw/system/Transaction' );
 
 var TaxMgr = require( 'dw/order/TaxMgr' );
 var ShippingLocation = require( 'dw/order/ShippingLocation' );
@@ -10,6 +11,7 @@ var LineItem = require( '*/cartridge/scripts/payments/model/request/session' ).L
 
 var isTaxationPolicyNet = require( '*/cartridge/scripts/util/klarnaHelper' ).isTaxationPolicyNet;
 var discountTaxationMethod = require( '*/cartridge/scripts/util/klarnaHelper' ).getDiscountsTaxation();
+var isOMSEnabled = require( '*/cartridge/scripts/util/klarnaHelper' ).isOMSEnabled();
 
 var ORDER_LINE_TYPE = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).ORDER_LINE_TYPE;
 
@@ -108,9 +110,9 @@ ShipmentItem.prototype.build = function( shipment ) {
     this.item.reference = shipment.shippingMethod.ID;
     this.item.unit_price = shipmentUnitPrice;
     this.item.tax_rate = Math.round( shipmentTaxRate );
-    this.item.total_amount = ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' ) ? shipmentAdjustedPrice : shipmentUnitPrice;
+    this.item.total_amount = isOMSEnabled || ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' ) ? shipmentAdjustedPrice : shipmentUnitPrice;
 
-    if ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' && shipmentUnitPrice !== shipmentAdjustedPrice ) {
+    if ( isOMSEnabled || ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' && shipmentUnitPrice !== shipmentAdjustedPrice ) ) {
         var discountAmount = shipmentUnitPrice - shipmentAdjustedPrice;
         this.item.total_discount_amount = Math.round( discountAmount );
     }
@@ -120,6 +122,13 @@ ShipmentItem.prototype.build = function( shipment ) {
     }
 
     this.item.total_tax_amount = this.calculateShippingTotalTaxAmount( shipment );
+
+    if ( isOMSEnabled ) {
+        var itemObj = this.item;
+        Transaction.wrap( function() {
+            shipment.custom.lineItemJSON = JSON.stringify( itemObj );
+        } );
+    }
 
     return this.item;
 };

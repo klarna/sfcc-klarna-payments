@@ -26,7 +26,7 @@
     var isTaxationPolicyNet = require( '*/cartridge/scripts/util/klarnaHelper' ).isTaxationPolicyNet;
     var discountTaxationMethod = require( '*/cartridge/scripts/util/klarnaHelper' ).getDiscountsTaxation();
     var getShippment = require( '*/cartridge/scripts/util/klarnaHelper' ).getShippment;
-
+    var isOMSEnabled = require( '*/cartridge/scripts/util/klarnaHelper' ).isOMSEnabled();
     /**
      * KP Order Request Builder
      * @return {void}
@@ -233,7 +233,7 @@
         this.context.order_amount = Math.round( totalAmount );
 
         // Set order discount line items
-        if ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' ) ) {
+        if ( !isOMSEnabled && ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' )) ) {
             this.addPriceAdjustments( order.priceAdjustments, null, null, this.context );
         }
 
@@ -320,11 +320,11 @@
 
             if ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' ) ) {
                 // Add product-specific shipping line adjustments
-                if ( !isGiftCertificate && !empty( li.shippingLineItem ) ) {
+                if ( !isOMSEnabled && !isGiftCertificate && !empty( li.shippingLineItem ) ) {
                     this.addPriceAdjustments( li.shippingLineItem.priceAdjustments.toArray(), li.productID, null, context );
                 }
 
-                if ( !isGiftCertificate && !empty( li.priceAdjustments ) && li.priceAdjustments.length > 0 ) {
+                if ( !isOMSEnabled && !isGiftCertificate && !empty( li.priceAdjustments ) && li.priceAdjustments.length > 0 ) {
                     this.addPriceAdjustments( li.priceAdjustments.toArray(), li.productID, li.optionID, context );
                 }
             }
@@ -371,7 +371,7 @@
             if ( !empty( shipment.shippingMethod ) ) {
                 shippingLineItem = this.getShipmentItemRequestBuilder().build( shipment );
 
-                if ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' ) ) {
+                if ( !isOMSEnabled && (isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' )) ) {
                     this.addPriceAdjustments( shipment.shippingPriceAdjustments.toArray(), null, null, context );
                 }
 

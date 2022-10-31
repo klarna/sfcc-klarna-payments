@@ -275,6 +275,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="kpOMSEnabled">
+                <display-name xml:lang="x-default">Enable OMS</display-name>
+                <description xml:lang="x-default">Enable OMS</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Klarna_Payments">
@@ -307,6 +315,7 @@
                 <attribute attribute-id="kpRateLimitByOperation"/>
                 <attribute attribute-id="kpUseAlternativePaymentFlow"/>
                 <attribute attribute-id="kpPaymentIntent"/>
+                <attribute attribute-id="kpOMSEnabled"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -461,4 +470,43 @@
             </attribute-group>
         </group-definitions>
     </type-extension>
+
+    <type-extension type-id="ProductLineItem">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="lineItemJSON">
+                <display-name xml:lang="x-default">lineItemJSON</display-name>
+                <description xml:lang="x-default">Enriched data for product line item.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>true</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="custom">
+                <display-name xml:lang="x-default">Custom</display-name>
+                <attribute attribute-id="lineItemJSON"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+    
+    <type-extension type-id="Shipment">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="lineItemJSON">
+                <display-name xml:lang="x-default">lineItemJSON</display-name>
+                <description xml:lang="x-default">Enriched data for shipment.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>true</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="custom">
+                <display-name xml:lang="x-default">Custom</display-name>
+                <attribute attribute-id="lineItemJSON"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
 </metadata>

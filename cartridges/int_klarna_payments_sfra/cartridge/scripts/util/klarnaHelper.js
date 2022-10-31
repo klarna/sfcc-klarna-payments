@@ -88,7 +88,8 @@ superMdl.getKlarnaResources = function () {
     // klarna constants obj
     var KPConstants = {
         SHIPPING_METHOD_TYPE: KlarnaPaymentsConstants.SHIPPING_METHOD_TYPE,
-        SHIPPING_TYPE: KlarnaPaymentsConstants.SHIPPING_TYPE
+        SHIPPING_TYPE: KlarnaPaymentsConstants.SHIPPING_TYPE,
+        KLARNA_PAYMENT_DEFAULT: KlarnaPaymentsConstants.PAYMENT_METHOD
     };
 
     // klarna sitePreferences obj

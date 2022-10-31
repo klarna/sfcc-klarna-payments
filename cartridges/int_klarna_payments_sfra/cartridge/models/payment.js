@@ -3,8 +3,11 @@
 var PaymentMgr = require('dw/order/PaymentMgr');
 var PaymentInstrument = require('dw/order/PaymentInstrument');
 var collections = require('*/cartridge/scripts/util/collections');
+var ArrayList = require('dw/util/ArrayList');
 
-var KLARNA_PAYMENT_METHOD = require('*/cartridge/scripts/util/klarnaPaymentsConstants').PAYMENT_METHOD;
+var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+var KLARNA_PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
+var KLARNA_PAYMENT_DEFAULT = require('*/cartridge/scripts/util/klarnaPaymentsConstants').PAYMENT_METHOD;
 
 /**
  * Creates an array of objects containing applicable payment methods
@@ -14,12 +17,20 @@ var KLARNA_PAYMENT_METHOD = require('*/cartridge/scripts/util/klarnaPaymentsCons
  *      current cart
  */
 function applicablePaymentMethods(paymentMethods) {
-    return collections.map(paymentMethods, function (method) {
-        return {
-            ID: method.ID,
-            name: method.name
-        };
-    });
+    var result = new ArrayList();
+    var iterator = paymentMethods.iterator();
+    var method;
+    while (iterator.hasNext()) {
+        method = iterator.next();
+        if (method.ID.indexOf(KLARNA_PAYMENT_DEFAULT) === -1 ||
+            (method.ID.indexOf(KLARNA_PAYMENT_DEFAULT) >= 0 && method.ID === KLARNA_PAYMENT_METHOD)) {
+            result.add({
+                ID: method.ID,
+                name: method.name
+            });
+        }
+    }
+    return result;
 }
 
 /**

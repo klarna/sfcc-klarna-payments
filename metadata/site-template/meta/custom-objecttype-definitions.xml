@@ -194,7 +194,15 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-
+            <attribute-definition attribute-id="paymentMethodID">
+                <display-name xml:lang="x-default">Payment Method ID</display-name>
+                <description xml:lang="x-default">Payment Method ID that should be used for placing of the order. If not defined, by default the payment method that should be used is 'KLARNA_PAYMENTS'.</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
             <attribute-definition attribute-id="kebMCEnabled">
                 <display-name xml:lang="x-default">MiniCart Express Button Enabled</display-name>
                 <type>boolean</type>
@@ -271,6 +279,7 @@
                 <attribute attribute-id="country"/>
                 <attribute attribute-id="klarnaLocale"/>
                 <attribute attribute-id="credentialID"/>
+                <attribute attribute-id="paymentMethodID"/>
             </attribute-group>
             <attribute-group group-id="osm">
                 <display-name xml:lang="x-default">On-site Messaging</display-name>

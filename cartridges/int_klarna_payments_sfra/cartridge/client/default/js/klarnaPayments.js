@@ -600,8 +600,9 @@ KlarnaCheckout.updatePaymentSummary = function (order) {
     var firstPaymentInstrument = selectedPaymentInstruments[0];
     var $paymentSummary = $('.payment-details');
     var htmlToAppend = '';
+    var KLARNA_PAYMENT_DEFAULT = this.klarnaPaymentsConstants.KLARNA_PAYMENT_DEFAULT;
 
-    if (firstPaymentInstrument && firstPaymentInstrument.paymentMethod === 'KLARNA_PAYMENTS') {
+    if (firstPaymentInstrument && firstPaymentInstrument.paymentMethod.indexOf(KLARNA_PAYMENT_DEFAULT) >= 0) {
         htmlToAppend += '<div class="payment">';
         htmlToAppend += '<div class="method-name">' + firstPaymentInstrument.name + '</div>';
         htmlToAppend += '<div class="category-name">' + firstPaymentInstrument.categoryName + '</div>';
@@ -1019,7 +1020,7 @@ KlarnaCheckout.submitPaymentMethod = function ($tabContent, callback) {
         data: paymentFormData
     }).done(function (data) {
         Klarna.Payments.init({
-            client_token: data.order.klarnaClientToken
+            client_token: this.klarnaPaymentsObjects.clientToken
         });
         if (!data.error && data.updateSummary) {
             summaryHelpers.updateTotals(data.order.totals);

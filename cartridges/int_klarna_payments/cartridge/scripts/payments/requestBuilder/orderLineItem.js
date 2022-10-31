@@ -5,12 +5,14 @@
 var URLUtils = require( 'dw/web/URLUtils' );
 var Site = require( 'dw/system/Site' );
 var ArrayList = require( 'dw/util/ArrayList' );
+var Transaction = require( 'dw/system/Transaction' );
 
 var Builder = require( '*/cartridge/scripts/payments/builder' );
 var LineItem = require( '*/cartridge/scripts/payments/model/request/session' ).LineItem;
 
 var isTaxationPolicyNet = require( '*/cartridge/scripts/util/klarnaHelper' ).isTaxationPolicyNet;
 var discountTaxationMethod = require( '*/cartridge/scripts/util/klarnaHelper' ).getDiscountsTaxation();
+var isOMSEnabled = require( '*/cartridge/scripts/util/klarnaHelper' ).isOMSEnabled();
 
 var ORDER_LINE_TYPE = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).ORDER_LINE_TYPE;
 
@@ -162,10 +164,10 @@ OrderLineItem.prototype.build = function( li ) {
     this.item.name = this.getItemName( li );
     this.item.unit_price = Math.round( itemPrice / quantity );
     this.item.tax_rate = this.getItemTaxRate( li );
-    this.item.total_amount = ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' ) ? Math.round( itemProratedPrice ) : Math.round( itemPrice );
+    this.item.total_amount = isOMSEnabled || ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' ) ? Math.round( itemProratedPrice ) : Math.round( itemPrice );
     this.item.total_tax_amount = this.getItemTaxAmount( li );
 
-    if ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' && itemProratedPrice !== itemPrice ) {
+    if ( isOMSEnabled || ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' && itemProratedPrice !== itemPrice ) ) {
         var discountAmount = itemPrice - itemProratedPrice;
         this.item.total_discount_amount = Math.round( discountAmount );
     }
@@ -181,6 +183,13 @@ OrderLineItem.prototype.build = function( li ) {
     }
 
     this.buildItemProductAndImageUrls( li );
+
+    if ( isOMSEnabled ) {
+        var itemObj = this.item;
+        Transaction.wrap( function() {
+            li.custom.lineItemJSON = JSON.stringify( itemObj );
+        });
+    }
 
     return this.item;
 };

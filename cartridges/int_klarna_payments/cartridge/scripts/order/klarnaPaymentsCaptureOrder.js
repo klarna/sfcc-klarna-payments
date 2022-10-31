@@ -13,8 +13,8 @@ var KlarnaPayments = {
     httpService: require( '*/cartridge/scripts/common/klarnaPaymentsHttpService' ),
     apiContext: require( '*/cartridge/scripts/common/klarnaPaymentsApiContext' )
 };
-var KlarnaPaymentsConstants = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' );
-var PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
+var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
+var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
 
 /**
  * Attempts to create a full-amount capture through Klarna API.

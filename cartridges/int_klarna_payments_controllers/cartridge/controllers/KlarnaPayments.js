@@ -246,6 +246,14 @@ function updateSession() {
  */
 function confirmation() {
     var order = OrderMgr.getOrder( session.privacy.OrderNo );
+
+    //remove kpClientToken from order
+    Transaction.wrap( function() {
+        if ( order && !empty( order.custom.kpClientToken ) ) {
+            order.custom.kpClientToken = null;
+        }
+    } );
+
     var COSummary = require( '*/cartridge/controllers/COSummary.js' );
     return COSummary.ShowConfirmation( order );
 }
@@ -438,7 +446,8 @@ function selectPaymentMethod() {
         return;
     }
 
-    var PAYMENT_METHOD = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).PAYMENT_METHOD;
+    var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
+    
     if ( paymentMethodID === PAYMENT_METHOD ) {
         result = app.getModel( 'PaymentProcessor' ).handle( cart.object, paymentMethodID );
 
@@ -492,8 +501,8 @@ function selectPaymentMethod() {
 
 function expressCheckout() {
     var URLUtils = require( 'dw/web/URLUtils' );
-    var PAYMENT_METHOD = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).PAYMENT_METHOD;
-
+    var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
+    
     var cart = app.getModel( 'Cart' ).get();
     var expressForm = app.getForm( 'klarnaexpresscheckout' ).object;
     var klarnaDetails = KlarnaHelper.getExpressFormDetails( expressForm );

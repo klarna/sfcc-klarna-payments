@@ -58,6 +58,7 @@ server.append(
         var viewData = res.viewData;
         var klarnaForm = server.forms.getForm('klarna');
         var currentBasket = BasketMgr.getCurrentBasket();
+        var KLARNA_PAYMENT_DEFAULT = require('*/cartridge/scripts/util/klarnaPaymentsConstants').PAYMENT_METHOD;
 
         if (!currentBasket) {
             res.json({
@@ -70,7 +71,7 @@ server.append(
             return next();
         }
 
-        if (empty(viewData.error) && !viewData.error && viewData.paymentMethod.value === 'KLARNA_PAYMENTS') {
+        if (empty(viewData.error) && !viewData.error && viewData.paymentMethod.value.indexOf(KLARNA_PAYMENT_DEFAULT) >= 0) {
             var KlarnaPaymentsCategoriesModel = require('*/cartridge/scripts/payments/model/categories');
             var userSession = req.session.raw;
 
@@ -83,7 +84,7 @@ server.append(
             this.on('route:BeforeComplete', function (req, res) { // eslint-disable-line no-shadow
                 var vd = res.viewData;
                 var collections = require('*/cartridge/scripts/util/collections');
-                var KLARNA_PAYMENT_METHOD = require('*/cartridge/scripts/util/klarnaPaymentsConstants').PAYMENT_METHOD;
+                var KLARNA_PAYMENT_METHOD = KlarnaUtils.getPaymentMethod();
                 var paymentInstrument = collections.find(currentBasket.getPaymentInstruments(), function (item) {
                     return item.paymentMethod === KLARNA_PAYMENT_METHOD;
                 });
@@ -101,7 +102,7 @@ server.append(
             });
         }
 
-        if (empty(viewData.error) && !viewData.error && viewData.paymentMethod.value !== 'KLARNA_PAYMENTS') {
+        if (empty(viewData.error) && !viewData.error && viewData.paymentMethod.value.indexOf(KLARNA_PAYMENT_DEFAULT) === -1) {
             // Cancel any previous authorizations
             var processor = require('*/cartridge/scripts/payments/processor');
             processor.cancelAuthorization();
@@ -117,6 +118,17 @@ server.append(
 
 server.append('PlaceOrder', function (req, res, next) {
     var redirectURL = req.session.privacyCache.get('KlarnaPaymentsRedirectURL');
+
+    //remove kpClientToken from order
+    var OrderMgr = require('dw/order/OrderMgr');
+    var order = OrderMgr.getOrder(res.viewData.orderID);
+
+    if (order && !empty(order.custom.kpClientToken)) {
+        var Transaction = require('dw/system/Transaction');
+        Transaction.wrap(function () {
+            order.custom.kpClientToken = null;
+        })
+    }
 
     if (redirectURL) {
         req.session.privacyCache.set('KlarnaPaymentsRedirectURL', null);

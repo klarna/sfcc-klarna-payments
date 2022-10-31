@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 22.5.0
+### Changed
+* OMS support
+
 ## 22.4.0
 ### Changed
 * Intent field addition in Klarna Payment session creation

@@ -1,9 +1,10 @@
+<isset name="KLARNA_PAYMENT_DEFAULT" value="${require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).PAYMENT_METHOD}" scope="page" />
 <div class="payment-details">
     <isloop items="${pdict.order.billing.payment.selectedPaymentInstruments}" var="payment">
         <isif condition="${payment.paymentMethod === 'CREDIT_CARD'}">
             <isinclude template="checkout/billing/paymentOptions/creditCardSummary" />
         </isif>
-        <isif condition="${payment.paymentMethod === 'KLARNA_PAYMENTS'}">
+        <isif condition="${payment.paymentMethod.indexOf(KLARNA_PAYMENT_DEFAULT) >= 0}">
             <isinclude template="checkout/billing/paymentOptions/klarnaPaymentSummary" />
         </isif>
     </isloop>

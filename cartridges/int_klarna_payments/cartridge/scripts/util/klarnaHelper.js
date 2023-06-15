@@ -200,6 +200,7 @@ function getKlarnaResources( countryCode ) {
 
     var BasketMgr = require( 'dw/order/BasketMgr' );
     var currentBasket = BasketMgr.getCurrentBasket();
+    var currentSite = require( 'dw/system/Site' ).getCurrent();
     var AdditionalCustomerInfoRequestBuilder = require( '*/cartridge/scripts/payments/requestBuilder/additionalCustomerInfo' );
     var additionalCustomerInfoRequestBuilder = new AdditionalCustomerInfoRequestBuilder();
 
@@ -211,7 +212,8 @@ function getKlarnaResources( countryCode ) {
         clearSession: URLUtils.https( KLARNA_PAYMENT_URLS.CLEAR_SESSION ).toString(),
         saveAuth: URLUtils.https( KLARNA_PAYMENT_URLS.SAVE_AUTH ).toString(),
         selectPaymentMethod: URLUtils.https( KLARNA_PAYMENT_URLS.SELECT_PAYMENT_METHOD ).toString(),
-        summaryUpdate: URLUtils.https( KLARNA_PAYMENT_URLS.MINISUMMARY_UPDATE ).toString()
+        summaryUpdate: URLUtils.https( KLARNA_PAYMENT_URLS.MINISUMMARY_UPDATE ).toString(),
+        writeLog: URLUtils.https(KLARNA_PAYMENT_URLS.WRITE_ADDITIONAL_LOG).toString()
     };
 
     // klarna payments objects
@@ -236,7 +238,8 @@ function getKlarnaResources( countryCode ) {
 
     //klarna sitePreferences obj
     var KPPreferences = {
-        kpUseAlternativePaymentFlow: dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpUseAlternativePaymentFlow' ) || false
+        kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue( 'kpUseAlternativePaymentFlow' ) || false,
+        kpAdditionalLogging: currentSite.getCustomPreferenceValue( 'kpAdditionalLogging' ) || false
     };
 
     return {

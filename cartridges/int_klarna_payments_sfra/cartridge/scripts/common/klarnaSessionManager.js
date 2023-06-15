@@ -12,6 +12,7 @@ var log = Logger.getLogger('KlarnaPayments');
 var Transaction = require('dw/system/Transaction');
 var Site = require('dw/system/Site');
 var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
 
 /**
  * @constructor
@@ -92,6 +93,7 @@ KlarnaSessionManager.prototype.refreshSession = function () {
     var localeObject = this.getLocale();
     var updateSessionHelper = require('*/cartridge/scripts/session/klarnaPaymentsUpdateSession');
     var updateSessionResponse = updateSessionHelper.updateSession(basket.custom.kpSessionId, basket, localeObject);
+
     return updateSessionResponse.response;
 };
 
@@ -112,6 +114,7 @@ KlarnaSessionManager.prototype.createSession = function () {
     var localeObject = this.getLocale();
     var createSessionHelper = require('*/cartridge/scripts/session/klarnaPaymentsCreateSession');
     var createSessionResponse = createSessionHelper.createSession(basket, localeObject);
+
     return createSessionResponse.response;
 };
 
@@ -185,6 +188,8 @@ KlarnaSessionManager.prototype.createOrUpdateSession = function () {
         }
     } catch (e) {
         log.error('Error in handling Klarna Payments Session: {0}', e.message + e.stack);
+        KlarnaAdditionalLogging.writeLog(basket, basket.custom.kpSessionId, 'klarnaSessionManager.js:KlarnaSessionManager.prototype.createOrUpdateSession()', 'Error in handling Klarna Payments Session. Error:' + JSON.stringify(e));
+
         KlarnaHelper.clearSessionRef(basket);
         return null;
     }

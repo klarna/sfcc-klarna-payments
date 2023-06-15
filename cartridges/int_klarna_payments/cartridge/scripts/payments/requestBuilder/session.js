@@ -5,7 +5,6 @@
 
     var Site = require( 'dw/system/Site' );
     var Logger = require( 'dw/system/Logger' );
-
     var log = Logger.getLogger( 'KlarnaPayments' );
 
     var Builder = require( '*/cartridge/scripts/payments/builder' );
@@ -14,6 +13,7 @@
     var isTaxationPolicyNet = require( '*/cartridge/scripts/util/klarnaHelper' ).isTaxationPolicyNet;
     var discountTaxationMethod = require( '*/cartridge/scripts/util/klarnaHelper' ).getDiscountsTaxation();
     var getShippment = require( '*/cartridge/scripts/util/klarnaHelper' ).getShippment;
+    var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
 
     var AddressRequestBuilder = require( '*/cartridge/scripts/payments/requestBuilder/address' );
     var OrderLineItemRequestBuilder = require( '*/cartridge/scripts/payments/requestBuilder/orderLineItem' );
@@ -115,6 +115,7 @@
                 this.context.merchant_reference2 = basket[Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' )].toString();
             } catch ( err ) {
                 log.error( 'merchant_reference2 was not set. Error: {0} ', err.message );
+                KlarnaAdditionalLogging.writeLog( basket, basket.custom.kpSessionId, 'requestByilder/session.js:KlarnaPaymentsSessionRequestBuilder.prototype.setMerchantReference()', 'Merchant_reference2 was not set. Error:' + JSON.stringify( err ) );
             }
         }
 

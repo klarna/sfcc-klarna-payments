@@ -9,6 +9,7 @@
 
 // import packages
 var logger = dw.system.Logger.getLogger( 'KlarnaPaymentsCancelOrder.js' );
+var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
 var KlarnaPayments = {
     httpService : require( '*/cartridge/scripts/common/klarnaPaymentsHttpService' ),
     apiContext : require( '*/cartridge/scripts/common/klarnaPaymentsApiContext' )
@@ -40,11 +41,13 @@ function cancelOrder( localeObject, order ) {
     try {
         var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
-        var requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'cancelOrder' ), order.custom.kpOrderID );
+        var requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'cancelOrder' ), order.custom.klarna_oms__kpOrderID );
         var serviceID = klarnaApiContext.getFlowApiIds().get( 'cancelOrder' );
         klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, null );
     } catch ( e ) {
         logger.error( 'Error in cancelling Klarna Payments Order: {0}', e );
+        KlarnaAdditionalLogging.writeLog( order, order.custom.kpSessionId, 'order/klarnaPaymentsCancelOrder.js:cancelOrder()', 'Error in cancelling Klarna Payments Order. Error:' + JSON.stringify( e ) );
+
         return {
             success: false
         };

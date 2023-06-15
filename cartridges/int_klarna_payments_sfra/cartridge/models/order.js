@@ -15,8 +15,8 @@ function OrderModel(lineItemContainer, options) {
     this.klarnaSessionId = '';
     this.klarnaClientToken = '';
 
-    if (lineItemContainer && 'kpOrderID' in lineItemContainer.custom) {
-        this.klarnaOrderId = lineItemContainer.custom.kpOrderID;
+    if (lineItemContainer && 'klarna_oms__kpOrderID' in lineItemContainer.custom) {
+        this.klarnaOrderId = lineItemContainer.custom.klarna_oms__kpOrderID;
     }
 
     if (lineItemContainer && 'kpSessionId' in lineItemContainer.custom) {

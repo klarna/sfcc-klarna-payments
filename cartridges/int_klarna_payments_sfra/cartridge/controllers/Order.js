@@ -13,8 +13,7 @@ server.replace('Confirm', function (req, res, next) {
 
     var order = OrderMgr.getOrder(req.querystring.ID);
 
-    if (!order || order.customer.ID !== req.currentCustomer.raw.ID
-    ) {
+    if (!order || order.customer.ID !== req.currentCustomer.raw.ID) {
         res.render('/error', {
             message: Resource.msg('error.confirmation.error', 'confirmation', null)
         });

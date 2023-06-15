@@ -52,10 +52,11 @@ var KLARNA_PAYMENT_URLS = {
     SELECT_PAYMENT_METHOD: 'KlarnaPayments-SelectPaymentMethod',
     CONFIRMATION: 'Order-Confirm',
     NOTIFICATION: 'KlarnaPayments-Notification',
-    MINISUMMARY_UPDATE: ''
+    MINISUMMARY_UPDATE: '',
+    WRITE_ADDITIONAL_LOG: 'KlarnaPayments-WriteLog'
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Klarna Payments 22.5.0';
+var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 22.3.1';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.NOTIFY_EVENT_TYPES = NOTIFY_EVENT_TYPES;

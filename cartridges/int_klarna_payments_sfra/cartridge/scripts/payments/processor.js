@@ -97,6 +97,10 @@ function placeOrder(order, klarnaPaymentsOrderID, localeObject) {
             }
         } catch (e) {
             log.error('Order could not be placed: {0}', e.message + e.stack);
+            
+            var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
+            KlarnaAdditionalLogging.writeLog( order, order.custom.kpSessionId, 'processor.js:placeOrder()', 'Order could not be placed. Error:'+ JSON.stringify( e ) );
+        
         }
     }
 }
@@ -191,13 +195,13 @@ function attemptAuthorizeVCNSettlement(order) {
 /**
  * Handle KP order authorization in case VCN settlement is enabled
  * @param {dw.order.order} order DW order
- * @param {string} kpOrderID KP order ID
+ * @param {string} klarna_oms__kpOrderID KP order ID
  * @param {Object} localeObject locale info
  * @returns {boolean} true if successfully handled
  */
-function handleVCNOrder(order, kpOrderID, localeObject) {
+function handleVCNOrder(order, klarna_oms__kpOrderID, localeObject) {
     try {
-        var isSettlementCreated = handleVCNSettlement(order, kpOrderID, localeObject);
+        var isSettlementCreated = handleVCNSettlement(order, klarna_oms__kpOrderID, localeObject);
 
         if (!isSettlementCreated) {
             cancelOrder(order, localeObject);
@@ -260,7 +264,7 @@ function updateOrderWithKlarnaOrderInfo(order, paymentInstrument, kpOrderId) {
             pInstr.paymentTransaction.type = PaymentTransaction.TYPE_AUTH;
         }
 
-        dwOrder.custom.kpOrderID = kpOrderId;
+        dwOrder.custom.klarna_oms__kpOrderID = kpOrderId;
         dwOrder.custom.kpIsVCN = empty(kpVCNEnabledPreferenceValue) ? false : kpVCNEnabledPreferenceValue;
     });
 }
@@ -269,12 +273,12 @@ function updateOrderWithKlarnaOrderInfo(order, paymentInstrument, kpOrderId) {
  * Authorize order already accepted by Klarna.
  *
  * @param {dw.order.order} order DW Order
- * @param {string} kpOrderID KP Order ID
+ * @param {string} klarna_oms__kpOrderID KP Order ID
  * @param {Object} localeObject locale info
  *
  * @return {AuthorizationResult} authorization result
  */
-function authorizeAcceptedOrder(order, kpOrderID, localeObject) {
+function authorizeAcceptedOrder(order, klarna_oms__kpOrderID, localeObject) {
     var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue('kpAutoCapture');
     var kpVCNEnabledPreferenceValue = Site.getCurrent().getCustomPreferenceValue('kpVCNEnabled');
     var authResult = {};
@@ -282,14 +286,14 @@ function authorizeAcceptedOrder(order, kpOrderID, localeObject) {
     if (!kpVCNEnabledPreferenceValue) {
         if (autoCaptureEnabled) {
             try {
-                handleAutoCapture(order, kpOrderID, localeObject);
+                handleAutoCapture(order, klarna_oms__kpOrderID, localeObject);
             } catch (e) {
                 authResult = generateErrorAuthResult();
             }
         }
     } else {
         try {
-            var isSettlementCreated = handleVCNSettlement(order, kpOrderID, localeObject);
+            var isSettlementCreated = handleVCNSettlement(order, klarna_oms__kpOrderID, localeObject);
 
             if (!isSettlementCreated) {
                 authResult = generateErrorAuthResult();
@@ -392,20 +396,20 @@ function saveFraudStatus(order, kpFraudStatus) {
 /**
  * Handle Klarna notification
  * @param {dw.order.order} order DW Order
- * @param {string} kpOrderID KP Order ID
+ * @param {string} klarna_oms__kpOrderID KP Order ID
  * @param {string} kpEventType event type
  */
-function notify(order, kpOrderID, kpEventType) {
+function notify(order, klarna_oms__kpOrderID, kpEventType) {
     var localeObject = klarnaSessionManager.getLocale();
 
     saveFraudStatus(order, kpEventType);
 
     if (kpEventType === NOTIFY_EVENT_TYPES.FRAUD_RISK_ACCEPTED) {
         if (order.custom.kpIsVCN) {
-            handleVCNOrder(order, kpOrderID, localeObject);
+            handleVCNOrder(order, klarna_oms__kpOrderID, localeObject);
         }
 
-        placeOrder(order, kpOrderID, localeObject);
+        placeOrder(order, klarna_oms__kpOrderID, localeObject);
     } else {
         failOrder(order);
     }

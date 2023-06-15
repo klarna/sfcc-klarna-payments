@@ -20,24 +20,26 @@ function AdditionalCustomerInfo() {
 AdditionalCustomerInfo.prototype = new Builder();
 
 /**
- * Function to get customers purchase history details
+ * Function to get customers payment history details
  *
  * @param {dw.customer.Customer} customer customer object
- * @returns {Array} Array containing customer purchase history
+ * @returns {Array} Array containing customer payment history
  */
-AdditionalCustomerInfo.prototype.buildAdditionalCustomerPurchaseHistory = function( customer ) {
-    var purchaseHistoryFull = [{}];
-    purchaseHistoryFull[0].unique_account_identifier = customer.ID;
-    purchaseHistoryFull[0].payment_option = 'other';
+AdditionalCustomerInfo.prototype.buildAdditionalCustomerPaymentHistory = function( customer ) {
+    var paymentHistoryFull = [{}];
+    paymentHistoryFull[0].unique_account_identifier = customer.ID;
+    paymentHistoryFull[0].payment_option = 'other';
 
     if ( customer.getActiveData() ) {
-        purchaseHistoryFull[0].number_paid_purchases = !empty( customer.activeData.orders ) ? customer.activeData.orders : 0;
-        purchaseHistoryFull[0].total_amount_paid_purchases = !empty( customer.activeData.orderValue ) ? customer.activeData.orderValue : 0;
-        purchaseHistoryFull[0].date_of_last_paid_purchase = !empty( customer.activeData.lastOrderDate ) ? customer.activeData.lastOrderDate.toISOString().slice( 0, -5 ) + 'Z' : '';
-        purchaseHistoryFull[0].date_of_first_paid_purchase = '';
+        paymentHistoryFull[0].number_paid_purchases = !empty( customer.activeData.orders ) ? customer.activeData.orders : 0;
+        paymentHistoryFull[0].total_amount_paid_purchases = !empty( customer.activeData.orderValue ) ? customer.activeData.orderValue : 0;
+
+        if (!empty(customer.activeData.lastOrderDate)) {
+            paymentHistoryFull[0].date_of_last_paid_purchase = customer.activeData.lastOrderDate.toISOString().slice( 0, -5 ) + 'Z';
+        }
     }
 
-    return purchaseHistoryFull;
+    return paymentHistoryFull;
 };
 
 /**
@@ -58,7 +60,7 @@ AdditionalCustomerInfo.prototype.buildAdditionalCustomerInfoBody = function( bas
         body.customer_account_info[0].account_last_modified = !empty( customer.profile.lastModified ) ? customer.profile.lastModified.toISOString().slice( 0, -5 ) + 'Z' : '';
     }
 
-    body.purchase_history_full = this.buildAdditionalCustomerPurchaseHistory( customer );
+    body.payment_history_full = this.buildAdditionalCustomerPaymentHistory( customer );
     body.other_delivery_address = this.buildOtherDeliveryAddresses( basket );
 
     return JSON.stringify( body );

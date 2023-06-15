@@ -63,7 +63,7 @@ var KlarnaOSM = {
     },
     /**
      * Function that sets and returns the KlarnaCountries custom object
-     * @return {dw.object.CustomObject} locale Object 
+     * @return {dw.object.CustomObject} locale Object
      */
     getKlarnaCountriesObject: function() {
         if ( !this.klarnaCountriesObject ) {
@@ -211,7 +211,7 @@ var KlarnaOSM = {
     },
     /**
      * Function that returns rounded price
-     * 
+     *
      * @param {Object} price price object
      * @return {number} formatted amount
      */

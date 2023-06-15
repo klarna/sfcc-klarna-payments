@@ -187,7 +187,7 @@ OrderLineItem.prototype.build = function( li ) {
     if ( isOMSEnabled ) {
         var itemObj = this.item;
         Transaction.wrap( function() {
-            li.custom.lineItemJSON = JSON.stringify( itemObj );
+            li.custom.klarna_oms__lineItemJSON = JSON.stringify( itemObj );
         });
     }
 

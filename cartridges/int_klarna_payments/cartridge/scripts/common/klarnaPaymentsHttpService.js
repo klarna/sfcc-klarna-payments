@@ -43,7 +43,7 @@ KlarnaPaymentsHttpService.prototype.getLastStatusCode = function() {
  * @param {Object} requestBody - optional, JSON body.
  * @returns {string} Parsed JSON response; if not available - response status code.
  */
-KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVerb, credentialID, requestBody, klarnaSessionID ) {
+KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVerb, credentialID, requestBody, klarnaSessionID, klarnaIdempotencyKey ) {
     var serviceId = serviceID;
     var useKpRateLimit = Site.getCurrent().getCustomPreferenceValue( 'kpRateLimitByOperation' );
     if ( !useKpRateLimit ) {
@@ -63,6 +63,17 @@ KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVer
             } catch( e ) {
                 return msg;
             }
+        },
+        mockCall: function( svc, client ) {
+            return {
+                statusCode: 500,
+        	    statusMessage: "ERROR",
+        	    errorText: "MOCK RESPONSE",
+                mockResult: true,
+                object: null,
+                ok: false,
+                unavailableReason: null
+            };
         }
     } );
 
@@ -71,6 +82,10 @@ KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVer
     service.addHeader( 'Content-Type', 'application/json' );
     service.addHeader( 'Accept', 'application/json' );
     service.addHeader( 'User-Agent', SERVICE_HEADER );
+
+    if (!empty(klarnaIdempotencyKey) && klarnaIdempotencyKey !== 'undefined') {
+        service.addHeader( 'Klarna-Idempotency-Key', klarnaIdempotencyKey );
+    }
 
     if ( !empty( httpVerb ) && this.isValidHttpVerb( httpVerb ) ) {
         service.setRequestMethod( httpVerb );
@@ -93,7 +108,7 @@ KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVer
     this.logResponseData( urlPath, httpVerb, requestBody, result );
     this.detectErrorResponse( result, httpVerb, service.URL, requestBody, klarnaSessionID );
 
-    if ( !empty( result.object.text ) ) {
+    if ( !empty( result.object ) && !empty( result.object.text ) ) {
         var jsonResponse = result.object.text.replace( /\r?\n|\r/g, ' ' );
         var responseObject = JSON.parse( jsonResponse );
 
@@ -139,8 +154,11 @@ KlarnaPaymentsHttpService.prototype.detectErrorResponse = function( result, http
     } else if ( result.error == 404 ) {
         this.logErrorResponse( result, requestUrl, requestBody, klarnaSessionID );
         throw new Error( result );
+    //log error response for all 5xx status codes but not fail order 
+    } else if ( result.error > 499 && result.error < 600 ) {
+        this.logErrorResponse( result, requestUrl, requestBody, klarnaSessionID );
     } else if ( result.error !== 0 || result.status === 'ERROR' || result.status === 'SERVICE_UNAVAILABLE' ) {
-        this.logErrorResponse( result, requestUrl, requestBody );
+        this.logErrorResponse( result, requestUrl, requestBody, klarnaSessionID );
         throw new Error( result.errorMessage );
     }
 };

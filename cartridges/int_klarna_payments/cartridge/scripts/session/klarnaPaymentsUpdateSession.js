@@ -15,6 +15,7 @@ var KlarnaPayments = {
     sessionRequestBuilder : require( '*/cartridge/scripts/payments/requestBuilder/session' )
 };
 var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
+var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
 
 /**
  * Function that can be called by pipelines
@@ -72,7 +73,9 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
     } catch ( e ) {
         var errorMsg = e.message;
         var errorMsgObj = JSON.parse( errorMsg );
-        if ( Site.getCurrent().getCustomPreferenceValue( 'kpCreateNewSessionWhenExpires' ) || errorMsgObj.error === 404 || errorMsgObj.error_code === 'INVALID_OPERATION') {
+        KlarnaAdditionalLogging.writeLog(basket, basket.custom.kpSessionId, 'klarnaPaymentsUpdateSession.updateSession()', 'Error Updating Klarna session. Error:' + JSON.stringify( e ) );
+
+        if ( Site.getCurrent().getCustomPreferenceValue( 'kpCreateNewSessionWhenExpires' ) || errorMsgObj.error === 404 || errorMsgObj.error_code === 'INVALID_OPERATION' ) {
             return require( '*/cartridge/scripts/session/klarnaPaymentsCreateSession' ).createSession( basket, localeObject );
         }
     }
@@ -89,6 +92,8 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
         } );
     } catch ( e ) {
         dw.system.Logger.error( 'Error in updating Klarna Payments Session: {0}', e.message + e.stack );
+        KlarnaAdditionalLogging.writeLog(basket, basket.custom.kpSessionId, 'klarnaPaymentsUpdateSession.updateSession()', 'Error reading updated Klarna session. Error:' + JSON.stringify( e ) );
+
         KlarnaHelper.clearSessionRef( basket );
         return {
             success: false,

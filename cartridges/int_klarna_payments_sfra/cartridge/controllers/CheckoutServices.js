@@ -117,7 +117,6 @@ server.append(
 );
 
 server.append('PlaceOrder', function (req, res, next) {
-    var redirectURL = req.session.privacyCache.get('KlarnaPaymentsRedirectURL');
 
     //remove kpClientToken from order
     var OrderMgr = require('dw/order/OrderMgr');
@@ -129,6 +128,8 @@ server.append('PlaceOrder', function (req, res, next) {
             order.custom.kpClientToken = null;
         })
     }
+
+    var redirectURL = req.session.privacyCache.get('KlarnaPaymentsRedirectURL');
 
     if (redirectURL) {
         req.session.privacyCache.set('KlarnaPaymentsRedirectURL', null);

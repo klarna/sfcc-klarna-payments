@@ -1,5 +1,11 @@
 # CHANGELOG
 
+## 23.1.0
+* Fix issue with incorrect values for EMD
+* Improvement Klarna Auto Capture and error handling
+* Logging information for troubleshooting bugs
+* Add Auto_finalise=True to the review checkout flow.
+
 ## 22.5.0
 ### Changed
 * OMS support
@@ -32,7 +38,7 @@
 ### Changed
 * Improvements for create and update session errors
 * Added Klarna Express Button in minicart
-* Support for long running basket
+* Support for long-running basket
 * Rate-limits by operations
 
 ## 21.3.1

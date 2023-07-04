@@ -70,6 +70,7 @@ function _getRequestBody( order, localeObject ) {
  */
 function createOrder( order, localeObject, klarnaAuthorizationToken ) {
     var logger = dw.system.Logger.getLogger( 'klarnaPaymentsCreateOrder.js' );
+    var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
 
     try {
         var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
@@ -78,6 +79,7 @@ function createOrder( order, localeObject, klarnaAuthorizationToken ) {
         var requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'createOrder' ), klarnaAuthorizationToken );
         var serviceID = klarnaApiContext.getFlowApiIds().get( 'createOrder' );
         var response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+
         return {
             success: true,
             order_id: response.order_id,
@@ -88,6 +90,9 @@ function createOrder( order, localeObject, klarnaAuthorizationToken ) {
 
     } catch ( e ) {
         logger.error( 'Error in creating Klarna Payments Order: {0}', e.message + e.stack );
+
+        KlarnaAdditionalLogging.writeLog( order, order.custom.kpSessionId, 'klarnaPaymentsCreateOrder.createOrder()', 'Error in creating Klarna Payments Order. Error:'+ JSON.stringify( e ) );
+        
         return {
             success: false,
             response: null

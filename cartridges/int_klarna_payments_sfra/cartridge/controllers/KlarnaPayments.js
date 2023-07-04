@@ -16,18 +16,18 @@ server.post('Notification', function (req, res) {
 
     var klarnaPaymentsFraudDecisionObject = JSON.parse(req.body);
 
-    var kpOrderID = klarnaPaymentsFraudDecisionObject.order_id;
+    var klarna_oms__kpOrderID = klarnaPaymentsFraudDecisionObject.order_id;
     var kpEventType = klarnaPaymentsFraudDecisionObject.event_type;
     var currentCountry = requestParams.klarna_country;
 
     res.setStatusCode(200);
 
     try {
-        var klarnaOrder = processor.getKlarnaOrder(kpOrderID);
+        var klarnaOrder = processor.getKlarnaOrder(klarna_oms__kpOrderID);
         if (klarnaOrder && FRAUD_STATUS_MAP[klarnaOrder.fraud_status] && FRAUD_STATUS_MAP[klarnaOrder.fraud_status] === kpEventType) {
-            var order = OrderMgr.queryOrder('custom.kpOrderID = {0}', kpOrderID);
+            var order = OrderMgr.queryOrder('custom.klarna_oms__kpOrderID = {0}', klarna_oms__kpOrderID);
             if (order) {
-                processor.notify(order, kpOrderID, kpEventType, currentCountry);
+                processor.notify(order, klarna_oms__kpOrderID, kpEventType, currentCountry);
             }
         }
     } catch (e) {
@@ -337,6 +337,17 @@ server.post('ExpressCheckout', function (req, res, next) {
     session.privacy.KlarnaExpressCategory = EXPRESS_CATEGORY;
 
     res.redirect(URLUtils.url('Checkout-Begin', 'stage', stage));
+    return next();
+});
+
+server.post('WriteLog', function (req, res, next) {
+    var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
+    var BasketMgr = require('dw/order/BasketMgr');
+    var basket = BasketMgr.getCurrentBasket();
+    var storeFrontResponse = JSON.stringify(req.form);
+
+    KlarnaAdditionalLogging.writeLog(basket, basket.custom.kpSessionId, req.form.actionName, req.form.message + ' Response Object:' + storeFrontResponse);
+
     return next();
 });
 

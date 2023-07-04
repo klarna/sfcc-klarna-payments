@@ -3,6 +3,7 @@
 
 <isif condition="${KlarnaOSM.isEnabledExpressButtonCart()}">
     <klarna-express-button class="klarna-express-btn-cart"
-        data-locale="${KlarnaOSM.getLocale()}" data-size="${KlarnaOSM.getMCSize()}" data-theme="${KlarnaOSM.
-        getExpressButtonTheme()}" data-shape="${KlarnaOSM.getExpressButtonShape()}"/>
+                           data-locale="${KlarnaOSM.getLocale()}"
+                           data-theme="${KlarnaOSM.getExpressButtonTheme()}"
+                           data-shape="${KlarnaOSM.getExpressButtonShape()}" />
 </isif>

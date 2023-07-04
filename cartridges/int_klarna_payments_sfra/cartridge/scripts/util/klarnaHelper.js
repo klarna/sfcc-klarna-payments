@@ -4,6 +4,8 @@
 
 var superMdl = module.superModule;
 var Site = require('dw/system/Site');
+var currentSite = Site.getCurrent();
+
 /**
  * Returns shipment if it contains store ID or returns the default shipment
  *
@@ -69,7 +71,8 @@ superMdl.getKlarnaResources = function () {
         refreshSession: URLUtils.https(KLARNA_PAYMENT_URLS.UPDATE_SESSION).toString(),
         saveAuth: URLUtils.https(KLARNA_PAYMENT_URLS.SAVE_AUTH).toString(),
         loadAuth: URLUtils.https(KLARNA_PAYMENT_URLS.LOAD_AUTH).toString(),
-        selectPaymentMethod: URLUtils.https(KLARNA_PAYMENT_URLS.SELECT_PAYMENT_METHOD).toString()
+        selectPaymentMethod: URLUtils.https(KLARNA_PAYMENT_URLS.SELECT_PAYMENT_METHOD).toString(),
+        writeLog: URLUtils.https(KLARNA_PAYMENT_URLS.WRITE_ADDITIONAL_LOG).toString(),
     };
 
     // klarna payments objects
@@ -94,7 +97,8 @@ superMdl.getKlarnaResources = function () {
 
     // klarna sitePreferences obj
     var KPPreferences = {
-        kpUseAlternativePaymentFlow: Site.getCurrent().getCustomPreferenceValue('kpUseAlternativePaymentFlow') || false
+        kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue('kpUseAlternativePaymentFlow') || false,
+        kpAdditionalLogging: currentSite.getCustomPreferenceValue( 'kpAdditionalLogging' ) || false
     };
 
     return {

@@ -56,7 +56,7 @@
 
             Klarna.Payments.authorize( {
                 payment_method_category: paymentMethodCategoryId,
-                auto_finalize: false
+                auto_finalize: true
             }, klarnaRequestData , function( res ) {
                 if ( res.approved ) {
                     var xhr = new XMLHttpRequest();
@@ -99,6 +99,9 @@
                     xhr.send();
                 } else {
                     $placeOrderBtn.disabled = false;
+                }
+                if ( !res || res.error ) {
+                    writeAdditionalLog( res, 'klarna-payments-alternative-flow.js:Klarna.Payments.load()', 'SG Storefront Ajax Request Error.' );
                 }
             } );
         } else {
@@ -202,8 +205,25 @@
             if ( !res.show_form ) {
                 $placeOrderBtn.disabled = true;
             }
+            if ( !res || res.error ) {
+                writeAdditionalLog( res, 'klarna-payments-alternative-flow.js:Klarna.Payments.load()', 'SG Storefront Ajax Request Error.' );
+            }
         } );
     }
+
+    function writeAdditionalLog ( res, action, msg ) {
+        if ( klarnaPaymentsPreferences.kpAdditionalLogging ) {
+            $.ajax({
+                url: klarnaPaymentsUrls.writeLog,
+                method: 'POST',
+                data: {
+                    responseFromKlarna: JSON.stringify(res),
+                    actionName: action,
+                    message: msg
+                }
+            })
+        }    
+    };
 
     $placeOrderBtn.addEventListener( "click", placeOrderBtnClickEventListener );
 }() );

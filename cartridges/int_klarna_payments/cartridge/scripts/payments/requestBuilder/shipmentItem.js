@@ -126,7 +126,7 @@ ShipmentItem.prototype.build = function( shipment ) {
     if ( isOMSEnabled ) {
         var itemObj = this.item;
         Transaction.wrap( function() {
-            shipment.custom.lineItemJSON = JSON.stringify( itemObj );
+            shipment.custom.klarna_oms__lineItemJSON = JSON.stringify( itemObj );
         } );
     }
 

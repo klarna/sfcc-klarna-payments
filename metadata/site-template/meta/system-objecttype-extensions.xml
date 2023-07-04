@@ -147,6 +147,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="kpAdditionalLogging">
+                <display-name xml:lang="x-default">Klarna Payments Additional Logging</display-name>
+                <description xml:lang="x-default">Additional Logging helps to get more order details when issue occurs</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="kpAttachments">
                 <display-name xml:lang="x-default">Attachments</display-name>
                 <description xml:lang="x-default">Toggle (Yes/No) for the inclusion of attachments when creating an order. Specific to inclusion of EMD (customer_account_info, other_delivery_address) when applicable</description>
@@ -315,6 +323,7 @@
                 <attribute attribute-id="kpRateLimitByOperation"/>
                 <attribute attribute-id="kpUseAlternativePaymentFlow"/>
                 <attribute attribute-id="kpPaymentIntent"/>
+                <attribute attribute-id="kpAdditionalLogging"/>
                 <attribute attribute-id="kpOMSEnabled"/>
             </attribute-group>
         </group-definitions>
@@ -340,7 +349,7 @@
 
     <type-extension type-id="Order">
         <custom-attribute-definitions>
-            <attribute-definition attribute-id="kpOrderID">
+            <attribute-definition attribute-id="klarna_oms__kpOrderID">
                 <display-name xml:lang="x-default">Klarna Payments Order ID</display-name>
                 <description xml:lang="x-default">The Klarna payments Order ID for Klarna payment method selected by customer</description>
                 <type>string</type>
@@ -418,7 +427,7 @@
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Klarna_Payments">
-                <attribute attribute-id="kpOrderID"/>
+                <attribute attribute-id="klarna_oms__kpOrderID"/>
                 <attribute attribute-id="kpIsVCN"/>
                 <attribute attribute-id="kpVCNCardID"/>
             </attribute-group>
@@ -473,8 +482,8 @@
 
     <type-extension type-id="ProductLineItem">
         <custom-attribute-definitions>
-            <attribute-definition attribute-id="lineItemJSON">
-                <display-name xml:lang="x-default">lineItemJSON</display-name>
+            <attribute-definition attribute-id="klarna_oms__lineItemJSON">
+                <display-name xml:lang="x-default">klarna_oms__lineItemJSON</display-name>
                 <description xml:lang="x-default">Enriched data for product line item.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
@@ -485,15 +494,15 @@
         <group-definitions>
             <attribute-group group-id="custom">
                 <display-name xml:lang="x-default">Custom</display-name>
-                <attribute attribute-id="lineItemJSON"/>
+                <attribute attribute-id="klarna_oms__lineItemJSON"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
     
     <type-extension type-id="Shipment">
         <custom-attribute-definitions>
-            <attribute-definition attribute-id="lineItemJSON">
-                <display-name xml:lang="x-default">lineItemJSON</display-name>
+            <attribute-definition attribute-id="klarna_oms__lineItemJSON">
+                <display-name xml:lang="x-default">klarna_oms__lineItemJSON</display-name>
                 <description xml:lang="x-default">Enriched data for shipment.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
@@ -504,7 +513,7 @@
         <group-definitions>
             <attribute-group group-id="custom">
                 <display-name xml:lang="x-default">Custom</display-name>
-                <attribute attribute-id="lineItemJSON"/>
+                <attribute attribute-id="klarna_oms__lineItemJSON"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

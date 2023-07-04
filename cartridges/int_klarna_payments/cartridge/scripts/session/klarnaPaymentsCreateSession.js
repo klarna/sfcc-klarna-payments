@@ -16,7 +16,7 @@ var KlarnaPayments = {
     sessionRequestBuilder : require( '*/cartridge/scripts/payments/requestBuilder/session' )
 };
 var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
-
+var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
 /**
  * Function that can be called by pipelines
  *
@@ -80,6 +80,8 @@ function createSession( basket, localeObject ) {
         } );
     } catch ( e ) {
         dw.system.Logger.error( 'Error in creating Klarna Payments Session: {0}', e.message + e.stack );
+        KlarnaAdditionalLogging.writeLog( basket, response.session_id, 'klarnaPaymentsCreateSession.createSession()', 'Error in creating Klarna Payments session. Error:'+ JSON.stringify( e ) );
+
         KlarnaHelper.clearSessionRef( basket );
         return {
             success: false,

@@ -20,6 +20,7 @@ var log = Logger.getLogger( 'KlarnaPayments.js' );
 var guard = require( '*/cartridge/scripts/guard' );
 var app = require( '*/cartridge/scripts/app' );
 var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
+var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
 
 /**
  * Creates a Klarna payment instrument for the given basket
@@ -102,6 +103,7 @@ function authorize( args ) { // eslint-disable-line complexity
                     klarnaPaymentsCaptureOrderHelper.handleAutoCapture( args.Order, session.privacy.KlarnaPaymentsOrderID, localeObject );
                 } );
             } catch ( e ) {
+                KlarnaAdditionalLogging.writeLog( args.Order, args.Order.custom.kpSessionId, 'KlarnaPayments.authorize()', 'Error on handleAutoCapture(). Error:'+ JSON.stringify( e ) );
                 return { error: true };
             }
         }
@@ -111,7 +113,7 @@ function authorize( args ) { // eslint-disable-line complexity
         paymentInstrument.paymentTransaction.transactionID = session.privacy.KlarnaPaymentsOrderID;
         paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
         session.privacy.OrderNo = orderNo;
-        args.Order.custom.kpOrderID = session.privacy.KlarnaPaymentsOrderID;
+        args.Order.custom.klarna_oms__kpOrderID = session.privacy.KlarnaPaymentsOrderID;
         args.Order.custom.kpIsVCN = empty( vcnEnabled ) ? false : vcnEnabled;
     } );
 
@@ -192,6 +194,8 @@ function createOrUpdateSession() {
         return createSession();
     } catch( e ) {
         log.error( 'Error in creating or updating Klarna Payments Session: {0}', e );
+        KlarnaAdditionalLogging.writeLog( basket, basket.custom.kpSessionId, 'KlarnaPayments.createOrUpdateSession()', 'Error in creating or updating Klarna Payments Session, e:'+ JSON.stringify( e ) );
+
         KlarnaHelper.clearSessionRef( basket );
         return null;
     }
@@ -213,6 +217,7 @@ function createSession() {
 
     var createSessionHelper = require( '*/cartridge/scripts/session/klarnaPaymentsCreateSession' );
     var createSessionResponse = createSessionHelper.createSession( basket, getLocale() );
+
     return createSessionResponse.response;
 }
 
@@ -232,7 +237,9 @@ function updateSession() {
     }
 
     var updateSessionHelper = require( '*/cartridge/scripts/session/klarnaPaymentsUpdateSession' );
+    
     var updateSessionResponse = updateSessionHelper.updateSession( basket.custom.kpSessionId, basket, getLocale() );
+
     if ( updateSessionResponse.success && !empty( updateSessionResponse.response ) ) {
         return updateSessionResponse.response;
     }
@@ -274,7 +281,7 @@ function notification() {
     var klarnaPaymentsGetOrderHelper = require( '*/cartridge/scripts/order/klarnaPaymentsGetOrder' );
     var klarnaOrder = klarnaPaymentsGetOrderHelper.getKlarnaOrder( klarnaPaymentsOrderID , localeObject );
     if ( klarnaOrder && FRAUD_STATUS_MAP[klarnaOrder.fraud_status] && FRAUD_STATUS_MAP[klarnaOrder.fraud_status] === klarnaPaymentsFraudDecision ) {
-        var order = OrderMgr.queryOrder( "custom.kpOrderID ={0}", klarnaPaymentsOrderID );
+        var order = OrderMgr.queryOrder( "custom.klarna_oms__kpOrderID ={0}", klarnaPaymentsOrderID );
         if( empty( order ) ) {
             return response.setStatus( 200 );
         }
@@ -346,6 +353,7 @@ function placeOrder( order, klarnaPaymentsOrderID, localeObject ) {
             }
         } catch ( e ) {
             log.error( 'Order could not be placed: {0}', e.message + e.stack );
+            KlarnaAdditionalLogging.writeLog( order, order.custom.kpSessionId, 'KlarnaPayments.placeOrder()', 'Order could not be placed. Error:'+ JSON.stringify( e ) );
         }
     }
 }
@@ -621,6 +629,17 @@ function handleExpressRedirect( cart, paymentMethodId ) {
     response.redirect( URLUtils.https( 'COBilling-Start' ) );
 }
 
+function writeLog() {
+    var basket = BasketMgr.getCurrentBasket();
+    var storeFrontResponse = request.httpParameterMap.responseFromKlarna.value;
+    var actionName = request.httpParameterMap.actionName.value;
+    var message = request.httpParameterMap.message.value;
+
+    KlarnaAdditionalLogging.writeLog(basket, basket.custom.kpSessionId, actionName, message + ' Response Object:' + storeFrontResponse);
+
+    return;
+}
+
 /*
  * Module exports
  */
@@ -647,6 +666,8 @@ exports.InfoPage = guard.ensure( ['get'], infoPage );
 exports.SelectPaymentMethod = guard.ensure( ['post'], selectPaymentMethod );
 /** Triggers the express checkout flow */
 exports.ExpressCheckout = guard.ensure( ['post'], expressCheckout );
+/** Triggers the additional loging */
+exports.WriteLog = guard.ensure( ['post'], writeLog );
 
 /*
  * Local methods

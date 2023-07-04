@@ -28,22 +28,23 @@ function getCountries() {
 
 /**
  * @description iterate over the countries array, find the first country that has the current locale
- * @param {PipelineDictionary} currentLocale the current locale object
+ * @param {Object} requestObj object contains current request
  * @returns {Object|null} country the object containing the country's settings; null if no data available
  */
-function getCurrent(currentLocale) {
+function getCurrent(requestObj) {
+    var currentLocale = requestObj.CurrentRequest.locale;
     if (!countriesData || countriesData.length === 0) {
         return null;
     }
 
     var selectedCountry = null;
 
-    if (!currentLocale.ID) {
+    if (!currentLocale) {
         return countriesData[0]; // return the first in the list if the requested one is not available
     }
     for (var i = 0; i < countriesData.length; i++) {
         var country = countriesData[i];
-        if (country.id === currentLocale.ID) {
+        if (country.id === currentLocale) {
             selectedCountry = country;
             break;
         }

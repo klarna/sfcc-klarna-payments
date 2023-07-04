@@ -121,6 +121,10 @@
                 this.context.merchant_reference2 = order[Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' )].toString();
             } catch ( err ) {
                 log.error( 'merchant_reference2 was not set. Error: {0} ', err.message );
+
+                var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
+                KlarnaAdditionalLogging.writeLog( order, order.custom.kpSessionId, 'requestBuilder/order.js:KlarnaPaymentsOrderRequestBuilder.prototype.setMerchantReference()', 'merchant_reference2 was not set. Error:' + JSON.stringify( err ) );
+                
             }
         }
 

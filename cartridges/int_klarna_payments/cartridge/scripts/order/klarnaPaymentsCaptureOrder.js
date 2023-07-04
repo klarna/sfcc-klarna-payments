@@ -9,6 +9,7 @@
 
 var Logger = require( 'dw/system/Logger' );
 var logger = Logger.getLogger( 'KlarnaPaymentsCaptureOrder.js' );
+var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
 var KlarnaPayments = {
     httpService: require( '*/cartridge/scripts/common/klarnaPaymentsHttpService' ),
     apiContext: require( '*/cartridge/scripts/common/klarnaPaymentsApiContext' )
@@ -25,7 +26,8 @@ var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
  */
 function _createCapture( klarnaOrderID, localeObject, captureData ) {
     var StringUtils = require( 'dw/util/StringUtils' );
-
+    var UUIDUtils = require('dw/util/UUIDUtils');
+    var klarnaIdempotencyKey = UUIDUtils.createUUID();
     var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
     var klarnaApiContext = new KlarnaPayments.apiContext();
     var requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'createCapture' ), klarnaOrderID );
@@ -34,7 +36,7 @@ function _createCapture( klarnaOrderID, localeObject, captureData ) {
         captured_amount: captureData.amount
     };
 
-    klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
+    klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody, null, klarnaIdempotencyKey );
 }
 
 /**
@@ -86,6 +88,7 @@ function handleAutoCapture( dwOrder, kpOrderId, localeObject ) {
         dwOrder.setPaymentStatus( dwOrder.PAYMENT_STATUS_PAID );
     } catch ( e ) {
         logger.error( 'Error in creating Klarna Payments Order Capture: {0}', e.message + e.stack );
+        KlarnaAdditionalLogging.writeLog( dwOrder, dwOrder.custom.kpSessionId, 'order/klarnaPaymentsCaptureOrder.js:handleAutoCapture()', 'Error in creating Klarna Payments Order Capture. Error:' + JSON.stringify( e ) );
 
         throw e;
     }

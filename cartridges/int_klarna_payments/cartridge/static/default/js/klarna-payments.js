@@ -394,6 +394,8 @@
                     var jsonResponse = JSON.parse( response );
                     if ( jsonResponse && !jsonResponse.error && jsonResponse.updateSummary ) {
                         updateSummary();
+                    } else if (jsonResponse && jsonResponse.error && jsonResponse.cartError && jsonResponse.redirectUrl) {
+                        window.location.href = jsonResponse.redirectUrl;
                     }
                 } catch ( e ) {
                     console.debug(e); // eslint-disable-line

@@ -56,7 +56,7 @@ var KLARNA_PAYMENT_URLS = {
     WRITE_ADDITIONAL_LOG: 'KlarnaPayments-WriteLog'
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 22.3.1';
+var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 23.1.1';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.NOTIFY_EVENT_TYPES = NOTIFY_EVENT_TYPES;

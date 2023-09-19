@@ -488,6 +488,18 @@ function selectPaymentMethod() {
     var newBasketTotal = cart.getTotalGrossPrice().getValue();
 
     if ( paymentMethodID === PAYMENT_METHOD ) {
+		
+		if (cart.object.defaultShipment.shippingMethod === null) {
+            var URLUtils = require('dw/web/URLUtils');
+            responseUtils.renderJSON({
+                error: true,
+                cartError: true,
+                redirectUrl: URLUtils.url('Cart-Show').toString()
+
+            });
+            return;
+        }
+		
         // Update Klarna session details if we have selected Klarna option,
         // before placing order in order to get the correct order number
         // including taxation and discount.

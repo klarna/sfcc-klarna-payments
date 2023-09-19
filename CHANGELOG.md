@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 23.1.1
+* Fixed an issue where sessions with negative order_tax_amount occurred due to SFCC session expiration
+* Compatibility mode 21.2 support
+
 ## 23.1.0
 * Fix issue with incorrect values for EMD
 * Improvement Klarna Auto Capture and error handling

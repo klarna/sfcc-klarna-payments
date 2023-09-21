@@ -471,7 +471,7 @@ KlarnaCheckout.initKlarnaButtonEvent = function (klarnaButton, defer) {
                             if (this.klarnaPaymentsPreferences.kpUseAlternativePaymentFlow) {
                                 $.ajax({
                                     url: this.klarnaPaymentsUrls.loadAuth
-                                }).done(function (result) {
+                                }).done( function (result) {
                                     this.handleLoadAuthResponse(result, defer);
                                 }.bind(this));
                             } else {
@@ -521,7 +521,7 @@ KlarnaCheckout.initKlarnaPlaceOrderButton = function (defer) {
 
             $.ajax({
                 url: this.klarnaPaymentsUrls.loadAuth
-            }).done(function (result) {
+            }).done( function(result) {
                 this.handleLoadAuthResponse(result, defer);
             }.bind(this));
         }.bind(this));

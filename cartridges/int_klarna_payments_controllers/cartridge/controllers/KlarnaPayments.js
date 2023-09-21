@@ -491,12 +491,11 @@ function selectPaymentMethod() {
         
         if ( cart.object.defaultShipment.shippingMethod === null ) {
             var URLUtils = require('dw/web/URLUtils');
-            responseUtils.renderJSON({
+            responseUtils.renderJSON( {
                 error: true,
                 cartError: true,
                 redirectUrl: URLUtils.url('Cart-Show').toString()
-
-            });
+            } );
             return;
         }
         

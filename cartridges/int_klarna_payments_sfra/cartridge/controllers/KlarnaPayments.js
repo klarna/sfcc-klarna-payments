@@ -119,11 +119,10 @@ server.post('SelectPaymentMethod', function (req, res, next) {
         var OrderModel = require('*/cartridge/models/order');
         var Locale = require('dw/util/Locale');
         var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
-
+        var URLUtils = require('dw/web/URLUtils');
         var currentBasket = BasketMgr.getCurrentBasket();
         var billingData = res.getViewData();
         var paymentMethodID = billingData.paymentMethod.value;
-        var paymentInstruments = currentBasket.getPaymentInstruments(PAYMENT_METHOD);
         var result;
 
         // if we have no basket or there is no selected payment option and balance is greater than zero
@@ -133,6 +132,8 @@ server.post('SelectPaymentMethod', function (req, res, next) {
             });
             return;
         }
+
+        var paymentInstruments = currentBasket.getPaymentInstruments(PAYMENT_METHOD);
 
         // if the selected payment matches Klarna
         if (paymentMethodID === PAYMENT_METHOD) {
@@ -188,6 +189,16 @@ server.post('SelectPaymentMethod', function (req, res, next) {
         }
 
         var newBasketTotal = currentBasket.totalGrossPrice.value;
+
+        if (!currentBasket.customerEmail || currentBasket.defaultShipment.shippingMethod === null) {
+            res.json({
+                error: true,
+                cartError: true,
+                redirectUrl: URLUtils.url('Cart-Show').toString()
+
+            });
+            return;
+        }
 
         var usingMultiShipping = req.session.privacyCache.get('usingMultiShipping');
         if (usingMultiShipping === true && currentBasket.shipments.length < 2) {
@@ -341,7 +352,7 @@ server.post('ExpressCheckout', function (req, res, next) {
 });
 
 server.post('WriteLog', function (req, res, next) {
-    var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
+    var KlarnaAdditionalLogging = require('*/cartridge/scripts/util/klarnaAdditionalLogging');
     var BasketMgr = require('dw/order/BasketMgr');
     var basket = BasketMgr.getCurrentBasket();
     var storeFrontResponse = JSON.stringify(req.form);

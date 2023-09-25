@@ -1032,6 +1032,9 @@ KlarnaCheckout.submitPaymentMethod = function ($tabContent, callback) {
         Klarna.Payments.init({
             client_token: this.klarnaPaymentsObjects.clientToken
         });
+        if (data.cartError && data.redirectUrl) {
+            window.location.href = data.redirectUrl;
+        }
         if (!data.error && data.updateSummary) {
             summaryHelpers.updateTotals(data.order.totals);
             summaryHelpers.updateOrderProductSummaryInformation(data.order, data.options);
@@ -1064,7 +1067,7 @@ KlarnaCheckout.writeAdditionalLog = function (res, action, msg) {
                 message: msg
             }
         })
-    }    
+    }
 };
 
 /**

@@ -61,8 +61,14 @@
                     </isif>
 
                     <!--- item price --->
+					<isset name="priceString" value="${lineItem.priceTotal.price}" scope="page"/>
+					<isset name="priceValue" value="${priceString.replace(/[^0-9.]/g, '')}" scope="page"/>
+					<isset name="singleUnitPriceValue" value="${priceValue / lineItem.quantity}" scope="page"/>
+					<isset name="currencySymbol" value="${priceString.replace(/[0-9.]/g, '')}" scope="page"/>
+					<isset name="formattedSingleUnitPrice" value="${currencySymbol + singleUnitPriceValue.toFixed(2)}" scope="page"/>
+                    
                     ${Resource.msg('label.each.item.price','cart',null)} -
-                    ${lineItem.price.formatted || lineItem.price.sales.formatted}
+                    ${formattedSingleUnitPrice}
                     <br/>
                     <!--- quantity --->
                     ${Resource.msg('field.selectquantity','cart',null)}
@@ -178,8 +184,13 @@
                 </isif>
 
                 <!--- item price --->
+                <isset name="priceString" value="${lineItem.priceTotal.price}" scope="page"/>
+				<isset name="priceValue" value="${priceString.replace(/[^0-9.]/g, '')}" scope="page"/>
+				<isset name="singleUnitPriceValue" value="${priceValue / lineItem.quantity}" scope="page"/>
+				<isset name="currencySymbol" value="${priceString.replace(/[0-9.]/g, '')}" scope="page"/>
+				<isset name="formattedSingleUnitPrice" value="${currencySymbol + singleUnitPriceValue.toFixed(2)}" scope="page"/>
                 ${Resource.msg('label.each.item.price','cart',null)} -
-                ${lineItem.price.formatted || lineItem.price.sales.formatted}
+                ${formattedSingleUnitPrice}
                 <br/>
                 <!--- quantity --->
                 ${Resource.msg('field.selectquantity','cart',null)}

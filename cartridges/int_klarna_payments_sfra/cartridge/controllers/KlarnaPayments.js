@@ -1,11 +1,12 @@
-/* globals empty, session, request */
-
+/* globals empty, session, request, dw */
 'use strict';
 
 var server = require('server');
 
 var Logger = require('dw/system/Logger');
 var log = Logger.getLogger('KlarnaPayments');
+
+var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 
 server.post('Notification', function (req, res) {
     var OrderMgr = require('dw/order/OrderMgr');
@@ -45,9 +46,16 @@ server.get('SaveAuth', function (req, res) {
     // Cancel any previous authorizations
     // processor.cancelAuthorization();
 
-    var klarnaSessionManager = new KlarnaSessionManager();
-    klarnaSessionManager.saveAuthorizationToken(token, finalizeRequired);
-
+    // If there was no authorization token and finalization is required,
+    // then we need to show the form
+    if (!token && finalizeRequired) {
+        session.privacy.KPAuthInfo = JSON.stringify({
+            FinalizeRequired: finalizeRequired
+        });
+    } else { // else we need to finalize the authorization
+        var klarnaSessionManager = new KlarnaSessionManager();
+        klarnaSessionManager.saveAuthorizationToken(token, finalizeRequired);
+    }
     res.setStatusCode(200);
 });
 
@@ -62,6 +70,65 @@ server.get('LoadAuth', function (req, res) {
     res.setStatusCode(200);
 
     this.emit('route:Complete', req, res);
+});
+
+server.post('BankTransferCallback', function (req, res) {
+    // Get Order ID from Klarna session_id
+    var OrderMgr = require('dw/order/OrderMgr');
+    var processor = require('*/cartridge/scripts/payments/processor');
+    var klarnaResponse = JSON.parse(req.body);
+    var kpAuthorizationToken = klarnaResponse.authorization_token;
+    var kpSessionId = klarnaResponse.session_id;
+
+    // Get Order by sessionId with status CREATED and update its status
+    try {
+        var order = OrderMgr.queryOrder('custom.kpSessionId = {0} AND status = {1}', kpSessionId, dw.order.Order.ORDER_STATUS_CREATED);
+        if (order) {
+            processor.bankTransferPlaceOrder(order, kpSessionId, kpAuthorizationToken);
+        }
+    } catch (e) {
+        log.error('BT Callback error: ' + e);
+    }
+
+    // If this callback is not fired, then
+    // the Order will not be updated (status = NOT_PAID)
+    res.setStatusCode(200);
+});
+
+server.get('BankTransferAwaitCallback', function (req, res, next) {
+    var kpSessionId = req.querystring.session_id;
+    var OrderMgr = require('dw/order/OrderMgr');
+    var order = OrderMgr.queryOrder('custom.kpSessionId = {0}', kpSessionId);
+
+    res.json({ redirectUrl: order.custom.kpRedirectURL });
+    return next();
+});
+
+/**
+ * Fail current Order using Klarna session_id in order to
+ * recreate Basket on Klarna Payments change
+ **/
+server.post('FailOrder', function (req, res, next) {
+    var kpSessionId = req.querystring.session_id;
+    var OrderMgr = require('dw/order/OrderMgr');
+    var BasketMgr = require('dw/order/BasketMgr');
+    var Transaction = require('dw/system/Transaction');
+
+    var order = OrderMgr.queryOrder('custom.kpSessionId = {0} AND status = {1}', kpSessionId, dw.order.Order.ORDER_STATUS_CREATED);
+    var result = true;
+    // Fail Order and recreate Basket
+    Transaction.wrap(function () {
+        result = OrderMgr.failOrder(order, true);
+    });
+
+    res.json({ success: true });
+    var currentBasket = BasketMgr.getCurrentBasket();
+    // In case of failure and no Basket, return error
+    if (!currentBasket && result.error) {
+        res.json({ success: false });
+    }
+    res.setStatusCode(200);
+    return next();
 });
 
 server.get('RefreshSession', function (req, res) {
@@ -358,6 +425,32 @@ server.post('WriteLog', function (req, res, next) {
     var storeFrontResponse = JSON.stringify(req.form);
 
     KlarnaAdditionalLogging.writeLog(basket, basket.custom.kpSessionId, req.form.actionName, req.form.message + ' Response Object:' + storeFrontResponse);
+
+    return next();
+});
+
+server.get('CancelSubscription', userLoggedIn.validateLoggedInAjax, function (req, res, next) {
+    var Resource = require('dw/web/Resource');
+    var subid = req.querystring.subid;
+    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+
+    var klarnaCreateCustomerTokenResponse = SubscriptionHelper.cancelSubscription(subid);
+
+    if (klarnaCreateCustomerTokenResponse.response) {
+        var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+        var isDisabled = SubscriptionHelper.disableCustomerSubscription(subid);
+
+        res.json({
+            error: !isDisabled,
+            statusMsg: Resource.msg('label.subscriptions.status.inactive', 'subscription', null),
+            message: Resource.msgf('msg.cancel.success', 'subscription', null, subid)
+        });
+    } else {
+        res.json({
+            error: true,
+            message: Resource.msgf('msg.cancel.error', 'subscription', null, subid)
+        });
+    }
 
     return next();
 });

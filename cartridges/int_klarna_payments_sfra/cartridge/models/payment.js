@@ -55,7 +55,7 @@ function applicablePaymentCards(paymentCards) {
  *      of payment instruments that the user is using to pay for the current basket
  * @returns {Array} Array of objects that contain information about the selected payment instruments
  */
-function getSelectedPaymentInstruments(selectedPaymentInstruments) {
+function getSelectedPaymentInstruments(selectedPaymentInstruments, currencyCode) {
     return collections.map(selectedPaymentInstruments, function (paymentInstrument) {
         var results = {
             paymentMethod: paymentInstrument.paymentMethod,
@@ -76,6 +76,7 @@ function getSelectedPaymentInstruments(selectedPaymentInstruments) {
             results.paymentCategory = paymentInstrument.custom.klarnaPaymentCategoryID;
             results.categoryName = paymentInstrument.custom.klarnaPaymentCategoryName;
         }
+        results.currencyCode = currencyCode;
 
         return results;
     });
@@ -107,7 +108,7 @@ function Payment(currentBasket, currentCustomer, countryCode) {
 	paymentCards ? applicablePaymentCards(paymentCards) : null;
 
     this.selectedPaymentInstruments = paymentInstruments ?
-	getSelectedPaymentInstruments(paymentInstruments) : null;
+	getSelectedPaymentInstruments(paymentInstruments, currentBasket.currencyCode) : null;
 }
 
 module.exports = Payment;

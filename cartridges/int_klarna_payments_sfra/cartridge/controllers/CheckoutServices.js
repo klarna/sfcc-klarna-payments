@@ -116,6 +116,22 @@ server.append(
     }
 );
 
+server.prepend('PlaceOrder', function (req, res, next) {
+    // Store Klarna SessionID to the user's session on PlaceOrder
+    try {
+        var BasketMgr = require('dw/order/BasketMgr');
+        var basket = BasketMgr.getCurrentBasket();
+        var kpSessionId = basket.custom.kpSessionId;
+        session.privacy.kpSessionId = kpSessionId;
+    } catch (e) {
+        var Logger = require('dw/system/Logger');
+        var log = Logger.getLogger('KlarnaPayments');
+        log.error('Cannot read Klarna SessionID: ' + e);
+    }
+
+    return next();
+});
+
 server.append('PlaceOrder', function (req, res, next) {
 
     //remove kpClientToken from order

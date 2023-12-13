@@ -212,31 +212,6 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="kpPaymentIntent">
-                <display-name xml:lang="x-default">Payment Intent</display-name>
-                <description xml:lang="x-default">If set to "No" or "None" Payment intent will not include to Klarna request. In other case will include selected value to Klarna request.</description>
-                <type>enum-of-string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition default="true">
-                        <display xml:lang="x-default">No</display>
-                        <value>No</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">Buy</display>
-                        <value>buy</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">Buy and tokenize</display>
-                        <value>buy_and_tokenize</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">Tokenize</display>
-                        <value>tokenize</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>
             <attribute-definition attribute-id="kpPromoTaxation">
                 <display-name xml:lang="x-default">Promotion Price Taxation</display-name>
                 <description xml:lang="x-default">Only use "Based on Adjusted Price" value if you have enabled the corresponding value in “Merchant Tools >  Site Preferences >  Promotions > Discount Taxation” and use gross taxation.</description>
@@ -283,6 +258,14 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="kpBankTransferCallback">
+                <display-name xml:lang="x-default">Use Bank Transfer callback</display-name>
+                <description xml:lang="x-default">If set to “Yes”, SFCC will wait for Klarna callback to place an order. Default is “No”</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
             <attribute-definition attribute-id="kpOMSEnabled">
                 <display-name xml:lang="x-default">Enable OMS</display-name>
                 <description xml:lang="x-default">Enable OMS</description>
@@ -290,6 +273,65 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpAgentUserName">
+                <display-name xml:lang="x-default">Agent User Name</display-name>
+                <description xml:lang="x-default">Agent user used to login on behalf of customers to create subscriptions orders</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpAgentUserPassword">
+                <display-name xml:lang="x-default">Agent User Password</display-name>
+                <description xml:lang="x-default">Agent user password used to login on behalf of customers to create subscriptions orders</description>
+                <type>password</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpEnableRecurringOrderRetry">
+                <display-name xml:lang="x-default">Enable Retry for Recurring Orders</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpRecurringNumberOfRetry">
+                <display-name xml:lang="x-default">Number Of Retries</display-name>
+                <type>enum-of-int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <value>1</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>2</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpRecurringRetryFrequency">
+                <display-name xml:lang="x-default">Recurring Retry Frequency</display-name>
+                <description xml:lang="x-default">Retry Frequency in days</description>
+                <type>enum-of-int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <value>1</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>2</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpCreateOrderToken">
+                <display-name xml:lang="x-default">Klarna Create Order Token</display-name>
+                <description xml:lang="x-default">Token used to verify the caller for recurring orders</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
             </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
@@ -319,12 +361,20 @@
                 <attribute attribute-id="kpVCNRetryEnabled"/>
                 <attribute attribute-id="kpPromoTaxation"/>
                 <attribute attribute-id="kpRejectedMethodDisplay"/>
+                <attribute attribute-id="kpBankTransferCallback"/>
                 <attribute attribute-id="kpCreateNewSessionWhenExpires"/>
                 <attribute attribute-id="kpRateLimitByOperation"/>
                 <attribute attribute-id="kpUseAlternativePaymentFlow"/>
-                <attribute attribute-id="kpPaymentIntent"/>
                 <attribute attribute-id="kpAdditionalLogging"/>
                 <attribute attribute-id="kpOMSEnabled"/>
+            </attribute-group>
+            <attribute-group group-id="Klarna_RecurringPayments">
+                <display-name xml:lang="x-default">Klarna Recurring Payments</display-name>
+                <attribute attribute-id="kpAgentUserName"/>
+                <attribute attribute-id="kpAgentUserPassword"/>
+                <attribute attribute-id="kpEnableRecurringOrderRetry"/>
+                <attribute attribute-id="kpRecurringNumberOfRetry"/>
+                <attribute attribute-id="kpRecurringRetryFrequency"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -343,6 +393,59 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSubscriptionFrequency">
+                <display-name xml:lang="x-default">Klarna Subscription Frequency</display-name>
+                <type>enum-of-int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <value>1</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>2</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>3</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>4</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>5</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>6</value>
+                    </value-definition>
+                    <value-definition>
+                        <value>15</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSubscriptionPeriod">
+                <display-name xml:lang="x-default">Klarna Subscription Period</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Day</display>
+                        <value>day</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Week</display>
+                        <value>week</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Month</display>
+                        <value>month</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Year</display>
+                        <value>year</value>
+                    </value-definition>
+                </value-definitions>
             </attribute-definition>
         </custom-attribute-definitions>
     </type-extension>
@@ -424,12 +527,49 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="kpAuthorizationToken">
+                <display-name xml:lang="x-default">Klarna Authorization Token</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpRedirectURL">
+                <display-name xml:lang="x-default">Klarna Redirect URL</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSubscriptionFrequency">
+                <display-name xml:lang="x-default">Klarna Subscription Frequency</display-name>
+                <type>int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>true</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSubscriptionPeriod">
+                <display-name xml:lang="x-default">Klarna Subscription Period</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>true</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpCustomerToken">
+                <display-name xml:lang="x-default">Klarna Customer Token</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Klarna_Payments">
                 <attribute attribute-id="klarna_oms__kpOrderID"/>
+                <attribute attribute-id="kpSessionId"/>
                 <attribute attribute-id="kpIsVCN"/>
                 <attribute attribute-id="kpVCNCardID"/>
+                <attribute attribute-id="kpSubscriptionFrequency"/>
+                <attribute attribute-id="kpSubscriptionPeriod"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -490,11 +630,18 @@
                 <externally-managed-flag>true</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+			<attribute-definition attribute-id="kpSubscription">
+                <display-name xml:lang="x-default">Klarna Subscription</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>true</externally-managed-flag>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="custom">
                 <display-name xml:lang="x-default">Custom</display-name>
                 <attribute attribute-id="klarna_oms__lineItemJSON"/>
+                <attribute attribute-id="kpSubscription"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -518,4 +665,66 @@
         </group-definitions>
     </type-extension>
 
+    <type-extension type-id="Product">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="kpIsStandardProduct">
+                <display-name xml:lang="x-default">Is Klarna Standard Product</display-name>
+                <type>boolean</type>
+                <site-specific-flag>false</site-specific-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <visible-flag>false</visible-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <order-required-flag>false</order-required-flag>
+                <externally-defined-flag>false</externally-defined-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpIsSubscriptionProduct">
+                <display-name xml:lang="x-default">Is Klarna Subscription Product</display-name>
+                <type>boolean</type>
+                <site-specific-flag>false</site-specific-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <visible-flag>false</visible-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <order-required-flag>false</order-required-flag>
+                <externally-defined-flag>false</externally-defined-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpTrialDaysUsage">
+                <display-name xml:lang="x-default">Klarna Trial Days Usage</display-name>
+                <type>int</type>
+                <localizable-flag>false</localizable-flag>
+                <site-specific-flag>false</site-specific-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <visible-flag>false</visible-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <order-required-flag>false</order-required-flag>
+                <externally-defined-flag>false</externally-defined-flag>
+                <min-value>1.0</min-value>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="KlarnaSubscription">
+                <display-name xml:lang="x-default">Klana Subscription</display-name>
+                <attribute attribute-id="kpIsSubscriptionProduct"/>
+                <attribute attribute-id="kpTrialDaysUsage"/>
+                <attribute attribute-id="kpIsStandardProduct"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+
+    <type-extension type-id="Profile">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="kpSubscriptions">
+                <display-name xml:lang="x-default">Klarna Subscriptions</display-name>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="Klarna">
+                <display-name xml:lang="x-default">Klarna</display-name>
+                <attribute attribute-id="kpSubscriptions"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
 </metadata>
+

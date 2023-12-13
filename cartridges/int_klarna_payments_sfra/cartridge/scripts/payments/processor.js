@@ -40,6 +40,41 @@ function callKlarnaCreateOrderAPI(order, localeObject) {
 }
 
 /**
+ * Calls Klarna Create Customer Token API.
+ *
+ * @param {dw.order.Order} order SCC order object
+ * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
+ *
+ * @return {Object|null} Klarna Payments create customer token response data on success, null on failure.
+ */
+function callKlarnaCreateCustomerTokenAPI(order, localeObject) {
+    var klarnaAuthorizationToken = session.privacy.KlarnaPaymentsAuthorizationToken;
+    var customer = order.customer.authenticated;
+    var createCustomerTokenHelper = require('*/cartridge/scripts/order/klarnaPaymentsCreateCustomerToken');
+    var klarnaCreateCustomerTokenResponse = createCustomerTokenHelper.createCustomerToken(order, localeObject, klarnaAuthorizationToken);
+    return klarnaCreateCustomerTokenResponse.response;
+}
+
+/**
+ * Calls Klarna Create Recurring Order API.
+ *
+ * @param {dw.order.Order} order SCC order object
+ * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
+ *
+ * @return {Object|null} Klarna Payments create order response data on success, null on failure.
+ */
+function callKlarnaCreateRecurringOrderAPI(order, localeObject) {
+    var customer = order.customer;
+    if (!customer) {
+        return null;
+    }
+    var customerToken = order.custom.kpCustomerToken;
+    var createOrderHelper = require('*/cartridge/scripts/order/klarnaPaymentsCreateRecurringOrder');
+    var klarnaCreateOrderResponse = createOrderHelper.createOrder(order, localeObject, customerToken);
+    return klarnaCreateOrderResponse.response;
+}
+
+/**
  * Cancels a Klarna order through Klarna API
  * @param {dw.order.Order} order SCC order object
  * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
@@ -97,10 +132,10 @@ function placeOrder(order, klarnaPaymentsOrderID, localeObject) {
             }
         } catch (e) {
             log.error('Order could not be placed: {0}', e.message + e.stack);
-            
-            var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
-            KlarnaAdditionalLogging.writeLog( order, order.custom.kpSessionId, 'processor.js:placeOrder()', 'Order could not be placed. Error:'+ JSON.stringify( e ) );
-        
+
+            var KlarnaAdditionalLogging = require('*/cartridge/scripts/util/klarnaAdditionalLogging');
+            KlarnaAdditionalLogging.writeLog(order, order.custom.kpSessionId, 'processor.js:placeOrder()', 'Order could not be placed. Error:' + JSON.stringify(e));
+
         }
     }
 }
@@ -270,6 +305,23 @@ function updateOrderWithKlarnaOrderInfo(order, paymentInstrument, kpOrderId) {
 }
 
 /**
+ *
+ * @param {dw.order.order} order DW order
+ * @param {dw.order.paymentInstrument} paymentInstrument DW payment instrument
+ * @param {string} kpOrderId Klarna Order Id.
+ */
+function updateOrderAndCustomerInfo(order, paymentInstrument, customerToken) {
+    var kpVCNEnabledPreferenceValue = Site.getCurrent().getCustomPreferenceValue('kpVCNEnabled');
+    var dwOrder = order;
+
+    session.privacy.customer_token = customerToken;
+
+    Transaction.wrap(function () {
+        dwOrder.custom.kpIsVCN = empty(kpVCNEnabledPreferenceValue) ? false : kpVCNEnabledPreferenceValue;
+    });
+}
+
+/**
  * Authorize order already accepted by Klarna.
  *
  * @param {dw.order.order} order DW Order
@@ -350,9 +402,41 @@ function handleKlarnaOrderCreated(order, paymentInstrument, kpOrderInfo) {
         session.privacy.KlarnaPaymentsAuthorizationToken = '';
         session.privacy.KPAuthInfo = null;
 
-        if (redirectURL) {
+        if (redirectURL) { // store Redirect URL in session
             session.privacy.KlarnaPaymentsRedirectURL = redirectURL;
+            // and in Order custom property
+            var dwOrder = order;
+            Transaction.wrap(function () {
+                dwOrder.custom.kpRedirectURL = redirectURL;
+            });
         }
+    }
+
+    return authorizationResult;
+}
+
+/**
+ * Handle Klarna Create Customer Toekn API call response.
+ *
+ * @param {dw.order.order} order DW Order.
+ * @param {dw.order.OrderPaymentInstrument} paymentInstrument DW PaymentInstrument.
+ * @param {Object} kpOrderInfo Response data from Klarna Create Order API call.
+ * @returns {Object} Authorization result object.
+ */
+function handleKlarnaCustomerTokenCreated(order, paymentInstrument, kpOrderInfo) {
+    var authorizationResult = {};
+    var localeObject = klarnaSessionManager.getLocale();
+    var customerToken = kpOrderInfo.token_id;
+
+    klarnaSessionManager.removeSession();
+
+    updateOrderAndCustomerInfo(order, paymentInstrument, customerToken);
+
+    authorizationResult = generateSuccessAuthResult();
+
+    if (!authorizationResult.error) {
+        session.privacy.KlarnaPaymentsAuthorizationToken = '';
+        session.privacy.KPAuthInfo = null;
     }
 
     return authorizationResult;
@@ -366,15 +450,51 @@ function handleKlarnaOrderCreated(order, paymentInstrument, kpOrderInfo) {
  * @param {dw.order.OrderPaymentInstrument} paymentInstrument - current payment instrument
  * @returns {Object} Processor authorizing result
  */
-function authorize(order, orderNo, paymentInstrument) {
-    var localeObject = klarnaSessionManager.getLocale();
-    var apiResponseData = callKlarnaCreateOrderAPI(order, localeObject);
+function authorize(order, orderNo, paymentInstrument, isRecurringOrder) {
+    var klarnaAuthorizationToken = session.privacy.KlarnaPaymentsAuthorizationToken;
+    var finalizeRequired = false;
+    try {
+        finalizeRequired = JSON.parse(session.privacy.KPAuthInfo).FinalizeRequired;
+        if (finalizeRequired === 'true') {
+            session.privacy.finalizeRequired = 'true';
+        } else {
+            session.privacy.finalizeRequired = null;
+        }
+    } catch (e) {
+        log.error('Error parsing JSON from KPAuthInfo: ', e);
+    }
 
+    // Do not fail Klarna order until a callback
+    if (finalizeRequired && (klarnaAuthorizationToken === 'undefined' || klarnaAuthorizationToken === null || empty(klarnaAuthorizationToken))) {
+        return { authorized: true };
+    }
+
+    var localeObject = klarnaSessionManager.getLocale();
+    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+    var subscriptionData = SubscriptionHelper.getSubscriptionData(order);
+    var apiResponseData;
+    if (subscriptionData && !isRecurringOrder) {
+        var customerTokenResponseData = callKlarnaCreateCustomerTokenAPI(order, localeObject);
+        if (!customerTokenResponseData) {
+            return generateErrorAuthResult();
+        }
+
+        if (subscriptionData.subscriptionTrialPeriod) {
+            return handleKlarnaCustomerTokenCreated(order, paymentInstrument, customerTokenResponseData);
+        } else {
+            session.privacy.customer_token = customerTokenResponseData.token_id;
+        }
+    }
+    if (isRecurringOrder) {
+        apiResponseData = callKlarnaCreateRecurringOrderAPI(order, localeObject);
+    } else {
+        apiResponseData = callKlarnaCreateOrderAPI(order, localeObject);
+    }
     if (!apiResponseData) {
         return generateErrorAuthResult();
     }
-
     return handleKlarnaOrderCreated(order, paymentInstrument, apiResponseData);
+
 }
 
 /**
@@ -416,6 +536,43 @@ function notify(order, klarna_oms__kpOrderID, kpEventType) {
 }
 
 /**
+ * Place Order on Klarna Bank Transfer callback by Klarna sessionId and Authorization Token
+ * @param {dw.order.order} order DW Order
+ * @param {string} kpSessionId Klarna Session ID
+ * @param {string} kpAuthorizationToken Klarna Authorization Token
+ * @returns {Object} Place Order via a callback result
+ */
+function bankTransferPlaceOrder(order, kpSessionId, kpAuthorizationToken) {
+    var paymentInstrument = order.getPaymentInstruments(PAYMENT_METHOD)[0];
+    var localeObject = klarnaSessionManager.getLocale();
+
+    var createOrderHelper = require('*/cartridge/scripts/order/klarnaPaymentsCreateOrder');
+    var klarnaCreateOrderResponse = createOrderHelper.createOrder(order, localeObject, kpAuthorizationToken);
+    var apiResponseData = klarnaCreateOrderResponse.response;
+
+    if (!apiResponseData) {
+        return generateErrorAuthResult();
+    }
+
+    var result = handleKlarnaOrderCreated(order, paymentInstrument, apiResponseData);
+
+    Transaction.wrap(function () {
+        var placeOrderStatus = OrderMgr.placeOrder(order);
+        if (placeOrderStatus === Status.ERROR) {
+            OrderMgr.failOrder(order);
+            log.error('Failed to place order.');
+            throw new Error('Failed to place order.');
+        }
+
+        order.setConfirmationStatus(order.CONFIRMATION_STATUS_CONFIRMED);
+        order.setExportStatus(order.EXPORT_STATUS_READY);
+        order.setPaymentStatus(order.PAYMENT_STATUS_PAID);
+    });
+
+    return result;
+}
+
+/**
  * Call Klarna Payments API to get an order
  * @param {string} klarnaPaymentsOrderID Klarna Payments Order ID
  * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
@@ -446,3 +603,5 @@ module.exports.authorize = authorize;
 module.exports.notify = notify;
 module.exports.cancelAuthorization = cancelAuthorization;
 module.exports.getKlarnaOrder = getKlarnaOrder;
+module.exports.bankTransferPlaceOrder = bankTransferPlaceOrder;
+

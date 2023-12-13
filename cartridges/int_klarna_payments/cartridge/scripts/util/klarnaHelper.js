@@ -196,6 +196,7 @@ function getKlarnaResources( countryCode ) {
     var URLUtils = require( 'dw/web/URLUtils' );
     var KlarnaConstants = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' );
     var hideRejectedPaymentsValue = hideRejectedPayments();
+    var kpBankTransferCallbackValue = getKpBankTransferCallback();
     var preAssement = isEnabledPreassessmentForCountry( countryCode ) || false;
 
     var BasketMgr = require( 'dw/order/BasketMgr' );
@@ -213,6 +214,8 @@ function getKlarnaResources( countryCode ) {
         saveAuth: URLUtils.https( KLARNA_PAYMENT_URLS.SAVE_AUTH ).toString(),
         selectPaymentMethod: URLUtils.https( KLARNA_PAYMENT_URLS.SELECT_PAYMENT_METHOD ).toString(),
         summaryUpdate: URLUtils.https( KLARNA_PAYMENT_URLS.MINISUMMARY_UPDATE ).toString(),
+        bankTransferAwaitCallback: URLUtils.https( KLARNA_PAYMENT_URLS.BANK_TRANSFER_AWAIT_CALLBACK ).toString(),
+        failOrder: URLUtils.https( KLARNA_PAYMENT_URLS.FAIL_ORDER ).toString(),
         writeLog: URLUtils.https(KLARNA_PAYMENT_URLS.WRITE_ADDITIONAL_LOG).toString()
     };
 
@@ -221,7 +224,8 @@ function getKlarnaResources( countryCode ) {
         sessionID: currentBasket.custom.kpSessionId ? currentBasket.custom.kpSessionId : null,
         clientToken: currentBasket.custom.kpClientToken ? currentBasket.custom.kpClientToken : null,
         preassesment: preAssement,
-        hideRejectedPayments: hideRejectedPaymentsValue
+        hideRejectedPayments: hideRejectedPaymentsValue,
+        kpBankTransferCallback: kpBankTransferCallbackValue
     };
 
     // klarna customer information
@@ -234,6 +238,12 @@ function getKlarnaResources( countryCode ) {
         SHIPPING_METHOD_TYPE: KlarnaConstants.SHIPPING_METHOD_TYPE,
         SHIPPING_TYPE: KlarnaConstants.SHIPPING_TYPE,
         KLARNA_PAYMENT_DEFAULT: KlarnaConstants.PAYMENT_METHOD
+    };
+
+    //klarna sitePreferences obj
+    var KPPreferences = {
+        kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue( 'kpUseAlternativePaymentFlow' ) || false,
+        kpAdditionalLogging: currentSite.getCustomPreferenceValue( 'kpAdditionalLogging' ) || false
     };
 
     //klarna sitePreferences obj
@@ -402,6 +412,17 @@ function setExpressShipping( shipment, klarnaAddress ) {
 }
 
 /**
+ * Get a site preference of Klarna Bank Transfer callback
+ * True - if the Klarna callback should be used
+ * False - if the Klarna callback should not be used
+ * 
+ * @returns {boolean} Returns whether Klarna callback should be used
+ */
+function getKpBankTransferCallback() {
+    return dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpBankTransferCallback' );
+}
+
+/**
  * Clear klarna session and basket attribute
  * @param  {dw.order.LineItemCtnr} lineItemCtnr basket or order
  */
@@ -477,6 +498,7 @@ exports.getExpressFormDetails = getExpressFormDetails;
 exports.setExpressBilling = setExpressBilling;
 exports.setExpressShipping = setExpressShipping;
 exports.strval = strval;
+exports.getKpBankTransferCallback = getKpBankTransferCallback;
 exports.clearSessionRef = clearSessionRef;
 exports.isOMSEnabled = isOMSEnabled;
 exports.getLocale = getLocale;

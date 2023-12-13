@@ -1,0 +1,42 @@
+<isscript>
+    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+    var subscriptionData = SubscriptionHelper.getSubscriptionDataCart(pdict.Basket);
+    var isSubscriptionBasket = SubscriptionHelper.isSubscriptionBasket(pdict.Basket);
+</isscript>
+<div id="cart-table">
+    <div class="item-delivery-options subscription-data <isif condition=" ${!isSubscriptionBasket}">hide</isif>">
+        <p>${Resource.msg('klarna.heading.subscription', 'subscription', null)}</p>
+        <div class="form-row label-inline">
+            <label class="form-control-label label" for="subscriptionPeriod">
+                <span class="label">${Resource.msg('klarna.subscription.period', 'subscription', null)}</span>
+            </label>
+            <div class="value">
+                <select class="form-control subscription-period" id="subscriptionPeriod"
+                    data-url="${URLUtils.url('Cart-UpdateSubscriptionDetails')}" data-field="kpSubscriptionPeriod">
+                    <isloop items=${subscriptionData.periodValues} var="subPeriod">
+                        <option id="${subPeriod.value}" value="${subPeriod.value}" <isif
+                            condition="${subPeriod.value === subscriptionData.subscriptionPeriod.value}">
+                            selected
+                            </isif>>${subPeriod.displayValue}</option>
+                    </isloop>
+                </select>
+            </div>
+            <div class="form-row label-inline">
+                <label class="form-control-label label" for="subscriptionFrequency">
+                    ${Resource.msg('klarna.subscription.frequency', 'subscription', null)}
+                </label>
+                <div class="value">
+                    <select class="form-control subscription-frequency" id="subscriptionFrequency"
+                        data-url="${URLUtils.url('Cart-UpdateSubscriptionDetails')}"
+                        data-field="kpSubscriptionFrequency">
+                        <isloop items=${subscriptionData.frequencyValues} var="subFrequency">
+                            <option id="${subFrequency.value}" value="${subFrequency.value}" <isif
+                                condition="${subFrequency.value === subscriptionData.subscriptionFrequency.value}">
+                                selected</isif>>${subFrequency.displayValue}</option>
+                        </isloop>
+                    </select>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>

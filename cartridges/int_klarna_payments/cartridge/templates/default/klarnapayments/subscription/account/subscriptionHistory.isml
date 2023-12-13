@@ -1,0 +1,84 @@
+<iscontent type="text/html" charset="UTF-8" compact="true" />
+<isdecorate template="account/orderhistory/pt_orderhistory">
+    <isscript>
+        var subscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+    </isscript>
+
+    <h1>${Resource.msg('label.subscriptions', 'subscription', null)}</h1>
+    <ul class="search-result-items">
+        <isloop items="${pdict.subscriptions}" var="subscription">
+
+            <li>
+                <div class="order-history-header">
+                    <button type="button" class="cancel-subscription" data-toggle="modal"
+                        data-subid="${subscription.subscriptionId}"
+                        data-action="${URLUtils.url('KlarnaPayments-CancelSubscription')}"
+                        aria-label="${Resource.msgf('label.subscriptions.cancel', 'subscription', null)}" <isif
+                        condition="${subscription.enabled === 'false'}">disabled="disabled"
+                        </isif>>
+                        ${Resource.msgf('label.subscriptions.cancel', 'subscription', null)}
+                    </button>
+
+                    <div class="order-number">
+                        <span class="label">${Resource.msg('label.subscriptions.subsciptionId', 'subscription', null)}:</span>
+                        <span class="value">
+                            <isprint value="${subscription.subscriptionId}" /></span>
+                    </div>
+
+                    <div class="order-status">
+                        <span class="label">${Resource.msg('label.subscriptions.status', 'subscription', null)}:</span>
+                        <span class="value subscription-status ${subscription.enabled === 'false' ? 'error' : ''}">
+                            <isprint value="${subscription.enabled === 'false' ? Resource.msg('label.subscriptions.status.inactive', 'subscription', null) : Resource
+                                            .msg('label.subscriptions.status.active', 'subscription', null)}" />
+                        </span>
+                    </div>
+
+                    <div class="order-date">
+                        <span class="label">${Resource.msg('label.subscriptions.nextChargeDate', 'subscription', null)}:</span>
+                        <span class="value">
+                            <isprint value="${subscriptionHelper.getNextChargeDateByDateStr(subscription.nextChargeDate)}" /></span>
+                    </div>
+                </div>
+
+                <div class="order-history-items">
+                    <table class="order-history-table">
+                        <tr>
+                            <th class="order-shipped-to">
+                                ${Resource.msg('label.subscriptions.lastOrderId', 'subscription', null)}:</th>
+                            <th class="order-items">
+                                ${Resource.msg('account.orders.items', 'account', null)}</th>
+                            <th class="order-total-price">
+                                ${Resource.msg('label.subscriptions.total.amount', 'subscription', null)}</th>
+                        </tr>
+
+                        <tr>
+                            <td>
+                                <isprint value="${subscription.lastOrderID}" />
+                            </td>
+                            <td class="order-items">
+                                <ul>
+                                    <isloop items="${subscription.subscriptionProductID.split(',')}" var="productId">
+                                        <isset name="subProduct" value="${dw.catalog.ProductMgr.getProduct(productId)}"
+                                            scope="page" />
+                                        <li>
+                                            <isprint value="${subProduct.name}" />
+                                        </li>
+                                    </isloop>
+                                </ul>
+                            </td>
+
+                            <td>
+                                <span class="value">
+                                    <isprint value="${subscriptionHelper.getSubscriptionLastTotal(subscription.lastOrderID)}" />
+                                </span>
+                            </td>
+                        </tr>
+                    </table>
+                </div>
+            </li>
+        </isloop>
+    </ul>
+    <div id="subscription-dialog-body" class="visually-hidden">
+        ${Resource.msg('msg.cancel.subscription', 'subscription', null)}
+    </div>
+</isdecorate>

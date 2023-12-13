@@ -14,6 +14,8 @@ function OrderModel(lineItemContainer, options) {
     this.klarnaOrderId = '';
     this.klarnaSessionId = '';
     this.klarnaClientToken = '';
+    this.kpAuthorizationToken = '';
+    this.kpRedirectURL = '';
 
     if (lineItemContainer && 'klarna_oms__kpOrderID' in lineItemContainer.custom) {
         this.klarnaOrderId = lineItemContainer.custom.klarna_oms__kpOrderID;
@@ -25,6 +27,18 @@ function OrderModel(lineItemContainer, options) {
 
     if (lineItemContainer && 'kpClientToken' in lineItemContainer.custom) {
         this.klarnaClientToken = lineItemContainer.custom.kpClientToken;
+    }
+
+    if (lineItemContainer && 'kpAuthorizationToken' in lineItemContainer.custom) {
+        this.kpAuthorizationToken = lineItemContainer.custom.kpAuthorizationToken;
+    }
+
+    if (lineItemContainer && 'kpRedirectURL' in lineItemContainer.custom) {
+        this.kpRedirectURL = lineItemContainer.custom.kpRedirectURL;
+    }
+
+    if (lineItemContainer && 'kpCustomerToken' in lineItemContainer.custom) {
+        this.subscriptionId = lineItemContainer.custom.kpCustomerToken;
     }
 }
 

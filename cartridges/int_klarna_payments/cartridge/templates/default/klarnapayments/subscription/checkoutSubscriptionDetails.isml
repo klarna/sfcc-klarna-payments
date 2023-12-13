@@ -1,0 +1,22 @@
+<isscript>
+    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+    var subscriptionData = SubscriptionHelper.getSubscriptionData(pdict.Basket);
+</isscript>
+<isif condition="${subscriptionData}">
+    <legend>
+        ${Resource.msg('klarna.heading.subscription', 'subscription', null)}
+    </legend>
+    <div class="form-row form-indent">
+        <span class="label">${Resource.msg('klarna.subscription.period', 'subscription', null)} :</span>
+        <span class="value">${subscriptionData.subscriptionPeriod.displayValue}</span>
+    </div>
+    <div class="form-row form-indent">
+        ${Resource.msg('klarna.subscription.frequency', 'subscription', null)} :
+        ${subscriptionData.subscriptionFrequency.displayValue}
+    </div>
+    <isif condition="${subscriptionData.subscriptionTrialPeriod}">
+        <div class="form-row form-indent">
+            <p>${Resource.msgf('klarna.subscription.checkout.trial', 'subscription', null, subscriptionData.subscriptionTrialPeriod)}</p>
+        </div>
+    </isif>
+</isif>

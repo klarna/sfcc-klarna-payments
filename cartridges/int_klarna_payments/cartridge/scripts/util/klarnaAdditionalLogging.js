@@ -113,8 +113,7 @@ function writeSitePreferencesToLog () {
             kpPromoTaxation: currentSite.getCustomPreferenceValue( 'kpPromoTaxation' ).value || false,
             kpCreateNewSessionWhenExpires: currentSite.getCustomPreferenceValue( 'kpCreateNewSessionWhenExpires' ) || false,
             kpRateLimitByOperation: currentSite.getCustomPreferenceValue( 'kpRateLimitByOperation' ) || false,
-            kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue( 'kpUseAlternativePaymentFlow' ).value || false,
-            kpPaymentIntent: currentSite.getCustomPreferenceValue( 'kpPaymentIntent' ).value || false,
+            kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue( 'kpUseAlternativePaymentFlow' ).value || false
         }
 
         log.info( 'SitePreferences Configuration:' + JSON.stringify( logObj ) );

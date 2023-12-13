@@ -218,10 +218,19 @@
         var giftCertificates = basket.getGiftCertificateLineItems().toArray();
         var giftCertificatePIs = basket.getGiftCertificatePaymentInstruments().toArray();
 
-        this.buildItems( lineItems, this );
+        var subscription = null;
+		
+		if (basket.custom.kpSubscriptionPeriod.value && basket.custom.kpSubscriptionFrequency.value) {
+            subscription = {
+                interval: basket.custom.kpSubscriptionPeriod.value.toUpperCase(),
+                interval_count: basket.custom.kpSubscriptionFrequency.value
+            }
+        }
+
+        this.buildItems( lineItems, subscription, this );
 
         if ( giftCertificates.length > 0 ) {
-            this.buildItems( giftCertificates, this );
+            this.buildItems( giftCertificates, subscription, this );
         }
 
         if ( giftCertificatePIs.length > 0 ) {
@@ -343,7 +352,7 @@
         return item;
     };
 
-    KlarnaPaymentsSessionRequestBuilder.prototype.buildItems = function( items ) {
+    KlarnaPaymentsSessionRequestBuilder.prototype.buildItems = function( items, subscription ) {
         var i = 0;
         var li = {};
         var newItem = {};
@@ -368,6 +377,11 @@
                 newItem = this.buildGCItem( li );
             } else {
                 newItem = this.buildItem( li );
+            }
+			
+			if (subscription) {
+                subscription.name = li.productName;
+                newItem.subscription = subscription;
             }
 
             this.context.order_lines.push( newItem );
@@ -446,9 +460,21 @@
         }
     };
 
-    KlarnaPaymentsSessionRequestBuilder.prototype.setPaymentIntent = function() {
-        this.context.intent = Site.getCurrent().getCustomPreferenceValue( 'kpPaymentIntent' ).value;
-        
+    KlarnaPaymentsSessionRequestBuilder.prototype.setPaymentIntent = function( basket ) {
+        var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+        var subscriptionData = SubscriptionHelper.getSubscriptionData(basket);
+        var intent = 'buy';
+
+        if (subscriptionData) {
+            if (subscriptionData.subscriptionTrialPeriod) {
+                intent = 'tokenize';
+            } else {
+                intent = 'buy_and_tokenize';
+            }
+        }
+
+        this.context.intent = intent;
+
         return this;
     };
 
@@ -456,7 +482,6 @@
         var basket = this.params.basket;
         var preAssement = isEnabledPreassessmentForCountry( this.getLocaleObject().country );
         var kpAttachmentsPreferenceValue = Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' );
-        var kpPaymentIntentPreferenceValue = Site.getCurrent().getCustomPreferenceValue( 'kpPaymentIntent' );
 
         this.init( preAssement );
 
@@ -464,9 +489,7 @@
 
         this.buildLocale( basket );
 
-        if (kpPaymentIntentPreferenceValue && kpPaymentIntentPreferenceValue.value !== 'No') {
-            this.setPaymentIntent ();
-        }
+        this.setPaymentIntent ( basket );
 
         if ( preAssement ) {
             this.buildBilling( basket );

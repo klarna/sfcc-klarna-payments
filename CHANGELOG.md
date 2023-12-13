@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 23.2.0
+* Subscription Payments support: recurring payments and subscription handling directly within the SFCC environment. This update includes configuration options, subscription management in the cart and checkout pages, and a customer dashboard for subscription oversight.
+* Klarna Bank Transfer payment: added a new server-side authorization callback feature for Klarna Bank Transfer payments, enhancing reliability across EU markets and supporting all existing KP cartridge functionalities.
+
 ## 23.1.1
 * Fixed an issue where sessions with negative order_tax_amount occurred due to SFCC session expiration
 * Compatibility mode 21.2 support

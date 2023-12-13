@@ -69,6 +69,12 @@ function _getRequestBody( order, localeObject ) {
  * @return {Object} status, order id, redirect url and fraud status
  */
 function createOrder( order, localeObject, klarnaAuthorizationToken ) {
+    if ( klarnaAuthorizationToken === 'undefined' ) {
+        return {
+            success: true
+        };
+    }
+
     var logger = dw.system.Logger.getLogger( 'klarnaPaymentsCreateOrder.js' );
     var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
 

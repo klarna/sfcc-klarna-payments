@@ -43,3 +43,12 @@
 <ismodule template="klarnapayments/keb/minicartbutton.isml"
 	name="mckeb"
 />
+
+<ismodule template="klarnapayments/subscription/cartProductCardSubscription.isml"
+    name="kpsubscription"
+    attribute="lineitem"
+    attribute="lmkpsubscription"
+    attribute="showsubscription"
+    attribute="disablesubscribe"
+    attribute="kptrialdaysusage"
+/>

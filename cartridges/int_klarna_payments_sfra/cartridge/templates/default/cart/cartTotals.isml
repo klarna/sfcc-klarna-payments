@@ -52,3 +52,5 @@
         <iskosmcart />
     </div>
 </div>
+
+<isinclude template="cart/cartSubscriptionDetails.isml"/>

@@ -47,7 +47,26 @@ function _getRequestBody( basket, localeObject ) {
         localeObject: localeObject
     } );
 
-    return sessionRequestBuilder.build();
+    var requestBody = sessionRequestBuilder.build();
+    
+    // On session_create set the callback URL for all methods
+    // as we don't have a payment method selected yet
+    var KLARNA_PAYMENT_URLS = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).KLARNA_PAYMENT_URLS;
+    var URLUtils = require( 'dw/web/URLUtils' );
+    var country = localeObject.custom.country;
+    
+    // Do not override current merchant_urls if they are already set
+    if ( !requestBody.merchant_urls ) {
+        requestBody.merchant_urls = {};
+    }
+    // If BT Callback is required
+    var kpBankTransferCallback = dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpBankTransferCallback' );
+    if ( kpBankTransferCallback ) {
+        // update request body with the Bank Transfer callback URL
+        requestBody.merchant_urls.authorization = URLUtils.https( KLARNA_PAYMENT_URLS.BANK_TRANSFER_CALLBACK, 'klarna_country', country ).toString();
+    }
+
+    return requestBody;
 }
 
 /**
@@ -77,6 +96,10 @@ function createSession( basket, localeObject ) {
 
             basket.custom.kpSessionId = response.session_id;
             basket.custom.kpClientToken = response.client_token;
+
+            session.privacy.finalizeRequired = null;
+            session.privacy.isBasketPending = null;
+            session.privacy.kpSessionId = null;
         } );
     } catch ( e ) {
         dw.system.Logger.error( 'Error in creating Klarna Payments Session: {0}', e.message + e.stack );

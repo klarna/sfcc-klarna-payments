@@ -137,6 +137,33 @@
         <cb-calls>0</cb-calls>
         <cb-millis>0</cb-millis>
     </service-profile>
+    <service-profile service-profile-id="klarna.http.createCustomerToken">
+        <timeout-millis>30000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+    <service-profile service-profile-id="klarna.http.cancelCustomerToken">
+        <timeout-millis>30000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+    <service-profile service-profile-id="klarna.http.createRecurringOrder">
+        <timeout-millis>30000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
     <service service-id="klarna.http.createSession">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
@@ -236,5 +263,34 @@
         <profile-id>klarna.http.service</profile-id>
         <credential-id/>
     </service>
-
+    <service service-id="klarna.http.createCustomerToken">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>klarna_createCustToken</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>klarna.http.createCustomerToken</profile-id>
+        <credential-id/>
+    </service>
+    <service service-id="klarna.http.cancelCustomerToken">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>klarna_cacnelCustToken</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>klarna.http.cancelCustomerToken</profile-id>
+        <credential-id/>
+    </service>
+    <service service-id="klarna.http.createRecurringOrder">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>klarna_createRecOrder</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>klarna.http.createRecurringOrder</profile-id>
+        <credential-id/>
+    </service>
 </services>

@@ -139,7 +139,7 @@
     
                     Klarna.Payments.authorize( {
                         payment_method_category: $selectedPaymentMethod.id,
-                        auto_finalize: true
+                        auto_finalize: klarnaPaymentsObjects.kpBankTransferCallback ? false : true
                     }, klarnaRequestData , function( res ) {
                         if ( res.approved ) {
                             var xhr = new XMLHttpRequest();

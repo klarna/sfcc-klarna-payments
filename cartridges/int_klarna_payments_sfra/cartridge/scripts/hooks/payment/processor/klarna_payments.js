@@ -20,9 +20,10 @@ function Handle(basket) {
  * @param {Object} paymentInstrument payment intrument
  * @returns {Object} processor result
  */
-function Authorize(orderNumber, paymentInstrument) {
+function Authorize(orderNumber, paymentInstrument, paymentProcessor, isReccuringOrder) {
     var order = dw.order.OrderMgr.getOrder(orderNumber);
-    var result = KlarnaPaymentsProcessor.authorize(order, orderNumber, paymentInstrument);
+    var recurringOrder = isReccuringOrder !== 'undefined' ? isReccuringOrder : false;
+    var result = KlarnaPaymentsProcessor.authorize(order, orderNumber, paymentInstrument, recurringOrder);
     return result;
 }
 

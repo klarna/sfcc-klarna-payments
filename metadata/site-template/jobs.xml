@@ -23,4 +23,30 @@
         </triggers>
     </job>
 
+    <job job-id="RecurringOrders" priority="0">
+        <description/>
+        <parameters/>
+        <flow>
+            <context site-id="RefArch"/>
+            <step step-id="createOrder" type="ExecuteScriptModule" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="ExecuteScriptModule.Module">int_klarna_payments/cartridge/scripts/job/RecurringOrdersJob.js</parameter>
+                    <parameter name="ExecuteScriptModule.FunctionName">execute</parameter>
+                    <parameter name="ExecuteScriptModule.Transactional">false</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules>
+            <on-running runtime-threshold="60m" enabled="false">
+                <mark-job-as-hanging/>
+            </on-running>
+        </rules>
+        <triggers>
+            <run-once enabled="false">
+                <date>2023-07-25Z</date>
+                <time>14:06:00.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
 </jobs>

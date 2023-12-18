@@ -13,6 +13,8 @@ var Transaction = require('dw/system/Transaction');
 var Status = require('dw/system/Status');
 var OrderMgr = require('dw/order/OrderMgr');
 var Order = require('dw/order/Order');
+var PaymentMgr = require('dw/order/PaymentMgr');
+var HookMgr = require('dw/system/HookMgr');
 
 /**
  * Find the first klarna payment transaction within the order (if exists).
@@ -56,8 +58,12 @@ superMdl.placeOrder = function (order, fraudDetectionStatus) {
             order.setPaymentStatus(order.PAYMENT_STATUS_NOTPAID);
         } else {
             var placeOrderStatus = OrderMgr.placeOrder(order);
-            if (placeOrderStatus === Status.ERROR) {
+            if (placeOrderStatus.error) {
                 throw new Error();
+            }
+            if (session.privacy.customer_token) {
+                var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+                SubscriptionHelper.updateCustomerSubscriptionData(order);
             }
 
             order.setConfirmationStatus(Order.CONFIRMATION_STATUS_CONFIRMED);
@@ -68,9 +74,89 @@ superMdl.placeOrder = function (order, fraudDetectionStatus) {
     } catch (e) {
         Transaction.wrap(function () { OrderMgr.failOrder(order); });
         result.error = true;
+        dw.system.Logger.error('Error in place order: ' + e);
     }
 
     return result;
 };
+
+/**
+ * handles the payment authorization for each payment instrument
+ * @param {dw.order.Order} order - the order object
+ * @param {string} orderNumber - The order number for the order
+ * @returns {Object} an error object
+ */
+superMdl.handlePayments = function (order, orderNumber, isRecurringOrder) {
+    var result = {};
+
+    if (order.totalNetPrice !== 0.00) {
+        var paymentInstruments = order.paymentInstruments;
+
+        if (paymentInstruments.length === 0) {
+            Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+            result.error = true;
+        }
+
+        if (!result.error) {
+            for (var i = 0; i < paymentInstruments.length; i++) {
+                var paymentInstrument = paymentInstruments[i];
+                var paymentProcessor = PaymentMgr
+                    .getPaymentMethod(paymentInstrument.paymentMethod)
+                    .paymentProcessor;
+                var authorizationResult;
+                if (paymentProcessor === null) {
+                    Transaction.begin();
+                    paymentInstrument.paymentTransaction.setTransactionID(orderNumber);
+                    Transaction.commit();
+                } else {
+                    if (HookMgr.hasHook('app.payment.processor.' +
+                        paymentProcessor.ID.toLowerCase())) {
+                        authorizationResult = HookMgr.callHook(
+                            'app.payment.processor.' + paymentProcessor.ID.toLowerCase(),
+                            'Authorize',
+                            orderNumber,
+                            paymentInstrument,
+                            paymentProcessor,
+                            isRecurringOrder
+                        );
+                    } else {
+                        authorizationResult = HookMgr.callHook(
+                            'app.payment.processor.default',
+                            'Authorize'
+                        );
+                    }
+
+                    if (authorizationResult.error) {
+                        Transaction.wrap(function () { OrderMgr.failOrder(order, true); });
+                        result.error = true;
+                        break;
+                    }
+                }
+            }
+        }
+    }
+
+    return result;
+}
+
+/**
+ * Attempts to create an order from the current basket
+ * @param {dw.order.Basket} currentBasket - The current basket
+ * @returns {dw.order.Order} The order object created from the current basket
+ */
+superMdl.createOrder = function (currentBasket) {
+    var order;
+
+    try {
+        order = Transaction.wrap(function () {
+            return OrderMgr.createOrder(currentBasket);
+        });
+    } catch (error) {
+        dw.system.Logger.error(error);
+        dw.system.Logger.error(error.stack);
+        return null;
+    }
+    return order;
+}
 
 module.exports = superMdl;

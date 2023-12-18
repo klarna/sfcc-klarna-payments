@@ -2,6 +2,7 @@ var page = module.superModule; // inherits functionality
 var server = require('server');
 var URLUtils = require('dw/web/URLUtils');
 var Resource = require('dw/web/Resource');
+var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
 
 server.extend(page);
 
@@ -66,6 +67,29 @@ server.replace('Confirm', function (req, res, next) {
     req.session.raw.custom.orderID = req.querystring.ID; // eslint-disable-line no-param-reassign
 
     return next();
+});
+
+server.get('Subscriptions', server.middleware.https, userLoggedIn.validateLoggedIn, function (req, res, next) {
+    var customer = req.currentCustomer.raw;
+    var breadcrumbs = [
+        {
+            htmlValue: Resource.msg('global.home', 'common', null),
+            url: URLUtils.home().toString()
+        },
+        {
+            htmlValue: Resource.msg('page.title.myaccount', 'account', null),
+            url: URLUtils.url('Account-Show').toString()
+        }
+    ];
+
+    var subscriptions = customer.profile.custom.kpSubscriptions ? JSON.parse(customer.profile.custom.kpSubscriptions) : [];
+
+    res.render("account/subscriptionHistory", {
+        subscriptions: subscriptions,
+        breadcrumbs: breadcrumbs,
+        accountlanding: false
+    });
+    next();
 });
 
 module.exports = server.exports();

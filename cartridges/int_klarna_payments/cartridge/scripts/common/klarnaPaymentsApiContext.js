@@ -24,6 +24,9 @@ KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function()
         this._flowApiUrls.put( 'cancelOrder', '/ordermanagement/v1/orders/{0}/cancel' );
         this._flowApiUrls.put( 'vcnSettlement', 'merchantcard/v3/settlements' );
         this._flowApiUrls.put( 'createCapture', '/ordermanagement/v1/orders/{0}/captures' );
+        this._flowApiUrls.put( 'createCustomerToken', 'payments/v1/authorizations/{0}/customer-token' );
+        this._flowApiUrls.put( 'cancelCustomerToken', 'customer-token/v1/tokens/{0}/status' );
+        this._flowApiUrls.put( 'createRecurringOrder', 'customer-token/v1/tokens/{0}/order' );
     }
 
     return this._flowApiUrls;
@@ -49,6 +52,9 @@ KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function()
          this._flowApiIds.put( 'cancelOrder', 'klarna.http.cancelOrder' );
          this._flowApiIds.put( 'vcnSettlement', 'klarna.http.vcnSettlement' );
          this._flowApiIds.put( 'createCapture', 'klarna.http.createCapture' );
+         this._flowApiIds.put( 'createCustomerToken', 'klarna.http.createCustomerToken' );
+         this._flowApiIds.put( 'cancelCustomerToken', 'klarna.http.cancelCustomerToken' );
+         this._flowApiIds.put( 'createRecurringOrder', 'klarna.http.createRecurringOrder' );
      }
  
      return this._flowApiIds;

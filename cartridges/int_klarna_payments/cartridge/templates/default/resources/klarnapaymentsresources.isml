@@ -2,11 +2,13 @@
 
 <isset name="country" value="${require('*/cartridge/scripts/locale/klarnaPaymentsGetCountryFromLocale').getCountryFromLocale(pdict.CurrentRequest).countryCode}" scope="page" />
 <isset name="klarnaResources" value="${require('*/cartridge/scripts/util/klarnaHelper').getKlarnaResources(country)}" scope="page" />
+<isset name="serverErrorMessage" value="${Resource.msg('confirm.error.technical', 'checkout', null)}" scope="page" />
 
 (function(app){
     window.KlarnaPaymentsUrls = <isprint value="${klarnaResources.KPurls}" encoding="on"/>;
     window.KlarnaPaymentsObjects = <isprint value="${!empty(klarnaResources.KPObjects) ? klarnaResources.KPObjects : '[]'}" encoding="on"/>;
     window.KPCustomerInfo = <isprint value="${klarnaResources.KPCustomerInfo}" encoding="on"/>;
     window.KPConstants = <isprint value="${klarnaResources.KPConstants}" encoding="on"/>;
+    window.serverErrorMessage = "<isprint value="${serverErrorMessage}" encoding="on"/>";
     window.KPPreferences = <isprint value="${klarnaResources.KPPreferences}" encoding="on"/>;
 }(window.app = window.app || {}));

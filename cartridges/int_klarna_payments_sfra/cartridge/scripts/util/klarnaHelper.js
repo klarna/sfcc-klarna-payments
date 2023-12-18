@@ -59,6 +59,7 @@ superMdl.getKlarnaResources = function () {
     var country = Countries.getCurrent({ CurrentRequest: request }).countryCode;
     var preassess = this.isEnabledPreassessmentForCountry(country);
     var hideRejectedPaymentsValue = this.hideRejectedPayments();
+    var kpBankTransferCallbackValue = this.getKpBankTransferCallback();
 
     var BasketMgr = require('dw/order/BasketMgr');
     var currentBasket = BasketMgr.getCurrentBasket();
@@ -72,6 +73,8 @@ superMdl.getKlarnaResources = function () {
         saveAuth: URLUtils.https(KLARNA_PAYMENT_URLS.SAVE_AUTH).toString(),
         loadAuth: URLUtils.https(KLARNA_PAYMENT_URLS.LOAD_AUTH).toString(),
         selectPaymentMethod: URLUtils.https(KLARNA_PAYMENT_URLS.SELECT_PAYMENT_METHOD).toString(),
+        bankTransferAwaitCallback: URLUtils.https(KLARNA_PAYMENT_URLS.BANK_TRANSFER_AWAIT_CALLBACK).toString(),
+        failOrder: URLUtils.https(KLARNA_PAYMENT_URLS.FAIL_ORDER).toString(),
         writeLog: URLUtils.https(KLARNA_PAYMENT_URLS.WRITE_ADDITIONAL_LOG).toString(),
     };
 
@@ -80,7 +83,8 @@ superMdl.getKlarnaResources = function () {
         sessionID: currentBasket.custom.kpSessionId ? currentBasket.custom.kpSessionId : null,
         clientToken: currentBasket.custom.kpClientToken ? currentBasket.custom.kpClientToken : null,
         preassesment: preassess,
-        hideRejectedPayments: hideRejectedPaymentsValue
+        hideRejectedPayments: hideRejectedPaymentsValue,
+        kpBankTransferCallback: kpBankTransferCallbackValue
     };
 
     // klarna customer information
@@ -93,6 +97,12 @@ superMdl.getKlarnaResources = function () {
         SHIPPING_METHOD_TYPE: KlarnaPaymentsConstants.SHIPPING_METHOD_TYPE,
         SHIPPING_TYPE: KlarnaPaymentsConstants.SHIPPING_TYPE,
         KLARNA_PAYMENT_DEFAULT: KlarnaPaymentsConstants.PAYMENT_METHOD
+    };
+
+    // klarna sitePreferences obj
+    var KPPreferences = {
+        kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue('kpUseAlternativePaymentFlow') || false,
+        kpAdditionalLogging: currentSite.getCustomPreferenceValue( 'kpAdditionalLogging' ) || false
     };
 
     // klarna sitePreferences obj

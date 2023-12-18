@@ -1,0 +1,32 @@
+<isscript>
+    var assets = require('*/cartridge/scripts/assets.js');
+    assets.addCss('/css/klarnaPayments.css');
+</isscript>
+
+<div class="row justify-content-center">
+    <div class="col-sm-6">
+        <!---Profile--->
+        <isinclude template="account/profileCard" />
+
+        <isif condition="${!pdict.account.isExternallyAuthenticated}">
+            <!---Password--->
+            <isinclude template="account/passwordCard" />
+        </isif>
+
+        <!---Address Book--->
+        <isinclude template="account/addressBookCard" />
+    </div>
+    <div class="col-sm-6">
+        <!---Order History--->
+        <isif condition="${pdict.account.orderHistory}">
+            <isset name="order" value="${pdict.account.orderHistory}" scope="page" />
+            <isinclude template="account/order/orderHistoryCard" />
+        </isif>
+        <!---Payment--->
+        <isinclude template="account/paymentCard" />
+        <isif condition="${pdict.account.subscriptions && pdict.account.subscriptions.length > 0}">
+            <isset name="sub" value="${pdict.account.subscriptions[0]}" scope="page" />
+            <isinclude template="account/subscriptionsCard" />
+        </isif>
+    </div>
+</div>

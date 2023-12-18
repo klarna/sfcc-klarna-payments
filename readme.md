@@ -1,11 +1,11 @@
 [<img src="https://cdn.klarna.com/1.0/shared/image/generic/logo/global/basic/logo_black.png" alt="Klarna" width="200">](https://klarna.com)
 
-# Klarna Payments 2017-2022 Salesforce Commerce Cloud Cartridge
+# Klarna Payments 2017-2023 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 23.1.1.
+The latest version of this cartridge is 23.2.0.
 
-This version includes fix for an issue where sessions with negative order_tax_amount occurred due to SFCC session expiration, Compatibility mode 21.2 support and replace deprecated window.KlarnaOnsiteService.push with window.Klarna.OnsiteMessaging.refresh
+This version includes subscription Payments support: recurring payments and subscription handling directly within the SFCC environment. This update includes configuration options, subscription management in the cart and checkout pages, and a customer dashboard for subscription oversight. Klarna Bank Transfer payment: added a new server-side authorization callback feature for Klarna Bank Transfer payments, enhancing reliability across EU markets and supporting all existing KP cartridge functionalities.
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/

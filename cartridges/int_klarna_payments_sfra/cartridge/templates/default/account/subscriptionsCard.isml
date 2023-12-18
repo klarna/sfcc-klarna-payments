@@ -1,0 +1,59 @@
+<isscript>
+    var subscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+    var products = sub.subscriptionProductID.split(',');
+    var end = pdict.accountlanding ? 0 : products.length;
+</isscript>
+<div class="card">
+    <isif condition="${pdict.accountlanding}">
+        <div class="card-header clearfix">
+            <h2 class="pull-left">${Resource.msg('label.subscriptions', 'subscription', null)}</h2>
+            <a href="${URLUtils.url('Order-Subscriptions')}" class="pull-right"
+                aria-label="${Resource.msg('label.subscriptions', 'subscription', null)}">${Resource.msg('link.view', 'account', null)}</a>
+        </div>
+    <iselse/>
+        <div class="card-header clearfix">
+            <h3 class="pull-left">${Resource.msg('label.subscriptions.subsciptionId', 'subscription', null)}:
+                ${sub.subscriptionId}</h3>
+            <button type="link" class="remove-btn-lg cancel-subscription btn btn-light pull-right" data-toggle="modal"
+                data-target="#cancelSubscriptionModal" data-subid="${sub.subscriptionId}"
+                data-action="${URLUtils.url('KlarnaPayments-CancelSubscription')}"
+                aria-label="${Resource.msg('label.subscriptions.cancel', 'subscription', null)}" 
+                <isif condition="${sub.enabled === 'false'}">disabled="disabled"</isif>>
+                <span aria-hidden="true">${Resource.msgf('label.subscriptions.cancel', 'subscription', null)}</span>
+            </button>
+        </div>
+    </isif>
+
+    <div class="card-body card-info-group">
+        <div class="row">
+            <div class="col-4 hidden-xs-down">
+                <isloop items="${products}" var="productId" end="${end}">
+                    <isset name="subProduct" value="${dw.catalog.ProductMgr.getProduct(productId)}" scope="page" />
+                    <div>
+                        <img class="img-fluid" src="${subProduct.getImage('small', 0).URL}"
+                            alt="${subProduct.getImage('small', 0).alt}" title="${subProduct.getImage('small', 0).title}" />
+                    </div>
+                </isloop>
+            </div>
+            <div class="col-sm-8 col-12">
+                <isif condition="${pdict.accountlanding}">
+                    <p>${Resource.msg('label.subscriptions.subsciptionId', 'subscription', null)}:
+                        <span class="dashboard-order-card-status">${sub.subscriptionId}</span></p>
+                </isif>
+                <p>${Resource.msg('label.subscriptions.lastOrderId', 'subscription', null)}:
+                    <span class="dashboard-order-card-status">${sub.lastOrderID}</span></p>
+                <p>${Resource.msg('label.subscriptions.nextChargeDate', 'subscription', null)}:
+                    <isprint value="${subscriptionHelper.getNextChargeDateByDateStr(sub.nextChargeDate)}" />
+                </p>
+                <p>${Resource.msg('label.subscriptions.status', 'subscription', null)}:
+                    <span class="dashboard-order-card-status subscription-status ${sub.enabled === 'false' ? ' subscription-error' : ''}">
+                    ${sub.enabled === 'false' ? Resource.msg('label.subscriptions.status.inactive', 'subscription', null) : 
+                                                Resource.msg('label.subscriptions.status.active', 'subscription', null)}</span></p>
+                <p>${Resource.msg('label.subscriptions.total.amount', 'subscription', null)}:
+                    <span class="dashboard-order-card-status">
+                        <isprint value="${subscriptionHelper.getSubscriptionLastTotal(sub.lastOrderID)}" />
+                    </span></p>
+            </div>
+        </div>
+    </div>
+</div>

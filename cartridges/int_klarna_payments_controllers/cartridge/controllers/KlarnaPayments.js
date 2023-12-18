@@ -58,26 +58,91 @@ function handle( args ) {
 }
 
 /**
+ * Calls Klarna Create Recurring Order API.
+ *
+ * @param {dw.order.Order} order SCC order object
+ * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
+ *
+ * @return {Object|null} Klarna Payments create order response data on success, null on failure.
+ */
+function callKlarnaCreateRecurringOrderAPI(order, localeObject) {
+    var customer = order.customer;
+    if (!customer) {
+        return null;
+    }
+    var customerToken = order.custom.kpCustomerToken;
+    var createOrderHelper = require('*/cartridge/scripts/order/klarnaPaymentsCreateRecurringOrder');
+    var klarnaCreateOrderResponse = createOrderHelper.createOrder(order, localeObject, customerToken);
+    return klarnaCreateOrderResponse;
+}
+
+/**
  * Authorizes a payment using a KLARNA_PAYMENTS processor.
  * @param {Object} args object containing OrderNo (string), Order (dw.order.Order) and PaymentInstrument(dw.order.PaymentInstrument) properties
  *
  * @return {Object} authObject if authorization is successfull { authorized: true }, otherwise { error: true }
  */
 function authorize( args ) { // eslint-disable-line complexity
+    var KlarnaPaymentsAuthorizationToken = session.privacy.KlarnaPaymentsAuthorizationToken;
+    var finalizeRequired = false;
+    try {
+        if ( !empty(session.privacy.KPAuthInfo) ) {
+            finalizeRequired = JSON.parse( session.privacy.KPAuthInfo ).FinalizeRequired;
+        } 
+        if ( finalizeRequired === 'true' ) {
+            session.privacy.finalizeRequired = 'true';
+        } else {
+            session.privacy.finalizeRequired = null;
+        }
+    } catch ( e ) {
+        log.error( 'Error parsing JSON from KPAuthInfo: ', e );
+    }
+
+    // Do not fail Klarna order until a callback
+    if ( finalizeRequired && ( KlarnaPaymentsAuthorizationToken === 'undefined' || KlarnaPaymentsAuthorizationToken === null ) ) {
+        return { authorized: true };
+    }
+
     var createOrderHelper = require( '*/cartridge/scripts/order/klarnaPaymentsCreateOrder' );
+    var createCustomerTokenHelper = require( '*/cartridge/scripts/order/klarnaPaymentsCreateCustomerToken' );
     var orderNo = args.OrderNo;
     var paymentInstrument = args.PaymentInstrument;
     var paymentProcessor = PaymentMgr.getPaymentMethod( paymentInstrument.getPaymentMethod() ).getPaymentProcessor();
     var localeObject = getLocale();
+    var isRecurringOrder = args.isRecurringOrder;
 
-    var klarnaCreateOrderResponse = createOrderHelper.createOrder( args.Order, localeObject, session.privacy.KlarnaPaymentsAuthorizationToken );
+    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+    var subscriptionData = SubscriptionHelper.getSubscriptionData(args.Order);
+
+    if (subscriptionData && !isRecurringOrder) {
+        var customerTokenResponseData = createCustomerTokenHelper.createCustomerToken(args.Order, localeObject, session.privacy.KlarnaPaymentsAuthorizationToken);
+        if (!customerTokenResponseData) {
+            return { error: true };
+        }
+        session.privacy.customer_token = customerTokenResponseData.customer_token;
+        if (subscriptionData.subscriptionTrialPeriod) {
+            Transaction.wrap(function () {
+                session.privacy.OrderNo = orderNo;
+                args.Order.custom.kpIsVCN = empty(vcnEnabled) ? false : vcnEnabled;
+            });
+            return { authorized: true };
+        }
+    }
+
+    var klarnaCreateOrderResponse;
+    if (isRecurringOrder) {
+        klarnaCreateOrderResponse = callKlarnaCreateRecurringOrderAPI(args.Order, localeObject);
+    } else {
+        klarnaCreateOrderResponse = createOrderHelper.createOrder(args.Order, localeObject, session.privacy.KlarnaPaymentsAuthorizationToken);
+    }
+
     session.privacy.KlarnaPaymentsOrderID = klarnaCreateOrderResponse.order_id;
     session.privacy.KlarnaPaymentsRedirectURL = klarnaCreateOrderResponse.redirect_url;
     session.privacy.KlarnaPaymentsFraudStatus = klarnaCreateOrderResponse.fraud_status;
     var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue( 'kpAutoCapture' );
     var vcnEnabled = Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' );
-
     Transaction.wrap( function() {
+        args.Order.custom.kpRedirectURL = klarnaCreateOrderResponse.redirect_url;
         paymentInstrument.paymentTransaction.custom.kpFraudStatus = session.privacy.KlarnaPaymentsFraudStatus;
 
         if ( autoCaptureEnabled && !vcnEnabled ) {
@@ -86,8 +151,8 @@ function authorize( args ) { // eslint-disable-line complexity
             paymentInstrument.paymentTransaction.type = dw.order.PaymentTransaction.TYPE_AUTH;
         }
     } );
-
-    if( !klarnaCreateOrderResponse.success || session.privacy.KlarnaPaymentsFraudStatus === 'REJECTED' ) {
+	
+	if (!klarnaCreateOrderResponse.success || session.privacy.KlarnaPaymentsFraudStatus === 'REJECTED') {
         return { error: true };
     }
 
@@ -115,6 +180,7 @@ function authorize( args ) { // eslint-disable-line complexity
         session.privacy.OrderNo = orderNo;
         args.Order.custom.klarna_oms__kpOrderID = session.privacy.KlarnaPaymentsOrderID;
         args.Order.custom.kpIsVCN = empty( vcnEnabled ) ? false : vcnEnabled;
+        args.Order.custom.kpAuthorizationToken = KlarnaPaymentsAuthorizationToken;
     } );
 
     if ( session.privacy.KlarnaPaymentsFraudStatus === 'PENDING' ) {
@@ -488,7 +554,7 @@ function selectPaymentMethod() {
     var newBasketTotal = cart.getTotalGrossPrice().getValue();
 
     if ( paymentMethodID === PAYMENT_METHOD ) {
-        
+
         if ( cart.object.defaultShipment.shippingMethod === null ) {
             var URLUtils = require('dw/web/URLUtils');
             responseUtils.renderJSON( {
@@ -498,7 +564,7 @@ function selectPaymentMethod() {
             } );
             return;
         }
-        
+
         // Update Klarna session details if we have selected Klarna option,
         // before placing order in order to get the correct order number
         // including taxation and discount.
@@ -531,6 +597,26 @@ function expressCheckout() {
         response.redirect( URLUtils.https( 'Cart-Show' ) );
         return;
     }
+	
+	var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+
+    var result = cart.validateForCheckout();
+
+    if (result.BasketStatus.error) {
+        response.redirect(URLUtils.https('Cart-Show'));
+        return;
+    }
+
+    var isSubscriptionBasket = SubscriptionHelper.isSubscriptionBasket(cart.object);
+    if (isSubscriptionBasket) {
+        if (!customer.authenticated) {
+            session.privacy.guest_subscription_error = true;
+            response.redirect(URLUtils.https('Cart-Show'));
+            return;
+        }
+    }
+
+    SubscriptionHelper.updateCartSubscriptionDetails(cart.object);
 
     // Clear all payment forms before we handle KEB
     app.getForm( 'billing' ).object.paymentMethods.clearFormElement();
@@ -640,6 +726,115 @@ function handleExpressRedirect( cart, paymentMethodId ) {
     response.redirect( URLUtils.https( 'COBilling-Start' ) );
 }
 
+/**
+ * Place Order on Klarna Bank Transfer callback
+ *
+ * @return {void}
+ */
+function BankTransferCallback() {
+    var Order = require( 'dw/order/Order' );
+    var PAYMENT_METHOD = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).PAYMENT_METHOD;
+
+    try {
+        var localeObject = getLocale();
+        var klarnaResponse = JSON.parse( request.httpParameterMap.requestBodyAsString );
+        var kpAuthorizationToken = klarnaResponse.authorization_token;
+        var kpSessionId = klarnaResponse.session_id;
+
+        var order = OrderMgr.queryOrder( 'custom.kpSessionId = {0} AND status = {1}', kpSessionId, dw.order.Order.ORDER_STATUS_NEW );
+
+        if( empty( order ) ) {
+            return response.setStatus( 200 );
+        }
+
+        var paymentInstrument = order.getPaymentInstruments( PAYMENT_METHOD )[0];
+        var paymentProcessor = PaymentMgr.getPaymentMethod( paymentInstrument.getPaymentMethod() ).getPaymentProcessor();
+
+        var createOrderHelper = require( '*/cartridge/scripts/order/klarnaPaymentsCreateOrder' );
+        var klarnaCreateOrderResponse = createOrderHelper.createOrder( order, localeObject, kpAuthorizationToken );
+
+        var kpOrderID = klarnaCreateOrderResponse.order_id;
+
+        if( klarnaCreateOrderResponse.success ) {
+            Transaction.wrap( function() {
+                placeOrder( order, kpOrderID, localeObject );
+                
+                paymentInstrument.paymentTransaction.transactionID = kpOrderID;
+                paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
+
+                order.custom.kpRedirectURL = klarnaCreateOrderResponse.redirect_url;
+                order.custom.kpOrderID = kpOrderID;
+                order.custom.kpAuthorizationToken = kpAuthorizationToken;
+
+                order.setConfirmationStatus( Order.CONFIRMATION_STATUS_CONFIRMED );
+                order.setExportStatus( Order.EXPORT_STATUS_READY );
+                order.setPaymentStatus( Order.PAYMENT_STATUS_PAID );
+            } );
+        }
+    } catch ( e ) {
+        log.error( 'BT Callback error: {0}', e.message + e.stack );
+    }
+
+    response.setStatus( 200 );
+}
+
+/**
+ * Perform callback and send redirect
+ *
+ * @return {Object} JSON containing redirect URL
+ */
+function BankTransferAwaitCallback() {
+    var responseUtils = require( '*/cartridge/scripts/util/Response' );
+    var localeObject = getLocale();
+    var kpSessionId = request.httpParameterMap.session_id.value;
+    var order = OrderMgr.queryOrder( "custom.kpSessionId = {0}", kpSessionId );
+
+    if( empty( order ) ) {
+        return response.setStatus( 404 );
+    }
+    responseUtils.renderJSON( {
+        redirectUrl: order.custom.kpRedirectURL
+    } );
+}
+
+/**
+ * Fail current Order using Klarna session_id in order to
+ * recreate Basket on Klarna Payments change
+ * 
+ * @return {void}
+ **/
+function FailOrder() {
+    var responseUtils = require( '*/cartridge/scripts/util/Response' );
+    var kpSessionId = request.httpParameterMap.session_id.value;
+    var order = OrderMgr.queryOrder( 'custom.kpSessionId = {0} AND status = {1}', kpSessionId, dw.order.Order.ORDER_STATUS_CREATED );
+
+    if( empty( order ) ) {
+        responseUtils.renderJSON( {
+            success: false
+        } );
+        return response.setStatus( 404 );
+    }
+
+    var result = true;
+    // Fail Order and recreate Basket
+    Transaction.wrap( function() {
+        result = OrderMgr.failOrder( order, true );
+    } );
+
+    response.setStatusCode( 200 );
+    var currentBasket = BasketMgr.getCurrentBasket();
+    // In case of failure and no Basket, return error
+    if ( !currentBasket && result.error ) {
+        responseUtils.renderJSON( {
+            success: false
+        } );
+    } else {
+        responseUtils.renderJSON( {
+            success: true
+        } );
+    }
+}
+
 function writeLog() {
     var basket = BasketMgr.getCurrentBasket();
     var storeFrontResponse = request.httpParameterMap.responseFromKlarna.value;
@@ -647,6 +842,35 @@ function writeLog() {
     var message = request.httpParameterMap.message.value;
 
     KlarnaAdditionalLogging.writeLog(basket, basket.custom.kpSessionId, actionName, message + ' Response Object:' + storeFrontResponse);
+
+    return;
+}
+
+function cancelSubscription() {
+    var Resource = require('dw/web/Resource');
+    let r = require('*/cartridge/scripts/util/Response');
+    var subid = request.httpParameterMap.subid.stringValue;
+    var localeObject = getLocale();
+
+    var cancelCustomerTokenHelper = require('*/cartridge/scripts/order/klarnaPaymentsCancelCustomerToken');
+    var klarnaCreateCustomerTokenResponse = cancelCustomerTokenHelper.cancelCustomerToken(localeObject, subid);
+
+    if (klarnaCreateCustomerTokenResponse.response) {
+        var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+        var isDisabled = SubscriptionHelper.disableCustomerSubscription(subid);
+
+        r.renderJSON({
+            status: isDisabled ? 'OK' : 'ERROR',
+            statusMsg: Resource.msg('label.subscriptions.status.inactive', 'subscription', null),
+            message: Resource.msgf('msg.cancel.success', 'subscription', null, subid)
+        });
+
+    } else {
+        r.renderJSON({
+            status: 'ERROR',
+            message: Resource.msgf('msg.cancel.error', 'subscription', null, subid)
+        });
+    }
 
     return;
 }
@@ -677,8 +901,16 @@ exports.InfoPage = guard.ensure( ['get'], infoPage );
 exports.SelectPaymentMethod = guard.ensure( ['post'], selectPaymentMethod );
 /** Triggers the express checkout flow */
 exports.ExpressCheckout = guard.ensure( ['post'], expressCheckout );
+/** Perform Klarna Bank Transfer callback */
+exports.BankTransferCallback = guard.ensure( ['post'], BankTransferCallback );
+/** Perform Callback await*/
+exports.BankTransferAwaitCallback = guard.ensure( ['get'], BankTransferAwaitCallback );
+/** Fail current Order to recreate Basket */
+exports.FailOrder = guard.ensure( ['post'], FailOrder );
 /** Triggers the additional loging */
 exports.WriteLog = guard.ensure( ['post'], writeLog );
+/** Triggers the cancel subscriptions */
+exports.CancelSubscription = guard.ensure( ['https', 'loggedIn'], cancelSubscription );
 
 /*
  * Local methods

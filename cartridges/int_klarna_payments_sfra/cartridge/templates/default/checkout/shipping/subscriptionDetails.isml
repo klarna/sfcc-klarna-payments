@@ -1,0 +1,27 @@
+<isif condition="${pdict.subscriptionData}">
+    <h3>${Resource.msg('klarna.heading.subscription', 'subscription', null)}</h3>
+
+    <div class="row">
+        <div class="col-sm-6">
+            <p>${Resource.msg('klarna.subscription.period', 'subscription', null)} :
+                ${pdict.subscriptionData.subscriptionPeriod.displayValue} </p>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col-sm-6">
+            <p>
+                ${Resource.msg('klarna.subscription.frequency', 'subscription', null)} :
+                ${pdict.subscriptionData.subscriptionFrequency.displayValue}
+            </p>
+
+        </div>
+    </div>
+    <isif condition="${pdict.subscriptionData.subscriptionTrialPeriod}">
+        <div class="row">
+            <div class="col-sm-12">
+                <p>${Resource.msgf('klarna.subscription.checkout.trial', 'subscription', null, pdict.subscriptionData
+                   .subscriptionTrialPeriod)}</p>
+            </div>
+        </div>
+    </isif>
+</isif>

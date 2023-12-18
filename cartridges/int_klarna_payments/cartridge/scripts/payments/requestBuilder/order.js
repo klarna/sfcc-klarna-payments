@@ -106,8 +106,8 @@
         return this.localeObject;
     };
 
-    KlarnaPaymentsOrderRequestBuilder.prototype.init = function() {
-        this.context = new KlarnaPaymentsOrderModel();
+    KlarnaPaymentsOrderRequestBuilder.prototype.init = function(isRecurringOrder) {
+        this.context = new KlarnaPaymentsOrderModel(isRecurringOrder);
 
         return this;
     };
@@ -187,11 +187,19 @@
         var lineItems = order.getAllProductLineItems().toArray();
         var giftCertificates = order.getGiftCertificateLineItems().toArray();
         var giftCertificatePIs = order.getGiftCertificatePaymentInstruments().toArray();
+        var subscription = null;
 
-        this.buildItems( lineItems, this.context );
+        if (order.custom.kpSubscriptionPeriod && order.custom.kpSubscriptionFrequency) {
+            subscription = {
+                interval: order.custom.kpSubscriptionPeriod.toUpperCase(),
+                interval_count: order.custom.kpSubscriptionFrequency
+            }
+        }
+
+        this.buildItems( lineItems, this.context, subscription );
 
         if ( giftCertificates.length > 0 ) {
-            this.buildItems( giftCertificates, this.context );
+            this.buildItems( giftCertificates, this.context, subscription );
         }
 
         if ( giftCertificatePIs.length > 0 ) {
@@ -313,7 +321,7 @@
         return item;
     };
 
-    KlarnaPaymentsOrderRequestBuilder.prototype.buildItems = function( items, context ) {
+    KlarnaPaymentsOrderRequestBuilder.prototype.buildItems = function( items, context, subscription ) {
         var i = 0;
         var li = {};
         var item = {};
@@ -339,6 +347,11 @@
                 item = this.buildItem( li );
             }
 
+
+            if (subscription) {
+                subscription.name = li.productName;
+                item.subscription = subscription;
+            }
             context.order_lines.push( item );
 
             i += 1;
@@ -412,20 +425,33 @@
         }
     };
 
-    KlarnaPaymentsOrderRequestBuilder.prototype.build = function() {
+    KlarnaPaymentsOrderRequestBuilder.prototype.build = function () {
         var order = this.params.order;
+        var recurringOrder = this.params.recurringOrder;
+        if (recurringOrder) {
+            this.init(true)
+                .setMerchantReference(order)
+                .buildLocale(order)
+                .buildShipping(order)
+                .buildOrderLines(order)
+                .buildTotalAmount(order)
+                .buildTotalTax(order)
+                .buildOptions()
+                .buildMerchantInformation(order);
+        } else {
 
-        this.init()
-            .setMerchantReference( order )
-            .buildLocale( order )
-            .buildBilling( order )
-            .buildShipping( order )
-            .buildOrderLines( order )
-            .buildTotalAmount( order )
-            .buildTotalTax( order )
-            .buildAdditionalCustomerInfo( order )
-            .buildOptions()
-            .buildMerchantInformation( order );
+            this.init(false)
+                .setMerchantReference(order)
+                .buildLocale(order)
+                .buildBilling(order)
+                .buildShipping(order)
+                .buildOrderLines(order)
+                .buildTotalAmount(order)
+                .buildTotalTax(order)
+                .buildAdditionalCustomerInfo(order)
+                .buildOptions()
+                .buildMerchantInformation(order);
+        }
 
         return this.context;
     };

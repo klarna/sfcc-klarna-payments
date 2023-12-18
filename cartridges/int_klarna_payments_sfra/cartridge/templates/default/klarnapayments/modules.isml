@@ -31,3 +31,12 @@
 
 <isset name="klarnaOSMJsAdded" value="${false}" scope="page" />
 <isset name="klarnaEBJsAdded" value="${false}" scope="page" />
+
+<ismodule template="klarnapayments/subscription/cartProductCardSubscription.isml"
+    name="kpsubscription"
+    attribute="lineitem"
+    attribute="lmkpsubscription"
+    attribute="showsubscription"
+    attribute="disablesubscribe"
+    attribute="kptrialdaysusage"
+/>

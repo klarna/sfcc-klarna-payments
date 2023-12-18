@@ -1,0 +1,20 @@
+<isif condition="${pdict.showsubscription}">
+    <div class="d-flex flex-row klarna-subscription item-details">
+         <div class="form-row  label-inline product-list-item">
+             <input name="kpSubscription" class="custom-control-input kp-subscription" id="kpSubscription-${lineItem.UUID}" 
+                    type="checkbox" <isif condition="${pdict.lmkpsubscription}">checked</isif>
+                    <isif condition="${pdict.disablesubscribe}">disabled="disabled"</isif>
+                    data-uuid="${pdict.lineitem.UUID}" data-pid="${pdict.lineitem.productID || pdict.lineitem.id}"
+                    data-action="${URLUtils.url('Cart-UpdateSubscription')}">
+             <label for="kpSubscription-${pdict.lineitem.UUID}">
+                 <span class="value">${Resource.msg('klarna.subscription.subscribe', 'subscription', null)}</span>
+                 <div class="">${Resource.msg('klarna.subscription', 'subscription', null)}</div>
+             </label>
+         </div>
+    </div>
+    <isif condition="${pdict.kptrialdaysusage}">
+        <div class="d-flex flex-row value">
+            ${Resource.msgf('klarna.subscription.trial', 'subscription', null, pdict.kptrialdaysusage)}
+        </div>
+    </isif>
+</isif>

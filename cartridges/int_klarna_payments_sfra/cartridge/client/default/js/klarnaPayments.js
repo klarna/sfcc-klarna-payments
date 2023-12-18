@@ -302,6 +302,7 @@ KlarnaCheckout.getKlarnaPaymentMethod = function (methodId) {
 };
 
 KlarnaCheckout.handleFinalizeRequired = function (defer) {
+    var $errorBlock = $('p.error-message-text');
     var $placeOrderBtn = $('.place-order');
     var $klarnaPlaceOrderBtn = this.getKlarnaPlaceOrderBtn();
     var selectedPaymentMethod = this.getCookie('selectedKlarnaPaymentCategory');
@@ -310,52 +311,101 @@ KlarnaCheckout.handleFinalizeRequired = function (defer) {
         payment_method_category: selectedPaymentMethod
     }, {}, function (res) {
         if (res.approved) {
-            $.ajax({
-                headers: {
-                    'X-Auth': res.authorization_token
-                },
-                url: this.klarnaPaymentsUrls.saveAuth
-            }).done(function () {
-                // call the click event on the original checkout button
-                // to trigger checkout stage processing
-                $('body').trigger('checkout:disableButton', '.next-step-button button');
+            if (!this.klarnaPaymentsObjects.kpBankTransferCallback) {
+                // If no callback is set, the order is placed immediately.
                 $.ajax({
-                    url: $placeOrderBtn.data('action'),
-                    method: 'POST',
-                    success: function (data) {
-                        // enable the placeOrder button here
-                        $('body').trigger('checkout:enableButton', '.next-step-button button');
-                        if (data.error) {
-                            if (data.cartError) {
-                                window.location.href = data.redirectUrl;
-                                defer.reject();
-                            } else {
-                                // go to appropriate stage and display error message
-                                defer.reject(data);
-                            }
-                        } else {
-                            var continueUrl = data.continueUrl;
-                            var urlParams = {
-                                ID: data.orderID,
-                                token: data.orderToken
-                            };
-
-                            continueUrl += (continueUrl.indexOf('?') !== -1 ? '&' : '?') +
-                                Object.keys(urlParams).map(function (key) {
-                                    return key + '=' + encodeURIComponent(urlParams[key]);
-                                }).join('&');
-
-                            window.location.href = continueUrl;
-                            defer.resolve(data);
-                        }
+                    headers: {
+                        'X-Auth': res.authorization_token
                     },
-                    error: function () {
-                        // enable the placeOrder button here
-                        $('body').trigger('checkout:enableButton', $('.next-step-button button'));
+                    url: this.klarnaPaymentsUrls.saveAuth
+                }).done(function () {
+                    // call the click event on the original checkout button
+                    // to trigger checkout stage processing
+                    $('body').trigger('checkout:disableButton', '.next-step-button button');
+                    $.ajax({
+                        url: $placeOrderBtn.data('action'),
+                        method: 'POST',
+                        success: function (data) {
+                            // enable the placeOrder button here
+                            $('body').trigger('checkout:enableButton', '.next-step-button button');
+                            if (data.error) {
+                                if (data.cartError) {
+                                    window.location.href = data.redirectUrl;
+                                    defer.reject();
+                                } else {
+                                    // go to appropriate stage and display error message
+                                    defer.reject(data);
+                                }
+                            } else {
+                                var continueUrl = data.continueUrl;
+                                var urlParams = {
+                                    ID: data.orderID,
+                                    token: data.orderToken
+                                };
+    
+                                continueUrl += (continueUrl.indexOf('?') !== -1 ? '&' : '?') +
+                                    Object.keys(urlParams).map(function (key) {
+                                        return key + '=' + encodeURIComponent(urlParams[key]);
+                                    }).join('&');
+
+
+                                window.location.href = continueUrl;
+                                defer.resolve(data);
+                            }
+                        },
+                        error: function () {
+                            // enable the placeOrder button here
+                            $('body').trigger('checkout:enableButton', $('.next-step-button button'));
+                        }
+                    });
+                });
+            } else {
+                // disable the placeOrder button here
+                $('body').trigger('checkout:disableButton', '.next-step-button button');
+                $('body').spinner().start();
+                setTimeout(function(){
+                    window.scrollTo({ top: 0, behavior: 'smooth' });
+                }, 500);
+                // Await for a redirect for 20 seconds
+                var numOfTries = 11;
+                var currentUrl = window.location.href;
+                var newUrl = '';
+                var interval = setInterval(function () {
+                    if (numOfTries === 0) {
+                        clearInterval(interval);
+                        $errorBlock.text(window.serverErrorMessage);
+                        $errorBlock.parent().show();
+                        $('body').spinner().stop();
+                        return;
+                    }
+                    numOfTries--;
+                    $.ajax({
+                        url: this.klarnaPaymentsUrls.bankTransferAwaitCallback + '?session_id=' + window.KlarnaPaymentsObjects.sessionID
+                    }).done(function (response) {
+                        if (response.redirectUrl && response.redirectUrl !== currentUrl && response.redirectUrl !== newUrl) {
+                            clearInterval(interval);
+                            newUrl = response.redirectUrl;
+                            window.location.href = newUrl;
+                        }
+                    });
+                }.bind(this), 2000);
+            }
+        } else {
+            if (this.klarnaPaymentsObjects.kpBankTransferCallback) {
+                // If the payment isn't approved or popup is closed,
+                $.ajax({
+                    // then recreate Basket
+                    type: 'POST',
+                    url: this.klarnaPaymentsUrls.failOrder + '?session_id=' + window.KlarnaPaymentsObjects.sessionID
+                }).done(function (result) {
+                    if (!result.success) {
+                        // In case of error, show error message
+                        $klarnaPlaceOrderBtn.prop('disabled', true);
+                        $errorBlock.text(window.serverErrorMessage);
+                        $errorBlock.parent().show();
                     }
                 });
-            });
-        } else {
+            }
             $klarnaPlaceOrderBtn.prop('disabled', false);
         }
     }.bind(this));
@@ -364,8 +414,11 @@ KlarnaCheckout.handleFinalizeRequired = function (defer) {
 KlarnaCheckout.handleLoadAuthResponse = function (res, defer) {
     var $placeOrderBtn = $('.place-order');
     var finalizeRequired = res.FinalizeRequired;
-
     if (finalizeRequired === 'true') {
+        // Create Order if finalization is required
+        if (this.klarnaPaymentsObjects.kpBankTransferCallback) {
+            $placeOrderBtn.click();
+        }
         this.handleFinalizeRequired();
     } else {
         $('body').trigger('checkout:disableButton', '.next-step-button button');
@@ -389,12 +442,11 @@ KlarnaCheckout.handleLoadAuthResponse = function (res, defer) {
                         ID: data.orderID,
                         token: data.orderToken
                     };
-
+                    
                     continueUrl += (continueUrl.indexOf('?') !== -1 ? '&' : '?') +
                         Object.keys(urlParams).map(function (key) {
                             return key + '=' + encodeURIComponent(urlParams[key]);
                         }).join('&');
-
                     window.location.href = continueUrl;
                     defer.resolve(data);
                 }
@@ -451,10 +503,9 @@ KlarnaCheckout.initKlarnaButtonEvent = function (klarnaButton, defer) {
 
                     klarnaRequestData.attachment = kpAttachment;
                 }
-
                 Klarna.Payments.authorize({
                     payment_method_category: klarnaPaymentMethod,
-                    auto_finalize: true
+                    auto_finalize: this.klarnaPaymentsObjects.kpBankTransferCallback ? false : true
                 }, klarnaRequestData, function (res) {
                     if (res.approved) {
                         $.ajax({
@@ -471,7 +522,7 @@ KlarnaCheckout.initKlarnaButtonEvent = function (klarnaButton, defer) {
                             if (this.klarnaPaymentsPreferences.kpUseAlternativePaymentFlow) {
                                 $.ajax({
                                     url: this.klarnaPaymentsUrls.loadAuth
-                                }).done( function (result) {
+                                }).done(function (result) {
                                     this.handleLoadAuthResponse(result, defer);
                                 }.bind(this));
                             } else {
@@ -521,7 +572,7 @@ KlarnaCheckout.initKlarnaPlaceOrderButton = function (defer) {
 
             $.ajax({
                 url: this.klarnaPaymentsUrls.loadAuth
-            }).done( function(result) {
+            }).done(function (result) {
                 this.handleLoadAuthResponse(result, defer);
             }.bind(this));
         }.bind(this));

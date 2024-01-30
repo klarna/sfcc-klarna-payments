@@ -3,32 +3,9 @@
         {
             "name": "app.payment.processor.klarna_payments",
             "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
-        }, {
+        },
+        {
             "name": "app.payment.form.processor.klarna_payments",
-            "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
-        }, {
-            "name": "app.payment.processor.klarna_payments_test",
-            "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
-        }, {
-            "name": "app.payment.form.processor.klarna_payments_test",
-            "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
-        }, {
-            "name": "app.payment.processor.klarna_payments_k500726_53e48d922746",
-            "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
-        }, {
-            "name": "app.payment.form.processor.klarna_payments_k500726_53e48d922746",
-            "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
-        }, {
-            "name": "app.payment.processor.klarna_payments_eg100028_ce8ad769a640",
-            "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
-        }, {
-            "name": "app.payment.form.processor.klarna_payments_eg100028_ce8ad769a640",
-            "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
-        }, {
-            "name": "app.payment.processor.klarna_payments_pn04088_8479e32e7485",
-            "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
-        }, {
-            "name": "app.payment.form.processor.klarna_payments_pn04088_8479e32e7485",
             "script": "./cartridge/scripts/hooks/payment/processor/klarna_payments"
         }
     ]

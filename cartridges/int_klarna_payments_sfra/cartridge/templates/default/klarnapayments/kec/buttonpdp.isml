@@ -1,0 +1,17 @@
+<!--- TEMPLATENAME: klarnapayments/keb/buttoncart.isml --->
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+
+<isset name="product" value="${pdict.p_product}" scope="page" />
+
+<isscript>
+    var assets = require('*/cartridge/scripts/assets');
+    assets.addJs('/js/klarnaExpressCheckoutPDP.js');
+</isscript>
+
+<isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled()}">
+    <div class="col-sm-12 col-xl-8">
+        <div id="klarnaExpressCheckoutPDP" data-subscriptiononly="${product.isSubscriptionOnly}"
+            class="klarna-express-checkout-pdp" ${(!product.readyToOrder || !product.available) ? "disabled" : ""}>
+        </div>
+    </div>
+</isif>

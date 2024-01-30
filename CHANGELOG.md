@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 24.1.0
+* Klarna Express Checkout: a new feature introduced in Storefront where Express Checkout Button will be displayed in PDP, Cart and Mini Cart and user will be redirected to Klarna after clicking Express Checkout button. Klarna Express Checkout enabled quick and easy checkout where Shipping Address, Billing Address and Payment details will be preselected so that Checkout can be completed in fewer clicks.
+* Fix for create order service calls with 500 status response: now orders are not created and error is thrown for these cases.
+
 ## 23.2.0
 * Subscription Payments support: recurring payments and subscription handling directly within the SFCC environment. This update includes configuration options, subscription management in the cart and checkout pages, and a customer dashboard for subscription oversight.
 * Klarna Bank Transfer payment: added a new server-side authorization callback feature for Klarna Bank Transfer payments, enhancing reliability across EU markets and supporting all existing KP cartridge functionalities.

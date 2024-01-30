@@ -21,6 +21,19 @@
     name="kebcart"
 />
 
+<ismodule template="klarnapayments/kec/buttoncart.isml"
+    name="keccart"
+/>
+
+<ismodule template="klarnapayments/kec/minicartbutton.isml"
+    name="kecminicart"
+/>
+
+<ismodule template="klarnapayments/kec/buttonpdp.isml"
+    name="kecpdp"
+    attribute="p_product"
+/>
+
 <ismodule template="klarnapayments/keb/form.isml"
     name="kebform"
 />

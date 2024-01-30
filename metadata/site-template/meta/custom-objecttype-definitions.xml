@@ -272,6 +272,14 @@
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
+            <attribute-definition attribute-id="expressCheckoutClientKey">
+                <display-name xml:lang="x-default">Klarna Client Identifier</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </attribute-definitions>
         <group-definitions>
             <attribute-group group-id="custom">
@@ -312,6 +320,10 @@
                 <attribute attribute-id="kebMCEnabled"/>
                 <attribute attribute-id="kebMCTheme"/>
                 <attribute attribute-id="kebMiniCartShape"/>
+            </attribute-group>
+            <attribute-group group-id="expressCheckout">
+                <display-name xml:lang="x-default">Express Checkout</display-name>
+                <attribute attribute-id="expressCheckoutClientKey"/>
             </attribute-group>
         </group-definitions>
     </custom-type>

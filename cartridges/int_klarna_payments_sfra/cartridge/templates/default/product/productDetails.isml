@@ -125,6 +125,7 @@
                                     <isinclude template="klarnapayments/modules.isml"/>
                                     <iskosmpdp p_price="${price}" />
                                 </div>
+                                <iskecpdp p_product="${product}"/>
                             </div>
 
                             <!-- Cart and [Optionally] Apple Pay -->

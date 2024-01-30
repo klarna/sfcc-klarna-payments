@@ -99,8 +99,8 @@
         this.params = params;
     };
 
-    KlarnaPaymentsSessionRequestBuilder.prototype.init = function( preAssement ) {
-        this.context = new KlarnaPaymentsSessionModel( preAssement );
+    KlarnaPaymentsSessionRequestBuilder.prototype.init = function( preAssement, kpIsExpressCheckout ) {
+        this.context = new KlarnaPaymentsSessionModel( preAssement, kpIsExpressCheckout );
 
         this.getShipmentItemRequestBuilder().setMerchantDataAvailable( preAssement );
 
@@ -128,8 +128,10 @@
 
         this.context.billing_address.email = basket.customerEmail || '';
 
+        var billingAddress = basket.getBillingAddress();
+
         if ( empty( currentCustomer ) || empty( currentCustomer.profile ) ) {
-            var billingAddress = basket.getShipments().iterator().next().getShippingAddress();
+            var billingAddress = billingAddress || basket.getShipments().iterator().next().getShippingAddress();
             if ( empty( billingAddress ) ) {
                 return this;
             }
@@ -137,6 +139,12 @@
             this.context.billing_address = this.getAddressRequestBuilder().build( billingAddress );
             this.context.billing_address.email = basket.customerEmail || '';
 
+            return this;
+        }
+
+        if ( billingAddress ) {
+            this.context.billing_address = this.getAddressRequestBuilder().build( billingAddress );
+            this.context.billing_address.email =  basket.customerEmail || currentCustomer.profile.email;
             return this;
         }
 
@@ -161,10 +169,11 @@
 
         this.context.shipping_address.email = basket.customerEmail || '';
 
+        // get default shipment shipping address
+        var shipment = getShippment( basket );
+        var shippingAddress = shipment.getShippingAddress();
+
         if ( empty( currentCustomer ) || empty( currentCustomer.profile ) ) {
-            // get default shipment shipping address
-            var shipment = getShippment( basket );
-            var shippingAddress = shipment.getShippingAddress();
             if ( empty( shippingAddress ) ) {
                 delete this.context.shipping_address;
                 return this;
@@ -184,11 +193,17 @@
             if ( storePickUp && !empty( billingAddress.lastName ) ) {
                 this.context.shipping_address.family_name = billingAddress.lastName;
             }
+            this.context.shipping_address.email = basket.customerEmail || '';
 
             return this;
         }
 
-        this.context.shipping_address.email = '';
+        if ( shippingAddress ) {
+            this.context.shipping_address = this.getAddressRequestBuilder().build( shippingAddress );
+            this.context.shipping_address.email =  basket.customerEmail || currentCustomer.profile.email || '';
+            return this;
+        }
+
         this.context.shipping_address.phone = currentCustomer.profile.phoneHome;
         this.context.shipping_address.given_name = currentCustomer.profile.firstName;
         this.context.shipping_address.family_name = currentCustomer.profile.lastName;
@@ -198,6 +213,8 @@
         if ( !empty( customerPreferredAddress ) ) {
             this.context.shipping_address = this.getAddressRequestBuilder().build( customerPreferredAddress );
         }
+        
+        this.context.shipping_address.email =  basket.customerEmail || currentCustomer.profile.email || '';
 
         return this;
     };
@@ -219,8 +236,8 @@
         var giftCertificatePIs = basket.getGiftCertificatePaymentInstruments().toArray();
 
         var subscription = null;
-		
-		if (basket.custom.kpSubscriptionPeriod.value && basket.custom.kpSubscriptionFrequency.value) {
+        
+        if (basket.custom.kpSubscriptionPeriod.value && basket.custom.kpSubscriptionFrequency.value) {
             subscription = {
                 interval: basket.custom.kpSubscriptionPeriod.value.toUpperCase(),
                 interval_count: basket.custom.kpSubscriptionFrequency.value
@@ -378,8 +395,8 @@
             } else {
                 newItem = this.buildItem( li );
             }
-			
-			if (subscription) {
+            
+            if (subscription) {
                 subscription.name = li.productName;
                 newItem.subscription = subscription;
             }
@@ -480,10 +497,11 @@
 
     KlarnaPaymentsSessionRequestBuilder.prototype.build = function() {
         var basket = this.params.basket;
+        var kpIsExpressCheckout = this.params.kpIsExpressCheckout || false;
         var preAssement = isEnabledPreassessmentForCountry( this.getLocaleObject().country );
         var kpAttachmentsPreferenceValue = Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' );
 
-        this.init( preAssement );
+        this.init( preAssement, kpIsExpressCheckout );
 
         this.setMerchantReference( basket );
 
@@ -491,7 +509,7 @@
 
         this.setPaymentIntent ( basket );
 
-        if ( preAssement ) {
+        if ( preAssement || kpIsExpressCheckout) {
             this.buildBilling( basket );
             this.buildShipping( basket );
 

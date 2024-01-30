@@ -10,5 +10,6 @@
     window.KPCustomerInfo = <isprint value="${klarnaResources.KPCustomerInfo}" encoding="on"/>;
     window.KPConstants = <isprint value="${klarnaResources.KPConstants}" encoding="on"/>;
     window.serverErrorMessage = "<isprint value="${serverErrorMessage}" encoding="on"/>";
+    window.KPResources = <isprint value="${klarnaResources.KPResources}" encoding="on" />;
     window.KPPreferences = <isprint value="${klarnaResources.KPPreferences}" encoding="on"/>;
 }(window.app = window.app || {}));

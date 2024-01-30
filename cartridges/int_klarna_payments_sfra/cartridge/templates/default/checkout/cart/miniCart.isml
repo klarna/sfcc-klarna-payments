@@ -6,11 +6,12 @@
     <div>
         <div class="row">
             <div class="col-6">
-                <h1>${Resource.msg('title.your.shopping.cart','cart',null)}</h1>
+                <h1>${Resource.msg('title.your.shopping.cart', 'cart', null)}</h1>
             </div>
             <div class="col-6 text-right">
-                <a class="normal" href="${URLUtils.https('Cart-Show')}" title="${Resource.msg('link.view.cart','cart',null)}">
-                    ${Resource.msg('link.view.cart','cart',null)}
+                <a class="normal" href="${URLUtils.https('Cart-Show')}"
+                    title="${Resource.msg('link.view.cart', 'cart', null)}">
+                    ${Resource.msg('link.view.cart', 'cart', null)}
                 </a>
             </div>
         </div>
@@ -51,18 +52,24 @@
         </div>
     </div>
 
-    <isinclude template="cart/cartRemoveProductModal"/>
+    <isinclude template="cart/cartRemoveProductModal" />
 
     <div class="minicart-footer">
         <div class="row estimated-total">
             <div class="col-8">
-                <p class="sub-total-label">${Resource.msg('label.estimatedtotal','cart',null)}</p>
+                <p class="sub-total-label">${Resource.msg('label.estimatedtotal', 'cart', null)}</p>
             </div>
             <div class="col-4">
                 <p class="text-right sub-total">${pdict.totals.subTotal}</p>
             </div>
         </div>
         <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+        <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled()}">
+            <div class="row kec-cart ${pdict.hasSubscriptionOnlyProduct ? 'd-none' : ''}">
+                <div class="col-12 mb-sm-3" id="slotMiniCartKEC"></div>
+            </div>
+            <script src="${URLUtils.staticURL('/js/klarnaExpressMiniCart.js')}"></script>
+        </isif>
         <isif condition="${KlarnaOSM.isEnabledMCExpressButton()}">
             <div class="row keb-cart">
                 <div class="col-12 mb-sm-3" id="slotMiniCartKEB"></div>

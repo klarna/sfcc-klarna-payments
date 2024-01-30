@@ -1,0 +1,10 @@
+<!--- TEMPLATENAME: klarnapayments/keb/buttoncart.isml --->
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+<isset name="contId" value="${!empty(pdict.container_id) ? pdict.container_id : 'klarnaExpressCheckout'}"
+    scope="page" />
+
+<isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled()}">
+    <div class="kec-cart">
+        <div id="${contId}" class="klarna-express-checkout-cart"></div>
+    </div>
+</isif>

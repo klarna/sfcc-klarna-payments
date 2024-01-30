@@ -12,7 +12,7 @@ var log = Logger.getLogger('KlarnaPayments');
 var Transaction = require('dw/system/Transaction');
 var Site = require('dw/system/Site');
 var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
-var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
+var KlarnaAdditionalLogging = require('*/cartridge/scripts/util/klarnaAdditionalLogging');
 
 /**
  * @constructor
@@ -20,7 +20,7 @@ var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditiona
  * @param {dw.system.Session} userSession - User session.
  * @param {KlarnaLocale} klarnaLocaleMgr - KlarnaLocale instance.
  */
-function KlarnaSessionManager() {}
+function KlarnaSessionManager() { }
 
 /**
  * Returns the KlarnaLocale instance passed when constructing this manager.
@@ -173,9 +173,20 @@ KlarnaSessionManager.prototype.hasValidSession = function () {
  * @returns {Object} Last API call's response; on error - null
  */
 KlarnaSessionManager.prototype.createOrUpdateSession = function () {
+    var Transaction = require('dw/system/Transaction');
     var basket = BasketMgr.getCurrentBasket();
     var localeObject = this.getLocale();
+
     if (empty(basket)) {
+        return null;
+    }
+
+    if (basket.custom.kpIsExpressCheckout) {
+        Transaction.wrap(function () {
+            session.privacy.KlarnaLocale = localeObject.custom.klarnaLocale;
+            session.privacy.KlarnaPaymentMethods = KlarnaHelper.getExpressKlarnaMethod().paymentMethods;
+            session.privacy.SelectedKlarnaPaymentMethod = null;
+        });
         return null;
     }
 

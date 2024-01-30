@@ -55,6 +55,7 @@ superMdl.clearSessionRef = function (lineItemCtnr) {
 superMdl.getKlarnaResources = function () {
     var URLUtils = require('dw/web/URLUtils');
     var KlarnaPaymentsConstants = require('*/cartridge/scripts/util/klarnaPaymentsConstants');
+    var Resource = require('dw/web/Resource');
     var Countries = require('*/cartridge/scripts/util/countries');
     var country = Countries.getCurrent({ CurrentRequest: request }).countryCode;
     var preassess = this.isEnabledPreassessmentForCountry(country);
@@ -76,20 +77,31 @@ superMdl.getKlarnaResources = function () {
         bankTransferAwaitCallback: URLUtils.https(KLARNA_PAYMENT_URLS.BANK_TRANSFER_AWAIT_CALLBACK).toString(),
         failOrder: URLUtils.https(KLARNA_PAYMENT_URLS.FAIL_ORDER).toString(),
         writeLog: URLUtils.https(KLARNA_PAYMENT_URLS.WRITE_ADDITIONAL_LOG).toString(),
+        handleExpressCheckoutAuth: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_EXPRESS_CHECKOUT_AUTH).toString(),
+        expressCheckoutAuthCallback: URLUtils.https(KLARNA_PAYMENT_URLS.EXPRESS_CHECKOUT_AUTH_CALLBACK).toString(),
+        generateExpressCheckoutPayload: URLUtils.https(KLARNA_PAYMENT_URLS.GENERATE_EXPRESS_CHECKOUT_PAYLOAD).toString(),
+        handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString()
     };
 
     // klarna payments objects
     var KPObjects = {
-        sessionID: currentBasket.custom.kpSessionId ? currentBasket.custom.kpSessionId : null,
-        clientToken: currentBasket.custom.kpClientToken ? currentBasket.custom.kpClientToken : null,
+        sessionID: currentBasket ? (currentBasket.custom.kpSessionId ? currentBasket.custom.kpSessionId : null) : null,
+        clientToken: currentBasket ? (currentBasket.custom.kpClientToken ? currentBasket.custom.kpClientToken : null) : null,
         preassesment: preassess,
         hideRejectedPayments: hideRejectedPaymentsValue,
-        kpBankTransferCallback: kpBankTransferCallbackValue
+        kpBankTransferCallback: kpBankTransferCallbackValue,
+        kpIsExpressCheckout: currentBasket ? (currentBasket.custom.kpIsExpressCheckout ? currentBasket.custom.kpIsExpressCheckout : null) : null
     };
 
     // klarna customer information
     var KPCustomerInfo = {
-        attachment: additionalCustomerInfoRequestBuilder.build(currentBasket) || {}
+        attachment: currentBasket ? additionalCustomerInfoRequestBuilder.build(currentBasket) : {}
+    };
+
+    //klarna payment resource messages
+    var KPResources = {
+        kpExpressCheckoutAuthFailure: Resource.msg('klarna.express.payment.error', 'klarnapayments', null),
+        kpExpressSelectStyles: Resource.msg('klarna.express.select.styles', 'klarnapayments', null)
     };
 
     // klarna constants obj
@@ -102,13 +114,12 @@ superMdl.getKlarnaResources = function () {
     // klarna sitePreferences obj
     var KPPreferences = {
         kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue('kpUseAlternativePaymentFlow') || false,
-        kpAdditionalLogging: currentSite.getCustomPreferenceValue( 'kpAdditionalLogging' ) || false
-    };
-
-    // klarna sitePreferences obj
-    var KPPreferences = {
-        kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue('kpUseAlternativePaymentFlow') || false,
-        kpAdditionalLogging: currentSite.getCustomPreferenceValue( 'kpAdditionalLogging' ) || false
+        kpAdditionalLogging: currentSite.getCustomPreferenceValue('kpAdditionalLogging') || false,
+        kpCollectShippingAddress: currentSite.getCustomPreferenceValue('kpECCollectShippingAddress') || false,
+        kpExpressCheckoutClientKey: superMdl.getExpressCheckoutClientKey(),
+        kpExpressCheckoutTheme: currentSite.getCustomPreferenceValue('kpECButtonTheme').value,
+        kpExpressCheckoutShape: currentSite.getCustomPreferenceValue('kpECButtonShape').value,
+        kpLocale: superMdl.getLocaleString()
     };
 
     return {
@@ -116,7 +127,8 @@ superMdl.getKlarnaResources = function () {
         KPObjects: JSON.stringify(KPObjects),
         KPCustomerInfo: JSON.stringify(KPCustomerInfo),
         KPConstants: JSON.stringify(KPConstants),
-        KPPreferences: JSON.stringify(KPPreferences)
+        KPPreferences: JSON.stringify(KPPreferences),
+        KPResources: JSON.stringify(KPResources)
     };
 };
 
@@ -143,6 +155,45 @@ function filterApplicableShippingMethods(shipment, address) {
     });
 
     return filteredMethods;
+}
+
+//revert current customer basket details
+superMdl.revertCurrentBasketProductData = function (currentBasket) {
+    var Transaction = require('dw/system/Transaction');
+    var cartHelper = require('*/cartridge/scripts/cart/cartHelpers');
+    var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+
+    if (!empty(currentBasket)) {
+        var customerBasketData = session.privacy.kpCustomerProductData ? JSON.parse(session.privacy.kpCustomerProductData) : null;
+        var productLineItems = currentBasket.productLineItems.toArray();
+
+        Transaction.wrap(function () {
+            productLineItems.forEach(function (item) {
+                currentBasket.removeProductLineItem(item);
+            });
+        });
+
+        var products = (customerBasketData && customerBasketData.products) ? customerBasketData.products : null;
+        if (products) {
+            products.forEach(function (product) {
+                Transaction.wrap(function () {
+                    var result = cartHelper.addProductToCart(
+                        currentBasket,
+                        product.productId,
+                        product.qtyValue,
+                        [],
+                        []
+                    );
+                })
+
+            });
+        }
+
+        Transaction.wrap(function () {
+            cartHelper.ensureAllShipmentsHaveMethods(currentBasket);
+            basketCalculationHelpers.calculateTotals(currentBasket);
+        });
+    }
 }
 
 superMdl.filterApplicableShippingMethods = filterApplicableShippingMethods;

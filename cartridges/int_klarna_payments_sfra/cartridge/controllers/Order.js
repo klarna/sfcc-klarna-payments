@@ -11,6 +11,7 @@ server.replace('Confirm', function (req, res, next) {
     var OrderMgr = require('dw/order/OrderMgr');
     var OrderModel = require('*/cartridge/models/order');
     var Locale = require('dw/util/Locale');
+    var BasketMgr = require('dw/order/BasketMgr');
 
     var order = OrderMgr.getOrder(req.querystring.ID);
 
@@ -65,6 +66,16 @@ server.replace('Confirm', function (req, res, next) {
         });
     }
     req.session.raw.custom.orderID = req.querystring.ID; // eslint-disable-line no-param-reassign
+
+    //revert cart data in case of klarna buy now pdp
+    var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+    var currentBasket = BasketMgr.getCurrentOrNewBasket();
+    try {
+        KlarnaHelper.revertCurrentBasketProductData(currentBasket);
+    } catch (e) {
+        dw.system.Logger.error("Couldn't revert basket data - " + e);
+    }
+    session.privacy.kpCustomerProductData = null;
 
     return next();
 });

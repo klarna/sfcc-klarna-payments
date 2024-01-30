@@ -18,3 +18,15 @@
         <ismckeb />
     </div>
 </isif>
+
+<isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.getKlarnExpressCheckoutClientKey()}">
+
+    <script>
+		<isinclude template="/resources/klarnapaymentsresources.isml"/>
+	</script>
+    <script type="text/javascript" src="${URLUtils.staticURL('/js/klarna-express-checkout.js')}"></script>
+    <link rel="stylesheet" href="${URLUtils.staticURL('/css/klarna-express.css')}" />
+    <isif condition="${pageContext.ns !== 'checkout'}">
+        <script async src="https://x.klarnacdn.net/kp/lib/v1/api.js"></script>
+    </isif>
+</isif>

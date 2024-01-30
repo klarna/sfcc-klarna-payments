@@ -2,6 +2,7 @@
 
 var CustomObjectMgr = require( 'dw/object/CustomObjectMgr' );
 var Locale = require( 'dw/util/Locale' );
+var currentSite = require( 'dw/system/Site').current;
 
 /**
  * Klarna On-Site Messaging Component
@@ -269,6 +270,13 @@ var KlarnaOSM = {
     getMiniCartExpressButtonShape: function() {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebMiniCartShape.value || 'default';
+    },
+    isKlarnExpressCheckoutEnabled: function () {
+        return currentSite.getCustomPreferenceValue('kpECEnabled') || false;
+    },
+	getKlarnExpressCheckoutClientKey: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.expressCheckoutClientKey || null;
     }
 };
 

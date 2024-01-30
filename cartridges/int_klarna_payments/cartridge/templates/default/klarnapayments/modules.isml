@@ -44,6 +44,19 @@
 	name="mckeb"
 />
 
+<ismodule template="klarnapayments/kec/buttoncart.isml"
+    name="keccart"
+	attribute="container_id"
+/>
+
+<ismodule template="klarnapayments/kec/minicartbutton.isml"
+    name="kecminicart"
+/>
+
+<ismodule template="klarnapayments/kec/buttonpdp.isml"
+    name="kecpdp"
+/>
+
 <ismodule template="klarnapayments/subscription/cartProductCardSubscription.isml"
     name="kpsubscription"
     attribute="lineitem"

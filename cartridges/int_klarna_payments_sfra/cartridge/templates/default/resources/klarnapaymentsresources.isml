@@ -7,6 +7,7 @@
     window.KlarnaPaymentsObjects = <isprint value="${!empty(KlarnaResources.KPObjects) ? KlarnaResources.KPObjects : '[]'}" encoding="on"/>;
     window.KPCustomerInfo = <isprint value="${KlarnaResources.KPCustomerInfo}" encoding="on"/>;
     window.KPConstants = <isprint value="${KlarnaResources.KPConstants}" encoding="on"/>;
+    window.KPResources = <isprint value="${KlarnaResources.KPResources}" encoding="on"/>;
     window.serverErrorMessage = "<isprint value="${serverErrorMessage}" encoding="on"/>";
     window.KPPreferences = <isprint value="${KlarnaResources.KPPreferences}" encoding="on"/>;
 }(window.app = window.app || {}));

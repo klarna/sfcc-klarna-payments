@@ -187,6 +187,33 @@ function isEnabledPreassessmentForCountry( country ) {
 }
 
 /**
+ * Get Klarna Express Checkout Client Key
+ *
+ * @returns {string} configured client key
+ */
+function getExpressCheckoutClientKey() {
+    var localeObject = getLocale();
+    if ( !empty( localeObject ) ) {
+        return localeObject.custom.expressCheckoutClientKey || '';
+    } else {
+        return '';
+    }
+}
+
+/**
+ * @returns {string} concatenated locale string
+ */
+function getLocaleString() {
+	var Locale = require( 'dw/util/Locale' );
+	var currentLocale = Locale.getLocale( request.locale );
+	var resultLocale = currentLocale.language;
+	if ( currentLocale.country ) {
+		resultLocale = resultLocale + '-' + currentLocale.country;
+	}
+	return resultLocale;
+}
+
+/**
  * Fetches the Klarna Payments Resources
  *
  * @param {String} countryCode the country fetched from request locale
@@ -195,6 +222,7 @@ function isEnabledPreassessmentForCountry( country ) {
 function getKlarnaResources( countryCode ) {
     var URLUtils = require( 'dw/web/URLUtils' );
     var KlarnaConstants = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' );
+    var Resource = require('dw/web/Resource');
     var hideRejectedPaymentsValue = hideRejectedPayments();
     var kpBankTransferCallbackValue = getKpBankTransferCallback();
     var preAssement = isEnabledPreassessmentForCountry( countryCode ) || false;
@@ -216,21 +244,26 @@ function getKlarnaResources( countryCode ) {
         summaryUpdate: URLUtils.https( KLARNA_PAYMENT_URLS.MINISUMMARY_UPDATE ).toString(),
         bankTransferAwaitCallback: URLUtils.https( KLARNA_PAYMENT_URLS.BANK_TRANSFER_AWAIT_CALLBACK ).toString(),
         failOrder: URLUtils.https( KLARNA_PAYMENT_URLS.FAIL_ORDER ).toString(),
-        writeLog: URLUtils.https(KLARNA_PAYMENT_URLS.WRITE_ADDITIONAL_LOG).toString()
+        writeLog: URLUtils.https( KLARNA_PAYMENT_URLS.WRITE_ADDITIONAL_LOG ).toString(),
+        handleExpressCheckoutAuth: URLUtils.https( KLARNA_PAYMENT_URLS.HANDLE_EXPRESS_CHECKOUT_AUTH ).toString(),
+        expressCheckoutAuthCallback: URLUtils.https( KLARNA_PAYMENT_URLS.EXPRESS_CHECKOUT_AUTH_CALLBACK ).toString(),
+        generateExpressCheckoutPayload: URLUtils.https(KLARNA_PAYMENT_URLS.GENERATE_EXPRESS_CHECKOUT_PAYLOAD).toString(),
+        handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString()
     };
 
     // klarna payments objects
     var KPObjects = {
-        sessionID: currentBasket.custom.kpSessionId ? currentBasket.custom.kpSessionId : null,
-        clientToken: currentBasket.custom.kpClientToken ? currentBasket.custom.kpClientToken : null,
+        sessionID: currentBasket ? ( currentBasket.custom.kpSessionId ? currentBasket.custom.kpSessionId : null ) : null,
+        clientToken: currentBasket ? ( currentBasket.custom.kpClientToken ? currentBasket.custom.kpClientToken : null ) : null,
         preassesment: preAssement,
         hideRejectedPayments: hideRejectedPaymentsValue,
-        kpBankTransferCallback: kpBankTransferCallbackValue
+        kpBankTransferCallback: kpBankTransferCallbackValue,
+        kpIsExpressCheckout: currentBasket ? ( currentBasket.custom.kpIsExpressCheckout ? currentBasket.custom.kpIsExpressCheckout : null ) : null
     };
 
     // klarna customer information
     var KPCustomerInfo = {
-        attachment: additionalCustomerInfoRequestBuilder.build( currentBasket ) || {}
+        attachment: currentBasket ? additionalCustomerInfoRequestBuilder.build(currentBasket) : {}
     };
 
     // klarna constants obj
@@ -242,14 +275,19 @@ function getKlarnaResources( countryCode ) {
 
     //klarna sitePreferences obj
     var KPPreferences = {
-        kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue( 'kpUseAlternativePaymentFlow' ) || false,
-        kpAdditionalLogging: currentSite.getCustomPreferenceValue( 'kpAdditionalLogging' ) || false
+        kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue('kpUseAlternativePaymentFlow') || false,
+        kpAdditionalLogging: currentSite.getCustomPreferenceValue('kpAdditionalLogging') || false,
+        kpCollectShippingAddress: currentSite.getCustomPreferenceValue('kpECCollectShippingAddress') || false,
+        kpExpressCheckoutClientKey: this.getExpressCheckoutClientKey(),
+        kpExpressCheckoutTheme: currentSite.getCustomPreferenceValue('kpECButtonTheme').value,
+        kpExpressCheckoutShape: currentSite.getCustomPreferenceValue('kpECButtonShape').value,
+        kpLocale: getLocaleString()
     };
-
-    //klarna sitePreferences obj
-    var KPPreferences = {
-        kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue( 'kpUseAlternativePaymentFlow' ) || false,
-        kpAdditionalLogging: currentSite.getCustomPreferenceValue( 'kpAdditionalLogging' ) || false
+    
+    //klarna payment resource messages
+    var KPResources = {
+        kpExpressCheckoutAuthFailure: Resource.msg('klarna.express.payment.error', 'klarnapayments', null),
+        kpExpressSelectStyles: Resource.msg('klarna.express.select.styles', 'klarnapayments', null)
     };
 
     return {
@@ -257,7 +295,8 @@ function getKlarnaResources( countryCode ) {
         KPObjects: JSON.stringify( KPObjects ),
         KPCustomerInfo: JSON.stringify( KPCustomerInfo ),
         KPConstants: JSON.stringify( KPConstants ),
-        KPPreferences: JSON.stringify( KPPreferences )
+        KPPreferences: JSON.stringify( KPPreferences ),
+        KPResources: JSON.stringify( KPResources )
     }
 }
 
@@ -360,12 +399,12 @@ function getExpressFormDetails( expressForm ) {
  * @param {Object} klarnaAddress The Klarna address
  * @return {void}
  */
-function setExpressBilling( cart, klarnaAddress ) {
+function setExpressBilling( cart, klarnaAddress, forceUpdate ) {
     var Transaction = require( 'dw/system/Transaction' );
     var billingAddress = cart.getBillingAddress();
 
     Transaction.wrap( function() {
-        if ( !billingAddress ) {
+        if ( !billingAddress || forceUpdate ) {
             billingAddress = cart.createBillingAddress();
         }
 
@@ -390,12 +429,12 @@ function setExpressBilling( cart, klarnaAddress ) {
  * @param  {Object} klarnaAddress the Klarna address
  * @returns {void}
  */
-function setExpressShipping( shipment, klarnaAddress ) {
+function setExpressShipping( shipment, klarnaAddress, forceUpdate ) {
     var Transaction = require( 'dw/system/Transaction' );
     var shippingAddress = shipment.getShippingAddress();
 
     Transaction.wrap( function() {
-        if ( !shippingAddress ) {
+        if ( !shippingAddress || forceUpdate ) {
             shippingAddress = shipment.createShippingAddress();
 
             shippingAddress.setFirstName( klarnaAddress.firstName );
@@ -480,6 +519,113 @@ function getPaymentMethod( ) {
     return PAYMENT_METHOD;
 }
 
+/**
+ * Map Klarna address to expected in checkout address format
+ * @param {Object} customerData customer data
+ * @returns {Object} address object
+ */
+function mapKlarnaExpressAddress(collectedAddress) {
+    var addressData = {};
+    if (!collectedAddress) {
+        return null;
+    }
+    addressData.firstName = collectedAddress.given_name || '';
+    addressData.lastName = collectedAddress.family_name || '';
+    addressData.address1 = collectedAddress.street_address || '';
+    addressData.address2 = collectedAddress.street_address_2 || '';
+    addressData.city = collectedAddress.city || '';
+    addressData.postalCode = collectedAddress.postal_code || '';
+    addressData.stateCode = collectedAddress.region || '';
+    addressData.countryCode = { value: collectedAddress.country || '' };
+    addressData.phone = collectedAddress.phone || '';
+    addressData.email = collectedAddress.email || '';
+    return addressData;
+}
+
+/**
+ * Read and update Klarna Express Payment Method SitePreference
+ * @returns {String} payment method details
+*/
+function getExpressKlarnaMethod() {
+    var Site = require('dw/system/Site');
+    var Resource = require('dw/web/Resource');
+    var kpECPaymentCategoryContent = Site.getCurrent().getCustomPreferenceValue('kpECPaymentCategoryContent');
+    var paymentMethods = {};
+	var paymentMethod = null;
+    if (!empty(kpECPaymentCategoryContent)) {
+        paymentMethods = JSON.parse(kpECPaymentCategoryContent);
+        if (!empty(paymentMethods) && paymentMethods.length > 0) {
+            paymentMethod = paymentMethods[0];
+            //get payment method name property
+            paymentMethod.name = Resource.msg(paymentMethod.name, 'klarnapayments', null);
+        }
+    }
+
+    return { 
+             paymentMethods : JSON.stringify(paymentMethods),
+             defaultMethod: paymentMethod ? paymentMethod.identifier : ''
+           };
+}
+
+/**
+ * Get current customer basket details
+ * @returns {Object} customerBasketData JSON of priduct and qtys values
+*/
+function getCurrentBasketProductData(currentBasket) {
+    var customerBasketData = {};
+    if (!empty(currentBasket)) {
+        var productLineItems = currentBasket.productLineItems.toArray();
+
+        var products = [];
+        productLineItems.forEach(function (item) {
+            products.push({
+                productId: item.productID,
+                qtyValue: item.quantity.value
+            });
+            currentBasket.removeProductLineItem(item);
+        });
+        customerBasketData.products = products;
+    }
+    return customerBasketData;
+}
+
+/**
+ * Restore previous customer basket base on the JSON attribute in case of pay now
+ * @param {Object} currentBasket current basket
+*/
+function revertCurrentBasketProductData(currentBasket) {
+    var Transaction = require('dw/system/Transaction');
+    var app = require('*/cartridge/scripts/app');
+    var Product = app.getModel('Product');
+    var params = request.httpParameterMap;
+
+    if (!empty(currentBasket)) {
+        
+        var cart = app.getModel('Cart').get();
+        
+        var customerBasketData = session.privacy.kpCustomerProductData ? JSON.parse(session.privacy.kpCustomerProductData) : null;
+        var productLineItems = currentBasket.productLineItems.toArray();
+
+        Transaction.wrap(function () {
+            productLineItems.forEach(function (item) {
+                currentBasket.removeProductLineItem(item);
+            });
+        });
+
+        var products = (customerBasketData && customerBasketData.products) ? customerBasketData.products : null;
+        if (products) {
+            products.forEach(function (product) {
+                var productToAdd = Product.get(product.productId);
+                var productOptionModel = productToAdd.updateOptionSelection(params);
+                cart.addProductItem(productToAdd.object, product.qtyValue, productOptionModel);
+            });
+        }
+        Transaction.wrap(function () {
+            cart.calculate();
+        });
+    }
+}
+
 exports.calculateOrderTotalValue = calculateOrderTotalValue;
 exports.getKlarnaPaymentMethodName = getKlarnaPaymentMethodName;
 exports.getDiscountsTaxation = getDiscountsTaxation;
@@ -503,3 +649,9 @@ exports.clearSessionRef = clearSessionRef;
 exports.isOMSEnabled = isOMSEnabled;
 exports.getLocale = getLocale;
 exports.getPaymentMethod = getPaymentMethod;
+exports.getExpressCheckoutClientKey = getExpressCheckoutClientKey;
+exports.mapKlarnaExpressAddress = mapKlarnaExpressAddress;
+exports.getExpressKlarnaMethod = getExpressKlarnaMethod;
+exports.getCurrentBasketProductData = getCurrentBasketProductData;
+exports.revertCurrentBasketProductData = revertCurrentBasketProductData;
+exports.getLocaleString = getLocaleString;

@@ -1,6 +1,14 @@
-klarna-express-button.klarna-express-btn-cart {
+klarna-express-button.klarna-express-btn-cart,
+.klarna-express-checkout-cart {
   width: 100% !important;
   height: 2.5rem !important;
+  margin-bottom: 5px !important;
+}
+
+.klarna-express-checkout-pdp {
+  width: 100% !important;
+  height: 2.5rem !important;
+  margin-top: 5px !important;
 }
 
 .keb-hide {

@@ -21,7 +21,7 @@
                 <input type="hidden" class="form-control" name="${pdict.klarnaForm.paymentCategory.htmlName}" value="${klarnaPaymentMethod.identifier}" disabled="disabled" />
 
                 <div id="${'klarna_payments_' + klarnaPaymentMethod.identifier + '_container'}" style="text-align: center;"></div>
-                <isif condition="${empty(pdict.order.klarnaSessionId)}">
+                <isif condition="${empty(pdict.order.klarnaSessionId) && !pdict.order.kpIsExpressCheckout}">
                     <div class="klarna_payments_error" style="text-align: center; font-weight: bold; color: red;"><isprint value="${KlarnaPaymentNotAvailable}"/></div>
                 </isif>
             </fieldset>

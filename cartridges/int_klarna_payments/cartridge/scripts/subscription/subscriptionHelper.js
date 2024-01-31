@@ -642,6 +642,35 @@ function validateIncomingParams(payload, req) {
     };
 }
 
+/**
+ * Check if there is at least one subscription only
+ * product in the basket
+ * @param {Object} currentBasket currentBasket
+ * @returns {boolean} basket subscription status
+ */
+function hasSubscriptionOnly() {
+    var BasketMgr = require('dw/order/BasketMgr');
+
+    var currentBasket = BasketMgr.getCurrentBasket();
+
+    if (!currentBasket) {
+        return false;
+    }
+
+    var productLineItems = currentBasket.productLineItems.toArray();
+    var hasSubscriptionOnlyProduct = false;
+
+    productLineItems.forEach(function (item) {
+        var product = item.product;
+        var isStandardProduct = !empty(product.custom.kpIsStandardProduct) ? product.custom.kpIsStandardProduct : true;
+        if (product.custom.kpIsSubscriptionProduct && !isStandardProduct) {
+            hasSubscriptionOnlyProduct = true;
+            return;
+        }
+    });
+    return hasSubscriptionOnlyProduct;
+}
+
 module.exports = {
     getSubscriptionData: getSubscriptionData,
     validateCartProducts: validateCartProducts,
@@ -662,5 +691,6 @@ module.exports = {
     getSubscriptionProducts: getSubscriptionProducts,
     loginOnBehalfOfCustomer: loginOnBehalfOfCustomer,
     validateCart: validateCart,
-    validateIncomingParams: validateIncomingParams
+    validateIncomingParams: validateIncomingParams,
+    hasSubscriptionOnly: hasSubscriptionOnly
 };

@@ -1,4 +1,4 @@
-<isinclude template="klarnapayments/modules.isml"/>
+<isinclude template="klarnapayments/modules.isml" />
 
 <footer id="footercontent">
     <div class="container">
@@ -20,7 +20,8 @@
         <div class="row">
             <div class="col-lg-4 col-sm-4 push-sm-4 push-lg-4 social">
                 <isslot id="footer-column-m" description="Content in column 1 of the Footer" context="global" />
-                <button class="back-to-top" title="${Resource.msg('button.back_to_top', 'common', null)}" aria-label="${Resource.msg('button.back_to_top', 'common', null)}">
+                <button class="back-to-top" title="${Resource.msg('button.back_to_top', 'common', null)}"
+                    aria-label="${Resource.msg('button.back_to_top', 'common', null)}">
                     <span class="fa-stack fa-lg" aria-hidden="true">
                         <i class="fa fa-circle fa-inverse fa-stack-2x"></i>
                         <i class="fa fa-arrow-up fa-stack-1x"></i>
@@ -42,3 +43,17 @@
 <!-- Klarna KEB form -->
 <iskebform />
 <!-- Klarna KEB form -->
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+<isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.getKlarnExpressCheckoutClientKey()}">
+    <div class="keb-hide" id="miniCartKEC">
+        <isinclude template="components/modules" />
+        <isinclude template="klarnapayments/modules.isml" />
+        <iskecminicart />
+    </div>
+    <script>
+            <isinclude template="/resources/klarnapaymentsresources.isml"/>
+        </script>
+    <script type="text/javascript" src="${URLUtils.staticURL('/js/klarnaExpressCheckout.js')}"></script>
+    <link rel="stylesheet" href="${URLUtils.staticURL('/css/klarnaExpress.css')}" />
+    <script async src="https://x.klarnacdn.net/kp/lib/v1/api.js"></script>
+</isif>

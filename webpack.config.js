@@ -14,7 +14,10 @@ module.exports = [{
 		'klarnaOsm': path.join( __dirname, cartridgePath + '/client/default/js/klarnaOsm.js' ),
 		'klarnaExpressButton': path.join( __dirname, cartridgePath + '/client/default/js/klarnaExpressButton.js' ),
 		'klarnaMiniCart': path.join( __dirname, cartridgePath + '/client/default/js/klarnaMiniCart.js' ),
-		'klarnaSubscriptions': path.join(__dirname, cartridgePath + '/client/default/js/klarnaSubscriptions.js')
+		'klarnaSubscriptions': path.join(__dirname, cartridgePath + '/client/default/js/klarnaSubscriptions.js'),
+		'klarnaExpressCheckout': path.join(__dirname, cartridgePath + '/client/default/js/klarnaExpressCheckout.js'),
+		'klarnaExpressMiniCart': path.join(__dirname, cartridgePath + '/client/default/js/klarnaExpressMiniCart.js'),
+		'klarnaExpressCheckoutPDP': path.join(__dirname, cartridgePath + '/client/default/js/klarnaExpressCheckoutPDP.js')
 	},
 	output: {
 		path: path.resolve( cartridgePath + './static/default/js/' ),

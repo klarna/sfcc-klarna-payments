@@ -3,9 +3,9 @@
 # Klarna Payments 2017-2023 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 23.2.0.
+The latest version of this cartridge is 24.1.0.
 
-This version includes subscription Payments support: recurring payments and subscription handling directly within the SFCC environment. This update includes configuration options, subscription management in the cart and checkout pages, and a customer dashboard for subscription oversight. Klarna Bank Transfer payment: added a new server-side authorization callback feature for Klarna Bank Transfer payments, enhancing reliability across EU markets and supporting all existing KP cartridge functionalities.
+This version includes Klarna Express Checkout implementation: a new feature introduced in Storefront where Express Checkout Button will be displayed in PDP, Cart and Mini Cart and user will be redirected to Klarna after clicking Express Checkout button. Klarna Express Checkout enabled quick and easy checkout where Shipping Address, Billing Address and Payment details will be preselected so that Checkout can be completed in fewer clicks. Fix for create order service calls with 500 status response: now orders are not created and error is thrown for these cases.
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/
@@ -36,6 +36,7 @@ This repository is also pipeleines compliant. For more information contact Klarn
 * Support for adjusted price promotions with Gross Tax Policy
 * Handling of rejected payment method - hide or gray out
 * Klarna Express Button for convenient checkout experience
+* Klarna Express Checkout on PDP, minicart and cart
 
 
 ### SiteGenesis Javascript Controller (SGJC)

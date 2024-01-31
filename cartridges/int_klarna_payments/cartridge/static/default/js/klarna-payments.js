@@ -35,6 +35,7 @@
         } );
 
         var $selectedPaymentMethod = $selectPaymentMethod.querySelectorAll( ':checked' )[0];
+		console.log('klarnaAsyncCallback');
         for ( var i = 0; i < $paymentOptions.length; ++i ) {
             var $paymentMethod = $paymentOptions[i];
             var isKlarnaCategory = isKlarnaPaymentCategory( $paymentMethod.id );
@@ -84,7 +85,7 @@
         } )
     }
 
-    if ( klarnaPaymentsPreferences.kpUseAlternativePaymentFlow ) {
+    if ( klarnaPaymentsPreferences.kpUseAlternativePaymentFlow || klarnaPaymentsObjects.kpIsExpressCheckout) {
         $continueBtn.addEventListener( 'click' , function( event ) {
             var $selectedPaymentMethod = $selectPaymentMethod.querySelectorAll( ':checked' )[0];
 

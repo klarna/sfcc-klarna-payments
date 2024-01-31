@@ -40,6 +40,10 @@ function OrderModel(lineItemContainer, options) {
     if (lineItemContainer && 'kpCustomerToken' in lineItemContainer.custom) {
         this.subscriptionId = lineItemContainer.custom.kpCustomerToken;
     }
+
+    if (lineItemContainer && 'kpIsExpressCheckout' in lineItemContainer.custom) {
+        this.kpIsExpressCheckout = lineItemContainer.custom.kpIsExpressCheckout;
+    }
 }
 
 OrderModel.prototype = Object.create(base.prototype);

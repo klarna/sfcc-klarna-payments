@@ -106,7 +106,7 @@ KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVer
     }
 
     this.logResponseData( urlPath, httpVerb, requestBody, result );
-    this.detectErrorResponse( result, httpVerb, service.URL, requestBody, klarnaSessionID );
+    this.detectErrorResponse( result, httpVerb, service.URL, requestBody, klarnaSessionID, serviceID );
 
     if ( !empty( result.object ) && !empty( result.object.text ) ) {
         var jsonResponse = result.object.text.replace( /\r?\n|\r/g, ' ' );
@@ -147,7 +147,7 @@ KlarnaPaymentsHttpService.prototype.isValidHttpVerb = function( httpVerb ) {
  * @param {JSON} requestBody - optional, JSON body.
  * @returns {void}
  */
-KlarnaPaymentsHttpService.prototype.detectErrorResponse = function( result, httpVerb, requestUrl, requestBody, klarnaSessionID ) {
+KlarnaPaymentsHttpService.prototype.detectErrorResponse = function( result, httpVerb, requestUrl, requestBody, klarnaSessionID, serviceID ) {
     if ( empty( result ) ) {
         this.logger.error( 'result was empty' );
         throw new Error( this.getErrorResponse( 'default' ) );
@@ -157,6 +157,9 @@ KlarnaPaymentsHttpService.prototype.detectErrorResponse = function( result, http
     //log error response for all 5xx status codes but not fail order 
     } else if ( result.error > 499 && result.error < 600 ) {
         this.logErrorResponse( result, requestUrl, requestBody, klarnaSessionID );
+        if (serviceID && serviceID.indexOf('createOrder') != -1) {
+            throw new Error(result);
+        }
     } else if ( result.error !== 0 || result.status === 'ERROR' || result.status === 'SERVICE_UNAVAILABLE' ) {
         this.logErrorResponse( result, requestUrl, requestBody, klarnaSessionID );
         throw new Error( result.errorMessage );

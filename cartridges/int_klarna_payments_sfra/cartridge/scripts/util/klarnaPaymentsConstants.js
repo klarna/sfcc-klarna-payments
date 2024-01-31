@@ -56,10 +56,14 @@ var KLARNA_PAYMENT_URLS = {
     BANK_TRANSFER_CALLBACK: 'KlarnaPayments-BankTransferCallback',
     BANK_TRANSFER_AWAIT_CALLBACK: 'KlarnaPayments-BankTransferAwaitCallback',
     FAIL_ORDER: 'KlarnaPayments-FailOrder',
-    WRITE_ADDITIONAL_LOG: 'KlarnaPayments-WriteLog'
+    WRITE_ADDITIONAL_LOG: 'KlarnaPayments-WriteLog',
+    HANDLE_EXPRESS_CHECKOUT_AUTH: 'KlarnaPayments-HandleAuthorizationResult',
+    EXPRESS_CHECKOUT_AUTH_CALLBACK: 'KlarnaPayments-ECAuthorizationCallback',
+	GENERATE_EXPRESS_CHECKOUT_PAYLOAD: 'KlarnaPayments-GenerateExpressCheckoutPayload',
+	HANDLE_AUTH_FAILURE_PDP: 'KlarnaPayments-HandleAuthFailure'
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 23.2.0';
+var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 24.1.0';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.NOTIFY_EVENT_TYPES = NOTIFY_EVENT_TYPES;

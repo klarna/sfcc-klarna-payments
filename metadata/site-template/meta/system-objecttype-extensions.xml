@@ -333,6 +333,66 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="kpECEnabled">
+                <display-name xml:lang="x-default">Klarna Express Checkout Enabled</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpECCollectShippingAddress">
+                <display-name xml:lang="x-default">Klarna Express Checkout Collect Shipping Address</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpECButtonTheme">
+                <display-name xml:lang="x-default">Klarna Express Checkout Button Theme</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Default</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dark</display>
+                        <value>dark</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Light</display>
+                        <value>light</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpECButtonShape">
+                <display-name xml:lang="x-default">Klarna Express Checkout Button Shape</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Default</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Rect</display>
+                        <value>rect</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Pill</display>
+                        <value>pill</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpECPaymentCategoryContent">
+                <display-name xml:lang="x-default">Payment Category Content</display-name>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Klarna_Payments">
@@ -375,6 +435,14 @@
                 <attribute attribute-id="kpEnableRecurringOrderRetry"/>
                 <attribute attribute-id="kpRecurringNumberOfRetry"/>
                 <attribute attribute-id="kpRecurringRetryFrequency"/>
+            </attribute-group>
+            <attribute-group group-id="Klarna_ExpressCheckout">
+                <display-name xml:lang="x-default">Klarna Express Checkout</display-name>
+                <attribute attribute-id="kpECEnabled"/>
+                <attribute attribute-id="kpECCollectShippingAddress"/>
+                <attribute attribute-id="kpECButtonTheme"/>
+                <attribute attribute-id="kpECButtonShape"/>
+                <attribute attribute-id="kpECPaymentCategoryContent"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -446,6 +514,12 @@
                         <value>year</value>
                     </value-definition>
                 </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpIsExpressCheckout">
+                <display-name xml:lang="x-default">Klarna Is Express Checkout</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
         </custom-attribute-definitions>
     </type-extension>

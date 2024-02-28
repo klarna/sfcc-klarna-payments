@@ -45,23 +45,23 @@
 />
 
 <ismodule template="klarnapayments/kec/buttoncart.isml"
-    name="keccart"
+	name="keccart"
 	attribute="container_id"
 />
 
 <ismodule template="klarnapayments/kec/minicartbutton.isml"
-    name="kecminicart"
+	name="kecminicart"
 />
 
 <ismodule template="klarnapayments/kec/buttonpdp.isml"
-    name="kecpdp"
+	name="kecpdp"
 />
 
 <ismodule template="klarnapayments/subscription/cartProductCardSubscription.isml"
-    name="kpsubscription"
-    attribute="lineitem"
-    attribute="lmkpsubscription"
-    attribute="showsubscription"
-    attribute="disablesubscribe"
-    attribute="kptrialdaysusage"
+	name="kpsubscription"
+	attribute="lineitem"
+	attribute="lmkpsubscription"
+	attribute="showsubscription"
+	attribute="disablesubscribe"
+	attribute="kptrialdaysusage"
 />

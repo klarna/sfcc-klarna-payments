@@ -605,6 +605,9 @@ function selectPaymentMethod() {
     } );
 }
 
+/**
+ * Handle express checkout button
+ */
 function expressCheckout() {
     var URLUtils = require( 'dw/web/URLUtils' );
     var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
@@ -724,6 +727,11 @@ function expressCheckout() {
     return;
 }
 
+/**
+ * Redirect after express checkout button
+ * @param {object} cart current basket
+ * @param {string} paymentMethodId selected Klarna payment method id
+ */
 function handleExpressRedirect( cart, paymentMethodId ) {
     var URLUtils = require( 'dw/web/URLUtils' );
     var KlarnaOSM = require( '*/cartridge/scripts/marketing/klarnaOSM' );
@@ -856,6 +864,9 @@ function FailOrder() {
     }
 }
 
+/**
+ * Write additional log data
+ */ 
 function writeLog() {
     var basket = BasketMgr.getCurrentBasket();
     var storeFrontResponse = request.httpParameterMap.responseFromKlarna.value;
@@ -867,6 +878,9 @@ function writeLog() {
     return;
 }
 
+/**
+ * Execute Klarna call to cancell given subscription
+ */
 function cancelSubscription() {
     var Resource = require('dw/web/Resource');
     let r = require('*/cartridge/scripts/util/Response');
@@ -896,6 +910,11 @@ function cancelSubscription() {
     return;
 }
 
+/**
+ * Handle authorization result callback, 
+ * validate basket and redirect customer
+ * to the proper checkout page
+ */
 function handleAuthorizationResult() {
     var URLUtils = require('dw/web/URLUtils');
     var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
@@ -1059,6 +1078,12 @@ function handleAuthorizationResult() {
     return;
 }
 
+/**
+ * Handle redirect for express checkout call
+ * @param {object} cart current basket
+ * @param {string} paymentMethodId selected Klarna payment method id
+ * @param {string} redirectURL url to redirect
+ */
 function handleExpressCheckoutRedirect(cart, paymentMethodId, redirectURL) {
     var URLUtils = require('dw/web/URLUtils');
     var EXPRESS_CHECKOUT_CATEGORY = KlarnaHelper.getExpressKlarnaMethod().defaultMethod;
@@ -1090,13 +1115,11 @@ function handleExpressCheckoutRedirect(cart, paymentMethodId, redirectURL) {
     return;
 }
 
+/**
+ * Callback function to handle Klarna authorization completed
+ */
 function ecAuthorizationCallback() {
-    var Transaction = require('dw/system/Transaction');
-    // var klarnaResponse = JSON.parse(req.body);
-    dw.system.Logger.error(request.httpParameterMap.requestBodyAsString);
-    Transaction.wrap(function () {
-        //TODO
-    });
+    //TODO handle authorization callback if needed
 
     res.json({
         success: true
@@ -1105,6 +1128,10 @@ function ecAuthorizationCallback() {
     return;
 };
 
+/**
+ * Generates payload used in express 
+ * checkout authorization call
+ */
 function generateExpressCheckoutPayload() {
     var BasketMgr = require('dw/order/BasketMgr');
     var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');

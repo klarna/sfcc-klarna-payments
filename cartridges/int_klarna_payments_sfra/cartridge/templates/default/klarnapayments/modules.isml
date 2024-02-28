@@ -18,24 +18,24 @@
 />
 
 <ismodule template="klarnapayments/keb/buttoncart.isml"
-    name="kebcart"
+	name="kebcart"
 />
 
 <ismodule template="klarnapayments/kec/buttoncart.isml"
-    name="keccart"
+	name="keccart"
 />
 
 <ismodule template="klarnapayments/kec/minicartbutton.isml"
-    name="kecminicart"
+	name="kecminicart"
 />
 
 <ismodule template="klarnapayments/kec/buttonpdp.isml"
-    name="kecpdp"
-    attribute="p_product"
+	name="kecpdp"
+	attribute="p_product"
 />
 
 <ismodule template="klarnapayments/keb/form.isml"
-    name="kebform"
+	name="kebform"
 />
 
 <ismodule template="klarnapayments/keb/minicartbutton.isml"
@@ -46,10 +46,10 @@
 <isset name="klarnaEBJsAdded" value="${false}" scope="page" />
 
 <ismodule template="klarnapayments/subscription/cartProductCardSubscription.isml"
-    name="kpsubscription"
-    attribute="lineitem"
-    attribute="lmkpsubscription"
-    attribute="showsubscription"
-    attribute="disablesubscribe"
-    attribute="kptrialdaysusage"
+	name="kpsubscription"
+	attribute="lineitem"
+	attribute="lmkpsubscription"
+	attribute="showsubscription"
+	attribute="disablesubscribe"
+	attribute="kptrialdaysusage"
 />

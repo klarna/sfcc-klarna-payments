@@ -1,5 +1,7 @@
 # CHANGELOG
-
+## 24.2.0
+* Update of OSM functionality that is more aligned with current web standards, provides a consistent identifier system as used in KEC, and offers enhanced customization options to our merchants. This will not only improve the user experience but also reinforce Klarna’s commitment to providing versatile and state-of-the-art e-commerce solutions. CSS customizations are available only in the new library version.
+* Documentation update - new section added for cartridge upgrade process.
 ## 24.1.0
 * Klarna Express Checkout: a new feature introduced in Storefront where Express Checkout Button will be displayed in PDP, Cart and Mini Cart and user will be redirected to Klarna after clicking Express Checkout button. Klarna Express Checkout enabled quick and easy checkout where Shipping Address, Billing Address and Payment details will be preselected so that Checkout can be completed in fewer clicks.
 * Fix for create order service calls with 500 status response: now orders are not created and error is thrown for these cases.

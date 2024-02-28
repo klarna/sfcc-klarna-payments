@@ -35,7 +35,6 @@
         } );
 
         var $selectedPaymentMethod = $selectPaymentMethod.querySelectorAll( ':checked' )[0];
-		console.log('klarnaAsyncCallback');
         for ( var i = 0; i < $paymentOptions.length; ++i ) {
             var $paymentMethod = $paymentOptions[i];
             var isKlarnaCategory = isKlarnaPaymentCategory( $paymentMethod.id );

@@ -1,9 +1,14 @@
-<isset name="ProductPrice" value="${pdict.p_price}" scope="page"/>
+<isset name="ProductPrice" value="${pdict.p_price}" scope="page" />
 <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
 <isif condition="${KlarnaOSM.isEnabledPDPPage()}">
+    <isprint value="${KlarnaOSM.getPDPPlacementCustomStyling()}" encoding="off" />
+
     <div class="kosm-pdp">
-        <klarna-placement data-key="${KlarnaOSM.getPDPPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}"></klarna-placement>
+        <klarna-placement id="osm-pdp-placement" data-key="${KlarnaOSM.getPDPPagePlacementTagId()}"
+            data-locale="${KlarnaOSM.getLocale()}"
+            data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}"
+            data-theme="${KlarnaOSM.getOSMPDPTheme()}"></klarna-placement>
     </div>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');

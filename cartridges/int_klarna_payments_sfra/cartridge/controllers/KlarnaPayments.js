@@ -455,14 +455,12 @@ server.get('CancelSubscription', userLoggedIn.validateLoggedInAjax, function (re
     return next();
 });
 
+/**
+ * Endpoint to handle authorization callback
+ * for Klarna express checkout
+ */
 server.post('ECAuthorizationCallback', function (req, res, next) {
-    var Transaction = require('dw/system/Transaction');
-    // var klarnaResponse = JSON.parse(req.body);
-    dw.system.Logger.error(req.body);
-    Transaction.wrap(function () {
-        //TODO
-    });
-
+    //TODO handle authorization callback if needed
     res.json({
         success: true
 
@@ -470,6 +468,11 @@ server.post('ECAuthorizationCallback', function (req, res, next) {
     return next();
 });
 
+/**
+ * Handle authorization result callback, 
+ * validate basket and redirect customer
+ * to the proper checkout page
+ */
 server.post('HandleAuthorizationResult', function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
     var Transaction = require('dw/system/Transaction');
@@ -626,6 +629,11 @@ server.post('HandleAuthorizationResult', function (req, res, next) {
     return next();
 });
 
+/**
+ * Genereate payload for Klarna express checkout
+ * authorization call,
+ * validate and calculate cart
+ */
 server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
     var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
@@ -748,6 +756,10 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
 
 });
 
+/**
+ * Handle authorization failures - revert customer
+ * basket in case of express checkout on pdp
+ */
 server.get('HandleAuthFailure', function (req, res, next) {
     var BasketMgr = require('dw/order/BasketMgr');
     var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');

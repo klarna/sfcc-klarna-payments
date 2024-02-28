@@ -1,8 +1,11 @@
 <isset name="KlarnaOSM" value="${require('~/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
 <isif condition="${KlarnaOSM.isEnabledHeader()}">
+    <isprint value="${KlarnaOSM.getHeaderPlacementCustomStyling()}" encoding="off" />
+
     <div class="kosm-header">
-        <klarna-placement data-key="${KlarnaOSM.getHeaderPlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}"></klarna-placement>
+        <klarna-placement id="osm-header-placement" data-key="${KlarnaOSM.getHeaderPlacementTagId()}"
+            data-locale="${KlarnaOSM.getLocale()}" data-theme="${KlarnaOSM.getOSMHeaderTheme()}"></klarna-placement>
         <isset name="isKlarnaOSMScriptRequired" value="${true}" scope="page" />
     </div>
 </isif>

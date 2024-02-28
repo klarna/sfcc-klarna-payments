@@ -3,9 +3,9 @@
 # Klarna Payments 2017-2023 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 24.1.0.
+The latest version of this cartridge is 24.2.0.
 
-This version includes Klarna Express Checkout implementation: a new feature introduced in Storefront where Express Checkout Button will be displayed in PDP, Cart and Mini Cart and user will be redirected to Klarna after clicking Express Checkout button. Klarna Express Checkout enabled quick and easy checkout where Shipping Address, Billing Address and Payment details will be preselected so that Checkout can be completed in fewer clicks. Fix for create order service calls with 500 status response: now orders are not created and error is thrown for these cases.
+This version includes upgrade of Klarna OSM functionality: OSM update that is more aligned with current web standards, provides a consistent identifier system as used in KEC, and offers enhanced customization options to our merchants. This will not only improve the user experience but also reinforce Klarna’s commitment to providing versatile and state-of-the-art e-commerce solutions. CSS customizations are available only in the new library version. Documentation update - new section added for cartridge upgrade process.
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/

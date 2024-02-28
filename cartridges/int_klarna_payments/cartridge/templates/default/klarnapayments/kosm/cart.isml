@@ -3,9 +3,11 @@
 <isif condition="${!empty(LineItemCtnr) && KlarnaOSM.isEnabledCartPage()}">
     <isset name="KlarnaHelper" value="${require('~/cartridge/scripts/util/klarnaHelper')}" scope="page" />
     <isset name="orderTotalValue" value="${KlarnaHelper.calculateOrderTotalValue(LineItemCtnr)}" scope="page" />
+    <isprint value="${KlarnaOSM.getCartPlacementCustomStyling()}" encoding="off" />
 
     <div class="kosm-cart">
-        <klarna-placement data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(orderTotalValue)}"></klarna-placement>
+        <klarna-placement id="osm-cart-placement" data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(orderTotalValue)}"
+        data-theme="${KlarnaOSM.getOSMCartTheme()}"></klarna-placement>
         <isset name="isKlarnaOSMScriptRequired" value="true" scope="page" />
     </div>
 </isif>

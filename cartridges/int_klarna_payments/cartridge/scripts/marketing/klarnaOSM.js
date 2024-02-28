@@ -1,8 +1,8 @@
 'use strict';
 
-var CustomObjectMgr = require( 'dw/object/CustomObjectMgr' );
-var Locale = require( 'dw/util/Locale' );
-var currentSite = require( 'dw/system/Site').current;
+var CustomObjectMgr = require('dw/object/CustomObjectMgr');
+var Locale = require('dw/util/Locale');
+var currentSite = require('dw/system/Site').current;
 
 /**
  * Klarna On-Site Messaging Component
@@ -15,15 +15,15 @@ var KlarnaOSM = {
      * @param {String} countryCode country code
      * @return {void}
      */
-    setCountryCode: function( countryCode ) {
+    setCountryCode: function (countryCode) {
         this.countryCode = countryCode;
     },
     /**
      * Retrieves country code from request locale
      * @return {string} country code
      */
-    retrieveCountryCodeFromRequestLocale: function() {
-        var requestLocale = Locale.getLocale( request.locale );
+    retrieveCountryCodeFromRequestLocale: function () {
+        var requestLocale = Locale.getLocale(request.locale);
         var currentCountryCode = requestLocale.country;
 
         return currentCountryCode;
@@ -32,8 +32,8 @@ var KlarnaOSM = {
      * Function that returns the country code set in the OSM object
      * @return {string} country code
      */
-    getCountryCode: function() {
-        if ( !this.countryCode ) {
+    getCountryCode: function () {
+        if (!this.countryCode) {
             this.countryCode = this.retrieveCountryCodeFromRequestLocale();
         }
 
@@ -44,10 +44,10 @@ var KlarnaOSM = {
      *
      * @return {string} locale code
      */
-    getLocale: function() {
-        var currentLocale = Locale.getLocale( request.locale );
+    getLocale: function () {
+        var currentLocale = Locale.getLocale(request.locale);
         var resultLocale = currentLocale.language;
-        if ( currentLocale.country ) {
+        if (currentLocale.country) {
             resultLocale = resultLocale + '-' + currentLocale.country;
         }
         return resultLocale;
@@ -56,9 +56,9 @@ var KlarnaOSM = {
      * Function that returns the KlarnaCountries custom object for the selected country
      * @return {dw.object.CustomObject} locale Object
      */
-    loadKlarnaCountriesObject: function() {
+    loadKlarnaCountriesObject: function () {
         var countryCode = this.getCountryCode();
-        var localeObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
+        var localeObject = CustomObjectMgr.getCustomObject('KlarnaCountries', countryCode);
 
         return localeObject;
     },
@@ -66,8 +66,8 @@ var KlarnaOSM = {
      * Function that sets and returns the KlarnaCountries custom object
      * @return {dw.object.CustomObject} locale Object
      */
-    getKlarnaCountriesObject: function() {
-        if ( !this.klarnaCountriesObject ) {
+    getKlarnaCountriesObject: function () {
+        if (!this.klarnaCountriesObject) {
             this.klarnaCountriesObject = this.loadKlarnaCountriesObject();
         }
 
@@ -77,14 +77,14 @@ var KlarnaOSM = {
      * Function that checks if OSM object is enabled
      * @return {boolean} enabled/disabled
      */
-    isEnabled: function() {
-        return ( this.isEnabledCartPage() || this.isEnabledPDPPage() || this.isEnabledHeader() || this.isEnabledFooter() || this.isEnabledInfoPage() );
+    isEnabled: function () {
+        return (this.isEnabledCartPage() || this.isEnabledPDPPage() || this.isEnabledHeader() || this.isEnabledFooter() || this.isEnabledInfoPage());
     },
     /**
      * Function that checks if OSM is enabled for cart
      * @return {boolean} enable status
      */
-    isEnabledCartPage: function() {
+    isEnabledCartPage: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var value = localeObject.custom.osmCartEnabled;
 
@@ -94,7 +94,7 @@ var KlarnaOSM = {
      * Function that checks if OSM is enabled for cart page tag
      * @return {boolean} enable status
      */
-    getCartPagePlacementTagId: function() {
+    getCartPagePlacementTagId: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var value = localeObject.custom.osmCartTagId;
 
@@ -104,7 +104,7 @@ var KlarnaOSM = {
      * Function that checks if OSM is enabled for PDP
      * @return {boolean} enable status
      */
-    isEnabledPDPPage: function() {
+    isEnabledPDPPage: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var value = localeObject.custom.osmPDPEnabled;
 
@@ -114,7 +114,7 @@ var KlarnaOSM = {
      * Function that checks if OSM is enabled for PDP page tag
      * @return {boolean} enable status
      */
-    getPDPPagePlacementTagId: function() {
+    getPDPPagePlacementTagId: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var value = localeObject.custom.osmPDPTagId;
 
@@ -124,7 +124,7 @@ var KlarnaOSM = {
      * Function that checks if OSM is enabled for header
      * @return {boolean} enable status
      */
-    isEnabledHeader: function() {
+    isEnabledHeader: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var value = localeObject.custom.osmHeaderEnabled;
 
@@ -134,7 +134,7 @@ var KlarnaOSM = {
      * Function that checks if OSM is enabled for header placement tag
      * @return {boolean} enable status
      */
-    getHeaderPlacementTagId: function() {
+    getHeaderPlacementTagId: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var value = localeObject.custom.osmHeaderTagId;
 
@@ -144,7 +144,7 @@ var KlarnaOSM = {
      * Function that checks if OSM is enabled for footer
      * @return {boolean} enable status
      */
-    isEnabledFooter: function() {
+    isEnabledFooter: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var value = localeObject.custom.osmFooterEnabled;
 
@@ -154,7 +154,7 @@ var KlarnaOSM = {
      * Function that checks if OSM is enabled for footer tag
      * @return {boolean} enable status
      */
-    getFooterPlacementTagId: function() {
+    getFooterPlacementTagId: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var value = localeObject.custom.osmFooterTagId;
 
@@ -164,7 +164,7 @@ var KlarnaOSM = {
      * Function that checks if OSM is enabled for info page
      * @return {boolean} enable status
      */
-    isEnabledInfoPage: function() {
+    isEnabledInfoPage: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var value = localeObject.custom.osmInfoPageEnabled;
 
@@ -174,7 +174,7 @@ var KlarnaOSM = {
      * Function that checks if OSM is enabled for info page tag
      * @return {boolean} enable status
      */
-    getInfoPagePlacementTagId: function() {
+    getInfoPagePlacementTagId: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var value = localeObject.custom.osmInfoPageTagId;
 
@@ -184,7 +184,7 @@ var KlarnaOSM = {
      * Function that checks if OSM attribute "data-inline" is enabled for PDP/Cart placements
      * @return {boolean} enable status
      */
-    isEnabledDataInline: function() {
+    isEnabledDataInline: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var value = localeObject.custom.osmDataInlineEnabled;
 
@@ -194,7 +194,7 @@ var KlarnaOSM = {
      * Function that returns OSM client ID
      * @return {string} clientID
      */
-    getUCI: function() {
+    getUCI: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var uci = localeObject.custom.osmUCI;
 
@@ -204,7 +204,7 @@ var KlarnaOSM = {
      * Function that returns OSM library URL
      * @return {string} library URL
      */
-    getScriptURL: function() {
+    getScriptURL: function () {
         var localeObject = this.getKlarnaCountriesObject();
         var url = localeObject.custom.osmLibraryUrl;
 
@@ -216,67 +216,114 @@ var KlarnaOSM = {
      * @param {Object} price price object
      * @return {number} formatted amount
      */
-    formatPurchaseAmount: function( price ) {
-        var formattedAmount = Math.round( price.value * 100 );
+    formatPurchaseAmount: function (price) {
+        var formattedAmount = Math.round(price.value * 100);
 
         return formattedAmount;
     },
 
-    getExpressButtonScriptURL: function() {
+    getExpressButtonScriptURL: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebLibraryUrl;
     },
 
-    getExpressButtonMID: function() {
+    getExpressButtonMID: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebMerchantID;
     },
 
-    isEnabledExpressButtonCart: function() {
+    isEnabledExpressButtonCart: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebCartEnabled || false;
     },
 
-    isEnabledExpress: function() {
+    isEnabledExpress: function () {
         return this.isEnabledExpressButtonCart();
     },
 
-    getExpressButtonTheme: function() {
+    getExpressButtonTheme: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebTheme.value || 'default';
     },
-    getExpressButtonEnvironment: function() {
+    getExpressButtonEnvironment: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebEnvironment.value || 'playground';
     },
 
-    getExpressButtonCategory: function() {
+    getExpressButtonCategory: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebCategory || '';
     },
 
-    isEnabledMCExpressButton: function() {
+    isEnabledMCExpressButton: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebMCEnabled || false;
     },
-    getMCExpressButtonTheme: function() {
+    getMCExpressButtonTheme: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebMCTheme.value || 'default';
     },
-    getExpressButtonShape: function() {
+    getExpressButtonShape: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebShape.value || 'default';
     },
-    getMiniCartExpressButtonShape: function() {
+    getMiniCartExpressButtonShape: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.kebMiniCartShape.value || 'default';
     },
     isKlarnExpressCheckoutEnabled: function () {
         return currentSite.getCustomPreferenceValue('kpECEnabled') || false;
     },
-	getKlarnExpressCheckoutClientKey: function () {
+    getKlarnExpressCheckoutClientKey: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.expressCheckoutClientKey || null;
+    },
+    getKlarnExpressCheckoutScriptURL: function () {
+        return currentSite.getCustomPreferenceValue('kpECLibraryURL');
+    },
+    getOSMEnvironment: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.osmEnvironment.value || 'playground';
+    },
+    getCartPlacementCustomStyling: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.osmCartCustomStyling || null;
+    },
+    getOSMCartTheme: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.osmCartTheme.value || 'default';
+    },
+    getOSMHeaderTheme: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.osmHeaderTheme.value || 'default';
+    },
+    getHeaderPlacementCustomStyling: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.osmHeaderCustomStyling || null;
+    },
+    getOSMFooterTheme: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.osmFooterTheme.value || 'default';
+    },
+    getFooterPlacementCustomStyling: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.osmFooterCustomStyling || null;
+    },
+    getOSMInfoPageTheme: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.osmInfoPageTheme.value || 'default';
+    },
+    getInfoPagePlacementCustomStyling: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.osmInfoPageCustomStyling || null;
+    },
+    getOSMPDPTheme: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.osmPDPTheme.value || 'default';
+    },
+    getPDPPlacementCustomStyling: function () {
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.osmPDPCustomStyling || null;
     }
 };
 

@@ -1,7 +1,7 @@
 <isset name="KlarnaOSM" value="${require('~/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
 <isif condition="${KlarnaOSM.isEnabled()}">
-    <script async src="${KlarnaOSM.getScriptURL()}" data-client-id="${KlarnaOSM.getUCI()}"></script>
+    <script async src="${KlarnaOSM.getScriptURL()}" data-client-id="${KlarnaOSM.getUCI()}" data-environment="${KlarnaOSM.getOSMEnvironment()}"></script>
 </isif>
 
 <isif condition="${KlarnaOSM.isEnabledExpress()}" >
@@ -22,11 +22,11 @@
 <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.getKlarnExpressCheckoutClientKey()}">
 
     <script>
-		<isinclude template="/resources/klarnapaymentsresources.isml"/>
-	</script>
+        <isinclude template="/resources/klarnapaymentsresources.isml"/>
+    </script>
     <script type="text/javascript" src="${URLUtils.staticURL('/js/klarna-express-checkout.js')}"></script>
     <link rel="stylesheet" href="${URLUtils.staticURL('/css/klarna-express.css')}" />
-    <isif condition="${pageContext.ns !== 'checkout'}">
-        <script async src="https://x.klarnacdn.net/kp/lib/v1/api.js"></script>
+    <isif condition="${typeof pageContext === "undefined" || (pageContext.ns !== 'checkout')}">
+        <script async src="${KlarnaOSM.getKlarnExpressCheckoutScriptURL()}"></script>
     </isif>
 </isif>

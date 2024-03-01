@@ -3,27 +3,36 @@
 var klarnaPreferences = window.KPPreferences;
 var klarnaPaymentsUrls = window.KlarnaPaymentsUrls;
 var klarnaPaymentsResources = window.KPResources;
+var klarnaPaymentsConstants = window.KPConstants;
 
 var base = require('base/product/base');
 
+/**
+ * build and display error message overlay
+ * @param {string} message 
+ */
 function generateErrorAuthMessage(message) {
-    var msg = message ? message : klarnaPaymentsResources.kpExpressCheckoutAuthFailure;
-    if ($('.ec-payment-failure').length === 0) {
-        $('body').append(
-            '<div class="ec-payment-failure add-to-cart-messages"></div>'
-        );
-    }
-
-    if ($('.ec-payment-failure-alert').length === 0) {
-        $('.ec-payment-failure').append(
-            '<div class="alert ' + 'alert-danger' + ' ec-payment-failure-alert add-to-basket-alert text-center" role="alert">'
-            + msg + '</div>'
-        );
-    }
-
     setTimeout(function () {
-        $('.ec-payment-failure-alert').remove();
-    }, 2000);
+
+        var msg = message ? message : klarnaPaymentsResources.kpExpressCheckoutAuthFailure;
+        if ($('.ec-payment-failure').length === 0) {
+            $('body').append(
+                '<div class="ec-payment-failure add-to-cart-messages"></div>'
+            );
+        }
+
+        if ($('.ec-payment-failure-alert').length === 0) {
+            $('.ec-payment-failure').append(
+                '<div class="alert ' + 'alert-danger' + ' ec-payment-failure-alert add-to-basket-alert text-center" role="alert">'
+                + msg + '</div>'
+            );
+        }
+
+        setTimeout(function () {
+            $('.ec-payment-failure-alert').remove();
+        }, klarnaPaymentsConstants.ERROR_MSG_ALERT_TIMEOUT);
+
+    }, klarnaPaymentsConstants.KEC_EEROR_WAITTIME);
 }
 
 /**
@@ -117,19 +126,11 @@ function initKlarnaExpressButton(containerId, isPDP) {
                                             url: klarnaPaymentsUrls.handleAuthFailurePDP,
                                             type: 'get',
                                             dataType: 'json',
-                                            contentType: 'application/json',
-                                            success: function () {
-                                                setTimeout(function () {
-                                                    generateErrorAuthMessage();
-                                                }, 100);
-                                            }
+                                            contentType: 'application/json'
                                         });
-                                    } else {
-                                        setTimeout(function () {
-                                            generateErrorAuthMessage();
-                                        }, 100);
                                     }
-                                    console.log('Error in payment');
+
+                                    generateErrorAuthMessage();
                                 }
                             },
                         );

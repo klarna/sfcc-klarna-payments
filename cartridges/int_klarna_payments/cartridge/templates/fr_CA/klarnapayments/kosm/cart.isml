@@ -4,9 +4,11 @@
     <isset name="KlarnaHelper" value="${require('~/cartridge/scripts/util/klarnaHelper')}" scope="page" />
     <isset name="orderTotalValue" value="${KlarnaHelper.calculateOrderTotalValue(LineItemCtnr)}" scope="page" />
 
+    <isprint value="${KlarnaOSM.getCartPlacementCustomStyling()}" encoding="off" />
+
     <div class="kosm-cart">
-        <klarna-placement data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" 
-        data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(orderTotalValue)}" 
+        <klarna-placement id="osm-cart-placement" data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" 
+        data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(orderTotalValue)}" data-theme="${KlarnaOSM.getOSMCartTheme()}" 
         <isif condition="${KlarnaOSM.isEnabledDataInline()}">data-inline="true"</isif>></klarna-placement>
         <isset name="isKlarnaOSMScriptRequired" value="true" scope="page" />
     </div>

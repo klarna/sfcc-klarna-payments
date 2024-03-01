@@ -1,12 +1,17 @@
 <div class="kosm-cart">
-    <isset name="totalGrossPrice" value="${require('dw/order/BasketMgr').getCurrentBasket().getTotalGrossPrice()}" scope="page" />
+    <isset name="totalGrossPrice" value="${require('dw/order/BasketMgr').getCurrentBasket().getTotalGrossPrice()}"
+        scope="page" />
     <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
     <isif condition="${KlarnaOSM.isEnabledCartPage()}">
-        <klarna-placement data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" 
-        data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(totalGrossPrice)}" 
-        <isif condition="${KlarnaOSM.isEnabledDataInline()}">data-inline="true"</isif>></klarna-placement>
+        <isprint value="${KlarnaOSM.getCartPlacementCustomStyling()}" encoding="off" />
 
-        <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
+        <klarna-placement id="osm-cart-placement" data-key="${KlarnaOSM.getCartPagePlacementTagId()}"
+            data-locale="${KlarnaOSM.getLocale()}"
+            data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(totalGrossPrice)}"
+            data-theme="${KlarnaOSM.getOSMCartTheme()}" <isif condition="${KlarnaOSM.isEnabledDataInline()}">
+            data-inline="true"</isif>></klarna-placement>
+
+    <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
     </isif>
 </div>

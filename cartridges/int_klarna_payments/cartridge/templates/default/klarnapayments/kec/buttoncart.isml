@@ -1,4 +1,4 @@
-<!--- TEMPLATENAME: klarnapayments/keb/buttoncart.isml --->
+<!--- TEMPLATENAME: klarnapayments/kec/buttoncart.isml --->
 <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 <isset name="contId" value="${!empty(pdict.container_id) ? pdict.container_id : 'klarnaExpressCheckout'}"
     scope="page" />

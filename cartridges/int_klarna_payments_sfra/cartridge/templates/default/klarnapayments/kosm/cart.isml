@@ -1,10 +1,16 @@
 <div class="kosm-cart">
-    <isset name="totalGrossPrice" value="${require('dw/order/BasketMgr').getCurrentBasket().getTotalGrossPrice()}" scope="page" />
+    <isset name="totalGrossPrice" value="${require('dw/order/BasketMgr').getCurrentBasket().getTotalGrossPrice()}"
+        scope="page" />
     <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
     <isif condition="${KlarnaOSM.isEnabledCartPage()}">
-        <klarna-placement data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(totalGrossPrice)}"></klarna-placement>
+        <isprint value="${KlarnaOSM.getCartPlacementCustomStyling()}" encoding="off" />
+
+        <klarna-placement id="osm-cart-placement" data-key="${KlarnaOSM.getCartPagePlacementTagId()}"
+            data-locale="${KlarnaOSM.getLocale()}" data-theme="${KlarnaOSM.getOSMCartTheme()}"
+            data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(totalGrossPrice)}"></klarna-placement>
 
         <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
     </isif>
+
 </div>

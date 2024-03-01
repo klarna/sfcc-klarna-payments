@@ -55,5 +55,5 @@
         </script>
     <script type="text/javascript" src="${URLUtils.staticURL('/js/klarnaExpressCheckout.js')}"></script>
     <link rel="stylesheet" href="${URLUtils.staticURL('/css/klarnaExpress.css')}" />
-    <script async src="https://x.klarnacdn.net/kp/lib/v1/api.js"></script>
+    <script async src="${KlarnaOSM.getKlarnExpressCheckoutScriptURL()}"></script>
 </isif>

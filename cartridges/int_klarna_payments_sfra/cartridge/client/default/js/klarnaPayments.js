@@ -1171,7 +1171,7 @@ window.klarnaAsyncCallback = function () {
  * @param {object} $form checkout form to check for errors
  */
 function checkFormErrors($form) {
-    var numOfTries = 3;
+    var numOfTries = KlarnaCheckout.klarnaPaymentsConstants.FORM_VALIDATION_NUM_RETRIES;
     var interval = setInterval(function () {
         if (numOfTries === 0) {
             clearInterval(interval);
@@ -1183,7 +1183,7 @@ function checkFormErrors($form) {
             $('.btn-show-details').trigger('click');
             clearInterval(interval);
         }
-    }, 100);
+    }, KlarnaCheckout.klarnaPaymentsConstants.KEC_EEROR_WAITTIME);
 }
 
 /**

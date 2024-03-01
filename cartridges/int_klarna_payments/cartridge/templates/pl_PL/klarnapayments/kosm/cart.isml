@@ -1,4 +1,4 @@
-<isset name="LineItemCtnr" value="${pdict.p_lineitemctnr}" scope="page"/>
+<isset name="LineItemCtnr" value="${pdict.p_lineitemctnr}" scope="page" />
 <isscript>
     var KlarnaHelper = require('~/cartridge/scripts/util/KlarnaHelper');
     var KlarnaOSM = require('~/cartridge/scripts/marketing/KlarnaOSM');
@@ -9,8 +9,13 @@
         var orderTotalValue = KlarnaHelper.calculateOrderTotalValue(LineItemCtnr);
     </isscript>
 
+    <isprint value="${KlarnaOSM.getCartPlacementCustomStyling()}" encoding="off" />
+
     <div class="kosm-cart">
-        <klarna-placement data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(orderTotalValue)}" data-inline="true"></klarna-placement>
+        <klarna-placement id="osm-cart-placement" data-key="${KlarnaOSM.getCartPagePlacementTagId()}"
+            data-locale="${KlarnaOSM.getLocale()}"
+            data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(orderTotalValue)}"
+            data-theme="${KlarnaOSM.getOSMCartTheme()}"></klarna-placement>
         <isset name="isKlarnaOSMScriptRequired" value="true" scope="page" />
     </div>
 </isif>

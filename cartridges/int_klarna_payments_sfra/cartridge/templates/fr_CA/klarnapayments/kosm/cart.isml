@@ -3,8 +3,10 @@
     <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
     <isif condition="${KlarnaOSM.isEnabledCartPage()}">
-        <klarna-placement data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" 
-        data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(totalGrossPrice)}" 
+        <isprint value="${KlarnaOSM.getCartPlacementCustomStyling()}" encoding="off" />
+
+        <klarna-placement id="osm-cart-placement" data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" 
+        data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(totalGrossPrice)}" data-theme="${KlarnaOSM.getOSMCartTheme()}"
         <isif condition="${KlarnaOSM.isEnabledDataInline()}">data-inline="true"</isif>></klarna-placement>
 
         <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />

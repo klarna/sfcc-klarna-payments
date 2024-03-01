@@ -1,5 +1,10 @@
 'use strict';
 
+/**
+ * Check if the product is configured as subscription only
+ * @param {object} apiProduct 
+ * @returns {object} if the product is setup as subscription only
+ */
 function isSubscriptionOnly(apiProduct) {
     var isStandardProduct = !empty(apiProduct.custom.kpIsStandardProduct) ? apiProduct.custom.kpIsStandardProduct : true;
     var isSubscriptionProduct = !empty(apiProduct.custom.kpIsSubscriptionProduct) ? apiProduct.custom.kpIsSubscriptionProduct : false;

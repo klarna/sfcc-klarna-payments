@@ -204,13 +204,13 @@ function getExpressCheckoutClientKey() {
  * @returns {string} concatenated locale string
  */
 function getLocaleString() {
-	var Locale = require( 'dw/util/Locale' );
-	var currentLocale = Locale.getLocale( request.locale );
-	var resultLocale = currentLocale.language;
-	if ( currentLocale.country ) {
-		resultLocale = resultLocale + '-' + currentLocale.country;
-	}
-	return resultLocale;
+    var Locale = require( 'dw/util/Locale' );
+    var currentLocale = Locale.getLocale( request.locale );
+    var resultLocale = currentLocale.language;
+    if ( currentLocale.country ) {
+        resultLocale = resultLocale + '-' + currentLocale.country;
+    }
+    return resultLocale;
 }
 
 /**
@@ -270,7 +270,8 @@ function getKlarnaResources( countryCode ) {
     var KPConstants = {
         SHIPPING_METHOD_TYPE: KlarnaConstants.SHIPPING_METHOD_TYPE,
         SHIPPING_TYPE: KlarnaConstants.SHIPPING_TYPE,
-        KLARNA_PAYMENT_DEFAULT: KlarnaConstants.PAYMENT_METHOD
+        KLARNA_PAYMENT_DEFAULT: KlarnaConstants.PAYMENT_METHOD,
+        KEC_EEROR_WAITTIME: KlarnaConstants.KLARNA_JS_CONSTANTS.KEC_ERROR_WAITTIME
     };
 
     //klarna sitePreferences obj
@@ -551,7 +552,7 @@ function getExpressKlarnaMethod() {
     var Resource = require('dw/web/Resource');
     var kpECPaymentCategoryContent = Site.getCurrent().getCustomPreferenceValue('kpECPaymentCategoryContent');
     var paymentMethods = {};
-	var paymentMethod = null;
+    var paymentMethod = null;
     if (!empty(kpECPaymentCategoryContent)) {
         paymentMethods = JSON.parse(kpECPaymentCategoryContent);
         if (!empty(paymentMethods) && paymentMethods.length > 0) {
@@ -590,7 +591,9 @@ function getCurrentBasketProductData(currentBasket) {
 }
 
 /**
- * Restore previous customer basket base on the JSON attribute in case of pay now
+ * Restore previous customer basket based
+ * on the session JSON attribute in case of pay now
+ * from PDP
  * @param {Object} currentBasket current basket
 */
 function revertCurrentBasketProductData(currentBasket) {
@@ -598,31 +601,40 @@ function revertCurrentBasketProductData(currentBasket) {
     var app = require('*/cartridge/scripts/app');
     var Product = app.getModel('Product');
     var params = request.httpParameterMap;
+    var Logger = require('dw/system/Logger');
 
-    if (!empty(currentBasket)) {
-        
-        var cart = app.getModel('Cart').get();
-        
-        var customerBasketData = session.privacy.kpCustomerProductData ? JSON.parse(session.privacy.kpCustomerProductData) : null;
-        var productLineItems = currentBasket.productLineItems.toArray();
+    try {
+        Transaction.begin();
 
-        Transaction.wrap(function () {
+        if (!empty(currentBasket)) {
+            
+            var cart = app.getModel('Cart').get();
+            
+            var customerBasketData = session.privacy.kpCustomerProductData ? JSON.parse(session.privacy.kpCustomerProductData) : null;
+            var productLineItems = currentBasket.productLineItems.toArray();
+
+
             productLineItems.forEach(function (item) {
                 currentBasket.removeProductLineItem(item);
             });
-        });
 
-        var products = (customerBasketData && customerBasketData.products) ? customerBasketData.products : null;
-        if (products) {
-            products.forEach(function (product) {
-                var productToAdd = Product.get(product.productId);
-                var productOptionModel = productToAdd.updateOptionSelection(params);
-                cart.addProductItem(productToAdd.object, product.qtyValue, productOptionModel);
-            });
-        }
-        Transaction.wrap(function () {
+
+            var products = (customerBasketData && customerBasketData.products) ? customerBasketData.products : null;
+            if (products) {
+                products.forEach(function (product) {
+                    var productToAdd = Product.get(product.productId);
+                    var productOptionModel = productToAdd.updateOptionSelection(params);
+                    cart.addProductItem(productToAdd.object, product.qtyValue, productOptionModel);
+                });
+            }
             cart.calculate();
-        });
+            
+            session.privacy.kpCustomerProductData = null;
+        }
+        Transaction.commit();
+    } catch (e) {
+        Transaction.rollback();
+        Logger.error("Couldn't restore customer basket");
     }
 }
 

@@ -3,10 +3,16 @@
 var klarnaPreferences = window.KPPreferences;
 var klarnaPaymentsUrls = window.KlarnaPaymentsUrls;
 var klarnaPaymentsResources = window.KPResources;
+var klarnaPaymentsConstants = window.KPConstants;
 
+/*
+ * Build and display error message
+ */
 function generateErrorAuthMessage(message) {
-    var msg = message ? message : klarnaPaymentsResources.kpExpressCheckoutAuthFailure;
-    alert(msg);
+    setTimeout(function () {
+        var msg = message ? message : klarnaPaymentsResources.kpExpressCheckoutAuthFailure;
+        alert(msg);
+    }, klarnaPaymentsConstants.KEC_EEROR_WAITTIME);
 }
 
 /**
@@ -69,7 +75,6 @@ function initKlarnaExpressButton(containerId, isPDP) {
                             { collect_shipping_address: klarnaPreferences.kpCollectShippingAddress, auto_finalize: false },
                             data.payload,
                             (result) => {
-                                // The result, if successful contains the authorization_token
                                 if (result.approved) {
                                     $.ajax({
                                         url: klarnaPaymentsUrls.handleExpressCheckoutAuth,
@@ -89,19 +94,10 @@ function initKlarnaExpressButton(containerId, isPDP) {
                                             url: klarnaPaymentsUrls.handleAuthFailurePDP,
                                             type: 'get',
                                             dataType: 'json',
-                                            contentType: 'application/json',
-                                            success: function () {
-                                                setTimeout(function () {
-                                                    generateErrorAuthMessage();
-                                                }, 100);
-                                            }
+                                            contentType: 'application/json'
                                         });
-                                    } else {
-                                        setTimeout(function () {
-                                            generateErrorAuthMessage();
-                                        }, 100);
                                     }
-                                    console.log('Error in payment');
+                                    generateErrorAuthMessage();
                                 }
                             },
                         );

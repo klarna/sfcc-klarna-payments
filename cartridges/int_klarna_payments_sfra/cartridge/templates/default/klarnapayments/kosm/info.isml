@@ -1,8 +1,11 @@
 <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
 <isif condition="${KlarnaOSM.isEnabledInfoPage()}">
+    <isprint value="${KlarnaOSM.getInfoPagePlacementCustomStyling()}" encoding="off" />
+
     <div class="kosm-info">
-        <klarna-placement data-key="${KlarnaOSM.getInfoPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}"></klarna-placement>
+        <klarna-placement id="osm-info-page-placement" data-key="${KlarnaOSM.getInfoPagePlacementTagId()}"
+            data-locale="${KlarnaOSM.getLocale()}" data-theme="${KlarnaOSM.getOSMInfoPageTheme()}"></klarna-placement>
     </div>
     <isscript>
         var assets = require('*/cartridge/scripts/assets.js');

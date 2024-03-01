@@ -108,7 +108,10 @@ superMdl.getKlarnaResources = function () {
     var KPConstants = {
         SHIPPING_METHOD_TYPE: KlarnaPaymentsConstants.SHIPPING_METHOD_TYPE,
         SHIPPING_TYPE: KlarnaPaymentsConstants.SHIPPING_TYPE,
-        KLARNA_PAYMENT_DEFAULT: KlarnaPaymentsConstants.PAYMENT_METHOD
+        KLARNA_PAYMENT_DEFAULT: KlarnaPaymentsConstants.PAYMENT_METHOD,
+        ERROR_MSG_ALERT_TIMEOUT: KlarnaPaymentsConstants.KLARNA_JS_CONSTANTS.ERROR_MSG_ALERT_TIMEOUT,
+        KEC_EEROR_WAITTIME: KlarnaPaymentsConstants.KLARNA_JS_CONSTANTS.KEC_ERROR_WAITTIME,
+        FORM_VALIDATION_NUM_RETRIES: KlarnaPaymentsConstants.KLARNA_JS_CONSTANTS.FORM_VALIDATION_NUM_RETRIES
     };
 
     // klarna sitePreferences obj
@@ -157,43 +160,57 @@ function filterApplicableShippingMethods(shipment, address) {
     return filteredMethods;
 }
 
-//revert current customer basket details
+/**
+ * Restore previous customer basket based
+ * on the session JSON attribute in case of pay now
+ * from PDP
+ * @param {object} currentBasket 
+ */
 superMdl.revertCurrentBasketProductData = function (currentBasket) {
     var Transaction = require('dw/system/Transaction');
     var cartHelper = require('*/cartridge/scripts/cart/cartHelpers');
     var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+    var Logger = require('dw/system/Logger');
 
-    if (!empty(currentBasket)) {
-        var customerBasketData = session.privacy.kpCustomerProductData ? JSON.parse(session.privacy.kpCustomerProductData) : null;
-        var productLineItems = currentBasket.productLineItems.toArray();
+    try {
+        Transaction.begin();
+        if (!empty(currentBasket)) {
+            var customerBasketData = session.privacy.kpCustomerProductData ? JSON.parse(session.privacy.kpCustomerProductData) : null;
+            var productLineItems = currentBasket.productLineItems.toArray();
 
-        Transaction.wrap(function () {
+
             productLineItems.forEach(function (item) {
                 currentBasket.removeProductLineItem(item);
             });
-        });
 
-        var products = (customerBasketData && customerBasketData.products) ? customerBasketData.products : null;
-        if (products) {
-            products.forEach(function (product) {
-                Transaction.wrap(function () {
-                    var result = cartHelper.addProductToCart(
-                        currentBasket,
-                        product.productId,
-                        product.qtyValue,
-                        [],
-                        []
-                    );
-                })
+            var products = (customerBasketData && customerBasketData.products) ? customerBasketData.products : null;
+            if (products) {
+                products.forEach(function (product) {
+                    Transaction.wrap(function () {
+                        var result = cartHelper.addProductToCart(
+                            currentBasket,
+                            product.productId,
+                            product.qtyValue,
+                            [],
+                            []
+                        );
+                    })
 
-            });
-        }
+                });
+            }
 
-        Transaction.wrap(function () {
             cartHelper.ensureAllShipmentsHaveMethods(currentBasket);
             basketCalculationHelpers.calculateTotals(currentBasket);
-        });
+
+            session.privacy.kpCustomerProductData = null;
+
+        }
+        Transaction.commit();
+    } catch (e) {
+        Transaction.rollback();
+        Logger.error("Couldn't restore customer basket");
     }
+
 }
 
 superMdl.filterApplicableShippingMethods = filterApplicableShippingMethods;

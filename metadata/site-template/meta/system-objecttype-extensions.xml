@@ -393,6 +393,14 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="kpECLibraryURL">
+                <display-name xml:lang="x-default">Klarna Express Checkout Library URL</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>https://x.klarnacdn.net/kp/lib/v1/api.js</default-value>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Klarna_Payments">
@@ -439,6 +447,7 @@
             <attribute-group group-id="Klarna_ExpressCheckout">
                 <display-name xml:lang="x-default">Klarna Express Checkout</display-name>
                 <attribute attribute-id="kpECEnabled"/>
+                <attribute attribute-id="kpECLibraryURL"/>
                 <attribute attribute-id="kpECCollectShippingAddress"/>
                 <attribute attribute-id="kpECButtonTheme"/>
                 <attribute attribute-id="kpECButtonShape"/>

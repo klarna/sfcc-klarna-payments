@@ -53,6 +53,30 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="osmCartTheme">
+                <display-name xml:lang="x-default">Cart Placement Theme</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Default</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dark</display>
+                        <value>dark</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmCartCustomStyling">
+                <display-name xml:lang="x-default">Cart Placement Custom Styling (#osm-cart-placement)</display-name>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="osmPDPEnabled">
                 <display-name xml:lang="x-default">PDP Placement Tag Enabled</display-name>
                 <description xml:lang="x-default">To enable PDP Placement for a given locale.</description>
@@ -64,6 +88,30 @@
                 <display-name xml:lang="x-default">PDP Placement Data Key</display-name>
                 <description xml:lang="x-default">The Klarna On-site Messaging “data-key” of placement applicable for Product Display page for a given locale</description>
                 <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmPDPTheme">
+                <display-name xml:lang="x-default">PDP Placement Theme</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Default</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dark</display>
+                        <value>dark</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmPDPCustomStyling">
+                <display-name xml:lang="x-default">PDP Placement Custom Styling (#osm-pdp-placement)</display-name>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
@@ -81,6 +129,30 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="osmHeaderTheme">
+                <display-name xml:lang="x-default">Header Placement Theme</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Default</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dark</display>
+                        <value>dark</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmHeaderCustomStyling">
+                <display-name xml:lang="x-default">Header Placement Custom Styling (#osm-header-placement)</display-name>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="osmFooterEnabled">
                 <display-name xml:lang="x-default">Footer Placement Tag Enabled</display-name>
                 <description xml:lang="x-default">To enable Klarna footer Placement in a given storefront</description>
@@ -95,6 +167,30 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="osmFooterTheme">
+                <display-name xml:lang="x-default">Footer Placement Theme</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Default</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dark</display>
+                        <value>dark</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmFooterCustomStyling">
+                <display-name xml:lang="x-default">Footer Placement Custom Styling (#osm-footer-placement)</display-name>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="osmInfoPageEnabled">
                 <display-name xml:lang="x-default">Info Page Placement Tag Enabled</display-name>
                 <description xml:lang="x-default">To enable Klarna Info Page Placement in a given storefront</description>
@@ -106,6 +202,30 @@
                 <display-name xml:lang="x-default">Info Page Placement Data Key</display-name>
                 <description xml:lang="x-default">The Klarna On-site Messaging “data-key” of placement applicable for the Info Page .</description>
                 <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmInfoPageTheme">
+                <display-name xml:lang="x-default">Info Page Placement Theme</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Default</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dark</display>
+                        <value>dark</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="osmInfoPageCustomStyling">
+                <display-name xml:lang="x-default">Info Page Placement Custom Styling (#osm-info-page-placement)</display-name>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
@@ -280,6 +400,23 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
+            <attribute-definition attribute-id="osmEnvironment">
+                <display-name xml:lang="x-default">On-Site Messaging Environment</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Playground</display>
+                        <value>playground</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Production</display>
+                        <value>production</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
         </attribute-definitions>
         <group-definitions>
             <attribute-group group-id="custom">
@@ -291,19 +428,30 @@
             </attribute-group>
             <attribute-group group-id="osm">
                 <display-name xml:lang="x-default">On-site Messaging</display-name>
+                <attribute attribute-id="osmLibraryUrl"/>
                 <attribute attribute-id="osmUCI"/>
+                <attribute attribute-id="osmEnvironment"/>
                 <attribute attribute-id="osmCartEnabled"/>
                 <attribute attribute-id="osmCartTagId"/>
+                <attribute attribute-id="osmCartTheme"/>
+                <attribute attribute-id="osmCartCustomStyling"/>
                 <attribute attribute-id="osmPDPEnabled"/>
                 <attribute attribute-id="osmPDPTagId"/>
+                <attribute attribute-id="osmPDPTheme"/>
+                <attribute attribute-id="osmPDPCustomStyling"/>
                 <attribute attribute-id="osmHeaderEnabled"/>
                 <attribute attribute-id="osmHeaderTagId"/>
+                <attribute attribute-id="osmHeaderTheme"/>
+                <attribute attribute-id="osmHeaderCustomStyling"/>
                 <attribute attribute-id="osmFooterEnabled"/>
                 <attribute attribute-id="osmFooterTagId"/>
+                <attribute attribute-id="osmFooterTheme"/>
+                <attribute attribute-id="osmFooterCustomStyling"/>
                 <attribute attribute-id="osmInfoPageEnabled"/>
                 <attribute attribute-id="osmInfoPageTagId"/>
+                <attribute attribute-id="osmInfoPageTheme"/>
+                <attribute attribute-id="osmInfoPageCustomStyling"/>
                 <attribute attribute-id="osmDataInlineEnabled"/>
-                <attribute attribute-id="osmLibraryUrl"/>
             </attribute-group>
             <attribute-group group-id="expressButton">
                 <display-name xml:lang="x-default">Express Button</display-name>

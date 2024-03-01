@@ -59,11 +59,17 @@ var KLARNA_PAYMENT_URLS = {
     WRITE_ADDITIONAL_LOG: 'KlarnaPayments-WriteLog',
     HANDLE_EXPRESS_CHECKOUT_AUTH: 'KlarnaPayments-HandleAuthorizationResult',
     EXPRESS_CHECKOUT_AUTH_CALLBACK: 'KlarnaPayments-ECAuthorizationCallback',
-	GENERATE_EXPRESS_CHECKOUT_PAYLOAD: 'KlarnaPayments-GenerateExpressCheckoutPayload',
-	HANDLE_AUTH_FAILURE_PDP: 'KlarnaPayments-HandleAuthFailure'
+    GENERATE_EXPRESS_CHECKOUT_PAYLOAD: 'KlarnaPayments-GenerateExpressCheckoutPayload',
+    HANDLE_AUTH_FAILURE_PDP: 'KlarnaPayments-HandleAuthFailure'
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 24.1.0';
+var KLARNA_JS_CONSTANTS = {
+    ERROR_MSG_ALERT_TIMEOUT: 2000,
+    KEC_ERROR_WAITTIME: 100,
+    FORM_VALIDATION_NUM_RETRIES: 3
+};
+
+var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 24.2.0';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.NOTIFY_EVENT_TYPES = NOTIFY_EVENT_TYPES;
@@ -76,3 +82,4 @@ module.exports.SHIPPING_METHOD_TYPE = SHIPPING_METHOD_TYPE;
 module.exports.SHIPPING_TYPE = SHIPPING_TYPE;
 module.exports.KLARNA_PAYMENT_URLS = KLARNA_PAYMENT_URLS;
 module.exports.SERVICE_HEADER = SERVICE_HEADER;
+module.exports.KLARNA_JS_CONSTANTS = KLARNA_JS_CONSTANTS;

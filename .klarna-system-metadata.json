@@ -2,7 +2,7 @@
     "system_id": "partner-sfcc",
     "system_dependencies": [
         {
-            "system_id": "public-api-routing-service",
+            "system_id": "merchant-api-routing",
             "sla_impact": "IMMEDIATE",
             "description": "Handling all API requests"
         }

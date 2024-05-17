@@ -1,7 +1,7 @@
 {
   "init": [],
   "name": "klarna",
-  "version": "24.2.0",
+  "version": "24.3.0",
   "description": "Salesforce Commerce Cloud | Klarna Payment Integration",
   "main": "Gruntfile.js",
   "dependencies": {
@@ -56,6 +56,10 @@
     {
       "name": "Tihomir Ivanov",
       "email": "Tihomir.Ivanov@tryzens.com"
+    },
+    {
+      "name": "Rumyana Topalska",
+      "email": "Rumyana.Topalska@tryzens.com"
     }
   ],
   "license": "",

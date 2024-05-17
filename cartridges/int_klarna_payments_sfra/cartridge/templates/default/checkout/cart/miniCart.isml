@@ -64,7 +64,7 @@
             </div>
         </div>
         <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
-        <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled()}">
+        <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.showExpressCheckoutButton().miniCart}">
             <div class="row kec-cart ${pdict.hasSubscriptionOnlyProduct ? 'd-none' : ''}">
                 <div class="col-12 mb-sm-3" id="slotMiniCartKEC"></div>
             </div>

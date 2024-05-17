@@ -3,7 +3,7 @@
 <isset name="contId" value="${!empty(pdict.container_id) ? pdict.container_id : 'klarnaExpressCheckout'}"
     scope="page" />
 
-<isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled()}">
+<isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.showExpressCheckoutButton().cart}">
     <div class="kec-cart">
         <div id="${contId}" class="klarna-express-checkout-cart"></div>
     </div>

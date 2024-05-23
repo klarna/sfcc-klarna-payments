@@ -1,7 +1,7 @@
 <!--- TEMPLATENAME: klarnapayments/kec/buttoncart.isml --->
 <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
-<isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled()}">
+<isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.showExpressCheckoutButton().pdp}">
     <div class="">
         <div id="klarnaExpressCheckoutPDP" class="klarna-express-checkout-pdp"></div>
     </div>

@@ -274,6 +274,28 @@ var KlarnaOSM = {
     isKlarnExpressCheckoutEnabled: function () {
         return currentSite.getCustomPreferenceValue('kpECEnabled') || false;
     },
+    showExpressCheckoutButton: function () {
+        var showECButton = currentSite.getCustomPreferenceValue('kec_placement');
+        var showECButtonObj = {
+            cart: false,
+            pdp: false,
+            miniCart: false
+        };
+        if (showECButton && showECButton.length) {
+            showECButton.forEach(function (item) {
+                if (item.value === 'pdp') {
+                    showECButtonObj.pdp = true;
+                }
+                if (item.value === 'cart') {
+                    showECButtonObj.cart = true;
+                }
+                if (item.value === 'minicart') {
+                    showECButtonObj.miniCart = true;
+                }
+            });
+        }
+        return showECButtonObj;
+    },
     getKlarnExpressCheckoutClientKey: function () {
         var localeObject = this.getKlarnaCountriesObject();
         return localeObject.custom.expressCheckoutClientKey || null;

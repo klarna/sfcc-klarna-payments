@@ -340,6 +340,27 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="kec_placement">
+                <display-name xml:lang="x-default">Placement</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Cart</display>
+                        <value>cart</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PDP</display>
+                        <value>pdp</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Mini cart</display>
+                        <value>minicart</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
             <attribute-definition attribute-id="kpECCollectShippingAddress">
                 <display-name xml:lang="x-default">Klarna Express Checkout Collect Shipping Address</display-name>
                 <type>boolean</type>
@@ -445,13 +466,14 @@
                 <attribute attribute-id="kpRecurringRetryFrequency"/>
             </attribute-group>
             <attribute-group group-id="Klarna_ExpressCheckout">
-                <display-name xml:lang="x-default">Klarna Express Checkout</display-name>
+                <display-name xml:lang="x-default">Klarna Express checkout</display-name>
                 <attribute attribute-id="kpECEnabled"/>
                 <attribute attribute-id="kpECLibraryURL"/>
                 <attribute attribute-id="kpECCollectShippingAddress"/>
                 <attribute attribute-id="kpECButtonTheme"/>
                 <attribute attribute-id="kpECButtonShape"/>
                 <attribute attribute-id="kpECPaymentCategoryContent"/>
+                <attribute attribute-id="kec_placement"/>
             </attribute-group>
         </group-definitions>
     </type-extension>

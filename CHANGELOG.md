@@ -1,4 +1,7 @@
 # CHANGELOG
+## 24.3.0
+* Update of Klarna Express Checkout configuration. The display of Klarna Express Checkout buttons is now customizable by selecting preferred placements. By default none is selected.
+* Documentation update – new section added Klarna Display Conditions and Authorization Handling.
 ## 24.2.0
 * Update of OSM functionality that is more aligned with current web standards, provides a consistent identifier system as used in KEC, and offers enhanced customization options to our merchants. This will not only improve the user experience but also reinforce Klarna’s commitment to providing versatile and state-of-the-art e-commerce solutions. CSS customizations are available only in the new library version.
 * Documentation update - new section added for cartridge upgrade process.

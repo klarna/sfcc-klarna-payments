@@ -1,4 +1,4 @@
-[<img src="https://cdn.klarna.com/1.0/shared/image/generic/logo/global/basic/logo_black.png" alt="Klarna" width="200">](https://klarna.com)
+https://github.com/Realtech1/sfcc-klarna-payments.git[<img src="https://cdn.klarna.com/1.0/shared/image/generic/logo/global/basic/logo_black.png" alt="Klarna" width="200">](https://klarna.com)
 
 # Klarna Payments 2017-2023 Salesforce Commerce Cloud Cartridge
 

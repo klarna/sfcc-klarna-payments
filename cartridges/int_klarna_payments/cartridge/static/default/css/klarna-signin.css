@@ -1,0 +1,10 @@
+#klarna-identity-button {
+    width: 100%;
+}
+
+.klarna-signin-error {
+    color: #990000;
+    margin-bottom: 16px;
+    font-size: 0.65rem;
+    margin-top: 8px;
+}

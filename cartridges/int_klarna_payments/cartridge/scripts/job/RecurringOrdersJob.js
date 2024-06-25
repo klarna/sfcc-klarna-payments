@@ -36,9 +36,9 @@ function shouldCharge(subscription) {
  * @returns {boolean} retryEnabled is retry enabled
  */
 function isRetryEnabled() {
-    var retryEnabled = currentSite.getCustomPreferenceValue('kpEnableRecurringOrderRetry');
-    var retryNumber = currentSite.getCustomPreferenceValue('kpRecurringNumberOfRetry').value;
-    var retryFrequency = currentSite.getCustomPreferenceValue('kpRecurringRetryFrequency').value;
+    var retryEnabled = currentSite.getCustomPreferenceValue( 'kpSubsRetryEnable' ) ? currentSite.getCustomPreferenceValue( 'kpSubsRetryEnable' ) : currentSite.getCustomPreferenceValue( 'kpEnableRecurringOrderRetry' );
+    var retryNumber = currentSite.getCustomPreferenceValue( 'kpSubsRetryNumber' ) ? currentSite.getCustomPreferenceValue( 'kpSubsRetryNumber' ) : currentSite.getCustomPreferenceValue( 'kpRecurringNumberOfRetry' ).value;
+    var retryFrequency = currentSite.getCustomPreferenceValue( 'kpSubsRetryFrequency' ) ? currentSite.getCustomPreferenceValue( 'kpSubsRetryFrequency' ) : currentSite.getCustomPreferenceValue( 'kpRecurringRetryFrequency' ).value;
 
     return retryEnabled && retryNumber && retryFrequency;
 }
@@ -50,13 +50,13 @@ function isRetryEnabled() {
  * @param {Object} currentSite current site
  */
 function handleSubscriptionRetry(subscription, subToEdit, currentSite) {
-    var retryNumber = currentSite.getCustomPreferenceValue('kpRecurringNumberOfRetry').value;
+    var retryNumber = currentSite.getCustomPreferenceValue( 'kpSubsRetryNumber' ) ? currentSite.getCustomPreferenceValue( 'kpSubsRetryNumber' ) : currentSite.getCustomPreferenceValue( 'kpRecurringNumberOfRetry' ).value;
 
     var subRetryCount = subscription.retryCount || 0;
     var newRetryCount = !empty(subscription.retryCount) ? (parseInt(subscription.retryCount) + 1) : 0;
 
     if (isRetryEnabled() && subRetryCount < retryNumber && newRetryCount < retryNumber) {
-        var retryFrequency = currentSite.getCustomPreferenceValue('kpRecurringRetryFrequency').value;
+        var retryFrequency = currentSite.getCustomPreferenceValue( 'kpSubsRetryFrequency' ) ? currentSite.getCustomPreferenceValue( 'kpSubsRetryFrequency' ) : currentSite.getCustomPreferenceValue( 'kpRecurringRetryFrequency' ).value;
         var nextRetryDate = SubscriptionHelper.calculateNextChargeDate(null, 'day', retryFrequency);
         subToEdit.nextRetryDate = StringUtils.formatCalendar(nextRetryDate, SubscriptionHelper.DATE_PATTERN);
         subToEdit.retryCount = newRetryCount;

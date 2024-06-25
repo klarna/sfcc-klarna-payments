@@ -56,82 +56,65 @@
             }, {}, function (res) {
                 var xhr = new XMLHttpRequest();
                 if (res.approved) {
-                    if (!klarnaPaymentsObjects.kpBankTransferCallback) {
-                        xhr.open("GET", klarnaPaymentsUrls.saveAuth, true);
+                    // Await for a redirect for 20 seconds
+                    var $loader = document.createElement('div');
+                    $loader.className = 'loader';
+                    $loader.innerHTML = '<div class="loader-indicator"></div><div class="loader-bg"></div>';
+                    document.body.append($loader);
 
+                    var numOfTries = 11;
+                    var currentUrl = location.href;
+                    var newUrl = '';
+                    var interval = setInterval(function () {
+                        if (numOfTries === 0) {
+                            clearInterval(interval);
+                            $errorBlock.style.display = 'block';
+                            $($loader).hide();
+                            return;
+                        }
+                        numOfTries--;
+                        xhr.open("GET", klarnaPaymentsUrls.bankTransferAwaitCallback + '?session_id=' + klarnaPaymentsObjects.sessionID, true);
                         xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
                         xhr.setRequestHeader("X-Auth", res.authorization_token);
-
                         xhr.onreadystatechange = function () {
-                            if (xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200) {
-                                $placeOrderBtn.removeEventListener("click", placeOrderBtnClickEventListener);
-                                $placeOrderBtn.click();
-                            }
-                        };
-                        xhr.send();
-                    } else {
-                        // Await for a redirect for 20 seconds
-                        var $loader = document.createElement('div');
-                        $loader.className = 'loader';
-                        $loader.innerHTML = '<div class="loader-indicator"></div><div class="loader-bg"></div>';
-                        document.body.append($loader);
-
-                        var numOfTries = 11;
-                        var currentUrl = location.href;
-                        var newUrl = '';
-                        var interval = setInterval(function () {
-                            if (numOfTries === 0) {
-                                clearInterval(interval);
-                                $errorBlock.style.display = 'block';
-                                $($loader).hide();
-                                return;
-                            }
-                            numOfTries--;
-                            xhr.open("GET", klarnaPaymentsUrls.bankTransferAwaitCallback + '?session_id=' + klarnaPaymentsObjects.sessionID, true);
-                            xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-                            xhr.setRequestHeader("X-Auth", res.authorization_token);
-                            xhr.onreadystatechange = function () {
-                                var response = xhr.response;
-                                try {
-                                    if (response) {
-                                        var jsonResponse = JSON.parse(response);
-                                        if (jsonResponse.redirectUrl && jsonResponse.redirectUrl !== currentUrl && jsonResponse.redirectUrl !== newUrl && jsonResponse.redirectUrl !== 'undefined') {
-                                            clearInterval(interval);
-                                            newUrl = jsonResponse.redirectUrl;
-                                            location.href = jsonResponse.redirectUrl;
-                                        }
-                                    } else {
-                                        return;
-                                    }
-                                } catch (e) {
-                                    console.debug(e); // eslint-disable-line
-                                }
-                            };
-                            xhr.send();
-                        }, 2000);
-                    }
-                } else {
-                    if (klarnaPaymentsObjects.kpBankTransferCallback) {
-                        // If the payment isn't approved or popup is closed,
-                        // then recreate Basket.
-                        // In case of error, show error message
-                        xhr.open("POST", klarnaPaymentsUrls.failOrder + '?session_id=' + klarnaPaymentsObjects.sessionID, true);
-                        xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
-                        xhr.onreadystatechange = function () {
-                            if (xhr.readyState === XMLHttpRequest.DONE) {
-                                var response = xhr.response;
-                                try {
+                            var response = xhr.response;
+                            try {
+                                if (response) {
                                     var jsonResponse = JSON.parse(response);
-                                    if (jsonResponse && !jsonResponse.success) {
-                                        $errorBlock.style.display = 'block';
+                                    if (jsonResponse.redirectUrl && jsonResponse.redirectUrl !== currentUrl && jsonResponse.redirectUrl !== newUrl && jsonResponse.redirectUrl !== 'undefined') {
+                                        clearInterval(interval);
+                                        newUrl = jsonResponse.redirectUrl;
+                                        location.href = jsonResponse.redirectUrl;
                                     }
-                                } catch (e) {
-                                    console.debug(e); // eslint-disable-line
+                                } else {
+                                    return;
                                 }
+                            } catch (e) {
+                                console.debug(e); // eslint-disable-line
                             }
                         };
                         xhr.send();
-                    }
+                    }, 2000);
+                } else {
+                    // If the payment isn't approved or popup is closed,
+                    // then recreate Basket.
+                    // In case of error, show error message
+                    xhr.open("POST", klarnaPaymentsUrls.failOrder + '?session_id=' + klarnaPaymentsObjects.sessionID, true);
+                    xhr.setRequestHeader("Content-type", "application/json; charset=utf-8");
+                    xhr.onreadystatechange = function () {
+                        if (xhr.readyState === XMLHttpRequest.DONE) {
+                            var response = xhr.response;
+                            try {
+                                var jsonResponse = JSON.parse(response);
+                                if (jsonResponse && !jsonResponse.success) {
+                                    $errorBlock.style.display = 'block';
+                                }
+                            } catch (e) {
+                                console.debug(e); // eslint-disable-line
+                            }
+                        }
+                    };
+                    xhr.send();
                 }
             });
         }
@@ -139,7 +122,7 @@
 
     $placeOrderBtn.addEventListener("click", placeOrderBtnClickEventListener);
 
-    if (klarnaPaymentsObjects.kpBankTransferCallback) {
+    if (!klarnaPaymentsObjects.kpIsExpressCheckout) {
         var placeOrderForBTCallback = function () {
             $placeOrderBtn.removeEventListener("click", placeOrderForBTCallback);
             // Place Order

@@ -53,3 +53,8 @@
 	attribute="disablesubscribe"
 	attribute="kptrialdaysusage"
 />
+
+<ismodule template="klarnapayments/ksin/klarnaSignIn.isml"
+	name="klarnasignin"
+	attribute="oauthreentryendpoint"
+/>

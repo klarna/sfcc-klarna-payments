@@ -417,6 +417,22 @@
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
+            <attribute-definition attribute-id="signInClientId">
+                <display-name xml:lang="x-default">Klarna SignIn ClientID</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="region">
+                <display-name xml:lang="x-default">Region</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
         </attribute-definitions>
         <group-definitions>
             <attribute-group group-id="custom">
@@ -425,6 +441,7 @@
                 <attribute attribute-id="klarnaLocale"/>
                 <attribute attribute-id="credentialID"/>
                 <attribute attribute-id="paymentMethodID"/>
+                <attribute attribute-id="region"/>
             </attribute-group>
             <attribute-group group-id="osm">
                 <display-name xml:lang="x-default">On-site Messaging</display-name>
@@ -472,6 +489,218 @@
             <attribute-group group-id="expressCheckout">
                 <display-name xml:lang="x-default">Express Checkout</display-name>
                 <attribute attribute-id="expressCheckoutClientKey"/>
+            </attribute-group>
+            <attribute-group group-id="signInClientId">
+                <display-name xml:lang="x-default">Sign In Client ID</display-name>
+                <attribute attribute-id="signInClientId"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+
+    <custom-type type-id="KlarnaActivation">
+        <display-name xml:lang="x-default">Klarna Activation</display-name>
+        <description xml:lang="x-default">Klarna Activation</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <key-definition attribute-id="kp_activation_key">
+            <display-name xml:lang="x-default">Klarna Activation Key</display-name>
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="KP_API_Password_countries">
+                <display-name xml:lang="x-default">API Password</display-name>
+                <type>password</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="KP_API_Username_countries">
+                <display-name xml:lang="x-default">API Username</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNEnabled_countries">
+                <display-name xml:lang="x-default">Enable Virtual Card Number (VCN)</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNRetry_countries">
+                <display-name xml:lang="x-default">Enable settlement retry</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNkeyId_countries">
+                <display-name xml:lang="x-default">Public Key ID</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kp_client_id_countries">
+                <display-name xml:lang="x-default">Client ID</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kp_market_countries">
+                <display-name xml:lang="x-default">Market(s)</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Australia</display>
+                        <value>AU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Austria</display>
+                        <value>AT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Belgium</display>
+                        <value>BE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Canada</display>
+                        <value>CA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Czech Republic</display>
+                        <value>CZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Denmark</display>
+                        <value>DK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Finland</display>
+                        <value>FI</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">France</display>
+                        <value>FR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Germany</display>
+                        <value>DE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Greece</display>
+                        <value>GR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Hungary</display>
+                        <value>HU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Ireland (Republic of Ireland)</display>
+                        <value>IE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Italy</display>
+                        <value>IT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Mexico</display>
+                        <value>MX</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Netherlands</display>
+                        <value>NL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">New Zealand</display>
+                        <value>NZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Norway</display>
+                        <value>NO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Poland</display>
+                        <value>PL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Portugal</display>
+                        <value>PT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Romania</display>
+                        <value>RO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Slovakia</display>
+                        <value>SK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Spain</display>
+                        <value>ES</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Sweden</display>
+                        <value>SE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Switzerland</display>
+                        <value>CH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">United Kingdom</display>
+                        <value>GB</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">United States</display>
+                        <value>US</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kp_region_countries">
+                <display-name xml:lang="x-default">Region</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Europe</display>
+                        <value>EU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">North America</display>
+                        <value>NA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Oceania</display>
+                        <value>OA</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="marketSpecificCredentials">
+                <display-name xml:lang="x-default">Market Specific Credentials</display-name>
+                <attribute attribute-id="kp_activation_key"/>
+                <attribute attribute-id="kp_region_countries"/>
+                <attribute attribute-id="kp_market_countries"/>
+                <attribute attribute-id="kp_client_id_countries"/>
+                <attribute attribute-id="KP_API_Username_countries"/>
+                <attribute attribute-id="KP_API_Password_countries"/>
+            </attribute-group>
+            <attribute-group group-id="vcn">
+                <display-name xml:lang="x-default">Klarna Payments - Virtual Card Number (VCN)</display-name>
+                <attribute attribute-id="kpVCNEnabled_countries"/>
+                <attribute attribute-id="kpVCNkeyId_countries"/>
+                <attribute attribute-id="kpVCNRetry_countries"/>
             </attribute-group>
         </group-definitions>
     </custom-type>

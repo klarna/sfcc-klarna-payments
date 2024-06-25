@@ -1,4 +1,5 @@
-[{
+[
+{
     "countryCode": "US",
     "name": {
         "en_US": "United States"
@@ -88,7 +89,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "DE",
     "name": {
         "en_GB": "Germany",
@@ -180,7 +182,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "AT",
     "name": {
         "en_AT": "Austria",
@@ -272,7 +275,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "GB",
     "name": {
         "en_GB": "United Kingdom"
@@ -349,7 +353,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "JP",
     "name": {
         "ja_JP": "日本",
@@ -432,7 +437,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "CN",
     "name": {
         "zh_CN": "中国",
@@ -513,7 +519,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "FR",
     "name": {
         "en_FR": "France",
@@ -592,7 +599,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "IT",
     "name": {
         "en_IT": "Italy",
@@ -675,7 +683,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "CA",
     "name": {
         "en_CA": "Canada",
@@ -758,7 +767,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "ES",
     "name": {
         "en_ES": "Spain",
@@ -841,7 +851,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "BE",
     "name": {
         "en_BE": "Belgium",
@@ -925,7 +936,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "AU",
     "name": {
         "en_AU": "Australia"
@@ -1005,7 +1017,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "NZ",
     "name": {
         "en_NZ": "New Zealand"
@@ -1085,7 +1098,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "SE",
     "name": {
         "sv_SE": "Sweden"
@@ -1165,7 +1179,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "NO",
     "name": {
         "nb_NO": "Norway"
@@ -1242,7 +1257,8 @@
             }
         }
     }
-}, {
+}, 
+{
     "countryCode": "PL",
     "name": {
         "en_PL": "Poland",
@@ -1325,7 +1341,8 @@
             }
         }
     }
-},{
+},
+{
     "countryCode": "IE",
     "name": {
         "en_IE": "Ireland"
@@ -1402,4 +1419,278 @@
             }
         }
     }
-}]
+},
+{
+	"countryCode": "CZ",
+	"name": {
+		"en_CZ": "Czech Republic"
+	},
+	"continent": "europe",
+	"locales": [
+		"en_CZ"
+	],
+	"currencyCode": "CZK",
+	"taxation": {
+		"type": "gross",
+		"rate": 0.22
+	},
+	"priceBooks": [
+		"czk-list-prices",
+		"czk-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+                "fieldName": "state",
+                "type": "text",
+                "required": false
+            }],
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent": {
+			"eventaddress": [
+				{
+					"fieldName": "country",
+					"type": "select"
+				},
+				{
+					"fieldName": "states.state",
+					"type": "select",
+					"required": true
+				}
+			],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [
+					{
+						"fieldName": "states.state",
+						"type": "select"
+					},
+					{
+						"fieldName": "country",
+						"type": "select"
+					}
+				]
+			}
+		},
+		"expirationInfo": {
+			"year": {
+				"type": "select",
+				"rowclass": "year"
+			},
+			"month": {
+				"type": "select",
+				"rowclass": "month"
+			}
+		}
+	}
+},
+{
+	"countryCode": "RO",
+	"name": {
+		"en_RO": "Romania"
+	},
+	"continent": "europe",
+	"locales": [
+		"en_RO"
+	],
+	"currencyCode": "RON",
+	"taxation": {
+		"type": "gross",
+		"rate": 0.22
+	},
+	"priceBooks": [
+		"ron-list-prices",
+		"ron-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+                "fieldName": "state",
+                "type": "text",
+                "required": false
+            }],
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent": {
+			"eventaddress": [
+				{
+					"fieldName": "country",
+					"type": "select"
+				},
+				{
+					"fieldName": "states.state",
+					"type": "select",
+					"required": true
+				}
+			],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [
+					{
+						"fieldName": "states.state",
+						"type": "select"
+					},
+					{
+						"fieldName": "country",
+						"type": "select"
+					}
+				]
+			}
+		},
+		"expirationInfo": {
+			"year": {
+				"type": "select",
+				"rowclass": "year"
+			},
+			"month": {
+				"type": "select",
+				"rowclass": "month"
+			}
+		}
+	}
+},
+{
+	"countryCode": "HU",
+	"name": {
+		"en_HU": "Hungary"
+	},
+	"continent": "europe",
+	"locales": [
+		"en_HU"
+	],
+	"currencyCode": "HUF",
+	"taxation": {
+		"type": "gross",
+		"rate": 0.22
+	},
+	"priceBooks": [
+		"huf-list-prices",
+		"huf-sale-prices"
+	],
+	"dynamicForms": {
+		"addressDetails": {
+			"country": {
+				"type": "select"
+			},
+			"states": [{
+                "fieldName": "state",
+                "type": "text",
+                "required": false
+            }],
+			"phone": {
+				"help": {
+					"cid": "help-telephone",
+					"label": {
+						"property": "singleshipping.phonerequired",
+						"file": "checkout"
+					}
+				}
+			}
+		},
+		"giftRegistryEvent": {
+			"eventaddress": [
+				{
+					"fieldName": "country",
+					"type": "select"
+				},
+				{
+					"fieldName": "states.state",
+					"type": "select",
+					"required": true
+				}
+			],
+			"type": {
+				"type": "select"
+			}
+		},
+		"giftRegistrySearch": {
+			"simple": {
+				"eventType": {
+					"type": "select"
+				}
+			},
+			"advanced": {
+				"eventMonth": {
+					"type": "select"
+				},
+				"eventYear": {
+					"type": "select"
+				},
+				"eventAddress": [
+					{
+						"fieldName": "states.state",
+						"type": "select"
+					},
+					{
+						"fieldName": "country",
+						"type": "select"
+					}
+				]
+			}
+		},
+		"expirationInfo": {
+			"year": {
+				"type": "select",
+				"rowclass": "year"
+			},
+			"month": {
+				"type": "select",
+				"rowclass": "month"
+			}
+		}
+	}
+}
+]

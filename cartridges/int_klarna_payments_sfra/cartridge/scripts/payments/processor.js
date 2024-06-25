@@ -283,7 +283,7 @@ function isErrorAuthResult(authResult) {
  * @param {string} kpOrderId Klarna Order Id.
  */
 function updateOrderWithKlarnaOrderInfo(order, paymentInstrument, kpOrderId) {
-    var kpVCNEnabledPreferenceValue = Site.getCurrent().getCustomPreferenceValue('kpVCNEnabled');
+    var kpVCNEnabledPreferenceValue = KlarnaHelper.isVCNEnabled();
     var kpAutoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue('kpAutoCapture');
     var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
     var pInstr = paymentInstrument;
@@ -311,7 +311,7 @@ function updateOrderWithKlarnaOrderInfo(order, paymentInstrument, kpOrderId) {
  * @param {string} kpOrderId Klarna Order Id.
  */
 function updateOrderAndCustomerInfo(order, paymentInstrument, customerToken) {
-    var kpVCNEnabledPreferenceValue = Site.getCurrent().getCustomPreferenceValue('kpVCNEnabled');
+    var kpVCNEnabledPreferenceValue = KlarnaHelper.isVCNEnabled();
     var dwOrder = order;
 
     session.privacy.customer_token = customerToken;
@@ -332,7 +332,7 @@ function updateOrderAndCustomerInfo(order, paymentInstrument, customerToken) {
  */
 function authorizeAcceptedOrder(order, klarna_oms__kpOrderID, localeObject) {
     var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue('kpAutoCapture');
-    var kpVCNEnabledPreferenceValue = Site.getCurrent().getCustomPreferenceValue('kpVCNEnabled');
+    var kpVCNEnabledPreferenceValue = KlarnaHelper.isVCNEnabled();
     var authResult = {};
 
     if (!kpVCNEnabledPreferenceValue) {

@@ -58,7 +58,7 @@
 
             Klarna.Payments.authorize( {
                 payment_method_category: paymentMethodCategoryId,
-                auto_finalize: klarnaPaymentsObjects.kpBankTransferCallback ? false : true
+                auto_finalize: false
             }, klarnaRequestData , function( res ) {
                 if ( res.approved ) {
                     var xhr = new XMLHttpRequest();
@@ -75,7 +75,7 @@
                              //DE banktransfer two-step confirmation
                              if (res.finalize_required) {
                                 // Place Order
-                                if ( $form && klarnaPaymentsObjects.kpBankTransferCallback) {
+                                 if ($form && !klarnaPaymentsObjects.kpIsExpressCheckout) {
                                     var action = $form.action;
                                     var csrfToken = $form.csrf_token.value;
 
@@ -97,7 +97,7 @@
                                     payment_method_category: paymentMethodCategoryId
                                 }, {}, function( res ) {
                                     if ( res.approved ) {
-                                        if ( !klarnaPaymentsObjects.kpBankTransferCallback ) {
+                                        if ( klarnaPaymentsObjects.kpIsExpressCheckout ) {
                                             xhr = new XMLHttpRequest();
                                             xhr.open( "GET", klarnaPaymentsUrls.saveAuth, true );
                             
@@ -153,7 +153,7 @@
                                             }, 2000 );
                                         }
                                     } else {
-                                        if ( klarnaPaymentsObjects.kpBankTransferCallback ) {
+                                        if ( !klarnaPaymentsObjects.kpIsExpressCheckout ) {
                                             // If the payment isn't approved or popup is closed,
                                             // then recreate Basket.
                                             // In case of error, show error message
@@ -313,7 +313,7 @@
 
     $placeOrderBtn.addEventListener( "click", placeOrderBtnClickEventListener );
     
-    if ( klarnaPaymentsObjects.kpBankTransferCallback ) {
+    if ( !klarnaPaymentsObjects.kpIsExpressCheckout ) {
         // Create Error Block
         var $errorMessageText = document.createElement( 'div' );
         $errorMessageText.className = 'error-message-text';

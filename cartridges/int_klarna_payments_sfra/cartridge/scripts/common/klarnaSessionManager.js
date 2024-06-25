@@ -107,11 +107,11 @@ KlarnaSessionManager.prototype.refreshSession = function () {
  */
 KlarnaSessionManager.prototype.createSession = function () {
     var basket = BasketMgr.getCurrentBasket();
+    var localeObject = this.getLocale();
     if (empty(basket)) {
         return null;
     }
 
-    var localeObject = this.getLocale();
     var createSessionHelper = require('*/cartridge/scripts/session/klarnaPaymentsCreateSession');
     var createSessionResponse = createSessionHelper.createSession(basket, localeObject);
 
@@ -141,12 +141,9 @@ KlarnaSessionManager.prototype.getSession = function (basket, localeObject) {
         return true;
     }
     var getSessionResponse = getSessionHelper.getSession(kpSessionId, basket, localeObject);
-    if (Site.getCurrent().getCustomPreferenceValue('kpCreateNewSessionWhenExpires') && !getSessionResponse.success) {
+    if (!getSessionResponse.success) {
         log.error('Klarna Session Update Or Klarna Session expiration: {0}', kpSessionId);
         return true;
-    } else if (!getSessionResponse.success) {
-        log.error('Klarna Session Update Or Klarna Session expiration: {0}', kpSessionId);
-        return false;
     }
     return true;
 };
@@ -159,7 +156,7 @@ KlarnaSessionManager.prototype.getSession = function (basket, localeObject) {
 KlarnaSessionManager.prototype.hasValidSession = function () {
     var basket = BasketMgr.getCurrentBasket();
     var localeObject = this.getLocale();
-    if (empty(basket)) {
+    if (empty(basket) || Object.keys(localeObject).length === 0) {
         return false;
     }
     this.getSession(basket, localeObject);
@@ -178,6 +175,10 @@ KlarnaSessionManager.prototype.createOrUpdateSession = function () {
     var localeObject = this.getLocale();
 
     if (empty(basket)) {
+        return null;
+    }
+
+    if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
         return null;
     }
 

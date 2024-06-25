@@ -1,11 +1,11 @@
 [<img src="https://cdn.klarna.com/1.0/shared/image/generic/logo/global/basic/logo_black.png" alt="Klarna" width="200">](https://klarna.com)
 
-# Klarna Payments 2017-2023 Salesforce Commerce Cloud Cartridge
+# Klarna Payments 2017-2024 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 24.3.0.
+The latest version of this cartridge is 24.4.0.
 
-This version includes upgrade of Klarna Express Checkout configuration. The display of Klarna Express Checkout buttons is now customizable by selecting preferred placements. By default none is selected. Documentation update – new section added Klarna Display Conditions and Authorization Handling.
+This version includes the addition of the Sign In With Klarna (SIWK) feature, which allows customers to quickly and securely sign up for your platform using their Klarna account information. It also introduces support for RO and CZ countries. Configuration structure updates include new settings points for Klarna Activation Custom Object and various site preferences (Klarna Activation, Klarna Payments, Klarna Sign-in With Klarna, Klarna Express Checkout, and Klarna On-site Messaging). Deprecations include Klarna Countries Custom Object and several site preferences and attributes. Note that site preferences and service credentials for the deprecated items are now obsolete and must be migrated to the new site preferences or activation custom object.
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/

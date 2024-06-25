@@ -4,14 +4,6 @@
     <isset name="countryCode" value="${require('*/cartridge/scripts/util/countries').getCurrent({CurrentRequest: pdict.CurrentRequest}).countryCode}" scope="page" />
     <isset name="klarnaPaymentMethodID" value="${require('*/cartridge/scripts/util/klarnaHelper').getPaymentMethod()}" scope="page" />
     <isset name="KlarnaPaymentNotAvailable" value="${Resource.msg('error.klarna.notavailable', 'klarnapayments', null)}" scope="page" />
-    <isif condition="${!empty(dw.system.Site.getCurrent().getCustomPreferenceValue('kpNotAvailableMessage'))}">
-        <isset name="kpNotAvailableJSON" value="${JSON.parse(dw.system.Site.getCurrent().getCustomPreferenceValue('kpNotAvailableMessage'))}" scope="page" />
-        <isif condition="${kpNotAvailableJSON.hasOwnProperty(countryCode)}">
-            <isset name="KlarnaPaymentNotAvailable" value="${kpNotAvailableJSON[countryCode.toString()]}" scope="page" />
-        <iselse/>
-            <isset name="KlarnaPaymentNotAvailable" value="${kpNotAvailableJSON.default}" scope="page" />
-        </isif>
-    </isif>
 
     <isloop items="${JSON.parse(session.privacy.KlarnaPaymentMethods)}" var="klarnaPaymentMethod">
         <div class="tab-pane klarna_payments-content klarna_payments_${klarnaPaymentMethod.identifier}" id="${'klarna_payments_' + klarnaPaymentMethod.identifier}" role="tabpanel">

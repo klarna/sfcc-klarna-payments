@@ -139,7 +139,7 @@
     
                     Klarna.Payments.authorize( {
                         payment_method_category: $selectedPaymentMethod.id,
-                        auto_finalize: klarnaPaymentsObjects.kpBankTransferCallback ? false : true
+                        auto_finalize: false
                     }, klarnaRequestData , function( res ) {
                         if ( res.approved ) {
                             var xhr = new XMLHttpRequest();
@@ -159,12 +159,6 @@
                                 }
                             };
                             xhr.send();
-                        } else if ( !res.show_form && klarnaPaymentsObjects.hideRejectedPayments === 'hide' ) {
-                            hidePaymentCategory( $selectedPaymentMethod.id );
-                            selectFirstPayment();
-                        } else if ( !res.show_form && klarnaPaymentsObjects.hideRejectedPayments === 'greyout' ) {
-                            greyoutPaymentCategory( $selectedPaymentMethod.id, true );
-                            $continueBtn.disabled = true;
                         } else {
                             $continueBtn.disabled = false;
                         }

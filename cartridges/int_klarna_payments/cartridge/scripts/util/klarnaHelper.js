@@ -1,3 +1,8 @@
+
+var Locale = require('dw/util/Locale');
+var currentSite = require('dw/system/Site').getCurrent();
+var KlarnaConstants = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' );
+
 /**
  * Calculate order total value for a basket.
  * 
@@ -52,19 +57,6 @@ function getDiscountsTaxation() {
 function isTaxationPolicyNet() {
     var TaxMgr = require( 'dw/order/TaxMgr' );
     return ( TaxMgr.getTaxationPolicy() === TaxMgr.TAX_POLICY_NET );
-}
-
-/**
- * Checks if payment options should be displayed, hidden or grayed out when hard reject from Klarna is received.
- * Value of "kpRejectedMethodDisplay" determines if the method will be displayed - If set to value other than "No", 
- * the Klarna payment method options on the checkout will be greyed out/ not displayed to customer in the current 
- * view when Klarna authorization request is rejected in the response (.i.e hard reject - "show_form" and "approved" 
- * are both "false")
- * 
- * @returns {string} the selectd mode of payment method with hard reject
- */
-function hideRejectedPayments() {
-    return dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpRejectedMethodDisplay' ).value;
 }
 
 /**
@@ -192,8 +184,12 @@ function isEnabledPreassessmentForCountry( country ) {
  * @returns {string} configured client key
  */
 function getExpressCheckoutClientKey() {
+    var newKlarnaKECKey = getKlarnaClientId();
+    if (newKlarnaKECKey) {
+        return newKlarnaKECKey;
+    }
     var localeObject = getLocale();
-    if ( !empty( localeObject ) ) {
+    if (Object.keys(localeObject).length > 0) {
         return localeObject.custom.expressCheckoutClientKey || '';
     } else {
         return '';
@@ -221,17 +217,15 @@ function getLocaleString() {
  */
 function getKlarnaResources( countryCode ) {
     var URLUtils = require( 'dw/web/URLUtils' );
-    var KlarnaConstants = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' );
     var Resource = require('dw/web/Resource');
-    var hideRejectedPaymentsValue = hideRejectedPayments();
-    var kpBankTransferCallbackValue = getKpBankTransferCallback();
-    var preAssement = isEnabledPreassessmentForCountry( countryCode ) || false;
+    var preAssement = isEnabledPreassessmentForCountry(countryCode) || false;
 
-    var BasketMgr = require( 'dw/order/BasketMgr' );
+    var BasketMgr = require('dw/order/BasketMgr');
     var currentBasket = BasketMgr.getCurrentBasket();
-    var currentSite = require( 'dw/system/Site' ).getCurrent();
-    var AdditionalCustomerInfoRequestBuilder = require( '*/cartridge/scripts/payments/requestBuilder/additionalCustomerInfo' );
+    var currentSite = require('dw/system/Site').getCurrent();
+    var AdditionalCustomerInfoRequestBuilder = require('*/cartridge/scripts/payments/requestBuilder/additionalCustomerInfo');
     var additionalCustomerInfoRequestBuilder = new AdditionalCustomerInfoRequestBuilder();
+    var KlarnaOSM = require('*/cartridge/scripts/marketing/klarnaOSM');
 
     // klarna payments urls
     var KLARNA_PAYMENT_URLS = KlarnaConstants.KLARNA_PAYMENT_URLS;
@@ -248,7 +242,8 @@ function getKlarnaResources( countryCode ) {
         handleExpressCheckoutAuth: URLUtils.https( KLARNA_PAYMENT_URLS.HANDLE_EXPRESS_CHECKOUT_AUTH ).toString(),
         expressCheckoutAuthCallback: URLUtils.https( KLARNA_PAYMENT_URLS.EXPRESS_CHECKOUT_AUTH_CALLBACK ).toString(),
         generateExpressCheckoutPayload: URLUtils.https(KLARNA_PAYMENT_URLS.GENERATE_EXPRESS_CHECKOUT_PAYLOAD).toString(),
-        handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString()
+        handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString(),
+        kpSignInRedirectUriToCheckout: URLUtils.https(KLARNA_PAYMENT_URLS.KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SG).toString()
     };
 
     // klarna payments objects
@@ -256,9 +251,7 @@ function getKlarnaResources( countryCode ) {
         sessionID: currentBasket ? ( currentBasket.custom.kpSessionId ? currentBasket.custom.kpSessionId : null ) : null,
         clientToken: currentBasket ? ( currentBasket.custom.kpClientToken ? currentBasket.custom.kpClientToken : null ) : null,
         preassesment: preAssement,
-        hideRejectedPayments: hideRejectedPaymentsValue,
-        kpBankTransferCallback: kpBankTransferCallbackValue,
-        kpIsExpressCheckout: currentBasket ? ( currentBasket.custom.kpIsExpressCheckout ? currentBasket.custom.kpIsExpressCheckout : null ) : null
+        kpIsExpressCheckout: currentBasket ? (currentBasket.custom.kpIsExpressCheckout ? currentBasket.custom.kpIsExpressCheckout : false) : false
     };
 
     // klarna customer information
@@ -277,14 +270,21 @@ function getKlarnaResources( countryCode ) {
     //klarna sitePreferences obj
     var KPPreferences = {
         kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue('kpUseAlternativePaymentFlow') || false,
-        kpAdditionalLogging: currentSite.getCustomPreferenceValue('kpAdditionalLogging') || false,
-        kpCollectShippingAddress: currentSite.getCustomPreferenceValue('kpECCollectShippingAddress') || false,
+        kpAdditionalLogging: currentSite.getCustomPreferenceValue( 'kpLogExtraData' ) ? currentSite.getCustomPreferenceValue( 'kpLogExtraData' ) : currentSite.getCustomPreferenceValue( 'kpAdditionalLogging' ) || false,
         kpExpressCheckoutClientKey: this.getExpressCheckoutClientKey(),
-        kpExpressCheckoutTheme: currentSite.getCustomPreferenceValue('kpECButtonTheme').value,
-        kpExpressCheckoutShape: currentSite.getCustomPreferenceValue('kpECButtonShape').value,
-        kpLocale: getLocaleString()
+        kpExpressCheckoutTheme: currentSite.getCustomPreferenceValue('kec_theme').value || currentSite.getCustomPreferenceValue('kpECButtonTheme').value,
+        kpExpressCheckoutShape: currentSite.getCustomPreferenceValue('kec_shape').value || currentSite.getCustomPreferenceValue('kpECButtonShape').value,
+        kpLocale: getLocaleString(),
+        kpSignInClientID: KlarnaOSM.getKlarnaSignInClientId(),
+        kpSignInEnvironment: KlarnaOSM.getKlarnaSignInEnvironment(),
+        kpSignInLocale: KlarnaOSM.getLocale(),
+        kpSignInScope: KlarnaOSM.getKlarnaSignInScope(),
+        kpSignInButtonShape: KlarnaOSM.getKlarnaSignInButtonShape(),
+        kpSignInButtonTheme: KlarnaOSM.getKlarnaSignInButtonTheme(),
+        kpSignInButtonLogoAlignment: KlarnaOSM.getKlarnaSignInButtonLogoAlignment(),
+        kpSignInRedirectUri: URLUtils.https( KlarnaOSM.getKlarnaSignInRedirectURL() ).toString()
     };
-    
+
     //klarna payment resource messages
     var KPResources = {
         kpExpressCheckoutAuthFailure: Resource.msg('klarna.express.payment.error', 'klarnapayments', null),
@@ -448,18 +448,7 @@ function setExpressShipping( shipment, klarnaAddress, forceUpdate ) {
             shippingAddress.setCountryCode( klarnaAddress.countryCode.value );
             shippingAddress.setPhone( klarnaAddress.phone );
         }
-    } );
-}
-
-/**
- * Get a site preference of Klarna Bank Transfer callback
- * True - if the Klarna callback should be used
- * False - if the Klarna callback should not be used
- * 
- * @returns {boolean} Returns whether Klarna callback should be used
- */
-function getKpBankTransferCallback() {
-    return dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpBankTransferCallback' );
+    });
 }
 
 /**
@@ -470,22 +459,20 @@ function getKpBankTransferCallback() {
     var Transaction = require( 'dw/system/Transaction' );
     var Site = require( 'dw/system/Site' );
 
-    if ( Site.getCurrent().getCustomPreferenceValue( 'kpCreateNewSessionWhenExpires' ) ) {
-        Transaction.wrap( function () {
-            session.privacy.KlarnaLocale = null;
-            session.privacy.KlarnaPaymentMethods = null;
-            session.privacy.SelectedKlarnaPaymentMethod = null;
-            session.privacy.KlarnaExpressCategory = null;
-            lineItemCtnr.custom.kpSessionId = null;
-            lineItemCtnr.custom.kpClientToken = null;
-        });
-    }
+    Transaction.wrap( function () {
+        session.privacy.KlarnaLocale = null;
+        session.privacy.KlarnaPaymentMethods = null;
+        session.privacy.SelectedKlarnaPaymentMethod = null;
+        session.privacy.KlarnaExpressCategory = null;
+        lineItemCtnr.custom.kpSessionId = null;
+        lineItemCtnr.custom.kpClientToken = null;
+    });
 };
 
 /**
  * Is OMS enabled
  */
- function isOMSEnabled() {
+function isOMSEnabled() {
     return dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpOMSEnabled' );
 }
 /**
@@ -548,24 +535,18 @@ function mapKlarnaExpressAddress(collectedAddress) {
  * @returns {String} payment method details
 */
 function getExpressKlarnaMethod() {
-    var Site = require('dw/system/Site');
-    var Resource = require('dw/web/Resource');
-    var kpECPaymentCategoryContent = Site.getCurrent().getCustomPreferenceValue('kpECPaymentCategoryContent');
-    var paymentMethods = {};
+    var paymentMethods = KlarnaConstants.KLARNA_EXPRESS_CATEGORY_CONTENT.KEC_CONTENT;
     var paymentMethod = null;
-    if (!empty(kpECPaymentCategoryContent)) {
-        paymentMethods = JSON.parse(kpECPaymentCategoryContent);
+    if (!empty(paymentMethods)) {
         if (!empty(paymentMethods) && paymentMethods.length > 0) {
             paymentMethod = paymentMethods[0];
-            //get payment method name property
-            paymentMethod.name = Resource.msg(paymentMethod.name, 'klarnapayments', null);
         }
     }
 
-    return { 
-             paymentMethods : JSON.stringify(paymentMethods),
-             defaultMethod: paymentMethod ? paymentMethod.identifier : ''
-           };
+    return {
+        paymentMethods: JSON.stringify(paymentMethods),
+        defaultMethod: paymentMethod ? paymentMethod.identifier : ''
+    };
 }
 
 /**
@@ -607,9 +588,9 @@ function revertCurrentBasketProductData(currentBasket) {
         Transaction.begin();
 
         if (!empty(currentBasket)) {
-            
+
             var cart = app.getModel('Cart').get();
-            
+
             var customerBasketData = session.privacy.kpCustomerProductData ? JSON.parse(session.privacy.kpCustomerProductData) : null;
             var productLineItems = currentBasket.productLineItems.toArray();
 
@@ -628,7 +609,7 @@ function revertCurrentBasketProductData(currentBasket) {
                 });
             }
             cart.calculate();
-            
+
             session.privacy.kpCustomerProductData = null;
         }
         Transaction.commit();
@@ -638,11 +619,234 @@ function revertCurrentBasketProductData(currentBasket) {
     }
 }
 
+//read arguments and return object
+function getActivationObjectAttrValue() {
+    const args = Array.from(arguments);
+    var countryCode = Locale.getLocale(request.locale).country;
+    var activationKey = session.privacy['kpActivationKey_' + countryCode];
+    var CustomObjectMgr = require('dw/object/CustomObjectMgr');
+    var activationObject = CustomObjectMgr.getCustomObject('KlarnaActivation', activationKey);
+    var attrValues = {};
+    if (activationObject) {
+        for (var i = 0; i < args.length; i++) {
+            let attrId = args[i];
+            attrValues[attrId] = activationObject.custom[attrId];
+        }
+    }
+    return attrValues;
+}
+
+// retrieve kpVCNEnabled from Klarna Activation
+// Custom object or site preferences
+function isVCNEnabled() {
+    var isVCNEnabled = false;
+    var countryCode = Locale.getLocale(request.locale).country;
+    var isKlarnaActive = session.privacy['kpActive_' + countryCode];
+    if (!isKlarnaActive) {
+        return isVCNEnabled;
+    }
+    var kpAcativationSource = session.privacy['kpActivationSource_' + countryCode];
+    if (kpAcativationSource === 'KlarnaActivation_CO') {
+        isVCNEnabled = getActivationObjectAttrValue('kpVCNEnabled_countries').kpVCNEnabled_countries;
+    } else {
+        isVCNEnabled = currentSite.getCustomPreferenceValue('kpVCNEnabled');
+    }
+    return isVCNEnabled;
+}
+
+// retrieve kpVCNkeyId from Klarna Activation
+// Custom object or site preferences
+function getVCNKeyId() {
+    var vcnKeyId = null;
+    var countryCode = Locale.getLocale(request.locale).country;
+    var isKlarnaActive = session.privacy['kpActive_' + countryCode];
+    if (!isKlarnaActive) {
+        return vcnKeyId;
+    }
+    var kpAcativationSource = session.privacy['kpActivationSource_' + countryCode];
+    if (kpAcativationSource === 'KlarnaActivation_CO') {
+        vcnKeyId = getActivationObjectAttrValue('kpVCNkeyId_countries').kpVCNkeyId_countries;
+    } else {
+        vcnKeyId = currentSite.getCustomPreferenceValue('kpVCNkeyId');
+    }
+    return vcnKeyId;
+}
+
+// retrieve VCNRetryEnabled from Klarna Activation
+// Custom object or site preferences
+function isVCNSettlementRetry() {
+    var kpVCNRetryEnabled = false;
+    var countryCode = Locale.getLocale(request.locale).country;
+    var isKlarnaActive = session.privacy['kpActive_' + countryCode];
+    if (!isKlarnaActive) {
+        return kpVCNRetryEnabled;
+    }
+    var kpAcativationSource = session.privacy['kpActivationSource_' + countryCode];
+    if (kpAcativationSource === 'KlarnaActivation_CO') {
+        kpVCNRetryEnabled = getActivationObjectAttrValue('kpVCNRetry_countries').kpVCNRetry_countries;
+    } else {
+        kpVCNRetryEnabled = currentSite.getCustomPreferenceValue( 'kpVCNRetry' ) ?  currentSite.getCustomPreferenceValue( 'kpVCNRetry' ) : currentSite.getCustomPreferenceValue( 'kpVCNRetryEnabled' );
+    }
+    return kpVCNRetryEnabled;
+}
+
+// retrieve client id from Klarna Activation
+// Custom object or site preferences
+function getKlarnaClientId() {
+    var clientId = null;
+    var countryCode = Locale.getLocale(request.locale).country;
+    var isKlarnaActive = session.privacy['kpActive_' + countryCode];
+    if (!isKlarnaActive) {
+        return clientId;
+    }
+    var kpAcativationSource = session.privacy['kpActivationSource_' + countryCode];
+    if (kpAcativationSource === 'KlarnaActivation_CO') {
+        clientId = getActivationObjectAttrValue('kp_client_id_countries').kp_client_id_countries;
+    } else if (kpAcativationSource === 'KlarnaActivation_SP') {
+        clientId = currentSite.getCustomPreferenceValue('KP_client_id');
+    }
+    return clientId;
+}
+
+// return service url based on Klarna environment and region
+function getServiceURL(region) {
+    var kpEnvironmentTest = currentSite.getCustomPreferenceValue('KP_environment');
+    var env = kpEnvironmentTest ? KlarnaConstants.KLARNA_ENVIRONMENTS.PLAYGROUND : KlarnaConstants.KLARNA_ENVIRONMENTS.PRODUCTION;
+    var regionEndpoint = KlarnaConstants.KLARNA_ENDPOINTS[region];
+    return regionEndpoint[env];
+}
+
+//get Klarna environment from site preferences
+function getKlarnaEnvironment() {
+    var kpEnvironmentTest = currentSite.getCustomPreferenceValue('KP_environment');
+    return kpEnvironmentTest ? KlarnaConstants.KLARNA_ENVIRONMENTS.PLAYGROUND : KlarnaConstants.KLARNA_ENVIRONMENTS.PRODUCTION;
+}
+
+// fetch region code from Klarna Activation
+function getRegionCode() {
+    var countryCode = Locale.getLocale(request.locale).country;
+    var kpAcativationSource = session.privacy['kpActivationSource_' + countryCode];
+    var region = null;
+    if (kpAcativationSource === 'KlarnaActivation_CO') {
+        var attrValue = getActivationObjectAttrValue('kp_region_countries');
+        region = attrValue.kp_region_countries ? attrValue.kp_region_countries.value : null;
+    } else if (kpAcativationSource === 'KlarnaActivation_SP') {
+        region = currentSite.getCustomPreferenceValue('KP_Region').value;
+    }
+    return region ? region.toLowerCase() : null;
+}
+
+// retrieve the Klarna API credentials for current country
+// from Klarna Activation custom object
+// or Klarna Activation Site Preferences
+// if not found - service credentials should be used
+function getKlarnaServiceCredentials() {
+    var countryCode = Locale.getLocale(request.locale).country;
+    var kpAcativationSource = session.privacy['kpActivationSource_' + countryCode];
+    if (kpAcativationSource === 'KlarnaActivation_CO') {
+        var attrValues = getActivationObjectAttrValue('KP_API_Username_countries', 'KP_API_Password_countries', 'kp_region_countries');
+        return {
+            useServiceCredentials: false,
+            apiUsername: attrValues.KP_API_Username_countries,
+            apiPassword: attrValues.KP_API_Password_countries,
+            apiURL: getServiceURL(attrValues.kp_region_countries.value)
+        }
+    } else if (kpAcativationSource === 'KlarnaActivation_SP') {
+        var apiUsername = currentSite.getCustomPreferenceValue('KP_API_Username');
+        var apiPassword = currentSite.getCustomPreferenceValue('KP_API_Password');
+        var region = currentSite.getCustomPreferenceValue('KP_Region').value;
+        if (!apiUsername || !apiPassword || !region) {
+            return {
+                useServiceCredentials: true
+            };
+        }
+        return {
+            useServiceCredentials: false,
+            apiUsername: apiUsername,
+            apiPassword: apiPassword,
+            apiURL: getServiceURL(region)
+        }
+    }
+    return {
+        useServiceCredentials: true
+    };
+}
+
+// retrieve the configuration data for current country
+// from Klarna Activation custom object
+// or Klarna Activation Site Preferences
+function retrieveKlarnaCountriesData(countryCode) {
+    var CustomObjectMgr = require('dw/object/CustomObjectMgr');
+    var kpEnabled = currentSite.getCustomPreferenceValue('kp_enable');
+
+    var activationObject = CustomObjectMgr.queryCustomObject('KlarnaActivation', 'custom.kp_market_countries LIKE {0}', countryCode);
+    if (activationObject) {
+        return {
+            configFound: kpEnabled,
+            source: 'KlarnaActivation_CO',
+            activationId: activationObject.custom.kp_activation_key
+        };
+    }
+
+    //check preferences
+    var klarnaMarkets = currentSite.getCustomPreferenceValue('KP_Market');
+    var activationMarket = klarnaMarkets.find(function (market) {
+        if (market.value === countryCode) {
+            return market;
+        }
+    });
+    if (activationMarket) {
+        return {
+            configFound: kpEnabled,
+            source: 'KlarnaActivation_SP'
+        };
+
+    }
+    activationObject = getLocale();
+    if (Object.keys(activationObject).length !== 0 && activationObject.custom.coFound) {
+        return {
+            configFound: true,
+            source: 'KlarnaCountries_CO'
+        };
+    }
+
+    return {
+        configFound: false
+    };
+}
+
+// check if there is a configuration data
+// for current country in Klarna Activation custom object
+// or Klarna Activation Site Preferences
+// or Klarna Countries Custom object
+// store the configuration source in session for future usage
+function isCurrentCountryKlarnaEnabled() {
+    var countryCode = Locale.getLocale(request.locale).country;
+    var klarnaEnabled = session.privacy['kpActive_' + countryCode];
+    if (klarnaEnabled !== null) {
+        return klarnaEnabled;
+    }
+    var countryData = retrieveKlarnaCountriesData(countryCode);
+    if (countryData && countryData.configFound) {
+        session.privacy['kpActive_' + countryCode] = true;
+        session.privacy['kpActivationSource_' + countryCode] = countryData.source;
+        if (countryData.activationId) {
+            session.privacy['kpActivationKey_' + countryCode] = countryData.activationId;
+        }
+        return true;
+    } else {
+        session.privacy['kpActive_' + countryCode] = false;
+        session.privacy['kpActivationSource_' + countryCode] = null;
+        session.privacy['kpActivationKey_' + countryCode] = null;
+        return false;
+    }
+
+}
+
 exports.calculateOrderTotalValue = calculateOrderTotalValue;
 exports.getKlarnaPaymentMethodName = getKlarnaPaymentMethodName;
 exports.getDiscountsTaxation = getDiscountsTaxation;
 exports.isTaxationPolicyNet = isTaxationPolicyNet;
-exports.hideRejectedPayments = hideRejectedPayments;
 exports.getConfirmationEmailAsset = getConfirmationEmailAsset;
 exports.setPaymentCategoryDetails = setPaymentCategoryDetails;
 exports.getShippment = getShippment;
@@ -656,7 +860,6 @@ exports.getExpressFormDetails = getExpressFormDetails;
 exports.setExpressBilling = setExpressBilling;
 exports.setExpressShipping = setExpressShipping;
 exports.strval = strval;
-exports.getKpBankTransferCallback = getKpBankTransferCallback;
 exports.clearSessionRef = clearSessionRef;
 exports.isOMSEnabled = isOMSEnabled;
 exports.getLocale = getLocale;
@@ -667,3 +870,11 @@ exports.getExpressKlarnaMethod = getExpressKlarnaMethod;
 exports.getCurrentBasketProductData = getCurrentBasketProductData;
 exports.revertCurrentBasketProductData = revertCurrentBasketProductData;
 exports.getLocaleString = getLocaleString;
+exports.isCurrentCountryKlarnaEnabled = isCurrentCountryKlarnaEnabled;
+exports.getKlarnaServiceCredentials = getKlarnaServiceCredentials;
+exports.getKlarnaClientId = getKlarnaClientId;
+exports.isVCNEnabled = isVCNEnabled;
+exports.getVCNKeyId = getVCNKeyId;
+exports.isVCNSettlementRetry = isVCNSettlementRetry;
+exports.getKlarnaEnvironment = getKlarnaEnvironment;
+exports.getRegionCode = getRegionCode;

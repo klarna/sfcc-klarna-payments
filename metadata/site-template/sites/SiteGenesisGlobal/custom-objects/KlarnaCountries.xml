@@ -49,5 +49,20 @@
         <object-attribute attribute-id="credentialID">klarna.http.plcredentials</object-attribute>
         <object-attribute attribute-id="klarnaLocale">pl-PL</object-attribute>
     </custom-object>
-	
+
+    <custom-object type-id="KlarnaCountries" object-id="CZ">
+        <object-attribute attribute-id="credentialID">klarna.http.czcredentials</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">en-CZ</object-attribute>
+    </custom-object>
+    
+    <custom-object type-id="KlarnaCountries" object-id="RO">
+        <object-attribute attribute-id="credentialID">klarna.http.rocredentials</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">en-RO</object-attribute>
+    </custom-object>
+    
+    <custom-object type-id="KlarnaCountries" object-id="HU">
+        <object-attribute attribute-id="credentialID">klarna.http.hucredentials</object-attribute>
+        <object-attribute attribute-id="klarnaLocale">en-HU</object-attribute>
+    </custom-object>
+
 </custom-objects>

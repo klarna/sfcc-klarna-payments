@@ -13,6 +13,7 @@
 
 var Site = require( 'dw/system/Site' );
 var Logger = require( 'dw/system/Logger' );
+var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
 
 /* Script Modules */
 var log = Logger.getLogger( 'klarnaPaymentsVCNSettlement.js' );
@@ -51,7 +52,7 @@ function execute( args ) {
  * @return {boolean} VCN Settlement status
  */
 function handleVCNSettlement( order, klarnaPaymentsOrderID, localeObject ) {
-    var settlementRetry = Site.getCurrent().getCustomPreferenceValue( 'kpVCNRetryEnabled' );
+    var settlementRetry = KlarnaHelper.isVCNSettlementRetry();
 
     if ( settlementRetry ) {
         var retryCount = 1;
@@ -91,7 +92,7 @@ function createVCNSettlement( order, klarnaPaymentsOrderID, localeObject ) {
         var serviceID = klarnaApiContext.getFlowApiIds().get( 'vcnSettlement' );
         requestBody = {
             'order_id' : klarnaPaymentsOrderID,
-            'key_id' : Site.getCurrent().getCustomPreferenceValue( 'kpVCNkeyId' )
+            'key_id' : KlarnaHelper.getVCNKeyId()
         };
 
         response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
@@ -114,7 +115,7 @@ function createVCNSettlement( order, klarnaPaymentsOrderID, localeObject ) {
 
         var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
         KlarnaAdditionalLogging.writeLog( order, order.custom.kpSessionId, 'klarnaPaymentsVCNSerrlement.createVCNSettlement()', 'Error in creating Klarna Payments VCN Settlement. Error:' + JSON.stringify( e ) );
-        
+
         return false;
     }
 

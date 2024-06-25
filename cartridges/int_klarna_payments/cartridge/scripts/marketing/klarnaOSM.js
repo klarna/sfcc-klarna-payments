@@ -3,6 +3,8 @@
 var CustomObjectMgr = require('dw/object/CustomObjectMgr');
 var Locale = require('dw/util/Locale');
 var currentSite = require('dw/system/Site').current;
+var KlarnaConstants = require('*/cartridge/scripts/util/klarnaPaymentsConstants');
+var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
 
 /**
  * Klarna On-Site Messaging Component
@@ -68,7 +70,7 @@ var KlarnaOSM = {
      */
     getKlarnaCountriesObject: function () {
         if (!this.klarnaCountriesObject) {
-            this.klarnaCountriesObject = this.loadKlarnaCountriesObject();
+            this.klarnaCountriesObject = this.loadKlarnaCountriesObject() ? this.loadKlarnaCountriesObject() : { custom: {} };
         }
 
         return this.klarnaCountriesObject;
@@ -78,7 +80,14 @@ var KlarnaOSM = {
      * @return {boolean} enabled/disabled
      */
     isEnabled: function () {
-        return (this.isEnabledCartPage() || this.isEnabledPDPPage() || this.isEnabledHeader() || this.isEnabledFooter() || this.isEnabledInfoPage());
+        return this.isKlarnaEnabled() && (this.isEnabledCartPage() || this.isEnabledPDPPage() || this.isEnabledHeader() || this.isEnabledFooter() || this.isEnabledInfoPage());
+    },
+    /**
+     * Check if Klarna is enabled for current country
+     * in Klarna Activation CO, Klarna Activation SP or Klarna Countries
+     */
+    isKlarnaEnabled: function () {
+        return KlarnaHelper.isCurrentCountryKlarnaEnabled();
     },
     /**
      * Function that checks if OSM is enabled for cart
@@ -86,7 +95,9 @@ var KlarnaOSM = {
      */
     isEnabledCartPage: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        var value = localeObject.custom.osmCartEnabled;
+        var isCartPlacement = currentSite.getCustomPreferenceValue('osm_placement').find(page => page.value === 'cartPage');
+        var value = (!empty(currentSite.getCustomPreferenceValue('osm_enable')) && isCartPlacement) ? currentSite.getCustomPreferenceValue('osm_enable') :
+            (localeObject.custom.osmCartEnabled) || false;
 
         return value;
     },
@@ -96,7 +107,8 @@ var KlarnaOSM = {
      */
     getCartPagePlacementTagId: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        var value = localeObject.custom.osmCartTagId;
+        var isCartSitePref = currentSite.getCustomPreferenceValue('osm_placement').find(page => page.value === 'cartPage');
+        var value = isCartSitePref ? 'credit-promotion-badge' : localeObject.custom.osmCartTagId;
 
         return value;
     },
@@ -106,9 +118,11 @@ var KlarnaOSM = {
      */
     isEnabledPDPPage: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        var value = localeObject.custom.osmPDPEnabled;
+        var isPdpPlacement = currentSite.getCustomPreferenceValue('osm_placement').find(page => page.value === 'productPage');
+        var value = (!empty(currentSite.getCustomPreferenceValue('osm_enable')) && isPdpPlacement) ? currentSite.getCustomPreferenceValue('osm_enable') :
+            (localeObject.custom.osmPDPEnabled) || false;
 
-        return value;
+        return value && this.isKlarnaEnabled();
     },
     /**
      * Function that checks if OSM is enabled for PDP page tag
@@ -116,7 +130,8 @@ var KlarnaOSM = {
      */
     getPDPPagePlacementTagId: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        var value = localeObject.custom.osmPDPTagId;
+        var isPDPSitePref = currentSite.getCustomPreferenceValue('osm_placement').find(page => page.value === 'productPage');
+        var value = isPDPSitePref ? 'credit-promotion-auto-size' : localeObject.custom.osmPDPTagId;
 
         return value;
     },
@@ -126,7 +141,9 @@ var KlarnaOSM = {
      */
     isEnabledHeader: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        var value = localeObject.custom.osmHeaderEnabled;
+        var isHeaderPlacement = currentSite.getCustomPreferenceValue('osm_placement').find(page => page.value === 'siteBanners');
+        var value = (!empty(currentSite.getCustomPreferenceValue('osm_enable')) && isHeaderPlacement) ? currentSite.getCustomPreferenceValue('osm_enable') :
+            (localeObject.custom.osmHeaderEnabled) || false;
 
         return value;
     },
@@ -136,7 +153,8 @@ var KlarnaOSM = {
      */
     getHeaderPlacementTagId: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        var value = localeObject.custom.osmHeaderTagId;
+        var isHeaderSitePref = currentSite.getCustomPreferenceValue('osm_placement').find(page => page.value === 'siteBanners');
+        var value = isHeaderSitePref ? 'top-strip-promotion-badge' : localeObject.custom.osmHeaderTagId;
 
         return value;
     },
@@ -146,7 +164,9 @@ var KlarnaOSM = {
      */
     isEnabledFooter: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        var value = localeObject.custom.osmFooterEnabled;
+        var isFooterPlacement = currentSite.getCustomPreferenceValue('osm_placement').find(page => page.value === 'footer');
+        var value = (!empty(currentSite.getCustomPreferenceValue('osm_enable')) && isFooterPlacement) ? currentSite.getCustomPreferenceValue('osm_enable') :
+            (localeObject.custom.osmFooterEnabled) || false;
 
         return value;
     },
@@ -156,7 +176,8 @@ var KlarnaOSM = {
      */
     getFooterPlacementTagId: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        var value = localeObject.custom.osmFooterTagId;
+        var isFooterSitePref = currentSite.getCustomPreferenceValue('osm_placement').find(page => page.value === 'footer');
+        var value = isFooterSitePref ? 'footer-promotion-auto-size' : localeObject.custom.osmFooterTagId;
 
         return value;
     },
@@ -166,7 +187,9 @@ var KlarnaOSM = {
      */
     isEnabledInfoPage: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        var value = localeObject.custom.osmInfoPageEnabled;
+        var isInfoPlacement = currentSite.getCustomPreferenceValue('osm_placement').find(page => page.value === 'faq');
+        var value = (!empty(currentSite.getCustomPreferenceValue('osm_enable')) && isInfoPlacement) ? currentSite.getCustomPreferenceValue('osm_enable') :
+            (localeObject.custom.osmInfoPageEnabled) || false;
 
         return value;
     },
@@ -176,17 +199,8 @@ var KlarnaOSM = {
      */
     getInfoPagePlacementTagId: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        var value = localeObject.custom.osmInfoPageTagId;
-
-        return value;
-    },
-    /**
-     * Function that checks if OSM attribute "data-inline" is enabled for PDP/Cart placements
-     * @return {boolean} enable status
-     */
-    isEnabledDataInline: function () {
-        var localeObject = this.getKlarnaCountriesObject();
-        var value = localeObject.custom.osmDataInlineEnabled;
+        var isInfoSitePref = currentSite.getCustomPreferenceValue('osm_placement').find(page => page.value === 'faq');
+        var value = isInfoSitePref ? 'info-page' : localeObject.custom.osmInfoPageTagId;
 
         return value;
     },
@@ -195,6 +209,10 @@ var KlarnaOSM = {
      * @return {string} clientID
      */
     getUCI: function () {
+        var klarnaClientKey = KlarnaHelper.getKlarnaClientId();
+        if (klarnaClientKey) {
+            return klarnaClientKey;
+        }
         var localeObject = this.getKlarnaCountriesObject();
         var uci = localeObject.custom.osmUCI;
 
@@ -205,10 +223,7 @@ var KlarnaOSM = {
      * @return {string} library URL
      */
     getScriptURL: function () {
-        var localeObject = this.getKlarnaCountriesObject();
-        var url = localeObject.custom.osmLibraryUrl;
-
-        return url;
+        return KlarnaConstants.KLARNA_LIBS_URLS.KLARNA_OSM_SCRIPT_URL;
     },
     /**
      * Function that returns rounded price
@@ -272,7 +287,8 @@ var KlarnaOSM = {
         return localeObject.custom.kebMiniCartShape.value || 'default';
     },
     isKlarnExpressCheckoutEnabled: function () {
-        return currentSite.getCustomPreferenceValue('kpECEnabled') || false;
+        return !empty(currentSite.getCustomPreferenceValue('kec_enable')) ? (this.isKlarnaEnabled() && currentSite.getCustomPreferenceValue('kec_enable')) :
+            (currentSite.getCustomPreferenceValue('kpECEnabled') || false);
     },
     showExpressCheckoutButton: function () {
         var showECButton = currentSite.getCustomPreferenceValue('kec_placement');
@@ -297,55 +313,104 @@ var KlarnaOSM = {
         return showECButtonObj;
     },
     getKlarnExpressCheckoutClientKey: function () {
-        var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.expressCheckoutClientKey || null;
+        return KlarnaHelper.getExpressCheckoutClientKey();
     },
     getKlarnExpressCheckoutScriptURL: function () {
-        return currentSite.getCustomPreferenceValue('kpECLibraryURL');
+        return KlarnaConstants.KLARNA_LIBS_URLS.EXPRESS_CHECKOUT_URL;
+    },
+    getKlarnaSignInScriptURL: function () {
+        return KlarnaConstants.KLARNA_LIBS_URLS.KLARNA_SIGNIN_SCRIPT_URL;
     },
     getOSMEnvironment: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.osmEnvironment.value || 'playground';
+        return KlarnaHelper.getKlarnaEnvironment() || (localeObject.custom.osmEnvironment.value || 'playground');
     },
     getCartPlacementCustomStyling: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.osmCartCustomStyling || null;
+        return !empty(currentSite.getCustomPreferenceValue('osm_custom_styling')) ? currentSite.getCustomPreferenceValue('osm_custom_styling') : (localeObject.custom.osmCartCustomStyling || null);
     },
     getOSMCartTheme: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.osmCartTheme.value || 'default';
+        return !empty(currentSite.getCustomPreferenceValue('osm_theme')) ? currentSite.getCustomPreferenceValue('osm_theme').value : (localeObject.custom.osmCartTheme.value || 'default');
     },
     getOSMHeaderTheme: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.osmHeaderTheme.value || 'default';
+        return !empty(currentSite.getCustomPreferenceValue('osm_theme')) ? currentSite.getCustomPreferenceValue('osm_theme').value : (localeObject.custom.osmHeaderTheme.value || 'default');
     },
     getHeaderPlacementCustomStyling: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.osmHeaderCustomStyling || null;
+        return !empty(currentSite.getCustomPreferenceValue('osm_custom_styling')) ? currentSite.getCustomPreferenceValue('osm_custom_styling') : (localeObject.custom.osmHeaderCustomStyling || null);
     },
     getOSMFooterTheme: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.osmFooterTheme.value || 'default';
+        return !empty(currentSite.getCustomPreferenceValue('osm_theme')) ? currentSite.getCustomPreferenceValue('osm_theme').value : (localeObject.custom.osmFooterTheme.value || 'default');
     },
     getFooterPlacementCustomStyling: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.osmFooterCustomStyling || null;
+        return !empty(currentSite.getCustomPreferenceValue('osm_custom_styling')) ? currentSite.getCustomPreferenceValue('osm_custom_styling') : (localeObject.custom.osmFooterCustomStyling || null);
     },
     getOSMInfoPageTheme: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.osmInfoPageTheme.value || 'default';
+        return !empty(currentSite.getCustomPreferenceValue('osm_theme')) ? currentSite.getCustomPreferenceValue('osm_theme').value : (localeObject.custom.osmInfoPageTheme.value || 'default');
     },
     getInfoPagePlacementCustomStyling: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.osmInfoPageCustomStyling || null;
+        return !empty(currentSite.getCustomPreferenceValue('osm_custom_styling')) ? currentSite.getCustomPreferenceValue('osm_custom_styling') : (localeObject.custom.osmInfoPageCustomStyling || null);
     },
     getOSMPDPTheme: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.osmPDPTheme.value || 'default';
+        return !empty(currentSite.getCustomPreferenceValue('osm_theme')) ? currentSite.getCustomPreferenceValue('osm_theme').value : (localeObject.custom.osmPDPTheme.value || 'default');
     },
     getPDPPlacementCustomStyling: function () {
         var localeObject = this.getKlarnaCountriesObject();
-        return localeObject.custom.osmPDPCustomStyling || null;
+        return !empty(currentSite.getCustomPreferenceValue('osm_custom_styling')) ? currentSite.getCustomPreferenceValue('osm_custom_styling') : (localeObject.custom.osmPDPCustomStyling || null);
+    },
+    getKlarnaSignInClientId: function () {
+        var newKlarnaClientKey = KlarnaHelper.getKlarnaClientId();
+        if (newKlarnaClientKey) {
+            return newKlarnaClientKey;
+        }
+        var localeObject = this.getKlarnaCountriesObject();
+        return localeObject.custom.signInClientId || '';
+    },
+    isKlarnaSignInEnabled: function () {
+        return this.isKlarnaEnabled() && (currentSite.getCustomPreferenceValue('siwk_enable') || false);
+    },
+    getKlarnaSignInButtonShape: function () {
+        return currentSite.getCustomPreferenceValue('siwk_shape').value || 'default';
+    },
+    getKlarnaSignInButtonTheme: function () {
+        return currentSite.getCustomPreferenceValue('siwk_theme').value || 'default';
+    },
+    getKlarnaSignInEnvironment: function () {
+        return KlarnaHelper.getKlarnaEnvironment();
+    },
+    getKlarnaSignInScope: function () {
+        return currentSite.getCustomPreferenceValue('siwk_scope').join(" ");
+    },
+    getKlarnaSignInButtonLogoAlignment: function () {
+        return currentSite.getCustomPreferenceValue('siwk_alignment').value || 'default';
+    },
+    getKlarnaSignInRedirectURL: function () {
+        return currentSite.getCustomPreferenceValue('siwk_redirect_url');
+    },
+    showKlarnaSigninButton: function () {
+        var showSignInButton = currentSite.getCustomPreferenceValue('siwk_placement');
+        var showSignInButtonObj = {
+            checkoutPage: false,
+            loginPage: false
+        };
+        if (showSignInButton && showSignInButton.length) {
+            showSignInButton.forEach(function (item) {
+                if (item.value === 'checkoutPage') {
+                    showSignInButtonObj.checkoutPage = true;
+                }
+                if (item.value === 'loginPage') {
+                    showSignInButtonObj.loginPage = true;
+                }
+            });
+        }
+        return showSignInButtonObj;
     }
 };
 

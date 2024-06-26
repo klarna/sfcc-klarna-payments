@@ -47,6 +47,30 @@
         <password encrypted="true" encryption-type="common.export"></password>
     </service-credential>
 
+    <service-credential service-credential-id="klarna.http.czcredentials">
+        <url>https://api.playground.klarna.com/</url>
+        <user-id>your Merchant ID</user-id>
+        <password encrypted="true" encryption-type="common.export"></password>
+    </service-credential>
+
+    <service-credential service-credential-id="klarna.http.rocredentials">
+        <url>https://api.playground.klarna.com/</url>
+        <user-id>your Merchant ID</user-id>
+        <password encrypted="true" encryption-type="common.export"></password>
+    </service-credential>
+	
+    <service-credential service-credential-id="klarna.http.hucredentials">
+        <url>https://api.playground.klarna.com/</url>
+        <user-id>your Merchant ID</user-id>
+        <password encrypted="true" encryption-type="common.export"></password>
+    </service-credential>
+
+    <service-credential service-credential-id="klarna.signin.credentials">
+        <url>https://login.playground.klarna.com</url>
+        <user-id/>
+        <password encrypted="true" encryption-type="common.export"></password>
+    </service-credential>
+
     <service-profile service-profile-id="klarna.http.service">
         <timeout-millis>20000</timeout-millis>
         <rate-limit-enabled>false</rate-limit-enabled>
@@ -164,6 +188,17 @@
         <cb-calls>0</cb-calls>
         <cb-millis>0</cb-millis>
     </service-profile>
+
+    <service-profile service-profile-id="klarna.http.signIn">
+        <timeout-millis>30000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+
     <service service-id="klarna.http.createSession">
         <service-type>HTTP</service-type>
         <enabled>true</enabled>
@@ -292,5 +327,15 @@
         <mock-mode-enabled>false</mock-mode-enabled>
         <profile-id>klarna.http.createRecurringOrder</profile-id>
         <credential-id/>
+    </service>
+    <service service-id="klarna.http.signIn">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>klarna_signIn</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>klarna.http.signIn</profile-id>
+        <credential-id>klarna.signin.credentials</credential-id>
     </service>
 </services>

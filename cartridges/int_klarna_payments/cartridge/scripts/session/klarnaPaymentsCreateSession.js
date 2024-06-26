@@ -48,23 +48,18 @@ function _getRequestBody( basket, localeObject ) {
     } );
 
     var requestBody = sessionRequestBuilder.build();
-    
+
     // On session_create set the callback URL for all methods
     // as we don't have a payment method selected yet
     var KLARNA_PAYMENT_URLS = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).KLARNA_PAYMENT_URLS;
     var URLUtils = require( 'dw/web/URLUtils' );
     var country = localeObject.custom.country;
-    
+
     // Do not override current merchant_urls if they are already set
     if ( !requestBody.merchant_urls ) {
         requestBody.merchant_urls = {};
     }
-    // If BT Callback is required
-    var kpBankTransferCallback = dw.system.Site.getCurrent().getCustomPreferenceValue( 'kpBankTransferCallback' );
-    if ( kpBankTransferCallback ) {
-        // update request body with the Bank Transfer callback URL
-        requestBody.merchant_urls.authorization = URLUtils.https( KLARNA_PAYMENT_URLS.BANK_TRANSFER_CALLBACK, 'klarna_country', country ).toString();
-    }
+    requestBody.merchant_urls.authorization = URLUtils.https(KLARNA_PAYMENT_URLS.BANK_TRANSFER_CALLBACK, 'klarna_country', country).toString();
 
     return requestBody;
 }
@@ -78,12 +73,27 @@ function _getRequestBody( basket, localeObject ) {
  */
 function createSession( basket, localeObject ) {
     var Transaction = require( 'dw/system/Transaction' );
+    var signInHelper = require('*/cartridge/scripts/signin/klarnaSignIn');
+    var CustomerMgr = require('dw/customer/CustomerMgr');
+
     var response = null;
 
     try {
         var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody( basket, localeObject );
+        var customerProfile;
+        var getAccessToken;
+        Transaction.wrap (function () {
+            customerProfile = CustomerMgr.getExternallyAuthenticatedCustomerProfile( 'Klarna', basket.customer && basket.customer.profile && basket.customer.profile.email );
+            if( customerProfile && customerProfile.custom.kpRefreshToken && session.privacy.KlarnaSignedInCustomer ) {
+                var refreshToken = customerProfile.custom.kpRefreshToken;
+                getAccessToken = signInHelper.refreshCustomerSignInToken( refreshToken );
+                customerProfile.custom.kpRefreshToken = getAccessToken && getAccessToken.refresh_token;
+                session.privacy.klarnaSignInAccessToken = getAccessToken && getAccessToken.access_token ? getAccessToken.access_token : '';
+                requestBody.customer ={klarna_access_token: getAccessToken && getAccessToken.access_token ? getAccessToken.access_token : ''};
+            }
+        });
         var requestUrl = klarnaApiContext.getFlowApiUrls().get( 'createSession' );
         var serviceID = klarnaApiContext.getFlowApiIds().get( 'createSession' );
 

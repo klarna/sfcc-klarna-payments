@@ -45,19 +45,21 @@ function getLocaleObject( currentCountry ) {
         }
 
         var customlocaleObject = CustomObjectMgr.getCustomObject( 'KlarnaCountries', countryCode );
+        localeObject.custom = {};
 
         if ( empty( customlocaleObject ) ) {
-            throw new Error( 'Klarna - No active locale custom object found' );
+            // throw new Error('Klarna - No active locale custom object found');
+            localeObject.custom.country = countryCode;
+        } else {
+            Object.keys( customlocaleObject.custom ).forEach( function( key ) {
+                localeObject.custom[key] = customlocaleObject.custom[key];
+            });
         }
-
-        localeObject.custom = {};
-        Object.keys( customlocaleObject.custom ).forEach( function( key ) {
-            localeObject.custom[key] = customlocaleObject.custom[key];
-        } );
-
         if ( countryCode !== 'default' ) {
             localeObject.custom.klarnaLocale = buildKlarnaCompatibleLocale();
         }
+
+        localeObject.custom.coFound = customlocaleObject || false;
 
         return {
             success: true,

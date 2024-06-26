@@ -60,12 +60,26 @@ function _getRequestBody( basket, localeObject ) {
 function updateSession( klarnaSessionID, basket, localeObject ) {
     var Transaction = require( 'dw/system/Transaction' );
     var Site = require( 'dw/system/Site' );
+    var signInHelper = require('*/cartridge/scripts/signin/klarnaSignIn');
+    var CustomerMgr = require('dw/customer/CustomerMgr');
     var response = null;
     var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
 
     try {
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody( basket, localeObject );
+        var customerProfile;
+        var getAccessToken;
+        Transaction.wrap (function () {
+            customerProfile = CustomerMgr.getExternallyAuthenticatedCustomerProfile( 'Klarna', basket.customer && basket.customer.profile && basket.customer.profile.email );
+            if( customerProfile && customerProfile.custom.kpRefreshToken && session.privacy.KlarnaSignedInCustomer ) {
+                var refreshToken = customerProfile.custom.kpRefreshToken;
+                getAccessToken = signInHelper.refreshCustomerSignInToken( refreshToken );
+                customerProfile.custom.kpRefreshToken = getAccessToken && getAccessToken.refresh_token;
+                session.privacy.klarnaSignInAccessToken = getAccessToken && getAccessToken.access_token ? getAccessToken.access_token : '';
+                requestBody.customer ={klarna_access_token: getAccessToken && getAccessToken.access_token ? getAccessToken.access_token : ''};
+            }
+        });
         requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'updateSession' ), klarnaSessionID );
         var serviceID = klarnaApiContext.getFlowApiIds().get( 'updateSession' );
         // Update session
@@ -75,9 +89,7 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
         var errorMsgObj = JSON.parse( errorMsg );
         KlarnaAdditionalLogging.writeLog(basket, basket.custom.kpSessionId, 'klarnaPaymentsUpdateSession.updateSession()', 'Error Updating Klarna session. Error:' + JSON.stringify( e ) );
 
-        if ( Site.getCurrent().getCustomPreferenceValue( 'kpCreateNewSessionWhenExpires' ) || errorMsgObj.error === 404 || errorMsgObj.error_code === 'INVALID_OPERATION' ) {
-            return require( '*/cartridge/scripts/session/klarnaPaymentsCreateSession' ).createSession( basket, localeObject );
-        }
+        return require( '*/cartridge/scripts/session/klarnaPaymentsCreateSession' ).createSession( basket, localeObject );
     }
 
     try {

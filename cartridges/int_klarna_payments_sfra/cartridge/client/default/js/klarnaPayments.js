@@ -315,14 +315,13 @@ KlarnaCheckout.handleFinalizeRequired = function (defer, sessionPayload) {
     var $placeOrderBtn = $('.place-order');
     var $klarnaPlaceOrderBtn = this.getKlarnaPlaceOrderBtn();
     var selectedPaymentMethod = this.getCookie('selectedKlarnaPaymentCategory');
+    var paymentCategory = this.klarnaPaymentsObjects.kpIsExpressCheckout ? {} : { payment_method_category: selectedPaymentMethod };
 
     var payload = this.klarnaPaymentsObjects.kpIsExpressCheckout ? sessionPayload : {};
 
-    Klarna.Payments.finalize({
-        payment_method_category: selectedPaymentMethod
-    }, payload, function (res) {
+    Klarna.Payments.finalize(paymentCategory, payload, function (res) {
         if (res.approved) {
-            if (!this.klarnaPaymentsObjects.kpBankTransferCallback || this.klarnaPaymentsObjects.kpIsExpressCheckout) {
+            if (this.klarnaPaymentsObjects.kpIsExpressCheckout) {
                 // If no callback is set, the order is placed immediately.
                 $.ajax({
                     headers: {
@@ -403,7 +402,7 @@ KlarnaCheckout.handleFinalizeRequired = function (defer, sessionPayload) {
                 }.bind(this), 2000);
             }
         } else {
-            if (this.klarnaPaymentsObjects.kpBankTransferCallback) {
+            if (!this.klarnaPaymentsObjects.kpIsExpressCheckout) {
                 // If the payment isn't approved or popup is closed,
                 $.ajax({
                     // then recreate Basket
@@ -428,10 +427,11 @@ KlarnaCheckout.handleLoadAuthResponse = function (res, defer, sessionPayload) {
     var finalizeRequired = res.FinalizeRequired;
     if (finalizeRequired === 'true') {
         // Create Order if finalization is required
-        if (this.klarnaPaymentsObjects.kpBankTransferCallback) {
+        if (!this.klarnaPaymentsObjects.kpIsExpressCheckout) {
             $placeOrderBtn.click();
         }
         this.handleFinalizeRequired(defer, sessionPayload);
+
     } else {
         $('body').trigger('checkout:disableButton', '.next-step-button button');
         $.ajax({
@@ -518,7 +518,7 @@ KlarnaCheckout.initKlarnaButtonEvent = function (klarnaButton, defer) {
                 }
                 Klarna.Payments.authorize({
                     payment_method_category: klarnaPaymentMethod,
-                    auto_finalize: this.klarnaPaymentsObjects.kpBankTransferCallback ? false : true
+                    auto_finalize: false
                 }, klarnaRequestData, function (res) {
                     if (res.approved) {
                         $.ajax({
@@ -546,20 +546,7 @@ KlarnaCheckout.initKlarnaButtonEvent = function (klarnaButton, defer) {
                         }.bind(this));
                     } else if (res.show_form) {
                         klarnaButton.prop('disabled', false);
-                    } else if (!res.show_form && this.klarnaPaymentsObjects.hideRejectedPayments === 'hide') {
-                        this.hidePaymentCategory(selectedPaymentMethod);
-
-                        var $firstItem = $('.payment-options .nav-item:not(.d-none) a[data-toggle="tab"]').first();
-
-                        if ($firstItem.length > 0) {
-                            $firstItem.click();
-                            klarnaButton.prop('disabled', false);
-                        }
-                    } else if (!res.show_form && this.klarnaPaymentsObjects.hideRejectedPayments === 'greyout') {
-                        this.greyoutPaymentCategory(selectedPaymentMethod, true);
-                        klarnaButton.prop('disabled', true);
                     }
-
                     if (!res || res.error) {
                         this.writeAdditionalLog(res, 'Klarna.Payments.authorize()', 'SFRA Storefront Ajax Request Error.');
                     }

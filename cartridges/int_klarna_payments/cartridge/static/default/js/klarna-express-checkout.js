@@ -72,7 +72,7 @@ function initKlarnaExpressButton(containerId, isPDP) {
                             'authorization': klarnaPaymentsUrls.expressCheckoutAuthCallback
                         };
                         authorize(
-                            { collect_shipping_address: klarnaPreferences.kpCollectShippingAddress, auto_finalize: false },
+                            { collect_shipping_address: true, auto_finalize: false },
                             data.payload,
                             (result) => {
                                 if (result.approved) {

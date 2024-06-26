@@ -1,4 +1,5 @@
 <isset name="KlarnaOSM" value="${require('~/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+<isset name="klarnaKPEnabled" value="${KlarnaOSM.isKlarnaEnabled()}" scope="page" />
 
 <isif condition="${KlarnaOSM.isEnabled()}">
     <script async src="${KlarnaOSM.getScriptURL()}" data-client-id="${KlarnaOSM.getUCI()}" data-environment="${KlarnaOSM.getOSMEnvironment()}"></script>
@@ -7,7 +8,7 @@
 <isif condition="${KlarnaOSM.isEnabledExpress()}" >
     <link rel="stylesheet" href="${URLUtils.staticURL('/css/klarna-express.css')}" />
     <script type="text/javascript" src="${URLUtils.staticURL('/js/klarna-express-button.js')}"></script>
-    <script src="${KlarnaOSM.getExpressButtonScriptURL()}" data-id="${KlarnaOSM.getExpressButtonMID()}" 
+    <script src="${KlarnaOSM.getExpressButtonScriptURL()}" data-id="${KlarnaOSM.getExpressButtonMID()}"
         data-environment="${KlarnaOSM.getExpressButtonEnvironment()}" async></script>
 </isif>
 
@@ -29,4 +30,8 @@
     <isif condition="${typeof pageContext === "undefined" || (pageContext.ns !== 'checkout')}">
         <script async src="${KlarnaOSM.getKlarnExpressCheckoutScriptURL()}"></script>
     </isif>
+</isif>
+
+<isif condition="${KlarnaOSM.isKlarnaSignInEnabled()}">
+    <script defer src="${KlarnaOSM.getKlarnaSignInScriptURL()}"></script>
 </isif>

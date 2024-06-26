@@ -17,7 +17,7 @@ module.exports = [{
 		'klarnaSubscriptions': path.join(__dirname, cartridgePath + '/client/default/js/klarnaSubscriptions.js'),
 		'klarnaExpressCheckout': path.join(__dirname, cartridgePath + '/client/default/js/klarnaExpressCheckout.js'),
 		'klarnaExpressMiniCart': path.join(__dirname, cartridgePath + '/client/default/js/klarnaExpressMiniCart.js'),
-		'klarnaExpressCheckoutPDP': path.join(__dirname, cartridgePath + '/client/default/js/klarnaExpressCheckoutPDP.js')
+		'klarnaSignIn': path.join(__dirname, cartridgePath + '/client/default/js/klarnaSignIn.js')
 	},
 	output: {
 		path: path.resolve( cartridgePath + './static/default/js/' ),
@@ -32,7 +32,8 @@ module.exports = [{
 	name: 'scss',
 	entry: {
 		'klarnaPayments': path.join( __dirname, cartridgePath + '/client/default/scss/klarnaPayments.scss' ),
-		'klarnaExpress': path.join( __dirname, cartridgePath + '/client/default/scss/klarnaExpress.scss' )
+		'klarnaExpress': path.join( __dirname, cartridgePath + '/client/default/scss/klarnaExpress.scss' ),
+		'klarnaSignIn': path.join( __dirname, cartridgePath + '/client/default/scss/klarnaSignIn.scss' )
 	},
 	output: {
 		path: path.resolve( cartridgePath + './static/default/css/' ),

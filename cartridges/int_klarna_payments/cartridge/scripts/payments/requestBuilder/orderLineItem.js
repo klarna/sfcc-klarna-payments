@@ -140,10 +140,8 @@ OrderLineItem.prototype.generateItemImageURL = function( li ) {
 };
 
 OrderLineItem.prototype.buildItemProductAndImageUrls = function( li ) {
-    if ( Site.getCurrent().getCustomPreferenceValue( 'sendProductAndImageURLs' ) ) {
-        this.item.product_url = this.generateItemProductURL( li );
-        this.item.image_url = this.generateItemImageURL( li );
-    }
+    this.item.product_url = this.generateItemProductURL( li );
+    this.item.image_url = this.generateItemImageURL( li );
 };
 
 OrderLineItem.prototype.getItemName = function( li ) {

@@ -88,7 +88,7 @@ function authorize( args ) { // eslint-disable-line complexity
     try {
         if ( !empty(session.privacy.KPAuthInfo) ) {
             finalizeRequired = JSON.parse( session.privacy.KPAuthInfo ).FinalizeRequired;
-        } 
+        }
         if ( finalizeRequired === 'true' ) {
             session.privacy.finalizeRequired = 'true';
         } else {
@@ -140,7 +140,7 @@ function authorize( args ) { // eslint-disable-line complexity
     session.privacy.KlarnaPaymentsRedirectURL = klarnaCreateOrderResponse.redirect_url;
     session.privacy.KlarnaPaymentsFraudStatus = klarnaCreateOrderResponse.fraud_status;
     var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue( 'kpAutoCapture' );
-    var vcnEnabled = Site.getCurrent().getCustomPreferenceValue( 'kpVCNEnabled' );
+    var vcnEnabled = KlarnaHelper.isVCNEnabled();
     Transaction.wrap( function() {
         args.Order.custom.kpRedirectURL = klarnaCreateOrderResponse.redirect_url;
         paymentInstrument.paymentTransaction.custom.kpFraudStatus = session.privacy.KlarnaPaymentsFraudStatus;
@@ -151,8 +151,8 @@ function authorize( args ) { // eslint-disable-line complexity
             paymentInstrument.paymentTransaction.type = dw.order.PaymentTransaction.TYPE_AUTH;
         }
     } );
-	
-	if (!klarnaCreateOrderResponse.success || session.privacy.KlarnaPaymentsFraudStatus === 'REJECTED') {
+
+    if (!klarnaCreateOrderResponse.success || session.privacy.KlarnaPaymentsFraudStatus === 'REJECTED') {
         return { error: true };
     }
 
@@ -246,7 +246,11 @@ function createOrUpdateSession() {
     if ( empty( basket ) ) {
         return null;
     }
-	
+
+    if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
+        return null;
+    }
+
     if (basket.custom.kpIsExpressCheckout) {
         var localeObject = getLocale();
         //setDefaultPaymentMethod();
@@ -288,12 +292,13 @@ function createOrUpdateSession() {
  */
 function createSession() {
     var basket = BasketMgr.getCurrentBasket();
-    if ( empty( basket ) ) {
+    var locale = getLocale();
+    if ( empty( basket ) || Object.keys(locale).length === 0 ) {
         return null;
     }
 
     var createSessionHelper = require( '*/cartridge/scripts/session/klarnaPaymentsCreateSession' );
-    var createSessionResponse = createSessionHelper.createSession( basket, getLocale() );
+    var createSessionResponse = createSessionHelper.createSession( basket, locale );
 
     return createSessionResponse.response;
 }
@@ -314,7 +319,7 @@ function updateSession() {
     }
 
     var updateSessionHelper = require( '*/cartridge/scripts/session/klarnaPaymentsUpdateSession' );
-    
+
     var updateSessionResponse = updateSessionHelper.updateSession( basket.custom.kpSessionId, basket, getLocale() );
 
     if ( updateSessionResponse.success && !empty( updateSessionResponse.response ) ) {
@@ -542,7 +547,7 @@ function selectPaymentMethod() {
     }
 
     var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
-    
+
     if ( paymentMethodID === PAYMENT_METHOD ) {
         result = app.getModel( 'PaymentProcessor' ).handle( cart.object, paymentMethodID );
 
@@ -611,7 +616,7 @@ function selectPaymentMethod() {
 function expressCheckout() {
     var URLUtils = require( 'dw/web/URLUtils' );
     var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
-    
+
     var cart = app.getModel( 'Cart' ).get();
     var expressForm = app.getForm( 'klarnaexpresscheckout' ).object;
     var klarnaDetails = KlarnaHelper.getExpressFormDetails( expressForm );
@@ -621,8 +626,8 @@ function expressCheckout() {
         response.redirect( URLUtils.https( 'Cart-Show' ) );
         return;
     }
-	
-	var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+
+    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
 
     var result = cart.validateForCheckout();
 
@@ -766,6 +771,7 @@ function BankTransferCallback() {
 
     try {
         var localeObject = getLocale();
+        KlarnaHelper.isCurrentCountryKlarnaEnabled();
         var klarnaResponse = JSON.parse( request.httpParameterMap.requestBodyAsString );
         var kpAuthorizationToken = klarnaResponse.authorization_token;
         var kpSessionId = klarnaResponse.session_id;
@@ -787,7 +793,7 @@ function BankTransferCallback() {
         if( klarnaCreateOrderResponse.success ) {
             Transaction.wrap( function() {
                 placeOrder( order, kpOrderID, localeObject );
-                
+
                 paymentInstrument.paymentTransaction.transactionID = kpOrderID;
                 paymentInstrument.paymentTransaction.paymentProcessor = paymentProcessor;
 
@@ -866,7 +872,7 @@ function FailOrder() {
 
 /**
  * Write additional log data
- */ 
+ */
 function writeLog() {
     var basket = BasketMgr.getCurrentBasket();
     var storeFrontResponse = request.httpParameterMap.responseFromKlarna.value;
@@ -1057,8 +1063,8 @@ function handleAuthorizationResult() {
     Transaction.wrap(function () {
         cart.calculate();
     });
-	
-	var redirectURL = URLUtils.url('COBilling-Start').toString();
+
+    var redirectURL = URLUtils.url('COBilling-Start').toString();
 
     if (!klarnaDetails && (!shipment.shippingAddress || !shipment.shippingAddress.address1)) {
         redirectURL =  URLUtils.https('COCustomer-Start').toString();
@@ -1068,8 +1074,8 @@ function handleAuthorizationResult() {
         if (hasMultipleShipments) {
             redirectURL = URLUtils.https('COShippingMultiple-Start').toString();
         } else {
-			redirectURL = URLUtils.https('COShipping-Start').toString();
-		}
+            redirectURL = URLUtils.https('COShipping-Start').toString();
+        }
     }
 
     session.forms.singleshipping.fulfilled.value = true;

@@ -1,15 +1,6 @@
-var FRAUD_STATUS = {
-    ACCEPTED: 'ACCEPTED',
-    REJECTED: 'REJECTED',
-    PENDING: 'PENDING',
-    ACCEPTED_AFTER_REVIEW: 'ACCEPTED_AFTER_REVIEW',
-    REJECTED_AFTER_REVIEW: 'REJECTED_AFTER_REVIEW'
-};
+'use strict';
 
-var FRAUD_STATUS_MAP = {
-    ACCEPTED: 'FRAUD_RISK_ACCEPTED',
-    REJECTED: 'FRAUD_RISK_REJECTED'
-};
+var superMdl = module.superModule;
 
 var NOTIFY_EVENT_TYPES = {
     FRAUD_RISK_ACCEPTED: 'FRAUD_RISK_ACCEPTED'
@@ -18,30 +9,6 @@ var NOTIFY_EVENT_TYPES = {
 var CREDIT_CARD_PROCESSOR_ID = 'basic_credit';
 
 var PAYMENT_METHOD = 'KLARNA_PAYMENTS';
-
-var ORDER_LINE_TYPE = {
-    DISCOUNT: 'discount',
-    SHIPPING_FEE: 'shipping_fee',
-    SALES_TAX: 'sales_tax',
-    PHYSICAL: 'physical',
-    SURCHARGE: 'surcharge',
-    GIFT_CERTIFICATE: 'gift_card',
-    GIFT_CERTIFICATE_PI: 'store_credit'
-};
-
-var CONTENT_TYPE = 'application/vnd.klarna.internal.emd-v2+json';
-
-var SHIPPING_METHOD_TYPE = {
-    STORE: 'store pick-up',
-    POINT: 'pick-up point',
-    REGBOX: 'registered box',
-    UREGBOX: 'unregistered box'
-};
-
-var SHIPPING_TYPE = {
-    NORMAL: 'normal',
-    EXPRESS: 'express'
-};
 
 var KLARNA_PAYMENT_URLS = {
     CREATE_SESSION: '',
@@ -60,26 +27,18 @@ var KLARNA_PAYMENT_URLS = {
     HANDLE_EXPRESS_CHECKOUT_AUTH: 'KlarnaPayments-HandleAuthorizationResult',
     EXPRESS_CHECKOUT_AUTH_CALLBACK: 'KlarnaPayments-ECAuthorizationCallback',
     GENERATE_EXPRESS_CHECKOUT_PAYLOAD: 'KlarnaPayments-GenerateExpressCheckoutPayload',
-    HANDLE_AUTH_FAILURE_PDP: 'KlarnaPayments-HandleAuthFailure'
+    HANDLE_AUTH_FAILURE_PDP: 'KlarnaPayments-HandleAuthFailure',
+    KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SFRA: 'Checkout-Begin',
+    KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SG: 'COCustomer-Start'
 };
 
-var KLARNA_JS_CONSTANTS = {
-    ERROR_MSG_ALERT_TIMEOUT: 2000,
-    KEC_ERROR_WAITTIME: 100,
-    FORM_VALIDATION_NUM_RETRIES: 3
-};
+var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 24.4.0';
 
-var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 24.3.0';
+superMdl.PAYMENT_METHOD = PAYMENT_METHOD;
+superMdl.KLARNA_PAYMENT_URLS = KLARNA_PAYMENT_URLS;
+superMdl.SERVICE_HEADER = SERVICE_HEADER;
 
-module.exports.FRAUD_STATUS = FRAUD_STATUS;
+module.exports = superMdl;
+
 module.exports.NOTIFY_EVENT_TYPES = NOTIFY_EVENT_TYPES;
-module.exports.PAYMENT_METHOD = PAYMENT_METHOD;
 module.exports.CREDIT_CARD_PROCESSOR_ID = CREDIT_CARD_PROCESSOR_ID;
-module.exports.ORDER_LINE_TYPE = ORDER_LINE_TYPE;
-module.exports.CONTENT_TYPE = CONTENT_TYPE;
-module.exports.FRAUD_STATUS_MAP = FRAUD_STATUS_MAP;
-module.exports.SHIPPING_METHOD_TYPE = SHIPPING_METHOD_TYPE;
-module.exports.SHIPPING_TYPE = SHIPPING_TYPE;
-module.exports.KLARNA_PAYMENT_URLS = KLARNA_PAYMENT_URLS;
-module.exports.SERVICE_HEADER = SERVICE_HEADER;
-module.exports.KLARNA_JS_CONSTANTS = KLARNA_JS_CONSTANTS;

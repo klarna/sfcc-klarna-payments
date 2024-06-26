@@ -1,6 +1,10 @@
 <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+<isset name="klarnaKPEnabled" value="${KlarnaOSM.isKlarnaEnabled()}" scope="page" />
 
 <isif condition="${KlarnaOSM.isEnabled()}">
     <script async src="${KlarnaOSM.getScriptURL()}" data-client-id="${KlarnaOSM.getUCI()}"
         data-environment="${KlarnaOSM.getOSMEnvironment()}"></script>
+</isif>
+<isif condition="${KlarnaOSM.isKlarnaSignInEnabled()}">
+    <script defer src="${KlarnaOSM.getKlarnaSignInScriptURL()}"></script>
 </isif>

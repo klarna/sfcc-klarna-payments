@@ -72,7 +72,12 @@
             return this;
         }
         if (customer.profile.birthday) {
-            this.context.customer.date_of_birth = customer.profile.birthday;
+            try {
+                var calendarDate = new dw.util.Calendar(customer.profile.birthday);
+                this.context.customer.date_of_birth = dw.util.StringUtils.formatCalendar(calendarDate, 'yyyy-mm-dd');
+            } catch (e) {
+                dw.system.Logger.info('Unable to build customer birthdate.');
+            }
         }
         if (customer.profile.gender.value) {
             this.context.customer.gender = customer.profile.gender;

@@ -75,10 +75,12 @@ server.get('LoadAuth', function (req, res) {
 server.post('BankTransferCallback', function (req, res) {
     // Get Order ID from Klarna session_id
     var OrderMgr = require('dw/order/OrderMgr');
+    var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
     var processor = require('*/cartridge/scripts/payments/processor');
     var klarnaResponse = JSON.parse(req.body);
     var kpAuthorizationToken = klarnaResponse.authorization_token;
     var kpSessionId = klarnaResponse.session_id;
+    KlarnaHelper.isCurrentCountryKlarnaEnabled();
 
     // Get Order by sessionId with status CREATED and update its status
     try {

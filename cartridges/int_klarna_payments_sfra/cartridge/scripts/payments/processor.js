@@ -566,7 +566,6 @@ function bankTransferPlaceOrder(order, kpSessionId, kpAuthorizationToken) {
 
         order.setConfirmationStatus(order.CONFIRMATION_STATUS_CONFIRMED);
         order.setExportStatus(order.EXPORT_STATUS_READY);
-        order.setPaymentStatus(order.PAYMENT_STATUS_PAID);
     });
 
     return result;

@@ -313,7 +313,7 @@
                 <type>boolean</type>
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
+                <default-value>false</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="siwk_placement">
                 <display-name xml:lang="x-default">Placements</display-name>
@@ -888,16 +888,6 @@ Klarna payments is required to enable the additional solutions.</description>
                 <attribute attribute-id="kpECButtonTheme"/>
                 <attribute attribute-id="kpECButtonShape"/>
                 <attribute attribute-id="kec_placement"/>
-            </attribute-group>
-            <attribute-group group-id="Klarna_swik">
-                <display-name xml:lang="x-default">Klarna Sign-in With Klarna</display-name>
-                <attribute attribute-id="siwk_enable"/>
-                <attribute attribute-id="siwk_scope"/>
-                <attribute attribute-id="siwk_redirect_url"/>
-                <attribute attribute-id="siwk_theme"/>
-                <attribute attribute-id="siwk_shape"/>
-                <attribute attribute-id="siwk_alignment"/>
-                <attribute attribute-id="siwk_placement"/>
             </attribute-group>
             <attribute-group group-id="Klarna_KEC">
                 <display-name xml:lang="x-default">Klarna Express Checkout</display-name>

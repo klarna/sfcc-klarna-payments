@@ -13,8 +13,7 @@
 
 	<div class="kosm-pdp">
 		<klarna-placement id="osm-pdp-placement" data-key="${KlarnaOSM.getPDPPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" 
-		data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}" data-theme="${KlarnaOSM.getOSMPDPTheme()}" 
-		<isif condition="${KlarnaOSM.isEnabledDataInline()}">data-inline="true"</isif>></klarna-placement>
+		data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}" data-theme="${KlarnaOSM.getOSMPDPTheme()}" ></klarna-placement>
 		<isset name="isKlarnaOSMScriptRequired" value="true" scope="page" />
 	</div>
 </isif>

@@ -10,7 +10,16 @@ var BasketMgr = require('dw/order/BasketMgr');
 
 server.prepend('Begin', function (req, res, next) {
     var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');
+    var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+    var collections = require('*/cartridge/scripts/util/collections');
+    var Transaction = require('dw/system/Transaction');
     var currentBasket = BasketMgr.getCurrentBasket();
+
+    var currentBasket = BasketMgr.getCurrentBasket();
+    if (!currentBasket) {
+        res.redirect(URLUtils.url('Cart-Show'));
+        return next();
+    }
 
     if (currentBasket && currentBasket.defaultShipment.shippingMethod === null) {
         res.redirect(URLUtils.url('Cart-Show'));
@@ -18,6 +27,29 @@ server.prepend('Begin', function (req, res, next) {
     }
 
     SubscriptionHelper.updateCartSubscriptionDetails(currentBasket);
+
+    var currentCustomer = req.currentCustomer.raw;
+    //preset customer address from Klarna SignIn
+    var kpCustomerAddress = session.privacy.kpCustomerAddress ? JSON.parse(session.privacy.kpCustomerAddress) : null;
+    if (kpCustomerAddress && customer.externallyAuthenticated) {
+        var billingAddress = currentBasket.billingAddress;
+        var shipments = currentBasket.shipments;
+        collections.forEach(shipments, function (shipment) {
+            if (!shipment.shippingAddress) {
+                COHelpers.copyCustomerAddressToShipment(kpCustomerAddress, shipment);
+            }
+        });
+
+        if (!billingAddress) {
+            COHelpers.copyCustomerAddressToBilling(kpCustomerAddress);
+        }
+
+
+        var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalculationHelpers');
+        Transaction.wrap(function () {
+            basketCalculationHelpers.calculateTotals(currentBasket);
+        });
+    }
 
     // Create or update session before base call,
     // as we'll need the token & ID form basket object
@@ -27,8 +59,7 @@ server.prepend('Begin', function (req, res, next) {
     // If BT callback required and Finalization required, review Orders
     // If Basket empty, fail Order because user refreshed the page
     var Site = require('dw/system/Site');
-    var kpBankTransferCallback = Site.getCurrent().getCustomPreferenceValue('kpBankTransferCallback');
-    if (kpBankTransferCallback) {
+    if (!currentBasket.custom.kpIsExpressCheckout) {
         var Logger = require('dw/system/Logger');
         var log = Logger.getLogger('KlarnaPayments');
         var Order = require('dw/order/Order');

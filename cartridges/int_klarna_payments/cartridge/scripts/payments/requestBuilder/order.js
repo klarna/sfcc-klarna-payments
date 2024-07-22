@@ -115,10 +115,11 @@
     KlarnaPaymentsOrderRequestBuilder.prototype.setMerchantReference = function( order ) {
         this.context.merchant_reference1 = order.orderNo;
         this.context.merchant_reference2 = '';
+        var merchant_reference2config = Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2' ) ? Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2' ) : Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' );
 
-        if ( Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' ) ) {
+        if ( merchant_reference2config ) {
             try {
-                this.context.merchant_reference2 = order[Site.getCurrent().getCustomPreferenceValue( 'merchant_reference2_mapping' )].toString();
+                this.context.merchant_reference2 = order[merchant_reference2config].toString();
             } catch ( err ) {
                 log.error( 'merchant_reference2 was not set. Error: {0} ', err.message );
 
@@ -290,10 +291,11 @@
             kpColorTextSecondary: currentSite.getCustomPreferenceValue( 'kpColorTextSecondary' ),
             kpRadiusBorder: currentSite.getCustomPreferenceValue( 'kpRadiusBorder' )
         };
+        var kpColorCustomizationConfig =  currentSite.getCustomPreferenceValue( 'kpColorCustomization' );
 
         var options = this.getOptionsRequestBuilder().build( preferences );
 
-        this.context.options = options;
+        this.context.options = !empty( kpColorCustomizationConfig ) ? JSON.parse ( kpColorCustomizationConfig ) : options;
 
         return this;
     };

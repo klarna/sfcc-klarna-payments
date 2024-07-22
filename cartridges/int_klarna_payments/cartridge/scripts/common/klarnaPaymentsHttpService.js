@@ -10,13 +10,14 @@
  *
  */
 
-var Logger = require( 'dw/system/Logger' );
-var LocalServiceRegistry = require( 'dw/svc/LocalServiceRegistry' );
-var StringUtils = require( 'dw/util/StringUtils' );
-var Site = require( 'dw/system/Site' );
-var Resource = require( 'dw/web/Resource' );
+var Logger = require('dw/system/Logger');
+var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
+var StringUtils = require('dw/util/StringUtils');
+var Site = require('dw/system/Site');
+var Resource = require('dw/web/Resource');
 
 var SERVICE_HEADER = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).SERVICE_HEADER;
+var SERVICE_ID = require('*/cartridge/scripts/util/klarnaPaymentsConstants').KLARNA_SERVICE;
 
 /**
  * @constructor
@@ -44,11 +45,7 @@ KlarnaPaymentsHttpService.prototype.getLastStatusCode = function() {
  * @returns {string} Parsed JSON response; if not available - response status code.
  */
 KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVerb, credentialID, requestBody, klarnaSessionID, klarnaIdempotencyKey ) {
-    var serviceId = serviceID;
-    var useKpRateLimit = Site.getCurrent().getCustomPreferenceValue( 'kpRateLimitByOperation' );
-    if ( !useKpRateLimit ) {
-        serviceId = Site.getCurrent().getCustomPreferenceValue( 'kpServiceName' );
-    }
+    var serviceId = SERVICE_ID;
 
     var service = LocalServiceRegistry.createService( serviceId, {
         createRequest: function( svc, sRequestBody ) {
@@ -67,8 +64,8 @@ KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVer
         mockCall: function( svc, client ) {
             return {
                 statusCode: 500,
-        	    statusMessage: "ERROR",
-        	    errorText: "MOCK RESPONSE",
+                statusMessage: "ERROR",
+                errorText: "MOCK RESPONSE",
                 mockResult: true,
                 object: null,
                 ok: false,
@@ -77,7 +74,8 @@ KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVer
         }
     } );
 
-    service.setCredentialID( credentialID );
+    //service.setCredentialID( credentialID );
+    setServiceCredentials(service, credentialID);
     service.URL += urlPath;
     service.addHeader( 'Content-Type', 'application/json' );
     service.addHeader( 'Accept', 'application/json' );
@@ -154,7 +152,7 @@ KlarnaPaymentsHttpService.prototype.detectErrorResponse = function( result, http
     } else if ( result.error == 404 ) {
         this.logErrorResponse( result, requestUrl, requestBody, klarnaSessionID );
         throw new Error( result );
-    //log error response for all 5xx status codes but not fail order 
+        //log error response for all 5xx status codes but not fail order 
     } else if ( result.error > 499 && result.error < 600 ) {
         this.logErrorResponse( result, requestUrl, requestBody, klarnaSessionID );
         if (serviceID && serviceID.indexOf('createOrder') != -1) {
@@ -284,6 +282,9 @@ function maskPersonalDetails( requestBody ) {
             maskedRequest.shipping_address.family_name = maskName( requestBody.shipping_address.family_name );
         }
     }
+    if ( !empty( requestBody ) && !empty( requestBody.customer ) && !empty( requestBody.customer.klarna_access_token ) ) {
+        maskedRequest.customer.klarna_access_token = maskName( requestBody.customer.klarna_access_token );
+    }
     return JSON.stringify( maskedRequest );
 }
 
@@ -303,15 +304,15 @@ KlarnaPaymentsHttpService.prototype.logResponseData = function( urlPath, httpVer
 
         if ( !empty( result.object ) && !empty( result.object.text ) ) {
             message = StringUtils.format( 'Response for request urlPath={0}, httpVerb={1}, requestBody=[{2}], responseBody=[{3}]',
-                        urlPath,
-                        httpVerb,
-                        requestBodyJson,
-                        result.object.text );
+                urlPath,
+                httpVerb,
+                requestBodyJson,
+                result.object.text );
         } else {
             message = StringUtils.format( 'Response for EMPTY request urlPath={0}, httpVerb={1}, requestBody=[{2}]',
-                        urlPath,
-                        httpVerb,
-                        requestBodyJson );
+                urlPath,
+                httpVerb,
+                requestBodyJson );
         }
 
         this.logger.info( message );
@@ -320,5 +321,22 @@ KlarnaPaymentsHttpService.prototype.logResponseData = function( urlPath, httpVer
         this.logger.error( exception );
     }
 };
+
+function setServiceCredentials(service, credentialID) {
+    var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+    var klarnaConfigs = KlarnaHelper.getKlarnaServiceCredentials();
+    if (!klarnaConfigs.useServiceCredentials) {
+        var Encoding = require('dw/crypto/Encoding');
+        var Bytes = require('dw/util/Bytes');
+        var password = klarnaConfigs.apiPassword;
+        var username = klarnaConfigs.apiUsername;
+        var basicToken = Encoding.toBase64(new Bytes(username + ':' + password));
+
+        service.addHeader('Authorization', 'Basic ' + basicToken);
+        service.URL = klarnaConfigs.apiURL;
+    } else {
+        service.setCredentialID(credentialID);
+    }
+}
 
 module.exports = KlarnaPaymentsHttpService;

@@ -1,193 +1,247 @@
-[{
-    "id": "en_US",
-    "currencyCode": "USD",
-    "countryCode": "US"
-}, {
-    "id": "es_US",
-    "currencyCode": "USD",
-    "countryCode": "US"
-}, {
-    "id": "en_GB",
-    "currencyCode": "GBP",
-    "countryCode": "GB"
-}, {
-    "id": "de_DE",
-    "currencyCode": "EUR",
-    "countryCode": "DE"
-}, {
-    "id": "en_DE",
-    "currencyCode": "EUR",
-    "countryCode": "DE"
-}, {
-    "id": "en_AT",
-    "currencyCode": "EUR",
-    "countryCode": "AT"
-}, {
-    "id": "de_AT",
-    "currencyCode": "EUR",
-    "countryCode": "AT"
-}, {
-    "id": "en_FR",
-    "currencyCode": "EUR",
-    "countryCode": "FR"
-}, {
-    "id": "fr_FR",
-    "currencyCode": "EUR",
-    "countryCode": "FR"
-}, {
-    "id": "en_CA",
-    "currencyCode": "CAD",
-    "countryCode": "CA"
-}, {
-    "id": "fr_CA",
-    "currencyCode": "CAD",
-    "countryCode": "CA"
-}, {
-    "id": "sv_SE",
-    "currencyCode": "SEK",
-    "countryCode": "SE"
-}, {
-    "id": "en_SE",
-    "currencyCode": "SEK",
-    "countryCode": "SE"
-}, {
-    "id": "en_AU",
-    "currencyCode": "AUD",
-    "countryCode": "AU"
-}, {
-    "id": "en_NZ",
-    "currencyCode": "NZD",
-    "countryCode": "NZ"
-}, {
-    "id": "en_IT",
-    "currencyCode": "EUR",
-    "countryCode": "IT"
-}, {
-    "id": "it_IT",
-    "currencyCode": "EUR",
-    "countryCode": "IT"
-}, {
-    "id": "en_ES",
-    "currencyCode": "EUR",
-    "countryCode": "ES"
-}, {
-    "id": "es_ES",
-    "currencyCode": "EUR",
-    "countryCode": "ES"
-}, {
-    "id": "en_BE",
-    "currencyCode": "EUR",
-    "countryCode": "BE"
-}, {
-    "id": "nl_BE",
-    "currencyCode": "EUR",
-    "countryCode": "BE"
-}, {
-    "id": "fr_BE",
-    "currencyCode": "EUR",
-    "countryCode": "BE"
-}, {
-    "id": "nb_NO",
-    "currencyCode": "NOK",
-    "countryCode": "NO"
-}, {
-    "id": "en_NO",
-    "currencyCode": "NOK",
-    "countryCode": "NO"
-}, {
-    "id": "pl_PL",
-    "currencyCode": "PLN",
-    "countryCode": "PL"
-}, {
-    "id": "en_PL",
-    "currencyCode": "PLN",
-    "countryCode": "PL"
-}, {
-    "id": "en_PT",
-    "currencyCode": "EUR",
-    "countryCode": "PT"
-}, {
-    "id": "pt_PT",
-    "currencyCode": "EUR",
-    "countryCode": "PT"
-}, {
-    "id": "en_IE",
-    "currencyCode": "EUR",
-    "countryCode": "IE"
-}, {
-    "id": "es_MX",
-    "currencyCode": "MXN",
-    "countryCode": "MX"
-}, {
-    "id": "en_MX",
-    "currencyCode": "MXN",
-    "countryCode": "MX"
-}, {
-    "id": "cs_CZ",
-    "currencyCode": "CZK",
-    "countryCode": "CZ"
-}, {
-    "id": "en_CZ",
-    "currencyCode": "CZK",
-    "countryCode": "CZ"
-}, {
-    "id": "da_DK",
-    "currencyCode": "DKK",
-    "countryCode": "DK"
-}, {
-    "id": "en_DK",
-    "currencyCode": "DKK",
-    "countryCode": "DK"
-}, {
-    "id": "de_CH",
-    "currencyCode": "CHF",
-    "countryCode": "CH"
-}, {
-    "id": "fr_CH",
-    "currencyCode": "CHF",
-    "countryCode": "CH"
-},  {
-    "id": "it_CH",
-    "currencyCode": "CHF",
-    "countryCode": "CH"
-},  {
-    "id": "en_CH",
-    "currencyCode": "CHF",
-    "countryCode": "CH"
-}, {
-    "id": "fi_FI",
-    "currencyCode": "EUR",
-    "countryCode": "FI"
-}, {
-    "id": "sv_FI",
-    "currencyCode": "EUR",
-    "countryCode": "FI"
-}, {
-    "id": "en_FI",
-    "currencyCode": "EUR",
-    "countryCode": "FI"
-}, {
-    "id": "el_GR",
-    "currencyCode": "EUR",
-    "countryCode": "GR"
-}, {
-    "id": "en_GR",
-    "currencyCode": "EUR",
-    "countryCode": "GR"
-}, {
-    "id": "en_NL",
-    "currencyCode": "EUR",
-    "countryCode": "NL"
-}, {
-    "id": "nl_NL",
-    "currencyCode": "EUR",
-    "countryCode": "NL"
-}, {
-    "id": "en_RO",
-    "currencyCode": "RON",
-    "countryCode": "RO"
-}, {
-    "id": "ro_RO",
-    "currencyCode": "RON",
-    "countryCode": "RO"
-}]
+[
+    {
+        "id": "en_US",
+        "currencyCode": "USD",
+        "countryCode": "US"
+    },
+    {
+        "id": "es_US",
+        "currencyCode": "USD",
+        "countryCode": "US"
+    },
+    {
+        "id": "en_GB",
+        "currencyCode": "GBP",
+        "countryCode": "GB"
+    },
+    {
+        "id": "de_DE",
+        "currencyCode": "EUR",
+        "countryCode": "DE"
+    },
+    {
+        "id": "en_DE",
+        "currencyCode": "EUR",
+        "countryCode": "DE"
+    },
+    {
+        "id": "en_AT",
+        "currencyCode": "EUR",
+        "countryCode": "AT"
+    },
+    {
+        "id": "de_AT",
+        "currencyCode": "EUR",
+        "countryCode": "AT"
+    },
+    {
+        "id": "en_FR",
+        "currencyCode": "EUR",
+        "countryCode": "FR"
+    },
+    {
+        "id": "fr_FR",
+        "currencyCode": "EUR",
+        "countryCode": "FR"
+    },
+    {
+        "id": "en_CA",
+        "currencyCode": "CAD",
+        "countryCode": "CA"
+    },
+    {
+        "id": "fr_CA",
+        "currencyCode": "CAD",
+        "countryCode": "CA"
+    },
+    {
+        "id": "sv_SE",
+        "currencyCode": "SEK",
+        "countryCode": "SE"
+    },
+    {
+        "id": "en_SE",
+        "currencyCode": "SEK",
+        "countryCode": "SE"
+    },
+    {
+        "id": "en_AU",
+        "currencyCode": "AUD",
+        "countryCode": "AU"
+    },
+    {
+        "id": "en_NZ",
+        "currencyCode": "NZD",
+        "countryCode": "NZ"
+    },
+    {
+        "id": "en_IT",
+        "currencyCode": "EUR",
+        "countryCode": "IT"
+    },
+    {
+        "id": "it_IT",
+        "currencyCode": "EUR",
+        "countryCode": "IT"
+    },
+    {
+        "id": "en_ES",
+        "currencyCode": "EUR",
+        "countryCode": "ES"
+    },
+    {
+        "id": "es_ES",
+        "currencyCode": "EUR",
+        "countryCode": "ES"
+    },
+    {
+        "id": "en_BE",
+        "currencyCode": "EUR",
+        "countryCode": "BE"
+    },
+    {
+        "id": "nl_BE",
+        "currencyCode": "EUR",
+        "countryCode": "BE"
+    },
+    {
+        "id": "fr_BE",
+        "currencyCode": "EUR",
+        "countryCode": "BE"
+    },
+    {
+        "id": "nb_NO",
+        "currencyCode": "NOK",
+        "countryCode": "NO"
+    },
+    {
+        "id": "en_NO",
+        "currencyCode": "NOK",
+        "countryCode": "NO"
+    },
+    {
+        "id": "pl_PL",
+        "currencyCode": "PLN",
+        "countryCode": "PL"
+    },
+    {
+        "id": "en_PL",
+        "currencyCode": "PLN",
+        "countryCode": "PL"
+    },
+    {
+        "id": "en_PT",
+        "currencyCode": "EUR",
+        "countryCode": "PT"
+    },
+    {
+        "id": "pt_PT",
+        "currencyCode": "EUR",
+        "countryCode": "PT"
+    },
+    {
+        "id": "en_IE",
+        "currencyCode": "EUR",
+        "countryCode": "IE"
+    },
+    {
+        "id": "es_MX",
+        "currencyCode": "MXN",
+        "countryCode": "MX"
+    },
+    {
+        "id": "en_MX",
+        "currencyCode": "MXN",
+        "countryCode": "MX"
+    },
+    {
+        "id": "cs_CZ",
+        "currencyCode": "CZK",
+        "countryCode": "CZ"
+    },
+    {
+        "id": "en_CZ",
+        "currencyCode": "CZK",
+        "countryCode": "CZ"
+    },
+    {
+        "id": "da_DK",
+        "currencyCode": "DKK",
+        "countryCode": "DK"
+    },
+    {
+        "id": "en_DK",
+        "currencyCode": "DKK",
+        "countryCode": "DK"
+    },
+    {
+        "id": "de_CH",
+        "currencyCode": "CHF",
+        "countryCode": "CH"
+    },
+    {
+        "id": "fr_CH",
+        "currencyCode": "CHF",
+        "countryCode": "CH"
+    },
+    {
+        "id": "it_CH",
+        "currencyCode": "CHF",
+        "countryCode": "CH"
+    },
+    {
+        "id": "en_CH",
+        "currencyCode": "CHF",
+        "countryCode": "CH"
+    },
+    {
+        "id": "fi_FI",
+        "currencyCode": "EUR",
+        "countryCode": "FI"
+    },
+    {
+        "id": "sv_FI",
+        "currencyCode": "EUR",
+        "countryCode": "FI"
+    },
+    {
+        "id": "en_FI",
+        "currencyCode": "EUR",
+        "countryCode": "FI"
+    },
+    {
+        "id": "el_GR",
+        "currencyCode": "EUR",
+        "countryCode": "GR"
+    },
+    {
+        "id": "en_GR",
+        "currencyCode": "EUR",
+        "countryCode": "GR"
+    },
+    {
+        "id": "en_NL",
+        "currencyCode": "EUR",
+        "countryCode": "NL"
+    },
+    {
+        "id": "nl_NL",
+        "currencyCode": "EUR",
+        "countryCode": "NL"
+    },
+    {
+        "id": "en_RO",
+        "currencyCode": "RON",
+        "countryCode": "RO"
+    },
+    {
+        "id": "ro_RO",
+        "currencyCode": "RON",
+        "countryCode": "RO"
+    },
+    {
+        "id": "en_HU",
+        "currencyCode": "HUF",
+        "countryCode": "HU"
+    }
+]

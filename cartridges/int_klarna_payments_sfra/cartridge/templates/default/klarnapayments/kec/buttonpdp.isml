@@ -3,12 +3,12 @@
 
 <isset name="product" value="${pdict.p_product}" scope="page" />
 
-<isscript>
-    var assets = require('*/cartridge/scripts/assets');
-    assets.addJs('/js/klarnaExpressCheckoutPDP.js');
-</isscript>
-
 <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.showExpressCheckoutButton().pdp}">
+    <isscript>
+        var assets = require('*/cartridge/scripts/assets');
+        assets.addJs('/js/klarnaExpressCheckoutPDP.js');
+    </isscript>
+
     <div class="col-sm-12 col-xl-8">
         <div id="klarnaExpressCheckoutPDP" data-subscriptiononly="${product.isSubscriptionOnly}"
             class="klarna-express-checkout-pdp" ${(!product.readyToOrder || !product.available) ? "disabled" : ""}>

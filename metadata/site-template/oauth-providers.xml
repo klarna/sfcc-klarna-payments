@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<oauth-providers xmlns="http://www.demandware.com/xml/impex/oauthprovider/2013-07-16">
+    <oauth-provider provider-id="Klarna">
+        <description>Klarna OAuth provider</description>
+        <scopes>openid offline_access profile:email profile:phone profile:billing_address</scopes>
+        <access-token-name>access_token</access-token-name>
+        <redirect-pipeline-node>Login-KlarnaSignIn</redirect-pipeline-node>
+    </oauth-provider>
+
+</oauth-providers>

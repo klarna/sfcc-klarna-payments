@@ -47,13 +47,12 @@
 <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.getKlarnExpressCheckoutClientKey()}">
     <div class="keb-hide" id="miniCartKEC">
         <isinclude template="components/modules" />
-        <isinclude template="klarnapayments/modules.isml" />
         <iskecminicart />
     </div>
     <script>
             <isinclude template="/resources/klarnapaymentsresources.isml"/>
         </script>
-    <script type="text/javascript" src="${URLUtils.staticURL('/js/klarnaExpressCheckout.js')}"></script>
+    <script src="${URLUtils.staticURL('/js/klarnaExpressCheckout.js')}"></script>
     <link rel="stylesheet" href="${URLUtils.staticURL('/css/klarnaExpress.css')}" />
     <script async src="${KlarnaOSM.getKlarnExpressCheckoutScriptURL()}"></script>
 </isif>

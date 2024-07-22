@@ -1,6 +1,6 @@
 var Site = require( 'dw/system/Site' );
 var currentSite = Site.getCurrent();
-var kpAdditionalLogging = currentSite.getCustomPreferenceValue( 'kpAdditionalLogging' ) || false;
+var kpAdditionalLogging = currentSite.getCustomPreferenceValue( 'kpLogExtraData' ) ? currentSite.getCustomPreferenceValue( 'kpLogExtraData' ) : currentSite.getCustomPreferenceValue( 'kpAdditionalLogging' ) || false;
 var Logger = require( 'dw/system/Logger' );
 var log = Logger.getLogger( 'KlarnaAdditionalLog', 'KlarnaAdditionalLog' );
 
@@ -107,12 +107,10 @@ function writeSitePreferencesToLog () {
     if (kpAdditionalLogging) {
         var logObj = {
             kpAutoCapture: currentSite.getCustomPreferenceValue( 'kpAutoCapture' ) || false,
-            kpAttachments: currentSite.getCustomPreferenceValue( 'kpAttachments' ) || false,
+            kpAttachments: currentSite.getCustomPreferenceValue( 'kpEMD' ) ? currentSite.getCustomPreferenceValue( 'kpEMD' ) : currentSite.getCustomPreferenceValue( 'kpAttachments' ) || false,
             kpVCNEnabled: currentSite.getCustomPreferenceValue( 'kpVCNEnabled' ) || false,
-            kpVCNRetryEnabled: currentSite.getCustomPreferenceValue( 'kpVCNRetryEnabled' ) || false,
+            kpVCNRetryEnabled:  currentSite.getCustomPreferenceValue( 'kpVCNRetry' ) ?  currentSite.getCustomPreferenceValue( 'kpVCNRetry' ) : currentSite.getCustomPreferenceValue( 'kpVCNRetryEnabled' ) || false,
             kpPromoTaxation: currentSite.getCustomPreferenceValue( 'kpPromoTaxation' ).value || false,
-            kpCreateNewSessionWhenExpires: currentSite.getCustomPreferenceValue( 'kpCreateNewSessionWhenExpires' ) || false,
-            kpRateLimitByOperation: currentSite.getCustomPreferenceValue( 'kpRateLimitByOperation' ) || false,
             kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue( 'kpUseAlternativePaymentFlow' ).value || false
         }
 

@@ -2,46 +2,13 @@
 <metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
     <type-extension type-id="SitePreferences">
         <custom-attribute-definitions>
-            <attribute-definition attribute-id="kpCreateNewSessionWhenExpires">
-                <display-name xml:lang="x-default">Klarna Payment Create New Session When Expires</display-name>
-                <description xml:lang="x-default">Klarna Payment Create New Session When Klarna existing Session Expires</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
-            </attribute-definition>
             <attribute-definition attribute-id="kpAutoCapture">
-                <display-name xml:lang="x-default">Autocapture</display-name>
-                <description xml:lang="x-default">When enabled “Yes”, a full order capture will be attempted automatically. The standalone order management API capture request will include total order amount value for “captured_amount”</description>
+                <display-name xml:lang="x-default">Enable autocapture</display-name>
+                <description xml:lang="x-default">When set to "Yes," the system will automatically attempt a full capture of the order. The capture request sent through the standalone Order Management API will include the total order amount as the "captured_amount."</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="kpRateLimitByOperation">
-                <display-name xml:lang="x-default">Rate Limit By Operation</display-name>
-                <description xml:lang="x-default">Klarna Payment Rate Limit By Operation</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="kpServiceName">
-                <display-name xml:lang="x-default">Klarna Payments Service Name</display-name>
-                <description xml:lang="x-default">The service name used for the current site</description>
-                <type>string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <min-length>0</min-length>
-                <default-value>klarna.http.defaultendpoint</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="sendProductAndImageURLs">
-                <display-name xml:lang="x-default">Send product_url and image_url</display-name>
-                <description xml:lang="x-default">If set to true, product_url and image_url fields will be included in the Klarna session and order API calls. This enhances shopper experience post purchase</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>true</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="merchant_reference2_mapping">
                 <display-name xml:lang="x-default">Merchant Reference 2 Mapping</display-name>
@@ -163,50 +130,25 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="kpNotAvailableMessage">
-                <display-name xml:lang="x-default">Not available message on billing page</display-name>
-                <description xml:lang="x-default">The Klarna Payments not available message on billing page. JSON string holding country code and corresponding message string. For example:&#13;
-{  &#13;
-   "GB":"Klarna Payment not available",&#13;
-   "default":"Klarna Payment not available"&#13;
-}</description>
-                <type>text</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
             <attribute-definition attribute-id="kpVCNEnabled">
-                <display-name xml:lang="x-default">Virtual Card Number Enabled</display-name>
-                <description xml:lang="x-default">If this option is set to “Yes”, Klarna settlement request will generate  a Virtual Card Number for every Klarna order.</description>
+                <display-name xml:lang="x-default">Enable virtual card number (VCN)</display-name>
+                <description xml:lang="x-default">When set to "Yes," each Klarna order will automatically generate a Virtual Card Number upon settlement request.</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpVCNkeyId">
-                <display-name xml:lang="x-default">VCN Public Key ID</display-name>
-                <description xml:lang="x-default">UUIDv4 value corresponding to the key pair. Shared with Klarna respectively for Production &amp; Playground (test) env.</description>
+                <display-name xml:lang="x-default">VCN - Public Key ID</display-name>
+                <description xml:lang="x-default">UUIDv4 value corresponding to the key pair. Shared with Klarna respectively for Production &amp; Playground (test) environment.</description>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
             </attribute-definition>
-            <attribute-definition attribute-id="vcnPrivateKey">
-                <display-name xml:lang="x-default">VCN Private Key</display-name>
-                <description xml:lang="x-default">SSL private key used only to decode Virtual Card information (used with kpVCNEnabled).</description>
-                <type>text</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="vcnPublicKey">
-                <display-name xml:lang="x-default">VCN Public Key</display-name>
-                <description xml:lang="x-default">SSL public key used with Virtual Card integration(used with kpVCNEnabled).</description>
-                <type>text</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
             <attribute-definition attribute-id="kpUseAlternativePaymentFlow">
-                <display-name xml:lang="x-default">Alternative Klarna Payment Flow</display-name>
-                <description xml:lang="x-default">If enabled "Yes", the Klarna order authorization and creation steps triggered on SFCC Review page when customer clicks CTA/Place Order Button.</description>
+                <display-name xml:lang="x-default">Enable alternative payment flow</display-name>
+                <description xml:lang="x-default">Klarna Authorization and Order creation steps will be triggered on Checkout Review page when customer clicks CTA/Place Order Button.</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -229,38 +171,9 @@
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
-            <attribute-definition attribute-id="kpRejectedMethodDisplay">
-                <display-name xml:lang="x-default">Hide Payment Methods on Deny</display-name>
-                <description xml:lang="x-default">If set to value other than "No", the Klarna payment method options on the checkout will be greyed out or not displayed to customer in the current view when Klarna authorization request is rejected in the response (.i.e hard reject - "show_form" and "approved" values are both "false")</description>
-                <type>enum-of-string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <value-definitions>
-                    <value-definition default="true">
-                        <display xml:lang="x-default">No</display>
-                        <value>no</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">Hide</display>
-                        <value>hide</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">Grey Out</display>
-                        <value>greyout</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>
             <attribute-definition attribute-id="kpVCNRetryEnabled">
                 <display-name xml:lang="x-default">VCN Settlement Retry Enabled</display-name>
                 <description xml:lang="x-default">If set to “Yes”, SFCC will retry the VCN settlement once again in case of service error. Default is “No”</description>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="kpBankTransferCallback">
-                <display-name xml:lang="x-default">Use Bank Transfer callback</display-name>
-                <description xml:lang="x-default">If set to “Yes”, SFCC will wait for Klarna callback to place an order. Default is “No”</description>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -334,42 +247,14 @@
                 <min-length>0</min-length>
             </attribute-definition>
             <attribute-definition attribute-id="kpECEnabled">
-                <display-name xml:lang="x-default">Klarna Express Checkout Enabled</display-name>
-                <type>boolean</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
-            </attribute-definition>
-            <attribute-definition attribute-id="kec_placement">
-                <display-name xml:lang="x-default">Placement</display-name>
-                <type>enum-of-string</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-                <select-multiple-flag>true</select-multiple-flag>
-                <value-definitions>
-                    <value-definition>
-                        <display xml:lang="x-default">Cart</display>
-                        <value>cart</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">PDP</display>
-                        <value>pdp</value>
-                    </value-definition>
-                    <value-definition>
-                        <display xml:lang="x-default">Mini cart</display>
-                        <value>minicart</value>
-                    </value-definition>
-                </value-definitions>
-            </attribute-definition>
-            <attribute-definition attribute-id="kpECCollectShippingAddress">
-                <display-name xml:lang="x-default">Klarna Express Checkout Collect Shipping Address</display-name>
+                <display-name xml:lang="x-default">Klarna Express Checkout Enabled (Deprecated)</display-name>
                 <type>boolean</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="kpECButtonTheme">
-                <display-name xml:lang="x-default">Klarna Express Checkout Button Theme</display-name>
+                <display-name xml:lang="x-default">Klarna Express Checkout Button Theme (Deprecated)</display-name>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -389,7 +274,7 @@
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="kpECButtonShape">
-                <display-name xml:lang="x-default">Klarna Express Checkout Button Shape</display-name>
+                <display-name xml:lang="x-default">Klarna Express Checkout Button Shape (Deprecated)</display-name>
                 <type>enum-of-string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -409,25 +294,565 @@
                 </value-definitions>
             </attribute-definition>
             <attribute-definition attribute-id="kpECPaymentCategoryContent">
-                <display-name xml:lang="x-default">Payment Category Content</display-name>
+                <display-name xml:lang="x-default">Payment Category Content (Deprecated)</display-name>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
             <attribute-definition attribute-id="kpECLibraryURL">
-                <display-name xml:lang="x-default">Klarna Express Checkout Library URL</display-name>
+                <display-name xml:lang="x-default">Klarna Express Checkout Library URL (Deprecated)</display-name>
                 <type>string</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
                 <default-value>https://x.klarnacdn.net/kp/lib/v1/api.js</default-value>
             </attribute-definition>
+            <attribute-definition attribute-id="siwk_enable">
+                <display-name xml:lang="x-default">Enable Sign-in with Klarna</display-name>
+                <description xml:lang="x-default">Reduce fraud rates through verified identities and consented shopper data, improve personalized shopping experiences.</description>
+                <type>boolean</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="siwk_placement">
+                <display-name xml:lang="x-default">Placements</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Login Page</display>
+                        <value>loginPage</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Checkout Page</display>
+                        <value>checkoutPage</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="siwk_redirect_url">
+                <display-name xml:lang="x-default">Redirect URL</display-name>
+                <type>string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+                <default-value>Login-Show</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="siwk_scope">
+                <display-name xml:lang="x-default">Scope</display-name>
+                <description xml:lang="x-default">Select the scope for Sign-in with Klarna.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">profile:name</display>
+                        <value>profile:name</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">profile:email</display>
+                        <value>profile:email</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">profile:phone</display>
+                        <value>profile:phone</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">profile:date_of_birth</display>
+                        <value>profile:date_of_birth</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">profile:billing_address</display>
+                        <value>profile:billing_address</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">profile:national_id</display>
+                        <value>profile:national_id</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">profile:country</display>
+                        <value>profile:country</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">profile:locale</display>
+                        <value>profile:locale</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="siwk_shape">
+                <display-name xml:lang="x-default">Button shape</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Rounded corners (Recommended)</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Rectangular</display>
+                        <value>rect</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Pill</display>
+                        <value>pill</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="siwk_theme">
+                <display-name xml:lang="x-default">Button theme</display-name>
+                <description xml:lang="x-default">Tailor Sign-in with Klarna theme to fit your brand and shop.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Dark</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Light(Recommended)</display>
+                        <value>light</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Outlined</display>
+                        <value>outlined</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="siwk_alignment">
+                <display-name xml:lang="x-default">Logo alignment</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Badge (Recommended)</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Left</display>
+                        <value>left</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Center</display>
+                        <value>center</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kec_enable">
+                <display-name xml:lang="x-default">Enable Klarna Express checkout</display-name>
+                <description xml:lang="x-default">Offer a 6x faster check-out process that will lower the threshold for shoppers to complete a purchase.</description>
+                <type>boolean</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kec_shape">
+                <display-name xml:lang="x-default">Button Shape</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Rounded corners (Recommended)</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Rectangular</display>
+                        <value>rect</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Pill</display>
+                        <value>pill</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kec_theme">
+                <display-name xml:lang="x-default">Button theme</display-name>
+                <description xml:lang="x-default">Tailor the Express checkout button to fit your brand by adjusting the button theme.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Light (Recommended)</display>
+                        <value>light</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dark</display>
+                        <value>dark</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Outlined</display>
+                        <value>outlined</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="kec_placement">
+                <display-name xml:lang="x-default">Placements</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Cart</display>
+                        <value>cart</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PDP</display>
+                        <value>pdp</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Mini cart</display>
+                        <value>minicart</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="osm_custom_styling">
+                <display-name xml:lang="x-default">Custom Styling</display-name>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="osm_enable">
+                <display-name xml:lang="x-default">Enable On-Site Messaging</display-name>
+                <description xml:lang="x-default">Add personalized messaging throughout the shopper journey for higher conversion rates and increased spend.</description>
+                <type>boolean</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="osm_placement">
+                <display-name xml:lang="x-default">Placements</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Product Page</display>
+                        <value>productPage</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Cart Page</display>
+                        <value>cartPage</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Site Wide Banners</display>
+                        <value>siteBanners</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">FAQ</display>
+                        <value>faq</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Footer</display>
+                        <value>footer</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="osm_theme">
+                <display-name xml:lang="x-default">Theme</display-name>
+                <type>enum-of-string</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition default="true">
+                        <display xml:lang="x-default">Light (recommended)</display>
+                        <value>default</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Dark</display>
+                        <value>dark</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Custom</display>
+                        <value>custom</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="KP_client_id">
+                <display-name xml:lang="x-default">Client ID</display-name>
+                <description xml:lang="x-default">To unlock the plugin’s features, enter your credentials. Get the client identifier and API credentials from the Klarna Merchant Portal, under Settings.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="KP_API_Username">
+                <display-name xml:lang="x-default">API Username</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="KP_API_Password">
+                <display-name xml:lang="x-default">API Password</display-name>
+                <type>password</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="KP_Region">
+                <display-name xml:lang="x-default">Region</display-name>
+                <description xml:lang="x-default">Select the region where your store operates.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Europe</display>
+                        <value>EU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">North America</display>
+                        <value>NA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Oceania</display>
+                        <value>OA</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="KP_Market">
+                <display-name xml:lang="x-default">Market</display-name>
+                <description xml:lang="x-default">Select the market(s) where your store operates.</description>
+                <type>enum-of-string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <select-multiple-flag>true</select-multiple-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">Australia</display>
+                        <value>AU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Austria</display>
+                        <value>AT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Belgium</display>
+                        <value>BE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Canada</display>
+                        <value>CA</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Czech Republic</display>
+                        <value>CZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Denmark</display>
+                        <value>DK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Finland</display>
+                        <value>FI</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">France</display>
+                        <value>FR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Germany</display>
+                        <value>DE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Greece</display>
+                        <value>GR</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Hungary</display>
+                        <value>HU</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Ireland (Republic of Ireland)</display>
+                        <value>IE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Italy</display>
+                        <value>IT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Mexico</display>
+                        <value>MX</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Netherlands</display>
+                        <value>NL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">New Zealand</display>
+                        <value>NZ</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Norway</display>
+                        <value>NO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Poland</display>
+                        <value>PL</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Portugal</display>
+                        <value>PT</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Romania</display>
+                        <value>RO</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Slovakia</display>
+                        <value>SK</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Spain</display>
+                        <value>ES</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Sweden</display>
+                        <value>SE</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">Switzerland</display>
+                        <value>CH</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">United Kingdom</display>
+                        <value>GB</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">United States</display>
+                        <value>US</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+            <attribute-definition attribute-id="KP_environment">
+                <display-name xml:lang="x-default">Run plugin in TEST mode</display-name>
+                <type>boolean</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kp_enable">
+                <display-name xml:lang="x-default">Enable Klarna Payments</display-name>
+                <description xml:lang="x-default">Give your customers the ability to pay in flexible ways such as Buy now, Pay Later, Invoicing, Instalments and Financing.&#13;
+&#13;
+Klarna payments is required to enable the additional solutions.</description>
+                <type>boolean</type>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpColorCustomization">
+                <display-name xml:lang="x-default">Color customization</display-name>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpEMD">
+                <display-name xml:lang="x-default">Enable extra merchant data</display-name>
+                <description xml:lang="x-default">Enable this option to include customer_account_info and other_delivery_address as attachments when creating an order.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpVCNRetry">
+                <display-name xml:lang="x-default">VCN - Enable settlement retry</display-name>
+                <description xml:lang="x-default">When set to “Yes”, SFCC will automatically retry the VCN settlement in the event of a service error.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpLogExtraData">
+                <display-name xml:lang="x-default">Log Extra debug data</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="merchant_reference2">
+                <display-name xml:lang="x-default">Merchant reference 2</display-name>
+                <description xml:lang="x-default">Enter the attribute from the SCC order (basket) object that you would like to forward as an additional merchant reference to Klarna. This attribute must be a class attribute of the SCC LineItemCtnr.</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSubsUsername">
+                <display-name xml:lang="x-default">Agent username for subscriptions</display-name>
+                <description xml:lang="x-default">Agent username used to login on behalf of customers to create subscription orders</description>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSubsPassword">
+                <display-name xml:lang="x-default">Agent password for subscriptions</display-name>
+                <description xml:lang="x-default">Agent password to login on behalf of customers to create subscription orders</description>
+                <type>password</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSubsRetryEnable">
+                <display-name xml:lang="x-default">Enable retry for subscriptions</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSubsRetryFrequency">
+                <display-name xml:lang="x-default">Recurring retry frequency</display-name>
+                <type>double</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSubsRetryNumber">
+                <display-name xml:lang="x-default">Number of retries</display-name>
+                <type>double</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
+            <attribute-group group-id="Klarna_Activation">
+                <display-name xml:lang="x-default">Klarna Activation</display-name>
+                <attribute attribute-id="KP_client_id"/>
+                <attribute attribute-id="KP_API_Username"/>
+                <attribute attribute-id="KP_API_Password"/>
+                <attribute attribute-id="KP_Region"/>
+                <attribute attribute-id="KP_Market"/>
+                <attribute attribute-id="KP_environment"/>
+            </attribute-group>
+            <attribute-group group-id="Klarna_KP">
+                <display-name xml:lang="x-default">Klarna Payments</display-name>
+                <attribute attribute-id="kp_enable"/>
+                <attribute attribute-id="kpAutoCapture"/>
+                <attribute attribute-id="kpUseAlternativePaymentFlow"/>
+                <attribute attribute-id="kpEMD"/>
+                <attribute attribute-id="merchant_reference2"/>
+                <attribute attribute-id="kpLogExtraData"/>
+                <attribute attribute-id="kpColorCustomization"/>
+                <attribute attribute-id="kpVCNEnabled"/>
+                <attribute attribute-id="kpVCNkeyId"/>
+                <attribute attribute-id="kpVCNRetry"/>
+                <attribute attribute-id="kpSubsUsername"/>
+                <attribute attribute-id="kpSubsPassword"/>
+                <attribute attribute-id="kpSubsRetryEnable"/>
+                <attribute attribute-id="kpSubsRetryNumber"/>
+                <attribute attribute-id="kpSubsRetryFrequency"/>
+                <attribute attribute-id="kpPromoTaxation"/>
+            </attribute-group>
             <attribute-group group-id="Klarna_Payments">
                 <display-name xml:lang="x-default">Klarna Payments</display-name>
                 <attribute attribute-id="kpAutoCapture"/>
-                <attribute attribute-id="sendProductAndImageURLs"/>
                 <attribute attribute-id="merchant_reference2_mapping"/>
                 <attribute attribute-id="kpColorDetails"/>
                 <attribute attribute-id="kpColorButton"/>
@@ -442,20 +867,12 @@
                 <attribute attribute-id="kpColorTextSecondary"/>
                 <attribute attribute-id="kpRadiusBorder"/>
                 <attribute attribute-id="kpAttachments"/>
-                <attribute attribute-id="kpNotAvailableMessage"/>
                 <attribute attribute-id="kpVCNEnabled"/>
                 <attribute attribute-id="kpVCNkeyId"/>
-                <attribute attribute-id="vcnPrivateKey"/>
-                <attribute attribute-id="vcnPublicKey"/>
                 <attribute attribute-id="kpVCNRetryEnabled"/>
                 <attribute attribute-id="kpPromoTaxation"/>
-                <attribute attribute-id="kpRejectedMethodDisplay"/>
-                <attribute attribute-id="kpBankTransferCallback"/>
-                <attribute attribute-id="kpCreateNewSessionWhenExpires"/>
-                <attribute attribute-id="kpRateLimitByOperation"/>
                 <attribute attribute-id="kpUseAlternativePaymentFlow"/>
                 <attribute attribute-id="kpAdditionalLogging"/>
-                <attribute attribute-id="kpOMSEnabled"/>
             </attribute-group>
             <attribute-group group-id="Klarna_RecurringPayments">
                 <display-name xml:lang="x-default">Klarna Recurring Payments</display-name>
@@ -466,14 +883,25 @@
                 <attribute attribute-id="kpRecurringRetryFrequency"/>
             </attribute-group>
             <attribute-group group-id="Klarna_ExpressCheckout">
-                <display-name xml:lang="x-default">Klarna Express checkout</display-name>
+                <display-name xml:lang="x-default">Klarna Express Checkout (Deprecated)</display-name>
                 <attribute attribute-id="kpECEnabled"/>
-                <attribute attribute-id="kpECLibraryURL"/>
-                <attribute attribute-id="kpECCollectShippingAddress"/>
                 <attribute attribute-id="kpECButtonTheme"/>
                 <attribute attribute-id="kpECButtonShape"/>
-                <attribute attribute-id="kpECPaymentCategoryContent"/>
                 <attribute attribute-id="kec_placement"/>
+            </attribute-group>
+            <attribute-group group-id="Klarna_KEC">
+                <display-name xml:lang="x-default">Klarna Express Checkout</display-name>
+                <attribute attribute-id="kec_enable"/>
+                <attribute attribute-id="kec_theme"/>
+                <attribute attribute-id="kec_shape"/>
+                <attribute attribute-id="kec_placement"/>
+            </attribute-group>
+            <attribute-group group-id="Klarna_OSM">
+                <display-name xml:lang="x-default">Klarna On-site messaging</display-name>
+                <attribute attribute-id="osm_enable"/>
+                <attribute attribute-id="osm_theme"/>
+                <attribute attribute-id="osm_placement"/>
+                <attribute attribute-id="osm_custom_styling"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
@@ -823,13 +1251,19 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+            <attribute-definition attribute-id="kpRefreshToken">
+                <display-name xml:lang="x-default">Klarna SignIn Refresh Token</display-name>
+                <type>text</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Klarna">
                 <display-name xml:lang="x-default">Klarna</display-name>
                 <attribute attribute-id="kpSubscriptions"/>
+                <attribute attribute-id="kpRefreshToken"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
 </metadata>
-

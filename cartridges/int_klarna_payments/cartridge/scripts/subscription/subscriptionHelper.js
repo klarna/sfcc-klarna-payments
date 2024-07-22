@@ -524,8 +524,8 @@ function loginOnBehalfOfCustomer(orderRef) {
     var Currency = require('dw/util/Currency');
     var AgentUserMgr = require('dw/customer/AgentUserMgr');
     var CustomerMgr = require('dw/customer/CustomerMgr');
-    var userAgentName = currentSite.getCustomPreferenceValue('kpAgentUserName');
-    var userAgentPassword = currentSite.getCustomPreferenceValue('kpAgentUserPassword');
+    var userAgentName = currentSite.getCustomPreferenceValue( 'kpSubsUsername' ) ? currentSite.getCustomPreferenceValue( 'kpSubsUsername' ) : currentSite.getCustomPreferenceValue( 'kpAgentUserName' );
+    var userAgentPassword = currentSite.getCustomPreferenceValue( 'kpSubsPassword' ) ? currentSite.getCustomPreferenceValue( 'kpSubsPassword' ) : currentSite.getCustomPreferenceValue( 'kpAgentUserPassword' );
     var stat = AgentUserMgr.loginAgentUser(userAgentName, userAgentPassword);
 
     var result = { error: false, message: null };

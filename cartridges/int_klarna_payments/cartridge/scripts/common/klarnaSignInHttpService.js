@@ -63,6 +63,7 @@ KlarnaSignInsHttpService.prototype.call = function (serviceID, urlPath, httpVerb
             };
         }
     });
+    setServiceCredentials(service, credentialID);
     service.URL += urlPath;
     service.addHeader('Content-Type', contentType ? contentType : 'application/json');
     service.addHeader('Accept', 'application/json');
@@ -271,4 +272,15 @@ KlarnaSignInsHttpService.prototype.logResponseData = function (urlPath, httpVerb
         this.logger.error(exception);
     }
 };
+
+function setServiceCredentials(service, credentialID) {
+    var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+    var klarnaConfigs = KlarnaHelper.getKlarnaSignInServiceCredentials();
+    if (!klarnaConfigs.useServiceCredentials) {
+        service.URL = klarnaConfigs.apiURL;
+    } else {
+        service.setCredentialID(credentialID);
+    }
+}
+
 module.exports = KlarnaSignInsHttpService;

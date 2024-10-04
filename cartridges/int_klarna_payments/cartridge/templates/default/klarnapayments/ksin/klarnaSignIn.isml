@@ -1,5 +1,7 @@
 <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
-<isif condition="${KlarnaOSM.isKlarnaSignInEnabled() && ((KlarnaOSM.showKlarnaSigninButton().loginPage && pdict.oauthreentryendpoint === null) || (KlarnaOSM.showKlarnaSigninButton().checkoutPage && pdict.oauthreentryendpoint==='checkout'))}">
+<isif
+    condition="${KlarnaOSM.isKlarnaSignInEnabled() && ((KlarnaOSM.showKlarnaSigninButton().loginPage && pdict.oauthreentryendpoint ===
+               null) || (KlarnaOSM.showKlarnaSigninButton().checkoutPage && pdict.oauthreentryendpoint === 'checkout'))}">
     <script>
         <isinclude template="/resources/klarnapaymentsresources.isml"/>
     </script>
@@ -9,6 +11,8 @@
     <div class="form-group klarna-signin-button"
         action-url="${URLUtils.url('Login-KlarnaSignIn', 'oauthLoginTargetEndPoint', pdict.oauthreentryendpoint)}">
         <div id="container"></div>
-        <div class="klarna-signin-error" style="display:none">${Resource.msg('klarna.signin.loginerror', 'klarnaSignIn', null)}</div>
+        <isset name="siwkStyle" value="${!pdict.siwkError ? ' style= display:none' : ''}" scope="page" />
+        <div class="klarna-signin-error" ${siwkStyle}>${Resource.msg('klarna.signin.loginerror', 'klarnaSignIn', null)}
+        </div>
     </div>
 </isif>

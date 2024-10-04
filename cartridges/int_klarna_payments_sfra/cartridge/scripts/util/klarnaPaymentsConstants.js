@@ -32,7 +32,7 @@ var KLARNA_PAYMENT_URLS = {
     KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SG: 'COCustomer-Start'
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 24.4.0';
+var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 24.5.0';
 
 superMdl.PAYMENT_METHOD = PAYMENT_METHOD;
 superMdl.KLARNA_PAYMENT_URLS = KLARNA_PAYMENT_URLS;

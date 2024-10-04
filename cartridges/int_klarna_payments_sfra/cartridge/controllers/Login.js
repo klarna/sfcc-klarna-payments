@@ -24,6 +24,7 @@ server.extend(page);
  */
 server.post('KlarnaSignIn', server.middleware.https, consentTracking.consent, function (req, res, next) {
     var Resource = require('dw/web/Resource');
+    var addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 
     var klarnaSignInErrorMsg = Resource.msg('klarna.signin.loginerror', 'klarnaSignIn', null);
     var httpParameterMap = req.httpParameterMap;
@@ -71,15 +72,28 @@ server.post('KlarnaSignIn', server.middleware.https, consentTracking.consent, fu
         });
         return next();
     }
+    var customerProfile = createCustomerResult.customer.customer;
     var customerAddress = signInHelper.mapKlarnaAddress(customerData);
     if (customerAddress) {
         session.privacy.kpCustomerAddress = JSON.stringify(customerAddress);
+        if (!addressHelpers.checkIfAddressStored(customerAddress, customerProfile.addressBook.addresses)) {
+            addressHelpers.saveExtAddress(customerAddress, customerProfile, addressHelpers.generateAddressName(customerAddress));
+        }
     }
 
     res.json({
         success: true,
         isAccountLogin: httpParameterMap.oauthLoginTargetEndPoint.stringValue === '1',
         redirectUrl: accountHelpers.getLoginRedirectURL(httpParameterMap.oauthLoginTargetEndPoint.stringValue, req.session.privacyCache, true)
+    });
+    return next();
+});
+
+server.append('Show', consentTracking.consent, server.middleware.https, csrfProtection.generateToken, function (req, res, next) {
+    session.custom.siwk_locale = request.locale;
+    var siwkError = request.httpParameterMap.siwkError.booleanValue;
+    res.setViewData({
+        siwkError: siwkError
     });
     return next();
 });

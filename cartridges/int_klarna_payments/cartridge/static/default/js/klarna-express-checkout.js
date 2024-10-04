@@ -38,7 +38,7 @@ function initMiniCartButton() {
  */
 function initKlarnaExpressButton(containerId, isPDP) {
     window.Klarna.Payments.Buttons.init({
-        client_key: klarnaPreferences.kpExpressCheckoutClientKey
+        client_id: klarnaPreferences.kpExpressCheckoutClientKey
     }).load({
         container: containerId,
         theme: klarnaPreferences.kpExpressCheckoutTheme,

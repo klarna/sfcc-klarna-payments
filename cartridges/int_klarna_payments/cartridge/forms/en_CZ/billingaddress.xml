@@ -6,7 +6,7 @@
 	<field formid="address1" label="resource.address1" type="string" mandatory="true" binding="address1" max-length="50" missing-error="resource.addresserror" range-error="address.field.invalid" />
 	<field formid="address2" label="resource.address2" type="string" mandatory="false" binding="address2" max-length="50" range-error="address.field.invalid" />
 	<field formid="postal" label="resource.zipcode" type="string" mandatory="true" min-length="5" 
-		max-length="10" binding="postalCode" missing-error="resource.errorzip" description="address.postalcode.example" regexp="(^([0-9]){5}$)"/>
+		max-length="10" binding="postalCode" missing-error="resource.errorzip" description="address.postalcode.example" regexp="(^\d{3} ?\d{2}$)"/>
 	<field formid="city" label="resource.city" type="string" mandatory="true" binding="city" min-length="2" max-length="50" missing-error="address.city.missing" range-error="address.field.invalid" />
 		
 	<!-- use set of supported billing countries -->

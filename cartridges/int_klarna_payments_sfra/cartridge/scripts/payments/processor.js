@@ -47,8 +47,8 @@ function callKlarnaCreateOrderAPI(order, localeObject) {
  *
  * @return {Object|null} Klarna Payments create customer token response data on success, null on failure.
  */
-function callKlarnaCreateCustomerTokenAPI(order, localeObject) {
-    var klarnaAuthorizationToken = session.privacy.KlarnaPaymentsAuthorizationToken;
+function callKlarnaCreateCustomerTokenAPI(order, localeObject, kpAuthorizationToken) {
+    var klarnaAuthorizationToken = kpAuthorizationToken || session.privacy.KlarnaPaymentsAuthorizationToken;
     var customer = order.customer.authenticated;
     var createCustomerTokenHelper = require('*/cartridge/scripts/order/klarnaPaymentsCreateCustomerToken');
     var klarnaCreateCustomerTokenResponse = createCustomerTokenHelper.createCustomerToken(order, localeObject, klarnaAuthorizationToken);
@@ -424,6 +424,7 @@ function handleKlarnaOrderCreated(order, paymentInstrument, kpOrderInfo) {
  * @returns {Object} Authorization result object.
  */
 function handleKlarnaCustomerTokenCreated(order, paymentInstrument, kpOrderInfo) {
+    var URLUtils = require('dw/web/URLUtils');
     var authorizationResult = {};
     var localeObject = klarnaSessionManager.getLocale();
     var customerToken = kpOrderInfo.token_id;
@@ -437,6 +438,9 @@ function handleKlarnaCustomerTokenCreated(order, paymentInstrument, kpOrderInfo)
     if (!authorizationResult.error) {
         session.privacy.KlarnaPaymentsAuthorizationToken = '';
         session.privacy.KPAuthInfo = null;
+        Transaction.wrap(function () {
+            order.custom.kpRedirectURL = URLUtils.url('Order-Confirm').toString();
+        });
     }
 
     return authorizationResult;
@@ -545,16 +549,34 @@ function notify(order, klarna_oms__kpOrderID, kpEventType) {
 function bankTransferPlaceOrder(order, kpSessionId, kpAuthorizationToken) {
     var paymentInstrument = order.getPaymentInstruments(PAYMENT_METHOD)[0];
     var localeObject = klarnaSessionManager.getLocale();
+    var result = null;
 
-    var createOrderHelper = require('*/cartridge/scripts/order/klarnaPaymentsCreateOrder');
-    var klarnaCreateOrderResponse = createOrderHelper.createOrder(order, localeObject, kpAuthorizationToken);
-    var apiResponseData = klarnaCreateOrderResponse.response;
+    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+    var subscriptionData = SubscriptionHelper.getSubscriptionData(order);
+    if (subscriptionData) {
+        var customerTokenResponseData = callKlarnaCreateCustomerTokenAPI(order, localeObject, kpAuthorizationToken);
+        if (!customerTokenResponseData) {
+            return generateErrorAuthResult();
+        }
 
-    if (!apiResponseData) {
-        return generateErrorAuthResult();
+        if (subscriptionData.subscriptionTrialPeriod) {
+            result = handleKlarnaCustomerTokenCreated(order, paymentInstrument, customerTokenResponseData);
+        } else {
+            session.privacy.customer_token = customerTokenResponseData.token_id;
+        }
     }
 
-    var result = handleKlarnaOrderCreated(order, paymentInstrument, apiResponseData);
+    if (result === null) {
+        var createOrderHelper = require('*/cartridge/scripts/order/klarnaPaymentsCreateOrder');
+        var klarnaCreateOrderResponse = createOrderHelper.createOrder(order, localeObject, kpAuthorizationToken);
+        var apiResponseData = klarnaCreateOrderResponse.response;
+
+        if (!apiResponseData) {
+            return generateErrorAuthResult();
+        }
+
+        result = handleKlarnaOrderCreated(order, paymentInstrument, apiResponseData);
+    }
 
     Transaction.wrap(function () {
         var placeOrderStatus = OrderMgr.placeOrder(order);
@@ -562,6 +584,11 @@ function bankTransferPlaceOrder(order, kpSessionId, kpAuthorizationToken) {
             OrderMgr.failOrder(order);
             log.error('Failed to place order.');
             throw new Error('Failed to place order.');
+        }
+
+        if (subscriptionData && customerTokenResponseData.token_id) {
+            dw.system.Logger.error('updateCustomerSubscriptionData - ');
+            SubscriptionHelper.updateCustomerSubscriptionData(order);
         }
 
         order.setConfirmationStatus(order.CONFIRMATION_STATUS_CONFIRMED);

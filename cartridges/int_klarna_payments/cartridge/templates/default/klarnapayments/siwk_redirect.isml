@@ -1,0 +1,52 @@
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+<script defer src="${URLUtils.staticURL(pdict.scriptURL)}"></script>
+
+<isscript>
+    request.setLocale(pdict.siwkLocale);
+</isscript>
+
+<script defer src="${KlarnaOSM.getKlarnaSignInScriptURL()}"
+    data-client-id="${KlarnaOSM.getKlarnaSignInClientId()}"></script>
+
+<script>
+    function redirectBack() {
+        const redirectURL = new URL(sessionStorage.getItem('siwkRedirectError'));
+        sessionStorage.removeItem('siwkRedirectError');
+        redirectURL.searchParams.append('siwkError', true);
+        location.href = redirectURL.toString();
+    }
+    window.KlarnaSDKCallback = function (klarna) {
+        // Listen for `signin` event to receive signin response object
+        klarna.Identity.on("signin", async (signinResponse) => {
+            var url = sessionStorage.getItem('siwkRedirect');
+            sessionStorage.removeItem('siwkRedirect');
+            if(!url) {
+                redirectBack();
+            }
+            $.ajax({
+                url: url,
+                type: 'POST',
+                data: { data: JSON.stringify(signinResponse) },
+                context: this,
+                dataType: 'json',
+                success: function (data) {
+                    if (data.success) {
+                        sessionStorage.removeItem('siwkRedirectError');
+                        location.href = data.redirectUrl;
+                    } else {
+                        redirectBack();
+                    }
+                },
+                error: function () {
+                    redirectBack();
+                }
+            });
+        });
+
+        // Listen for `error` event to handle error object
+        klarna.Identity.on("error", async (error) => {
+            sessionStorage.removeItem('siwkRedirect');
+            redirectBack();
+        });
+    };
+</script>

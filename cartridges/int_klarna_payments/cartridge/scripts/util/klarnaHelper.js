@@ -242,8 +242,7 @@ function getKlarnaResources( countryCode ) {
         handleExpressCheckoutAuth: URLUtils.https( KLARNA_PAYMENT_URLS.HANDLE_EXPRESS_CHECKOUT_AUTH ).toString(),
         expressCheckoutAuthCallback: URLUtils.https( KLARNA_PAYMENT_URLS.EXPRESS_CHECKOUT_AUTH_CALLBACK ).toString(),
         generateExpressCheckoutPayload: URLUtils.https(KLARNA_PAYMENT_URLS.GENERATE_EXPRESS_CHECKOUT_PAYLOAD).toString(),
-        handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString(),
-        kpSignInRedirectUriToCheckout: URLUtils.https(KLARNA_PAYMENT_URLS.KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SG).toString()
+        handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString()
     };
 
     // klarna payments objects
@@ -282,7 +281,7 @@ function getKlarnaResources( countryCode ) {
         kpSignInButtonShape: KlarnaOSM.getKlarnaSignInButtonShape(),
         kpSignInButtonTheme: KlarnaOSM.getKlarnaSignInButtonTheme(),
         kpSignInButtonLogoAlignment: KlarnaOSM.getKlarnaSignInButtonLogoAlignment(),
-        kpSignInRedirectUri: URLUtils.https( KlarnaOSM.getKlarnaSignInRedirectURL() ).toString()
+        kpSignInRedirectUri: KlarnaOSM.getKlarnaSignInRedirectURL()
     };
 
     //klarna payment resource messages
@@ -710,10 +709,8 @@ function getKlarnaClientId() {
 
 // return service url based on Klarna environment and region
 function getServiceURL(region) {
-    var kpEnvironmentTest = currentSite.getCustomPreferenceValue('KP_environment');
-    var env = kpEnvironmentTest ? KlarnaConstants.KLARNA_ENVIRONMENTS.PLAYGROUND : KlarnaConstants.KLARNA_ENVIRONMENTS.PRODUCTION;
     var regionEndpoint = KlarnaConstants.KLARNA_ENDPOINTS[region];
-    return regionEndpoint[env];
+    return regionEndpoint[getKlarnaEnvironment()];
 }
 
 //get Klarna environment from site preferences
@@ -772,12 +769,35 @@ function getKlarnaServiceCredentials() {
     };
 }
 
+// retrieve the Klarna SignIn service url
+// dynamically if activation entry found
+// if not found - service credentials should be used
+function getKlarnaSignInServiceCredentials() {
+    var countryCode = Locale.getLocale(request.locale).country;
+    var kpAcativationSource = session.privacy['kpActivationSource_' + countryCode];
+    if (kpAcativationSource === 'KlarnaActivation_CO' || kpAcativationSource === 'KlarnaActivation_SP') {
+        return {
+            useServiceCredentials: false,
+            apiURL: getServiceURL('LOGIN')
+        }
+    }
+    return {
+        useServiceCredentials: true
+    };
+}
+
 // retrieve the configuration data for current country
 // from Klarna Activation custom object
 // or Klarna Activation Site Preferences
 function retrieveKlarnaCountriesData(countryCode) {
     var CustomObjectMgr = require('dw/object/CustomObjectMgr');
     var kpEnabled = currentSite.getCustomPreferenceValue('kp_enable');
+
+    if (!countryCode) {
+        return {
+            configFound: false
+        };
+    }
 
     var activationObject = CustomObjectMgr.queryCustomObject('KlarnaActivation', 'custom.kp_market_countries LIKE {0}', countryCode);
     if (activationObject) {
@@ -843,6 +863,22 @@ function isCurrentCountryKlarnaEnabled() {
 
 }
 
+/**
+ * Verify if the address already exists as a stored user address
+ * @param {dw.order.OrderAddress} address - Object that contains shipping address
+ * @param {Object[]} storedAddress - Stored user address
+ * @returns {boolean} - Boolean indicating if the address already exists
+ */
+function checkIfAddrFoundInAddrBook( addressToAdd, storedAddress ) {
+    if ( storedAddress.address1 === addressToAdd.address1
+        && storedAddress.postalCode === addressToAdd.postalCode
+        && storedAddress.firstName === addressToAdd.firstName
+        && storedAddress.lastName === addressToAdd.lastName ) {
+        return true;
+    }
+    return false;
+}
+
 exports.calculateOrderTotalValue = calculateOrderTotalValue;
 exports.getKlarnaPaymentMethodName = getKlarnaPaymentMethodName;
 exports.getDiscountsTaxation = getDiscountsTaxation;
@@ -878,3 +914,5 @@ exports.getVCNKeyId = getVCNKeyId;
 exports.isVCNSettlementRetry = isVCNSettlementRetry;
 exports.getKlarnaEnvironment = getKlarnaEnvironment;
 exports.getRegionCode = getRegionCode;
+exports.checkIfAddrFoundInAddrBook = checkIfAddrFoundInAddrBook;
+exports.getKlarnaSignInServiceCredentials = getKlarnaSignInServiceCredentials;

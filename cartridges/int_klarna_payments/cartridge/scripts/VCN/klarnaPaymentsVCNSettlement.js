@@ -114,7 +114,7 @@ function createVCNSettlement( order, klarnaPaymentsOrderID, localeObject ) {
         log.error( 'Error in creating Klarna Payments VCN Settlement: {0}', e );
 
         var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
-        KlarnaAdditionalLogging.writeLog( order, order.custom.kpSessionId, 'klarnaPaymentsVCNSerrlement.createVCNSettlement()', 'Error in creating Klarna Payments VCN Settlement. Error:' + JSON.stringify( e ) );
+        KlarnaAdditionalLogging.writeLog(order, order.custom.kpSessionId, 'klarnaPaymentsVCNSettlement.createVCNSettlement()', 'Error in creating Klarna Payments VCN Settlement. Error:' + JSON.stringify( e ) );
 
         return false;
     }

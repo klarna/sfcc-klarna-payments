@@ -3,9 +3,10 @@
 # Klarna Payments 2017-2024 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 24.4.0.
+The latest version of this cartridge is 24.5.0.
 
-This version introduces support for RO and CZ countries. Configuration structure updates include new settings points for Klarna Activation Custom Object and various site preferences (Klarna Activation, Klarna Payments, Klarna Sign-in With Klarna, Klarna Express Checkout, and Klarna On-site Messaging). Deprecations include Klarna Countries Custom Object and several site preferences and attributes. Note that site preferences and service credentials for the deprecated items are now obsolete and must be migrated to the new site preferences or activation custom object.
+This version includes migration to SFRA version 7.0.0.
+The Sign In With Klarna (SIWK) feature, which allows customers to quickly and securely sign up for your platform using their Klarna account information. Some bug fixes.
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/
@@ -16,6 +17,9 @@ Klarna Bank AB (publ) is the leading global payments and shopping service, provi
 The Klarna Payments cartridges enables integration of Klarna Payment solution on Commerce Cloud Storefront. The integration provides merchants the flexibility to offer choice of multiple Klarna Payment products based on site configurations. This repository contains the Klarna integrations with the Salesforce Commerce Cloud platform. There are two versions currently available for SiteGenesis Javascript Controller (SGJS) and Salesforce Reference Architecture (SFRA). 
 
 This repository is also pipeleines compliant. For more information contact Klarna.
+
+### Cartridge Documentation
+https://docs.klarna.com/platform-solutions/e-commerce-platforms/salesforce-commerce-cloud/before-you-start/
 
 ### Cartridges
 * `int_klarna_payments` - Includes the base functionality used by SG controllers, pipeleines and SFRA

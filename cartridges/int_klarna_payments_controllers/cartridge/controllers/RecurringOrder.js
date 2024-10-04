@@ -22,6 +22,8 @@ var Cart = app.getModel('Cart');
 var Order = app.getModel('Order');
 var PaymentProcessor = app.getModel('PaymentProcessor');
 
+var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+
 /**
  * Handle payments for order
  * @param {Object} order order
@@ -198,6 +200,8 @@ function createOrder(orderRef) {
             throw new Error(loginResult.message);
         }
 
+        KlarnaHelper.isCurrentCountryKlarnaEnabled();
+
         var customerBasket = copyOrderToBasket(orderRef, request);
         customerBasket.setChannelType(Basket.CHANNEL_TYPE_SUBSCRIPTIONS);
 
@@ -270,6 +274,7 @@ function create() {
 function payOrder() {
     var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
     let r = require('*/cartridge/scripts/util/Response');
+    KlarnaHelper.isCurrentCountryKlarnaEnabled();
 
     var validationResult = SubscriptionHelper.validateIncomingParams(request.httpParameterMap.requestBodyAsString, request);
     if (validationResult.error) {

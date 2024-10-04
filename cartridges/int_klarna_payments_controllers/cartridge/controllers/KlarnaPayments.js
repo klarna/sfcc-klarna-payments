@@ -115,6 +115,11 @@ function authorize( args ) { // eslint-disable-line complexity
     var subscriptionData = SubscriptionHelper.getSubscriptionData(args.Order);
 
     if (subscriptionData && !isRecurringOrder) {
+        if (KlarnaPaymentsAuthorizationToken === 'undefined') {
+            return {
+                success: true
+            };
+        }
         var customerTokenResponseData = createCustomerTokenHelper.createCustomerToken(args.Order, localeObject, session.privacy.KlarnaPaymentsAuthorizationToken);
         if (!customerTokenResponseData) {
             return { error: true };
@@ -352,6 +357,9 @@ function confirmation() {
         dw.system.Logger.error("Couldn't revert basket data - " + e);
     }
     session.privacy.kpCustomerProductData = null;
+    session.privacy.KlarnaPaymentsRedirectURL = null;
+    session.privacy.KlarnaPaymentsAuthorizationToken = null;
+    session.privacy.KlarnaPaymentsFinalizeRequired = null;
 
     var COSummary = require( '*/cartridge/controllers/COSummary.js' );
     return COSummary.ShowConfirmation( order );
@@ -767,6 +775,7 @@ function handleExpressRedirect( cart, paymentMethodId ) {
  */
 function BankTransferCallback() {
     var Order = require( 'dw/order/Order' );
+    var URLUtils = require('dw/web/URLUtils');
     var PAYMENT_METHOD = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).PAYMENT_METHOD;
 
     try {
@@ -782,8 +791,34 @@ function BankTransferCallback() {
             return response.setStatus( 200 );
         }
 
-        var paymentInstrument = order.getPaymentInstruments( PAYMENT_METHOD )[0];
-        var paymentProcessor = PaymentMgr.getPaymentMethod( paymentInstrument.getPaymentMethod() ).getPaymentProcessor();
+        var paymentInstrument = order.getPaymentInstruments(PAYMENT_METHOD)[0];
+        var paymentProcessor = PaymentMgr.getPaymentMethod(paymentInstrument.getPaymentMethod()).getPaymentProcessor();
+
+        var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+        var subscriptionData = SubscriptionHelper.getSubscriptionData(order);
+
+        if (subscriptionData) {
+            var createCustomerTokenHelper = require('*/cartridge/scripts/order/klarnaPaymentsCreateCustomerToken');
+            var customerTokenResponseData = createCustomerTokenHelper.createCustomerToken(order, localeObject, kpAuthorizationToken);
+            if (!customerTokenResponseData) {
+                return { error: true };
+            }
+            session.privacy.customer_token = customerTokenResponseData.customer_token;
+
+            if (customerTokenResponseData.customer_token) {
+                SubscriptionHelper.updateCustomerSubscriptionData(order);
+            }
+
+            if (subscriptionData.subscriptionTrialPeriod) {
+                Transaction.wrap(function () {
+                    session.privacy.OrderNo = order.orderNo;
+                    order.custom.kpRedirectURL = URLUtils.url('KlarnaPayments-Confirmation').toString();
+                    order.custom.kpIsVCN = KlarnaHelper.isVCNEnabled();
+                });
+                return { authorized: true };
+            }
+
+        }
 
         var createOrderHelper = require( '*/cartridge/scripts/order/klarnaPaymentsCreateOrder' );
         var klarnaCreateOrderResponse = createOrderHelper.createOrder( order, localeObject, kpAuthorizationToken );
@@ -824,12 +859,22 @@ function BankTransferAwaitCallback() {
     var kpSessionId = request.httpParameterMap.session_id.value;
     var order = OrderMgr.queryOrder( "custom.kpSessionId = {0}", kpSessionId );
 
-    if( empty( order ) ) {
-        return response.setStatus( 404 );
+    if (empty(order)) {
+        return response.setStatus(404);
     }
-    responseUtils.renderJSON( {
+
+    var isSubscriptionOrder = false;
+
+    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+    var subscriptionData = SubscriptionHelper.getSubscriptionData(order);
+    if (subscriptionData && subscriptionData.subscriptionTrialPeriod) {
+        isSubscriptionOrder = true;
+    }
+    session.privacy.OrderNo = order.orderNo;
+
+    responseUtils.renderJSON({
         redirectUrl: order.custom.kpRedirectURL
-    } );
+    });
 }
 
 /**

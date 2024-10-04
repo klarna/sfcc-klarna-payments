@@ -9,6 +9,7 @@ var addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 var currentSite = require('dw/system/Site').current;
 var Resource = require('dw/web/Resource');
 var Logger = require('dw/system/Logger');
+var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
 
 /**
  * Validate basket for order
@@ -133,6 +134,7 @@ function createOrder(orderRef, req, res) {
             throw new Error(loginResult.message);
         }
 
+        KlarnaHelper.isCurrentCountryKlarnaEnabled();
         var customerBasket = copyOrderToBasket(orderRef, req);
         var valResult = validateCart(customerBasket, req);
 
@@ -186,7 +188,6 @@ function createOrder(orderRef, req, res) {
  */
 server.post('Create', function (req, res, next) {
     var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
-    var copyOrderToBasket = require('*/cartridge/scripts/subscription/copyOrderToBasket').copyOrderToBasket;
     var BasketMgr = require('dw/order/BasketMgr');
     var Basket = require('dw/order/Basket');
 
@@ -208,6 +209,7 @@ server.post('Create', function (req, res, next) {
  */
 server.post('PayOrder', function (req, res, next) {
     var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+    KlarnaHelper.isCurrentCountryKlarnaEnabled();
 
     var validationResult = SubscriptionHelper.validateIncomingParams(req.body, req);
     if (validationResult.error) {

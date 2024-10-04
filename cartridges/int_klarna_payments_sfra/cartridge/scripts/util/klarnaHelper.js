@@ -77,8 +77,7 @@ superMdl.getKlarnaResources = function () {
         handleExpressCheckoutAuth: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_EXPRESS_CHECKOUT_AUTH).toString(),
         expressCheckoutAuthCallback: URLUtils.https(KLARNA_PAYMENT_URLS.EXPRESS_CHECKOUT_AUTH_CALLBACK).toString(),
         generateExpressCheckoutPayload: URLUtils.https(KLARNA_PAYMENT_URLS.GENERATE_EXPRESS_CHECKOUT_PAYLOAD).toString(),
-        handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString(),
-        kpSignInRedirectUriToCheckout: URLUtils.https(KLARNA_PAYMENT_URLS.KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SFRA).toString()
+        handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString()
     };
 
     // klarna payments objects
@@ -125,7 +124,7 @@ superMdl.getKlarnaResources = function () {
         kpSignInButtonShape: KlarnaOSM.getKlarnaSignInButtonShape(),
         kpSignInButtonTheme: KlarnaOSM.getKlarnaSignInButtonTheme(),
         kpSignInButtonLogoAlignment: KlarnaOSM.getKlarnaSignInButtonLogoAlignment(),
-        kpSignInRedirectUri: URLUtils.https(KlarnaOSM.getKlarnaSignInRedirectURL()).toString()
+        kpSignInRedirectUri: KlarnaOSM.getKlarnaSignInRedirectURL()
     };
 
     return {

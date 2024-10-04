@@ -1,7 +1,12 @@
 # CHANGELOG
+## 24.5.0
+* Upgrade to SFRA7
+* Sign In With Klarna (SIWK): A social login feature tailored for shopping, allowing customers to quickly and securely sign up for your platform using their Klarna account information.
+* Bug fixes
 ## 24.4.0
+* Sign In With Klarna (SIWK): A social login feature tailored for shopping, allowing customers to quickly and securely sign up for your platform using their Klarna account information.
 * RO and CZ countries support.
-* Configuration structure updates: New Settings Points: Klarna Activation Custom Object, Site Preferences: Klarna Activation (Klarna_Activation), Klarna Payments (Klarna_KP), Klarna Express Checkout (Klarna_KEC), Klarna On-site Messaging (Klarna_OSM).
+* Configuration structure updates: New Settings Points: Klarna Activation Custom Object, Site Preferences: Klarna Activation (Klarna_Activation), Klarna Payments (Klarna_KP), Klarna Sign-in With Klarna (Klarna_siwk), Klarna Express Checkout (Klarna_KEC), Klarna On-site Messaging (Klarna_OSM).
 * Deprecations: Klarna Countries Custom Object, Site Preferences: Klarna Payments (Klarna_Payments), Klarna Recurring Payments (Klarna_RecurringPayments), Klarna Express Checkout (Klarna_ExpressCheckout), Removed Site Preferences Attributes: kpServiceName, kpBankTransferCallback, kpRejectedMethodDisplay, kpNotAvailableMessage, vcnPrivateKey, vcnPublicKey, KpRateLimitByOperation, kpCreateNewSessionWhenExpires, sendProductAndImageURLs.
 ## 24.3.0
 * Update of Klarna Express Checkout configuration. The display of Klarna Express Checkout buttons is now customizable by selecting preferred placements. By default none is selected.

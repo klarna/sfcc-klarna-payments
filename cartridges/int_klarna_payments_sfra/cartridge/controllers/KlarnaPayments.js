@@ -101,8 +101,20 @@ server.get('BankTransferAwaitCallback', function (req, res, next) {
     var kpSessionId = req.querystring.session_id;
     var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.queryOrder('custom.kpSessionId = {0}', kpSessionId);
+    var isSubscriptionOrder = false;
 
-    res.json({ redirectUrl: order.custom.kpRedirectURL });
+    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+    var subscriptionData = SubscriptionHelper.getSubscriptionData(order);
+    if (subscriptionData && subscriptionData.subscriptionTrialPeriod) {
+        isSubscriptionOrder = true;
+    }
+
+    res.json({
+        redirectUrl: order.custom.kpRedirectURL,
+        orderID: order.orderNo,
+        orderToken: order.orderToken,
+        isSubscriptionOrder: isSubscriptionOrder
+    });
     return next();
 });
 

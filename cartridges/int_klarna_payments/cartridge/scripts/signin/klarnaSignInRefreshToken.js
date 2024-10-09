@@ -45,8 +45,8 @@ function refreshSignInToken(localeObject, refreshToken) {
         var klarnaSignInHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody(localeObject, refreshToken);
-        var requestUrl = dw.util.StringUtils.format(klarnaApiContext.getFlowApiUrls().get('refreshSingInToken'), region);
-        var serviceID = klarnaApiContext.getFlowApiIds().get('refreshSingInToken');
+        var requestUrl = dw.util.StringUtils.format(klarnaApiContext.getFlowApiUrls().get('refreshSignInToken'), region);
+        var serviceID = klarnaApiContext.getFlowApiIds().get('refreshSignInToken');
         var response = klarnaSignInHttpService.call(serviceID, requestUrl, 'POST', 'klarna.signin.credentials', requestBody, 'application/x-www-form-urlencoded');
         return {
             success: true,

@@ -3,7 +3,7 @@
 var klarnaPreferences = window.KPPreferences;
 var klarnaUrls = window.KlarnaPaymentsUrls;
 
-var redirectUri = $('.klarna-signin-button').closest('form').hasClass('account-login') === true ? klarnaPreferences.kpSignInRedirectUri : klarnaUrls.kpSignInRedirectUriToCheckout;
+var redirectUri = klarnaPreferences.kpSignInRedirectUri;
 
 window.onload = async function () {
     const klarna = await Klarna.init({
@@ -22,6 +22,9 @@ window.onload = async function () {
         logoAlignment: klarnaPreferences.kpSignInButtonLogoAlignment
     })
     siwkButton.mount(".klarna-signin-button #container");
+
+    sessionStorage.setItem("siwkRedirectError", window.location.href);
+    sessionStorage.setItem("siwkRedirect", $('.klarna-signin-button').attr('action-url'));
 
     klarna.Identity.on("signin", (data) => {
         var url = $('.klarna-signin-button').attr('action-url');

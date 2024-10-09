@@ -23,6 +23,7 @@
 
 <ismodule template="klarnapayments/kec/buttoncart.isml"
 	name="keccart"
+	attribute="container_id"
 />
 
 <ismodule template="klarnapayments/kec/minicartbutton.isml"

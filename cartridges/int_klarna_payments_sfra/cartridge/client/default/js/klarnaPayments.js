@@ -393,11 +393,24 @@ KlarnaCheckout.handleFinalizeRequired = function (defer, sessionPayload) {
                     $.ajax({
                         url: this.klarnaPaymentsUrls.bankTransferAwaitCallback + '?session_id=' + window.KlarnaPaymentsObjects.sessionID
                     }).done(function (response) {
-                        if (response.redirectUrl && response.redirectUrl !== currentUrl && response.redirectUrl !== newUrl) {
+                        if (!response.isSubscriptionOrder && response.redirectUrl && response.redirectUrl !== currentUrl && response.redirectUrl !== newUrl) {
                             clearInterval(interval);
                             newUrl = response.redirectUrl;
                             window.location.href = newUrl;
+                        } else if (response.isSubscriptionOrder) {
+                            var continueUrl = response.redirectUrl;
+                            var urlParams = {
+                                ID: response.orderID,
+                                token: response.orderToken
+                            };
+
+                            continueUrl += (continueUrl.indexOf('?') !== -1 ? '&' : '?') +
+                                Object.keys(urlParams).map(function (key) {
+                                    return key + '=' + encodeURIComponent(urlParams[key]);
+                                }).join('&');
+                            window.location.href = continueUrl;
                         }
+
                     });
                 }.bind(this), 2000);
             }

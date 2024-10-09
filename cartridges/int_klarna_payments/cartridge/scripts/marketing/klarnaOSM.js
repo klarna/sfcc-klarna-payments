@@ -386,7 +386,7 @@ var KlarnaOSM = {
         return KlarnaHelper.getKlarnaEnvironment();
     },
     getKlarnaSignInScope: function () {
-        return currentSite.getCustomPreferenceValue('siwk_scope').join(" ");
+        return KlarnaConstants.SIGN_IN_DEFAULT_SCOPE + currentSite.getCustomPreferenceValue('siwk_scope').join(" ");
     },
     getKlarnaSignInButtonLogoAlignment: function () {
         return currentSite.getCustomPreferenceValue('siwk_alignment').value || 'default';

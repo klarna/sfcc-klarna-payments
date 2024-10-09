@@ -105,6 +105,10 @@ server.append('Begin', function (req, res, next) {
         res.redirect(URLUtils.url('Cart-Show'));
         return next();
     }
+    //swik redirect
+    session.custom.siwk_locale = request.locale;
+    var siwkError = request.httpParameterMap.siwkError.booleanValue;
+    viewData.siwkError = siwkError;
 
     return next();
 });

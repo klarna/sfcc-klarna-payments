@@ -73,7 +73,7 @@ function getAddToCartData(containerId) {
  */
 function initKlarnaExpressButton(containerId, isPDP) {
     window.Klarna.Payments.Buttons.init({
-        client_key: klarnaPreferences.kpExpressCheckoutClientKey
+        client_id: klarnaPreferences.kpExpressCheckoutClientKey
     }).load({
         container: containerId,
         theme: klarnaPreferences.kpExpressCheckoutTheme,
@@ -154,18 +154,18 @@ function initKlarnaExpressButton(containerId, isPDP) {
 
 
 window.klarnaAsyncCallback = function () {
-    var klarnaExpressCheckout = document.querySelector('#klarnaExpressCheckout');
+    var klarnaExpressCheckoutCart = document.querySelectorAll('.kec-container-cart');
     var klarnaExpressCheckoutMC = document.querySelector('#klarnaExpressCheckoutMC');
     var klarnaExpressCheckoutPDP = document.querySelector('#klarnaExpressCheckoutPDP');
 
-    if (klarnaExpressCheckout) {
-        initKlarnaExpressButton('#klarnaExpressCheckout', false);
+    if (klarnaExpressCheckoutCart.length > 0) {
+        klarnaExpressCheckoutCart.forEach(function (element, index) {
+            initKlarnaExpressButton('#' + element.dataset.contId, false);
+        });
     }
-
     if (klarnaExpressCheckoutMC) {
         initKlarnaExpressButton('#klarnaExpressCheckoutMC', false);
     }
-
     if (klarnaExpressCheckoutPDP) {
         initKlarnaExpressButton('#klarnaExpressCheckoutPDP', true);
     }

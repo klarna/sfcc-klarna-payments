@@ -1,6 +1,7 @@
 <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
-<isif condition="${KlarnaOSM.isKlarnaSignInEnabled() && ((KlarnaOSM.showKlarnaSigninButton().loginPage && pdict.oauthreentryendpoint === 1) || (KlarnaOSM.showKlarnaSigninButton().checkoutPage && pdict.oauthreentryendpoint === 2))}">
+<isif condition="${KlarnaOSM.isKlarnaSignInEnabled() && ((KlarnaOSM.showKlarnaSigninButton().loginPage && pdict.oauthreentryendpoint ===
+                 1) || (KlarnaOSM.showKlarnaSigninButton().checkoutPage && pdict.oauthreentryendpoint === 2))}">
     <script defer src="${KlarnaOSM.getKlarnaSignInScriptURL()}"></script>
 
     <script>
@@ -12,6 +13,8 @@
     <div class="form-group klarna-signin-button"
         action-url="${URLUtils.url('Login-KlarnaSignIn', 'oauthLoginTargetEndPoint', pdict.oauthreentryendpoint)}">
         <div id="container"></div>
-        <div class="klarna-login-error d-none">${Resource.msg('klarna.signin.loginerror', 'klarnaSignIn', null)}</div>
+        <isset name="siwkClass" value="${!pdict.siwkError ? ' d-none' : ''}" scope="page" />
+        <div class="klarna-login-error ${siwkClass}">${Resource.msg('klarna.signin.loginerror', 'klarnaSignIn', null)}
+        </div>
     </div>
 </isif>

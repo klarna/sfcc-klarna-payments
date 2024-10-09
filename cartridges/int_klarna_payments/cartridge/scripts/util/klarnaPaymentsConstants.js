@@ -89,6 +89,10 @@ var KLARNA_ENDPOINTS = {
     OC: {
         "playground": "https://api-oc.playground.klarna.com/",
         "production": "https://api-oc.klarna.com/"
+    },
+    LOGIN: {
+        "playground": "https://login.playground.klarna.com/",
+        "production": "https://login.klarna.com/"
     }
 }
 
@@ -105,7 +109,9 @@ var KLARNA_EXPRESS_CATEGORY_CONTENT = {
     ]
 }
 
-var SERVICE_HEADER = 'SFCC SG Version: ' + dw.web.Resource.msg('revisioninfo.revisionnumber', 'revisioninfo', 'Not found') + ' | Klarna Payments 24.4.0';
+var SIGN_IN_DEFAULT_SCOPE = 'openid offline_access payment:request:create ';
+
+var SERVICE_HEADER = 'SFCC SG Version: ' + dw.web.Resource.msg('revisioninfo.revisionnumber', 'revisioninfo', 'Not found') + ' | Klarna Payments 24.5.0';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.PAYMENT_METHOD = PAYMENT_METHOD;
@@ -122,3 +128,4 @@ module.exports.KLARNA_EXPRESS_CATEGORY_CONTENT = KLARNA_EXPRESS_CATEGORY_CONTENT
 module.exports.KLARNA_ENVIRONMENTS = KLARNA_ENVIRONMENTS;
 module.exports.KLARNA_ENDPOINTS = KLARNA_ENDPOINTS;
 module.exports.KLARNA_SERVICE = KLARNA_SERVICE;
+module.exports.SIGN_IN_DEFAULT_SCOPE = SIGN_IN_DEFAULT_SCOPE;

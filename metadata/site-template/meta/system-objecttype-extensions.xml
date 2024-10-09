@@ -313,7 +313,7 @@
                 <type>boolean</type>
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
-                <default-value>false</default-value>
+                <default-value>true</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="siwk_placement">
                 <display-name xml:lang="x-default">Placements</display-name>
@@ -338,7 +338,6 @@
                 <mandatory-flag>true</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
-                <default-value>Login-Show</default-value>
             </attribute-definition>
             <attribute-definition attribute-id="siwk_scope">
                 <display-name xml:lang="x-default">Scope</display-name>
@@ -851,7 +850,7 @@ Klarna payments is required to enable the additional solutions.</description>
                 <attribute attribute-id="kpPromoTaxation"/>
             </attribute-group>
             <attribute-group group-id="Klarna_Payments">
-                <display-name xml:lang="x-default">Klarna Payments</display-name>
+                <display-name xml:lang="x-default">Klarna Payments (Deprecated)</display-name>
                 <attribute attribute-id="kpAutoCapture"/>
                 <attribute attribute-id="merchant_reference2_mapping"/>
                 <attribute attribute-id="kpColorDetails"/>
@@ -875,7 +874,7 @@ Klarna payments is required to enable the additional solutions.</description>
                 <attribute attribute-id="kpAdditionalLogging"/>
             </attribute-group>
             <attribute-group group-id="Klarna_RecurringPayments">
-                <display-name xml:lang="x-default">Klarna Recurring Payments</display-name>
+                <display-name xml:lang="x-default">Klarna Recurring Payments (Deprecated)</display-name>
                 <attribute attribute-id="kpAgentUserName"/>
                 <attribute attribute-id="kpAgentUserPassword"/>
                 <attribute attribute-id="kpEnableRecurringOrderRetry"/>
@@ -888,6 +887,16 @@ Klarna payments is required to enable the additional solutions.</description>
                 <attribute attribute-id="kpECButtonTheme"/>
                 <attribute attribute-id="kpECButtonShape"/>
                 <attribute attribute-id="kec_placement"/>
+            </attribute-group>
+            <attribute-group group-id="Klarna_swik">
+                <display-name xml:lang="x-default">Klarna Sign-in With Klarna</display-name>
+                <attribute attribute-id="siwk_enable"/>
+                <attribute attribute-id="siwk_scope"/>
+                <attribute attribute-id="siwk_redirect_url"/>
+                <attribute attribute-id="siwk_theme"/>
+                <attribute attribute-id="siwk_shape"/>
+                <attribute attribute-id="siwk_alignment"/>
+                <attribute attribute-id="siwk_placement"/>
             </attribute-group>
             <attribute-group group-id="Klarna_KEC">
                 <display-name xml:lang="x-default">Klarna Express Checkout</display-name>

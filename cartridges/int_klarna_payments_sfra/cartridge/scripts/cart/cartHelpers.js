@@ -23,7 +23,7 @@ function addLineItem(currentBasket, product, quantity, childProducts, optionMode
     );
 
     if (product.bundle && childProducts.length) {
-        updateBundleProducts(productLineItem, childProducts);
+        superMdl.updateBundleProducts(productLineItem, childProducts);
     }
 
     productLineItem.setQuantityValue(quantity);

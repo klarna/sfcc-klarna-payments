@@ -69,10 +69,15 @@ function _getRequestBody( order, localeObject ) {
  * @return {Object} status, order id, redirect url and fraud status
  */
 function createOrder( order, localeObject, klarnaAuthorizationToken ) {
-    if ( klarnaAuthorizationToken === 'undefined' ) {
-        return {
-            success: true
-        };
+    // Fetch Klarna authorization token from Klarna session if unavailable on the client side
+    if ( !klarnaAuthorizationToken || klarnaAuthorizationToken === 'undefined' ) {
+        var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
+        klarnaAuthorizationToken = KlarnaHelper.getAuthTokenFromKlarnaSession( order, localeObject ); // eslint-disable-line no-param-reassign
+        if ( !klarnaAuthorizationToken ) {
+            return {
+                success: true
+            };
+        }
     }
 
     var logger = dw.system.Logger.getLogger( 'klarnaPaymentsCreateOrder.js' );

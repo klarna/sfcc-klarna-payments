@@ -3,10 +3,10 @@
 # Klarna Payments 2017-2024 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 24.5.0.
+The latest version of this cartridge is 24.6.0.
 
-This version includes migration to SFRA version 7.0.0.
-The Sign In With Klarna (SIWK) feature, which allows customers to quickly and securely sign up for your platform using their Klarna account information. Some bug fixes.
+This version includes auth callback feature for client-side calls to ensure that orders can still be placed even if there are frontend communication issues. 
+Some bug fixes.
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/

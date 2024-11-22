@@ -591,6 +591,12 @@ function bankTransferPlaceOrder(order, kpSessionId, kpAuthorizationToken) {
             SubscriptionHelper.updateCustomerSubscriptionData(order);
         }
 
+        if (order.getCustomerEmail()) {
+            // send order confirmation email
+            var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+            COHelpers.sendConfirmationEmail(order, request.locale);
+        }
+
         order.setConfirmationStatus(order.CONFIRMATION_STATUS_CONFIRMED);
         order.setExportStatus(order.EXPORT_STATUS_READY);
     });

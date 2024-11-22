@@ -879,6 +879,27 @@ function checkIfAddrFoundInAddrBook( addressToAdd, storedAddress ) {
     return false;
 }
 
+/**
+ * Retrieves Klarna authorization token from Klarna session if it is unavailable on the client side
+ * This function uses order and locale information to fetch the Klarna session details
+ * and stores the authorization token in the SFCC session
+ * @param {dw.order} order - order object
+ * @param {Object[]} localeObject - Locale information used for fetching the Klarna session
+ * @returns {string} klarnaAuthorizationToken - Klarna authorization token if available, otherwise null
+ */
+function getAuthTokenFromKlarnaSession( order, localeObject ) {
+    var klarnaAuthorizationToken = null;
+    var kpSessionId = order.custom.kpSessionId;
+    var getSessionHelper = require( '*/cartridge/scripts/session/klarnaPaymentsGetSession' );
+    // Retrieve Klarna session details using the Klarna session ID, order, and locale
+    var getSessionResponse = getSessionHelper.getSession( kpSessionId, order, localeObject );
+    if ( getSessionResponse && getSessionResponse.response && getSessionResponse.response.authorization_token ) {
+        // Store the authorization token in the sfcc session and klarnaAuthorizationToken variable
+        session.privacy.KlarnaPaymentsAuthorizationToken = klarnaAuthorizationToken = getSessionResponse.response.authorization_token;
+    }
+    return klarnaAuthorizationToken;
+}
+
 exports.calculateOrderTotalValue = calculateOrderTotalValue;
 exports.getKlarnaPaymentMethodName = getKlarnaPaymentMethodName;
 exports.getDiscountsTaxation = getDiscountsTaxation;
@@ -916,3 +937,4 @@ exports.getKlarnaEnvironment = getKlarnaEnvironment;
 exports.getRegionCode = getRegionCode;
 exports.checkIfAddrFoundInAddrBook = checkIfAddrFoundInAddrBook;
 exports.getKlarnaSignInServiceCredentials = getKlarnaSignInServiceCredentials;
+exports.getAuthTokenFromKlarnaSession = getAuthTokenFromKlarnaSession;

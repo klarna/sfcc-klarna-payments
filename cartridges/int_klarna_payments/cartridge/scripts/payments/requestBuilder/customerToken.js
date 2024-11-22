@@ -74,7 +74,8 @@
         if (customer.profile.birthday) {
             try {
                 var calendarDate = new dw.util.Calendar(customer.profile.birthday);
-                this.context.customer.date_of_birth = dw.util.StringUtils.formatCalendar(calendarDate, 'yyyy-MM-dd');
+                var DATE_FORMAT = require( '*/cartridge/scripts/util/constants' ).DATE_FORMAT;
+                this.context.customer.date_of_birth = dw.util.StringUtils.formatCalendar( calendarDate, DATE_FORMAT );
             } catch (e) {
                 dw.system.Logger.info('Unable to build customer birthdate.');
             }

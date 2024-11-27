@@ -64,6 +64,7 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
     var signInHelper = require('*/cartridge/scripts/signin/klarnaSignIn');
     var CustomerMgr = require('dw/customer/CustomerMgr');
     var response = null;
+    var requestUrl = null;
     var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
 
     try {

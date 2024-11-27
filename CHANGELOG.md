@@ -1,4 +1,7 @@
 # CHANGELOG
+## 24.6.0
+* Auth callback feature for client-side calls to ensure that orders can still be placed even if there are frontend communication issues.
+* Bug fixes.
 ## 24.5.0
 * Upgrade to SFRA7
 * Sign In With Klarna (SIWK): A social login feature tailored for shopping, allowing customers to quickly and securely sign up for your platform using their Klarna account information.

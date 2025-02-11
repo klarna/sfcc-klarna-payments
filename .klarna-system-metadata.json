@@ -40,6 +40,11 @@
             "system_id": "klarna-login-button",
             "sla_impact": "AFTER_24_HOURS",
             "description": "Customers can use the Klarna product Express Button"
+        },
+        {
+            "system_id": "sign-in-with-klarna",
+            "sla_impact": "AFTER_24_HOURS",
+            "description": "Customers can sign in with Klarna"
         }
     ]
 }

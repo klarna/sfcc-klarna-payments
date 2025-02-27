@@ -117,5 +117,6 @@ function execute( args )
 }
 
 module.exports = {
-    handleAutoCapture: handleAutoCapture
+    handleAutoCapture: handleAutoCapture,
+    createCapture:_createCapture
 };

@@ -185,7 +185,6 @@ KlarnaSessionManager.prototype.createOrUpdateSession = function () {
     if (basket.custom.kpIsExpressCheckout) {
         Transaction.wrap(function () {
             session.privacy.KlarnaLocale = localeObject.custom.klarnaLocale;
-            session.privacy.KlarnaPaymentMethods = KlarnaHelper.getExpressKlarnaMethod().paymentMethods;
             session.privacy.SelectedKlarnaPaymentMethod = null;
         });
         return null;

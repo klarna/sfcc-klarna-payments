@@ -514,7 +514,11 @@ server.post('HandleAuthorizationResult', function (req, res, next) {
         return next();
     }
 
-    var EXPRESS_CHECKOUT_CATEGORY = KlarnaHelper.getExpressKlarnaMethod().defaultMethod;
+    // For KEC, use the Klarna identifier provided by the authorize call
+    var expressKlarnaMethod = KlarnaHelper.getExpressKlarnaMethod(klarnaResponse.payment_method_categories);
+    session.privacy.KlarnaPaymentMethods = expressKlarnaMethod.paymentMethods;
+
+    var EXPRESS_CHECKOUT_CATEGORY = expressKlarnaMethod.defaultMethod;
     var PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
 
     var currentBasket = BasketMgr.getCurrentBasket();

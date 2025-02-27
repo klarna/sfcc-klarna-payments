@@ -28,9 +28,7 @@
                 url: klarnaPaymentsUrls.generateExpressCheckoutPayload + '?populateAddress=true&isPDP=false',
                 type: 'POST'
             }).done(function (payloadresult) {
-                Klarna.Payments.finalize({
-                    payment_method_category: paymentMethodCategoryId
-                }, payloadresult.payload, function (res) {
+                Klarna.Payments.finalize({}, payloadresult.payload, function (res) {
                     var xhr = new XMLHttpRequest();
                     if (res.approved) {
                         xhr.open("GET", klarnaPaymentsUrls.saveAuth, true);

@@ -1,6 +1,8 @@
 'use strict';
 
 var DATE_PATTERN = 'yyyy-MM-dd';
+var Logger = require( 'dw/system/Logger' );
+var subscriptionHelperExtension = require( '*/cartridge/scripts/subscription/subscriptionHelperExtension' );
 
 /**
  * Build subscription data for checkout page
@@ -156,7 +158,6 @@ function isSubscriptionBasket(currentBasket) {
  */
 function calculateNextChargeDate(trialPeriod, subscriptionPeriod, subscriptionFrequency) {
     var Calendar = require('dw/util/Calendar');
-    var Logger = require('dw/system/Logger');
 
     var nextDate = new Calendar();
     try {
@@ -331,7 +332,6 @@ function createRecurringOrder(orderNo) {
     var HttpClient = require('dw/net/HTTPClient');
     var URLUtils = require('dw/web/URLUtils');
     var URLAction = require('dw/web/URLAction');
-    var Logger = require('dw/system/Logger');
 
     var httpClient = new HttpClient();
 
@@ -420,7 +420,6 @@ function payRecurringOrder(orderNo) {
     var HttpClient = require('dw/net/HTTPClient');
     var URLUtils = require('dw/web/URLUtils');
     var URLAction = require('dw/web/URLAction');
-    var Logger = require('dw/system/Logger');
 
     var httpClient = new HttpClient();
 
@@ -671,6 +670,89 @@ function hasSubscriptionOnly() {
     return hasSubscriptionOnlyProduct;
 }
 
+/**
+ * Calculate the total subscription duration in days by multiplying the subscription interval (e.g., monthly, yearly)
+ * by the frequency (number of occurrences) to determine the overall number of days.
+ * @param {Object} item product line item
+ * @returns {number} subscription duration in days
+ */
+function getSubscriptionIntervalCount( item ) {
+    var SUBSCRIPTION_INTERVALS_IN_DAYS = require( '*/cartridge/scripts/util/constants' ).SUBSCRIPTION_INTERVALS_IN_DAYS;
+    var interval = item.subscription ? SUBSCRIPTION_INTERVALS_IN_DAYS[item.subscription.interval] : 0;
+    var frequency = item.subscription ? parseInt( item.subscription.interval_count, 10 ) : 0;
+
+    return interval * frequency;
+}
+
+/**
+ * Sort subscription items based on subscription frequency (in days) and price
+ * The function first sorts items by their subscription duration (interval count in days), and if the durations are the same,
+ * it then sorts by price (total_amount), ensuring that items with higher prices come first.
+ * @param {Object} items unsorted product line items
+ * @param {boolean} hasLineItemSubscription flag indicating if the basket contains subscription lineitems
+ * @returns {Object} sorted product line items
+ */
+function sortSubscriptionItems( items, hasLineItemSubscription ) {
+    try {
+        if ( !hasLineItemSubscription ) {
+            return items;
+        }
+
+        var List = require( 'dw/util/ArrayList' );
+    
+        // Convert lineItems to a List to sort based on subscription frequency
+        var lineItemsList = new List( items );
+        
+        // Sort the line items based on subscription frequency and price
+        lineItemsList.sort( function( firstItem, secondItem ) {
+            var firstItemIntervalCount = getSubscriptionIntervalCount( firstItem );
+            var secondItemIntervalCount = getSubscriptionIntervalCount( secondItem );
+
+            // Sort by interval count in descending order
+            if ( firstItemIntervalCount !== secondItemIntervalCount ) {
+                return secondItemIntervalCount - firstItemIntervalCount;
+            }
+
+            // If intervals are the same, sort by price (total_amount) in descending order
+            return secondItem.total_amount - firstItem.total_amount;
+        } );
+    
+        // return sorted line items
+        return lineItemsList.toArray();
+    } catch ( e ) {
+        // Return original line items if sorting fails
+        Logger.error( 'Error sorting subscription items: ' + e.message + e.stack );
+        return items;
+    }
+}
+
+/**
+ * Build new subscription object for each line item if basket subscription does not exist, otherwise return existing basket subscription
+ * @param {Object} li - The line item object
+ * @param {Object} subscription - The existing basket subscription object if available, or null if a new subscription needs to be created
+ * @param {boolean} hasLineItemSubscription - true if line item subscriptions are available, otherwise false
+ * @returns {Object} An object containing:
+ *   - `subscription`: The subscription object, basket subscription if available or a line item subscription
+ *   - `hasLineItemSubscription`: A boolean flag indicating whether a subscription-based product exists in the line items
+ */
+function handleSubscription( li, subscription, hasLineItemSubscription ) {
+    var liSubscription = null;
+    if ( subscription ) {
+        // Return the basket subscription if it exists
+        subscription.name = li.productName;
+        liSubscription = subscription;
+    } else {
+        // Create line item subscription object if basket subscription does not exist
+        liSubscription = subscriptionHelperExtension.buildItemSubscriptionObj( li );
+        hasLineItemSubscription = liSubscription ? true : hasLineItemSubscription; // eslint-disable-line no-param-reassign
+    }
+
+    return { 
+        subscription: liSubscription,
+        hasLineItemSubscription: hasLineItemSubscription
+    };
+}
+
 module.exports = {
     getSubscriptionData: getSubscriptionData,
     validateCartProducts: validateCartProducts,
@@ -692,5 +774,8 @@ module.exports = {
     loginOnBehalfOfCustomer: loginOnBehalfOfCustomer,
     validateCart: validateCart,
     validateIncomingParams: validateIncomingParams,
-    hasSubscriptionOnly: hasSubscriptionOnly
+    hasSubscriptionOnly: hasSubscriptionOnly,
+    sortSubscriptionItems: sortSubscriptionItems,
+    getSubscriptionIntervalCount: getSubscriptionIntervalCount,
+    handleSubscription: handleSubscription
 };

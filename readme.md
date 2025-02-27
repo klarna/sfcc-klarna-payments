@@ -3,10 +3,27 @@
 # Klarna Payments 2017-2024 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 24.6.0.
+The latest version of this cartridge is 25.1.0.
 
-This version includes auth callback feature for client-side calls to ensure that orders can still be placed even if there are frontend communication issues. 
-Some bug fixes.
+This release includes improvements to subscription handling, Klarna Express Checkout (KEC), bug fixes, and technical updates to enhance stability and performance.
+### New Features
+* Subscriptions Handling
+    * Subscription selection is now available on product pages (PDP).
+    * Klarna Express Checkout (KEC) supports subscription products.
+    * Improved handling of mixed carts containing subscription and standard products.
+    * Klarna checkout now processes subscription orders correctly, including trial and non-trial periods.
+    * Order sorting logic ensures the correct sequence for Klarna API calls.
+### Fixes
+* Fixed an issue where Klarna orders were not completing at checkout.
+* Corrected intent mapping for subscription products to align with Klarna’s API.
+* Resolved an issue where some orders appeared as uncaptured in the Klarna merchant portal.
+* Removed hardcoded identifiers in Klarna Express Checkout, ensuring dynamic payment method retrieval.
+### Deprecations and Technical Changes
+* Updated API authentication for improved session handling and security.
+* Migrated Klarna SFCC jobs to the latest SFCC framework, replacing deprecated job scripts.
+* Hardcoded identifiers for Klarna Express Checkout (KEC) are no longer used and are now dynamically retrieved.
+* Optimized order processing logic for better performance and accuracy.
+
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/

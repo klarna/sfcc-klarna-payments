@@ -261,7 +261,6 @@ function createOrUpdateSession() {
         //setDefaultPaymentMethod();
         Transaction.wrap(function () {
             session.privacy.KlarnaLocale = localeObject.custom.klarnaLocale;
-            session.privacy.KlarnaPaymentMethods = KlarnaHelper.getExpressKlarnaMethod().paymentMethods;
             session.privacy.SelectedKlarnaPaymentMethod = null;
         });
         return null;
@@ -1019,6 +1018,12 @@ function handleAuthorizationResult() {
         return;
     }
 
+    // For KEC, use the Klarna identifier provided by the authorize call
+    var expressKlarnaMethod = KlarnaHelper.getExpressKlarnaMethod( klarnaResponse.payment_method_categories );
+    session.privacy.KlarnaPaymentMethods = expressKlarnaMethod.paymentMethods;
+
+    var EXPRESS_CHECKOUT_CATEGORY = expressKlarnaMethod.defaultMethod;
+
     var klarnaSessionId = null;
     var currentBasket = cart.object;
     Transaction.wrap(function () {
@@ -1124,7 +1129,7 @@ function handleAuthorizationResult() {
     }
 
     session.forms.singleshipping.fulfilled.value = true;
-
+    session.privacy.KlarnaExpressCategory = EXPRESS_CHECKOUT_CATEGORY;
     handleExpressCheckoutRedirect(cart, PAYMENT_METHOD, redirectURL);
     return;
 }
@@ -1137,10 +1142,8 @@ function handleAuthorizationResult() {
  */
 function handleExpressCheckoutRedirect(cart, paymentMethodId, redirectURL) {
     var URLUtils = require('dw/web/URLUtils');
-    var EXPRESS_CHECKOUT_CATEGORY = KlarnaHelper.getExpressKlarnaMethod().defaultMethod;
     var r = require('*/cartridge/scripts/util/Response');
 
-    session.privacy.KlarnaExpressCategory = EXPRESS_CHECKOUT_CATEGORY;
     session.forms.billing.paymentMethods.selectedPaymentMethodID.value = paymentMethodId;
 
     // Handle the selection of this payment method - calculate if any payment promotions are available

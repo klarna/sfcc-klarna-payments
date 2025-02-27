@@ -27,6 +27,7 @@
     var discountTaxationMethod = require( '*/cartridge/scripts/util/klarnaHelper' ).getDiscountsTaxation();
     var getShippment = require( '*/cartridge/scripts/util/klarnaHelper' ).getShippment;
     var isOMSEnabled = require( '*/cartridge/scripts/util/klarnaHelper' ).isOMSEnabled();
+    var SubscriptionHelper = require( '*/cartridge/scripts/subscription/subscriptionHelper' );
     /**
      * KP Order Request Builder
      * @return {void}
@@ -327,6 +328,9 @@
         var i = 0;
         var li = {};
         var item = {};
+        var unsortedLineItems = [];
+        var sortedLineItems = [];
+        var hasLineItemSubscription = false;
 
         while ( i < items.length ) {
             li = items[i];
@@ -349,15 +353,20 @@
                 item = this.buildItem( li );
             }
 
+            var subscriptionObj = SubscriptionHelper.handleSubscription( li, subscription, hasLineItemSubscription );
+            item.subscription = subscriptionObj.subscription;
+            hasLineItemSubscription = subscriptionObj.hasLineItemSubscription;
 
-            if (subscription) {
-                subscription.name = li.productName;
-                item.subscription = subscription;
-            }
-            context.order_lines.push( item );
+            // Push each line item to unsorted line item list
+            unsortedLineItems.push( item );
 
             i += 1;
         }
+
+        // Sort line items based on subscription interval, count and product price
+        sortedLineItems = SubscriptionHelper.sortSubscriptionItems ( unsortedLineItems, hasLineItemSubscription );
+
+        context.order_lines = sortedLineItems;
     };
 
     KlarnaPaymentsOrderRequestBuilder.prototype.buildGCPaymentItems = function( items, context ) {

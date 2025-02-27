@@ -1,0 +1,60 @@
+{
+	"step-types": {
+		"script-module-step": [
+			{
+				"@type-id": "custom.OrderCleanUp",
+				"@supports-parallel-execution": "true",
+				"@supports-site-context": "true",
+				"@supports-organization-context": "true",
+				"description": "Clean up exported VCN orders and remove sensitive card data",
+				"module": "int_klarna_payments/cartridge/scripts/job/OrderCleanUpJob.js",
+				"function": "execute",
+				"transactional": "false",
+				"timeout-in-seconds": "900",
+				"status-codes": {
+					"status": [
+						{
+							"@code": "ERROR",
+							"description": "Error"
+						},
+						{
+							"@code": "WARN",
+							"description": "Warning"
+						},
+						{
+							"@code": "OK",
+							"description": "Ok"
+						}
+					]
+				}
+			},
+			{
+				"@type-id": "custom.RecurringOrders",
+				"@supports-parallel-execution": "true",
+				"@supports-site-context": "true",
+				"@supports-organization-context": "true",
+				"description": "Create Klarna recurring orders",
+				"module": "int_klarna_payments/cartridge/scripts/job/RecurringOrdersJob.js",
+				"function": "execute",
+				"transactional": "false",
+				"timeout-in-seconds": "900",
+				"status-codes": {
+					"status": [
+						{
+							"@code": "ERROR",
+							"description": "Error"
+						},
+						{
+							"@code": "WARN",
+							"description": "Warning"
+						},
+						{
+							"@code": "OK",
+							"description": "Ok"
+						}
+					]
+				}
+			}
+		]
+	}
+}

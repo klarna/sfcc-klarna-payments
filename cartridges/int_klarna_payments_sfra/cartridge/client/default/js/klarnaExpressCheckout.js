@@ -90,7 +90,8 @@ function initKlarnaExpressButton(containerId, isPDP) {
                     return;
                 }
             }
-            var url = klarnaPaymentsUrls.generateExpressCheckoutPayload + '?populateAddress=false&isPDP=' + isPDP;
+            var url = klarnaPaymentsUrls.generateExpressCheckoutPayload;
+            url+= (url.indexOf('?') !== -1 ? '&' : '?') + 'populateAddress=false&isPDP=' + isPDP;
             $.ajax({
                 url: url,
                 type: 'POST',

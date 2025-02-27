@@ -4,11 +4,7 @@
 $(function () {
     //handle express checkout button on variation change
     $('body').on('product:afterAttributeSelect', function (e, response) {
-        if (response.data.product.isSubscriptionOnly) {
-            $('#klarnaExpressCheckoutPDP').hide();
-        } else {
-            $('#klarnaExpressCheckoutPDP').show();
-        }
+        $('#klarnaExpressCheckoutPDP').show();
         if (!response.data.product.readyToOrder || !response.data.product.available) {
             $('#klarnaExpressCheckoutPDP').attr('disabled', 'disabled');
         } else {

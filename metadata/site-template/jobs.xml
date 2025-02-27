@@ -1,40 +1,32 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <jobs xmlns="http://www.demandware.com/xml/impex/jobs/2015-07-01">
-    <job job-id="OrderCleanUp" priority="0">
+    <job job-id="OrderCleanUp">
         <description>Clean up exported VCN orders and remove sensitive card data</description>
         <parameters/>
         <flow>
             <context site-id="RefArch"/>
-            <step step-id="execute" type="ExecuteScriptModule" enforce-restart="false">
+            <step step-id="execute" type="custom.OrderCleanUp" enforce-restart="false">
                 <description/>
-                <parameters>
-                    <parameter name="ExecuteScriptModule.Module">int_klarna_payments/cartridge/scripts/job/OrderCleanUpJob.js</parameter>
-                    <parameter name="ExecuteScriptModule.FunctionName">execute</parameter>
-                    <parameter name="ExecuteScriptModule.Transactional">false</parameter>
-                </parameters>
+                <parameters/>
             </step>
         </flow>
         <rules/>
         <triggers>
             <run-once enabled="false">
-                <date>2020-09-09Z</date>
-                <time>06:52:39.000Z</time>
+                <date>2025-02-12Z</date>
+                <time>10:00:00.000Z</time>
             </run-once>
         </triggers>
     </job>
 
-    <job job-id="RecurringOrders" priority="0">
+    <job job-id="RecurringOrders">
         <description/>
         <parameters/>
         <flow>
             <context site-id="RefArch"/>
-            <step step-id="createOrder" type="ExecuteScriptModule" enforce-restart="false">
+            <step step-id="createOrder" type="custom.RecurringOrders" enforce-restart="false">
                 <description/>
-                <parameters>
-                    <parameter name="ExecuteScriptModule.Module">int_klarna_payments/cartridge/scripts/job/RecurringOrdersJob.js</parameter>
-                    <parameter name="ExecuteScriptModule.FunctionName">execute</parameter>
-                    <parameter name="ExecuteScriptModule.Transactional">false</parameter>
-                </parameters>
+                <parameters/>
             </step>
         </flow>
         <rules>
@@ -44,8 +36,8 @@
         </rules>
         <triggers>
             <run-once enabled="false">
-                <date>2023-07-25Z</date>
-                <time>14:06:00.000Z</time>
+                <date>2025-02-12Z</date>
+                <time>10:00:00.000Z</time>
             </run-once>
         </triggers>
     </job>

@@ -13,6 +13,10 @@
 
 'use strict';
 
+var constants = require( '*/cartridge/scripts/util/constants' );
+var Resource = require( 'dw/web/Resource' );
+var Site = require( 'dw/system/Site' );
+var klarnaPaymentsCaptureOrderHelper = require( '*/cartridge/scripts/order/klarnaPaymentsCaptureOrder' );
 
 var KlarnaPayments = {
     httpService: require('*/cartridge/scripts/common/klarnaPaymentsHttpService'),
@@ -100,6 +104,75 @@ function createOrder(order, localeObject, klarnaCustomerToken) {
     }
 }
 
+/**
+ * Parses a JSON string and returns JSON object if the input is valid; otherwise, returns null
+ *
+ * @param {string} text - The JSON string to be parsed.
+ * @returns {Object|null} The parsed JSON object, or null if the JSON is invalid.
+ */
+function parseJson( text ) {
+    try {
+        return JSON.parse( text );
+    } catch ( error ) {
+        return null;
+    }
+}
+
+/**
+ * Function to create Klarna Recurring Order for lineitem subscriptions
+ * 
+ * @param {Object} payload SFCC JSON payload object
+ * @param {Object} localeObject locale object
+ * @param {string} klarnaCustomerToken Customer token to be used in Klarna API
+ * @return {Object} status, order id, redirect url and fraud status
+ */
+function createOrderForSubscriptions( payload, localeObject, klarnaCustomerToken ) {
+    var subscriptionLogger = dw.system.Logger.getLogger( 'klarnaPaymentsCreateRecurringOrder.js' );
+    try {
+        var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
+        var klarnaApiContext = new KlarnaPayments.apiContext();
+        if ( !klarnaCustomerToken ) {
+            throw new Error( Resource.msg( 'invalid.subscription.token.msg','subscription',null ) );
+        }
+
+        var requestBody = parseJson( payload );
+        if( !requestBody ) {
+            throw new Error( Resource.msg( 'invalid.payload.msg','subscription',null ) )
+        }
+
+        var requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( constants.SERVICES.CREATE_RECURRING_ORDER ), klarnaCustomerToken );
+        var serviceID = klarnaApiContext.getFlowApiIds().get( constants.SERVICES.CREATE_RECURRING_ORDER );
+        var response = klarnaPaymentsHttpService.call( serviceID, requestUrl, constants.SERVICES.METHOD, localeObject.custom.credentialID, requestBody );
+        var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue( 'kpAutoCapture' );
+        
+        if ( autoCaptureEnabled && response && response.order_id ) {
+            // Capture order in Klarna
+            var captureData = {
+                amount: requestBody.order_amount
+            };
+            klarnaPaymentsCaptureOrderHelper.createCapture( response.order_id, localeObject, captureData );
+        }
+
+        return {
+            success: true,
+            order_id: response.order_id,
+            redirect_url: response.redirect_url,
+            fraud_status: response.fraud_status,
+            response: response
+        };
+    } catch ( e ) {
+        var errorMsg = parseJson( e.message );
+        subscriptionLogger.error( Resource.msgf( 'api.response.error', 'subscription', null, e.message ) );
+       
+        return {
+            error: true,
+            response: null,
+            errorMessage: errorMsg ? errorMsg.error_code : e.message
+        };
+    }
+}
+
 module.exports = {
-    createOrder: createOrder
+    createOrder: createOrder,
+    createOrderForSubscriptions: createOrderForSubscriptions
 };

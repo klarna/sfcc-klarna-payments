@@ -531,10 +531,12 @@ function mapKlarnaExpressAddress(collectedAddress) {
 
 /**
  * Read and update Klarna Express Payment Method SitePreference
- * @returns {String} payment method details
-*/
-function getExpressKlarnaMethod() {
-    var paymentMethods = KlarnaConstants.KLARNA_EXPRESS_CATEGORY_CONTENT.KEC_CONTENT;
+ * @param {object} paymentMethodCategories klarna payment categories received from Klarna authorize call
+ * @returns {Object} paymentMethods JSON string of payment methods
+ */
+function getExpressKlarnaMethod( paymentMethodCategories ) {
+    // Use the payment method received from Klarna authorize call. If not available, fall back to the default value from KlarnaConstants
+    var paymentMethods = paymentMethodCategories ? paymentMethodCategories : KlarnaConstants.KLARNA_EXPRESS_CATEGORY_CONTENT.KEC_CONTENT;
     var paymentMethod = null;
     if (!empty(paymentMethods)) {
         if (!empty(paymentMethods) && paymentMethods.length > 0) {

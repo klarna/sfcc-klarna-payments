@@ -1,7 +1,19 @@
 'use strict';
 
 var DATE_FORMAT = 'yyyy-MM-dd';
+const SERVICES = {
+    METHOD: 'POST',
+    CREATE_RECURRING_ORDER: 'createRecurringOrder'
+};
+var SUBSCRIPTION_INTERVALS_IN_DAYS = {
+    DAY: 1,
+    WEEK: 7,
+    MONTH: 30,
+    YEAR: 360
+};
 
 module.exports = {
-    DATE_FORMAT: DATE_FORMAT
+    DATE_FORMAT: DATE_FORMAT,
+    SERVICES: SERVICES,
+    SUBSCRIPTION_INTERVALS_IN_DAYS: SUBSCRIPTION_INTERVALS_IN_DAYS
 };

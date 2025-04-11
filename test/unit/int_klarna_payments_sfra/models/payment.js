@@ -40,7 +40,7 @@ var paymentInstruments = new ArrayList([
     {
         creditCardNumberLastDigits: '1111',
         creditCardHolder: 'The Muffin Man',
-        creditCardExpirationYear: 2018,
+        creditCardExpirationYear: 2035,
         creditCardType: 'Visa',
         maskedCreditCardNumber: '************1111',
         paymentMethod: 'CREDIT_CARD',
@@ -102,11 +102,12 @@ describe('Payment', function () {
 
     it('should take payment Methods and convert to a plain object ', function () {
         var result = new PaymentModel(createApiBasket({ paymentMethods: paymentMethods }), null);
-        assert.equal(result.applicablePaymentMethods.length, 2);
-        assert.equal(result.applicablePaymentMethods[0].ID, 'GIFT_CERTIFICATE');
-        assert.equal(result.applicablePaymentMethods[0].name, 'Gift Certificate');
-        assert.equal(result.applicablePaymentMethods[1].ID, 'CREDIT_CARD');
-        assert.equal(result.applicablePaymentMethods[1].name, 'Credit Card');
+        var applicablePaymentMethods = result.applicablePaymentMethods.toArray();
+        assert.equal(applicablePaymentMethods.length, 2);
+        assert.equal(applicablePaymentMethods[0].ID, 'GIFT_CERTIFICATE');
+        assert.equal(applicablePaymentMethods[0].name, 'Gift Certificate');
+        assert.equal(applicablePaymentMethods[1].ID, 'CREDIT_CARD');
+        assert.equal(applicablePaymentMethods[1].name, 'Credit Card');
     });
 
     it('should take payment cards and convert to a plain object ', function () {
@@ -127,7 +128,7 @@ describe('Payment', function () {
         );
         assert.equal(result.selectedPaymentInstruments[0].lastFour, '1111');
         assert.equal(result.selectedPaymentInstruments[0].owner, 'The Muffin Man');
-        assert.equal(result.selectedPaymentInstruments[0].expirationYear, 2018);
+        assert.equal(result.selectedPaymentInstruments[0].expirationYear, 2035);
         assert.equal(result.selectedPaymentInstruments[0].type, 'Visa');
         assert.equal(
             result.selectedPaymentInstruments[0].maskedCreditCardNumber,

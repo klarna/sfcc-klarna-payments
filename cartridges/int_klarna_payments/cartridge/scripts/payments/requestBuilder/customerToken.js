@@ -68,6 +68,17 @@
 
     KlarnaPaymentsCustomerTokenRequestBuilder.prototype.buildCustomer = function (order) {
         var customer = order.customer;
+        var CustomerMgr = require( 'dw/customer/CustomerMgr' );
+        var KlarnaOSM = require( '*/cartridge/scripts/marketing/klarnaOSM' );
+
+        // Send Klarna sign-in access token in create-customer-token API for customers using SIWK
+        if ( KlarnaOSM.isKlarnaSignInEnabled() ) {
+            var customerProfile = CustomerMgr.getExternallyAuthenticatedCustomerProfile( 'Klarna', customer && customer.profile && customer.profile.email );
+            if( customerProfile && customerProfile.custom.kpRefreshToken && customerProfile.custom.klarnaSignInAccessToken ) {
+                this.context.customer.klarna_access_token = customerProfile.custom.klarnaSignInAccessToken;
+                return this;
+            }
+        }
         if (customer === null || !customer.authenticated) {
             return this;
         }

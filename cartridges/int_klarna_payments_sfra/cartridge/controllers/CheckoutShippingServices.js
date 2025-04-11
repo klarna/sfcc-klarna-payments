@@ -3,9 +3,15 @@
 var page = module.superModule;
 var server = require('server');
 
+var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+
 server.extend(page);
 
 server.append('ToggleMultiShip', server.middleware.https, function (req, res, next) {
+    if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
+        return next();
+    }
+
     var BasketMgr = require('dw/order/BasketMgr');
     var Transaction = require('dw/system/Transaction');
     var URLUtils = require('dw/web/URLUtils');
@@ -75,6 +81,10 @@ server.append(
     'SubmitShipping',
     server.middleware.https,
     function (req, res, next) {
+        if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
+            return next();
+        }
+
         var BasketMgr = require('dw/order/BasketMgr');
         var URLUtils = require('dw/web/URLUtils');
 

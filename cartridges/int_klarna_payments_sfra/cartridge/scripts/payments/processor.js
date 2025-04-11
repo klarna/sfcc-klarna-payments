@@ -441,7 +441,7 @@ function handleKlarnaCustomerTokenCreated(order, paymentInstrument, kpOrderInfo)
         session.privacy.KlarnaPaymentsAuthorizationToken = '';
         session.privacy.KPAuthInfo = null;
         Transaction.wrap(function () {
-            order.custom.kpRedirectURL = URLUtils.url('Order-Confirm').toString();
+            order.custom.kpRedirectURL = URLUtils.url('KlarnaPayments-ShowConfirmation', 'ID', order.orderNo, 'token', order.orderToken).toString();
         });
     }
 

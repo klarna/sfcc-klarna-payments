@@ -77,6 +77,10 @@ server.get('UpdateSubscription', function (req, res, next) {
 });
 
 server.append('Show', server.middleware.https, consentTracking.consent, csrfProtection.generateToken, function (req, res, next) {
+    var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+    if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
+        return next();
+    }
     var Resource = require('dw/web/Resource');
     var BasketMgr = require('dw/order/BasketMgr');
     var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');

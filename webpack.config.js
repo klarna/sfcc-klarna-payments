@@ -20,7 +20,8 @@ module.exports = [{
 		'klarnaExpressCheckout': path.join(__dirname, cartridgePath + '/client/default/js/klarnaExpressCheckout.js'),
 		'klarnaExpressCheckoutPDP': path.join(__dirname, cartridgePath + '/client/default/js/klarnaExpressCheckoutPDP.js'),
 		'klarnaExpressMiniCart': path.join(__dirname, cartridgePath + '/client/default/js/klarnaExpressMiniCart.js'),
-		'klarnaSignIn': path.join(__dirname, cartridgePath + '/client/default/js/klarnaSignIn.js')
+		'klarnaSignIn': path.join(__dirname, cartridgePath + '/client/default/js/klarnaSignIn.js'),
+		'klarnaInteroperability': path.join(__dirname, cartridgePath + '/client/default/js/klarnaInteroperability.js')
 	},
 	output: {
 		path: path.resolve( cartridgePath + './static/default/js/' ),

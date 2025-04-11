@@ -25,7 +25,7 @@
     var AdditionalCustomerInfoRequestBuilder = require( '*/cartridge/scripts/payments/requestBuilder/additionalCustomerInfo' );
     var OptionsRequestBuilder = require( '*/cartridge/scripts/payments/requestBuilder/options' );
     var isOMSEnabled = require( '*/cartridge/scripts/util/klarnaHelper' ).isOMSEnabled();
-    var SubscriptionHelper = require( '*/cartridge/scripts/subscription/subscriptionHelper' );
+    var subscriptionHelper = require( '*/cartridge/scripts/subscription/subscriptionHelper' );
     var subscriptionHelperExtension = require( '*/cartridge/scripts/subscription/subscriptionHelperExtension' );
 
     /**
@@ -373,49 +373,8 @@
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildItems = function( items, subscription ) {
-        var i = 0;
-        var li = {};
-        var newItem = {};
-        var unsortedLineItems = [];
-        var sortedLineItems = [];
-        var hasLineItemSubscription = false;
-
-        while ( i < items.length ) {
-            li = items[i];
-            var isGiftCertificate = ( li.describe().getSystemAttributeDefinition( 'recipientEmail' ) && !empty( li.recipientEmail ) ) ? true : false;
-
-            // if the default line item taxation is used, we can send the adjusted prices separately
-            if ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' ) ) {
-                // Add product-specific shipping line adjustments
-                if ( !isOMSEnabled && !isGiftCertificate && !empty( li.shippingLineItem ) ) {
-                    this.addPriceAdjustments( li.shippingLineItem.priceAdjustments.toArray(), li.productID, null );
-                }
-
-                if ( !isOMSEnabled && !isGiftCertificate && !empty( li.priceAdjustments ) && li.priceAdjustments.length > 0 ) {
-                    this.addPriceAdjustments( li.priceAdjustments.toArray(), li.productID, li.optionID );
-                }
-            }
-
-            if ( isGiftCertificate ) {
-                newItem = this.buildGCItem( li );
-            } else {
-                newItem = this.buildItem( li );
-            }
-
-            var subscriptionObj = SubscriptionHelper.handleSubscription( li, subscription, hasLineItemSubscription );
-            newItem.subscription = subscriptionObj.subscription;
-            hasLineItemSubscription = subscriptionObj.hasLineItemSubscription;
-
-            // Push each line item to unsorted line item list
-            unsortedLineItems.push( newItem );
-
-            i += 1;
-        }
-
-        // Sort line items based on subscription interval, count and product price
-        sortedLineItems = SubscriptionHelper.sortSubscriptionItems ( unsortedLineItems, hasLineItemSubscription );
-
-        this.context.order_lines = sortedLineItems;
+        var requestBuilderHelper = require( '*/cartridge/scripts/util/requestBuilderHelper' );
+        this.context.order_lines = requestBuilderHelper.buildItems( items, subscription, null, this );
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildGCPaymentItems = function( items ) {
@@ -501,7 +460,7 @@
      * @returns {KlarnaPaymentsSessionRequestBuilder} - The instance of KlarnaPaymentsSessionRequestBuilder
      */
     KlarnaPaymentsSessionRequestBuilder.prototype.setPaymentIntent = function( basket ) {
-        var subscriptionData = SubscriptionHelper.getSubscriptionData( basket );
+        var subscriptionData = subscriptionHelper.getSubscriptionData( basket );
         var intent = subscriptionHelperExtension.getPaymentIntent( subscriptionData );
 
         this.context.intent = intent;

@@ -7,8 +7,13 @@ server.extend(page);
 var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
 var URLUtils = require('dw/web/URLUtils');
 var BasketMgr = require('dw/order/BasketMgr');
+var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
 
 server.prepend('Begin', function (req, res, next) {
+    if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
+        return next();
+    }
+
     var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var collections = require('*/cartridge/scripts/util/collections');
@@ -88,6 +93,10 @@ server.prepend('Begin', function (req, res, next) {
 });
 
 server.append('Begin', function (req, res, next) {
+    if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
+        return next();
+    }
+
     var currentBasket = BasketMgr.getCurrentBasket();
     var viewData = res.getViewData();
 

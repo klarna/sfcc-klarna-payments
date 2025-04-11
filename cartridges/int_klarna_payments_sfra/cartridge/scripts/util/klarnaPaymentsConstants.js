@@ -17,7 +17,7 @@ var KLARNA_PAYMENT_URLS = {
     SAVE_AUTH: 'KlarnaPayments-SaveAuth',
     LOAD_AUTH: 'KlarnaPayments-LoadAuth',
     SELECT_PAYMENT_METHOD: 'KlarnaPayments-SelectPaymentMethod',
-    CONFIRMATION: 'Order-Confirm',
+    CONFIRMATION: 'KlarnaPayments-ShowConfirmation',
     NOTIFICATION: 'KlarnaPayments-Notification',
     MINISUMMARY_UPDATE: '',
     BANK_TRANSFER_CALLBACK: 'KlarnaPayments-BankTransferCallback',
@@ -29,7 +29,8 @@ var KLARNA_PAYMENT_URLS = {
     GENERATE_EXPRESS_CHECKOUT_PAYLOAD: 'KlarnaPayments-GenerateExpressCheckoutPayload',
     HANDLE_AUTH_FAILURE_PDP: 'KlarnaPayments-HandleAuthFailure',
     KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SFRA: 'Checkout-Begin',
-    KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SG: 'COCustomer-Start'
+    KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SG: 'COCustomer-Start',
+    SAVE_INTEROPERABILITY_TOKEN: 'KlarnaPayments-SaveInteroperabilityToken'
 };
 
 var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 25.1.0';

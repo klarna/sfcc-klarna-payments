@@ -13,6 +13,8 @@ This release includes improvements to subscription handling, Klarna Express Chec
     * Improved handling of mixed carts containing subscription and standard products.
     * Klarna checkout now processes subscription orders correctly, including trial and non-trial periods.
     * Order sorting logic ensures the correct sequence for Klarna API calls.
+* Interoperability
+    * Interoperability feature is now available which enable customers integrating Klarna via PSPs to seamlessly transition across partnerships
 ### Fixes
 * Fixed an issue where Klarna orders were not completing at checkout.
 * Corrected intent mapping for subscription products to align with Klarna’s API.

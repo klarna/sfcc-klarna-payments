@@ -39,6 +39,11 @@ server.prepend(
     server.middleware.https,
     csrfProtection.validateAjaxRequest,
     function (req, res, next) {
+        var klarnaOSM = require('*/cartridge/scripts/marketing/klarnaOSM');
+        if (!klarnaOSM.isKlarnaSignInEnabled()) {
+            return next();
+        }
+
         var CustomerMgr = require('dw/customer/CustomerMgr');
         var Resource = require('dw/web/Resource');
         var signInHelper = require('*/cartridge/scripts/signin/klarnaSignIn');

@@ -2,25 +2,22 @@
 
 ## 25.1.0
 * This release includes improvements to subscription handling, Klarna Express Checkout (KEC), bug fixes, and technical updates to enhance stability and performance.
-### New Features
-* Subscriptions Handling
-    * Subscription selection is now available on product pages (PDP).
-    * Klarna Express Checkout (KEC) supports subscription products.
-    * Improved handling of mixed carts containing subscription and standard products.
-    * Klarna checkout now processes subscription orders correctly, including trial and non-trial periods.
-    * Order sorting logic ensures the correct sequence for Klarna API calls.
-* Interoperability
-    * Interoperability feature is now available which enable customers integrating Klarna via PSPs to seamlessly transition across partnerships
-### Fixes
-* Fixed an issue where Klarna orders were not completing at checkout.
-* Corrected intent mapping for subscription products to align with Klarna’s API.
-* Resolved an issue where some orders appeared as uncaptured in the Klarna merchant portal.
-* Removed hardcoded identifiers in Klarna Express Checkout, ensuring dynamic payment method retrieval.
-### Deprecations and Technical Changes
-* Updated API authentication for improved session handling and security.
-* Migrated Klarna SFCC jobs to the latest SFCC framework, replacing deprecated job scripts.
-* Hardcoded identifiers for Klarna Express Checkout (KEC) are no longer used and are now dynamically retrieved.
-* Optimized order processing logic for better performance and accuracy.
+### Improvements
+* Subscription Support Enhancements:
+    * Modified subscription order creation to improve order accuracy and reduce failures.
+    * Enhanced subscription handling on Product Detail Pages (PDP) for better clarity and user guidance.
+    * Improved subscription handling capabilities on the Cart Page, ensuring smoother cart interactions.
+    * Updated subscription integration in the Checkout Page, enhancing reliability, reducing errors, and   improving overall performance.
+* Updated the scope to customer:login to enhance user session management and security.
+* Klarna SFCC jobs are updated with the latest version of steptypes.json for improved workflow efficiency.
+* Removed hardcoded 'identifier' references in SFCC, increasing maintainability and reducing potential integration issues.
+* Performance improvements
+### Bug Fixes
+* Fixed an issue where Klarna Express Checkout (KEC) was failing to load.
+* Corrected a problem that prevented proper ordering of subscription products.
+* Fixed a display issue where "Intent" was incorrectly shown as "tokenize" for subscription orders.
+* Addressed issues with orders created via payloads appearing as uncaptured.
+* Fixed an issue where the order confirmation page was not displayed for subscription orders.
 
 ## 24.6.0
 * Auth callback feature for client-side calls to ensure that orders can still be placed even if there are frontend communication issues.

@@ -20,10 +20,11 @@ function applicablePaymentMethods(paymentMethods) {
     var result = new ArrayList();
     var iterator = paymentMethods.iterator();
     var method;
+    var isKlarnaIntegratedViaPSP = JSON.parse(KlarnaHelper.getKlarnaResources().KPPreferences).isKlarnaIntegratedViaPSP;
     while (iterator.hasNext()) {
         method = iterator.next();
         if (method.ID.indexOf(KLARNA_PAYMENT_DEFAULT) === -1 ||
-            (method.ID.indexOf(KLARNA_PAYMENT_DEFAULT) >= 0 && method.ID === KLARNA_PAYMENT_METHOD)) {
+            (method.ID.indexOf(KLARNA_PAYMENT_DEFAULT) >= 0 && method.ID === KLARNA_PAYMENT_METHOD && !isKlarnaIntegratedViaPSP)) {
             result.add({
                 ID: method.ID,
                 name: method.name

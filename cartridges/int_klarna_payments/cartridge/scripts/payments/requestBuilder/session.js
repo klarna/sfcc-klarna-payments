@@ -25,6 +25,8 @@
     var AdditionalCustomerInfoRequestBuilder = require( '*/cartridge/scripts/payments/requestBuilder/additionalCustomerInfo' );
     var OptionsRequestBuilder = require( '*/cartridge/scripts/payments/requestBuilder/options' );
     var isOMSEnabled = require( '*/cartridge/scripts/util/klarnaHelper' ).isOMSEnabled();
+    var subscriptionHelper = require( '*/cartridge/scripts/subscription/subscriptionHelper' );
+    var subscriptionHelperExtension = require( '*/cartridge/scripts/subscription/subscriptionHelperExtension' );
 
     /**
      * KP Session Request Builder
@@ -371,41 +373,8 @@
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildItems = function( items, subscription ) {
-        var i = 0;
-        var li = {};
-        var newItem = {};
-
-        while ( i < items.length ) {
-            li = items[i];
-            var isGiftCertificate = ( li.describe().getSystemAttributeDefinition( 'recipientEmail' ) && !empty( li.recipientEmail ) ) ? true : false;
-
-            // if the default line item taxation is used, we can send the adjusted prices separately
-            if ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' ) ) {
-                // Add product-specific shipping line adjustments
-                if ( !isOMSEnabled && !isGiftCertificate && !empty( li.shippingLineItem ) ) {
-                    this.addPriceAdjustments( li.shippingLineItem.priceAdjustments.toArray(), li.productID, null );
-                }
-
-                if ( !isOMSEnabled && !isGiftCertificate && !empty( li.priceAdjustments ) && li.priceAdjustments.length > 0 ) {
-                    this.addPriceAdjustments( li.priceAdjustments.toArray(), li.productID, li.optionID );
-                }
-            }
-
-            if ( isGiftCertificate ) {
-                newItem = this.buildGCItem( li );
-            } else {
-                newItem = this.buildItem( li );
-            }
-            
-            if (subscription) {
-                subscription.name = li.productName;
-                newItem.subscription = subscription;
-            }
-
-            this.context.order_lines.push( newItem );
-
-            i += 1;
-        }
+        var requestBuilderHelper = require( '*/cartridge/scripts/util/requestBuilderHelper' );
+        this.context.order_lines = requestBuilderHelper.buildItems( items, subscription, null, this );
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildGCPaymentItems = function( items ) {
@@ -478,18 +447,21 @@
         }
     };
 
+    /**
+     * Set the payment intent for the current KlarnaPaymentsSessionRequestBuilder instance based on the provided basket
+     * 
+     * This method checks if the basket contains subscription data and depending on whether the subscription includes a trial period,
+     * sets the payment intent to either 'tokenize' or 'buy_and_default_tokenize'
+     * 
+     * If the basket does not contain subscription data, the method sets the payment intent to a default value retrieved from the 
+     * `subscriptionHelperExtension.getPaymentIntent()` function
+     * 
+     * @param {Object} basket - The basket object containing the purchase or subscription information
+     * @returns {KlarnaPaymentsSessionRequestBuilder} - The instance of KlarnaPaymentsSessionRequestBuilder
+     */
     KlarnaPaymentsSessionRequestBuilder.prototype.setPaymentIntent = function( basket ) {
-        var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
-        var subscriptionData = SubscriptionHelper.getSubscriptionData(basket);
-        var intent = 'buy';
-
-        if (subscriptionData) {
-            if (subscriptionData.subscriptionTrialPeriod) {
-                intent = 'tokenize';
-            } else {
-                intent = 'buy_and_tokenize';
-            }
-        }
+        var subscriptionData = subscriptionHelper.getSubscriptionData( basket );
+        var intent = subscriptionHelperExtension.getPaymentIntent( subscriptionData );
 
         this.context.intent = intent;
 

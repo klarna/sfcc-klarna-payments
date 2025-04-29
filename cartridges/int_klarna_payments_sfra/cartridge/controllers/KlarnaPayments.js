@@ -514,7 +514,11 @@ server.post('HandleAuthorizationResult', function (req, res, next) {
         return next();
     }
 
-    var EXPRESS_CHECKOUT_CATEGORY = KlarnaHelper.getExpressKlarnaMethod().defaultMethod;
+    // For KEC, use the Klarna identifier provided by the authorize call
+    var expressKlarnaMethod = KlarnaHelper.getExpressKlarnaMethod(klarnaResponse.payment_method_categories);
+    session.privacy.KlarnaPaymentMethods = expressKlarnaMethod.paymentMethods;
+
+    var EXPRESS_CHECKOUT_CATEGORY = expressKlarnaMethod.defaultMethod;
     var PAYMENT_METHOD = KlarnaPaymentsConstants.PAYMENT_METHOD;
 
     var currentBasket = BasketMgr.getCurrentBasket();
@@ -790,6 +794,66 @@ server.get('HandleAuthFailure', function (req, res, next) {
         });
         Logger.error(e);
     }
+    return next();
+});
+
+/**
+ * Endpoint to retrieve the 'orderID' and 'orderToken' from the Klarna callback query string
+ * The values are then used to render a dynamic form with these values, which is automatically
+ * submitted to the SFRA 'Order-Confirm' endpoint. This ensures the 'orderID' and 'orderToken'
+ * are available in the 'req.form' object for further processing
+ */
+server.get('ShowConfirmation', server.middleware.https, function (req, res, next) {
+    var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+    if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
+        return next();
+    }
+
+    if (req.querystring.ID && req.querystring.token) {
+        res.render('checkout/confirmation/klarnaConfirmation', {
+            orderID: req.querystring.ID,
+            orderToken: req.querystring.token
+        });
+    }
+    return next();
+});
+
+/**
+ * Save interoperability token in plugin session
+ */
+server.post('SaveInteroperabilityToken', function (req, res, next) {
+    var Resource = require('dw/web/Resource');
+    var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+
+    try {
+        var isKlarnaIntegratedViaPSP = JSON.parse(KlarnaHelper.getKlarnaResources().KPPreferences).isKlarnaIntegratedViaPSP;
+
+        if (isKlarnaIntegratedViaPSP) {
+            var interoperabilityToken = req.httpParameterMap.interoperabilityToken;
+            var interoperabilityTokenValue = interoperabilityToken ? interoperabilityToken.value : null;
+
+            if (interoperabilityTokenValue) {
+                session.privacy.klarna_interoperability_token = interoperabilityTokenValue;
+                log.debug(Resource.msg('klarna.interoperability.token.saved', 'interoperability', null));
+                res.json({
+                    success: true,
+                    message: Resource.msg('klarna.interoperability.token.saved', 'interoperability', null)
+                });
+            } else {
+                throw new Error(Resource.msg('klarna.interoperability.token.missing', 'interoperability', null));
+            }
+        } else {
+            throw new Error(Resource.msg('klarna.interoperability.token.disabled', 'interoperability', null));
+        }
+    } catch (error) {
+        log.error('Error while saving interoperability token: ' + error.message);
+        res.setStatusCode(500);
+        res.json({
+            success: false,
+            message: error.message
+        });
+    }
+
     return next();
 });
 

@@ -27,6 +27,7 @@
     var discountTaxationMethod = require( '*/cartridge/scripts/util/klarnaHelper' ).getDiscountsTaxation();
     var getShippment = require( '*/cartridge/scripts/util/klarnaHelper' ).getShippment;
     var isOMSEnabled = require( '*/cartridge/scripts/util/klarnaHelper' ).isOMSEnabled();
+    var subscriptionHelperExtension = require( '*/cartridge/scripts/subscription/subscriptionHelperExtension' );
     /**
      * KP Order Request Builder
      * @return {void}
@@ -324,40 +325,8 @@
     };
 
     KlarnaPaymentsOrderRequestBuilder.prototype.buildItems = function( items, context, subscription ) {
-        var i = 0;
-        var li = {};
-        var item = {};
-
-        while ( i < items.length ) {
-            li = items[i];
-            var isGiftCertificate = ( li.describe().getSystemAttributeDefinition( 'recipientEmail' ) && !empty( li.recipientEmail ) ) ? true : false;
-
-            if ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' ) ) {
-                // Add product-specific shipping line adjustments
-                if ( !isOMSEnabled && !isGiftCertificate && !empty( li.shippingLineItem ) ) {
-                    this.addPriceAdjustments( li.shippingLineItem.priceAdjustments.toArray(), li.productID, null, context );
-                }
-
-                if ( !isOMSEnabled && !isGiftCertificate && !empty( li.priceAdjustments ) && li.priceAdjustments.length > 0 ) {
-                    this.addPriceAdjustments( li.priceAdjustments.toArray(), li.productID, li.optionID, context );
-                }
-            }
-
-            if ( isGiftCertificate ) {
-                item = this.buildGCItem( li );
-            } else {
-                item = this.buildItem( li );
-            }
-
-
-            if (subscription) {
-                subscription.name = li.productName;
-                item.subscription = subscription;
-            }
-            context.order_lines.push( item );
-
-            i += 1;
-        }
+        var requestBuilderHelper = require( '*/cartridge/scripts/util/requestBuilderHelper' );
+        context.order_lines = requestBuilderHelper.buildItems( items, subscription, context, this );
     };
 
     KlarnaPaymentsOrderRequestBuilder.prototype.buildGCPaymentItems = function( items, context ) {

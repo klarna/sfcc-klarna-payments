@@ -1,5 +1,6 @@
 <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 <isset name="klarnaKPEnabled" value="${KlarnaOSM.isKlarnaEnabled()}" scope="page" />
+<isset name="KlarnaHelper" value="${require('*/cartridge/scripts/util/klarnaHelper')}" scope="page" />
 
 <isif condition="${KlarnaOSM.isEnabled()}">
     <script async src="${KlarnaOSM.getScriptURL()}" data-client-id="${KlarnaOSM.getUCI()}"
@@ -7,4 +8,12 @@
 </isif>
 <isif condition="${KlarnaOSM.isKlarnaSignInEnabled()}">
     <script defer src="${KlarnaOSM.getKlarnaSignInScriptURL()}"></script>
+</isif>
+
+<isif condition="${JSON.parse(KlarnaHelper.getKlarnaResources().KPPreferences).isKlarnaIntegratedViaPSP}">
+    <script>
+        <isinclude template="/resources/klarnapaymentsresources.isml"/>
+    </script>
+    <script async src="${KlarnaOSM.getScriptURL()}" data-client-id="${KlarnaHelper.getKlarnaClientIdForInteroperability()}"></script>
+    <script defer="defer" src="${URLUtils.staticURL('js/klarnaInteroperability.js')}"></script>
 </isif>

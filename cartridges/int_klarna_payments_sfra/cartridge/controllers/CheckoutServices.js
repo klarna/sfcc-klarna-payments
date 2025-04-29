@@ -5,9 +5,15 @@
 var page = module.superModule;
 var server = require('server');
 
+var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+
 server.extend(page);
 
 server.prepend('Get', server.middleware.https, function (req, res, next) {
+    if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
+        return next();
+    }
+
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var BasketMgr = require('dw/order/BasketMgr');
     var currentBasket = BasketMgr.getCurrentBasket();
@@ -54,6 +60,9 @@ server.append(
         var StringUtils = require('dw/util/StringUtils');
         var URLUtils = require('dw/web/URLUtils');
         var Money = require('dw/value/Money');
+        if (!KlarnaUtils.isCurrentCountryKlarnaEnabled()) {
+            return next();
+        }
 
         var viewData = res.viewData;
         var klarnaForm = server.forms.getForm('klarna');
@@ -117,6 +126,10 @@ server.append(
 );
 
 server.prepend('PlaceOrder', function (req, res, next) {
+    if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
+        return next();
+    }
+
     // Store Klarna SessionID to the user's session on PlaceOrder
     try {
         var BasketMgr = require('dw/order/BasketMgr');
@@ -133,6 +146,11 @@ server.prepend('PlaceOrder', function (req, res, next) {
 });
 
 server.append('PlaceOrder', function (req, res, next) {
+    if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
+        return next();
+    }
+    var URLUtils = require('dw/web/URLUtils');
+    var KLARNA_PAYMENT_URLS = require('*/cartridge/scripts/util/klarnaPaymentsConstants').KLARNA_PAYMENT_URLS;
 
     //remove kpClientToken from order
     var OrderMgr = require('dw/order/OrderMgr');
@@ -144,6 +162,11 @@ server.append('PlaceOrder', function (req, res, next) {
             order.custom.kpClientToken = null;
         })
     }
+
+    // set KlarnaPayments-ShowConfirmation endpoint as the continue url to display order confirmation page
+    res.setViewData({
+        continueUrl: URLUtils.url(KLARNA_PAYMENT_URLS.CONFIRMATION).toString()
+    });
 
     var redirectURL = req.session.privacyCache.get('KlarnaPaymentsRedirectURL');
 

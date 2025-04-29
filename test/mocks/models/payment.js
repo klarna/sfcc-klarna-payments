@@ -2,14 +2,16 @@
 
 var proxyquire = require('proxyquire').noCallThru().noPreserveCache();
 var collections = require('../util/collections');
-
+var ArrayList = require('../dw.util.Collection');
 function proxyModel() {
     return proxyquire('../../../cartridges/int_klarna_payments_sfra/cartridge/models/payment', {
         '*/cartridge/scripts/util/collections': collections,
-        '*/cartridge/scripts/util/klarnaPaymentsConstants': require('../../../cartridges/int_klarna_payments_sfra/cartridge/scripts/util/klarnaPaymentsConstants'),
+        '*/cartridge/scripts/util/klarnaPaymentsConstants': require('../util/klarnaPaymentsConstants'),
+        '*/cartridge/scripts/util/klarnaHelper': require('../util/klarnaHelper'),
+        'dw/util/ArrayList': ArrayList,
         'dw/order/PaymentMgr': {
             getApplicablePaymentMethods: function () {
-                return [
+                return new ArrayList([
                     {
                         ID: 'GIFT_CERTIFICATE',
                         name: 'Gift Certificate'
@@ -18,12 +20,12 @@ function proxyModel() {
                         ID: 'CREDIT_CARD',
                         name: 'Credit Card'
                     }
-                ];
+                ]);
             },
             getPaymentMethod: function () {
                 return {
                     getApplicablePaymentCards: function () {
-                        return [
+                        return new ArrayList([
                             {
                                 cardType: 'Visa',
                                 name: 'Visa',
@@ -42,7 +44,7 @@ function proxyModel() {
                                 cardType: 'Discover',
                                 name: 'Discover'
                             }
-                        ];
+                        ]);
                     }
                 };
             },

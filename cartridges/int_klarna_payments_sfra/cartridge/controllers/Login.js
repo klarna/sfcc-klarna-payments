@@ -7,6 +7,7 @@ var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
 var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 var signInHelper = require('*/cartridge/scripts/signin/klarnaSignIn');
 var accountHelpers = require('*/cartridge/scripts/helpers/accountHelpers');
+var klarnaOSM = require('*/cartridge/scripts/marketing/klarnaOSM');
 
 var page = module.superModule; // inherits functionality
 server.extend(page);
@@ -23,6 +24,10 @@ server.extend(page);
  * @param {serverfunction} - get
  */
 server.post('KlarnaSignIn', server.middleware.https, consentTracking.consent, function (req, res, next) {
+    if (!klarnaOSM.isKlarnaSignInEnabled()) {
+        return next();
+    }
+
     var Resource = require('dw/web/Resource');
     var addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
 
@@ -90,6 +95,10 @@ server.post('KlarnaSignIn', server.middleware.https, consentTracking.consent, fu
 });
 
 server.append('Show', consentTracking.consent, server.middleware.https, csrfProtection.generateToken, function (req, res, next) {
+    if (!klarnaOSM.isKlarnaSignInEnabled()) {
+        return next();
+    }
+
     session.custom.siwk_locale = request.locale;
     var siwkError = request.httpParameterMap.siwkError.booleanValue;
     res.setViewData({

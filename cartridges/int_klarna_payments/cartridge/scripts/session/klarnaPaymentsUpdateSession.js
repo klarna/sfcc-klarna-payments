@@ -61,8 +61,7 @@ function _getRequestBody( basket, localeObject ) {
 function updateSession( klarnaSessionID, basket, localeObject ) {
     var Transaction = require( 'dw/system/Transaction' );
     var Site = require( 'dw/system/Site' );
-    var signInHelper = require('*/cartridge/scripts/signin/klarnaSignIn');
-    var CustomerMgr = require('dw/customer/CustomerMgr');
+    var requestBuilderHelper = require( '*/cartridge/scripts/util/requestBuilderHelper' );
     var response = null;
     var requestUrl = null;
     var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
@@ -70,20 +69,10 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
     try {
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody( basket, localeObject );
-        if (KlarnaOSM.isKlarnaSignInEnabled()) {
-            var customerProfile;
-            var getAccessToken;
-            Transaction.wrap (function () {
-                customerProfile = CustomerMgr.getExternallyAuthenticatedCustomerProfile( 'Klarna', basket.customer && basket.customer.profile && basket.customer.profile.email );
-                if( customerProfile && customerProfile.custom.kpRefreshToken && session.privacy.KlarnaSignedInCustomer ) {
-                    var refreshToken = customerProfile.custom.kpRefreshToken;
-                    getAccessToken = signInHelper.refreshCustomerSignInToken( refreshToken );
-                    customerProfile.custom.kpRefreshToken = getAccessToken && getAccessToken.refresh_token;
-                    session.privacy.klarnaSignInAccessToken = getAccessToken && getAccessToken.access_token ? getAccessToken.access_token : '';
-                    requestBody.customer ={klarna_access_token: getAccessToken && getAccessToken.access_token ? getAccessToken.access_token : ''};
-                }
-            });
-        }
+
+        // update session request with customer access token for customers using SIWK
+        requestBuilderHelper.buildCustomerForSIWKUsers( basket, requestBody );
+
         requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'updateSession' ), klarnaSessionID );
         var serviceID = klarnaApiContext.getFlowApiIds().get( 'updateSession' );
         // Update session

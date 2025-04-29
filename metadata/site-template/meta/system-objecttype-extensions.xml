@@ -819,6 +819,13 @@ Klarna payments is required to enable the additional solutions.</description>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
             </attribute-definition>
+			<attribute-definition attribute-id="kpIntegrationViaPSP">
+                <display-name xml:lang="x-default">Is Klarna integrated via a Payment Service Provider (PSP)</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
         </custom-attribute-definitions>
         <group-definitions>
             <attribute-group group-id="Klarna_Activation">
@@ -829,6 +836,7 @@ Klarna payments is required to enable the additional solutions.</description>
                 <attribute attribute-id="KP_Region"/>
                 <attribute attribute-id="KP_Market"/>
                 <attribute attribute-id="KP_environment"/>
+                <attribute attribute-id="kpIntegrationViaPSP"/>
             </attribute-group>
             <attribute-group group-id="Klarna_KP">
                 <display-name xml:lang="x-default">Klarna Payments</display-name>
@@ -1254,6 +1262,12 @@ Klarna payments is required to enable the additional solutions.</description>
 
     <type-extension type-id="Profile">
         <custom-attribute-definitions>
+            <attribute-definition attribute-id="klarnaSignInAccessToken">
+                <display-name xml:lang="x-default">klarna signin access token</display-name>
+                <type>password</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
             <attribute-definition attribute-id="kpSubscriptions">
                 <display-name xml:lang="x-default">Klarna Subscriptions</display-name>
                 <type>text</type>

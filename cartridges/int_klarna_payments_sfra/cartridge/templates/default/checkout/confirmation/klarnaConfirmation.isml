@@ -1,0 +1,16 @@
+<div>
+    <form method="post" id="showConfirmationForm" name="showConfirmationForm" action="${URLUtils.url('Order-Confirm')}">
+        <input type="hidden" id="orderID" name="orderID" value="${pdict.orderID}" />
+        <input type="hidden" id="orderToken" name="orderToken"value="${pdict.orderToken}" />
+    </form>
+
+    <script>
+        var orderID = document.getElementById('orderID').value;
+        var orderToken = document.getElementById('orderToken').value;
+
+        // submit form to Order-Confirm endpoint to process order id and token in req.form and display sfcc order confirmation page
+        if (orderID && orderToken) {
+            document.getElementById('showConfirmationForm').submit();
+        }
+    </script>
+</div>

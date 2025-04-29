@@ -20,6 +20,8 @@ var HookMgr = require('dw/system/HookMgr');
 var log = Logger.getLogger('KlarnaPayments');
 var PaymentTransaction = require('dw/order/PaymentTransaction');
 
+var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+var subscriptionHelperExtension = require('*/cartridge/scripts/subscription/subscriptionHelperExtension');
 var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');
 var klarnaSessionManager = new KlarnaSessionManager();
 
@@ -439,11 +441,41 @@ function handleKlarnaCustomerTokenCreated(order, paymentInstrument, kpOrderInfo)
         session.privacy.KlarnaPaymentsAuthorizationToken = '';
         session.privacy.KPAuthInfo = null;
         Transaction.wrap(function () {
-            order.custom.kpRedirectURL = URLUtils.url('Order-Confirm').toString();
+            order.custom.kpRedirectURL = URLUtils.url('KlarnaPayments-ShowConfirmation', 'ID', order.orderNo, 'token', order.orderToken).toString();
         });
     }
 
     return authorizationResult;
+}
+
+/**
+ * Creates a customer token for line item subscriptions using Klarna API.
+ * This function checks if the subscription data exists for the line item and ensures that
+ * there is no existing basket subscription. If conditions are met, it creates a customer token.
+ * If the subscription is a trial, it immediately handles the customer token creation; otherwise,
+ * it stores the token in the session for future use.
+ * @param {Object} order - The order object containing details about the customer’s purchase.
+ * @param {Object} subscriptionData - The subscription data for the order, which provides details about the subscription type.
+ * @param {Object} localeObject - An object containing locale information for the current order, used for localization.
+ * @param {Object} paymentInstrument - The payment instrument used for the transaction, which is needed for handling the customer token.
+ * @param {string} kpAuthorizationToken - The authorization token required for authenticating the Klarna API request.
+ * @returns {Object|null} - If token creation fails, an error result is returned. Otherwise, it modifies the session with the token and returns nothing.
+ *                          If the subscription is trial-based, the customer token is immediately processed.
+ */
+function createCustomerTokenForLineItemSubscription(order, localeObject, paymentInstrument, kpAuthorizationToken) {
+    var lineItemSubscriptionData = subscriptionHelperExtension.getLineItemSubscriptionData(order);
+
+    if (lineItemSubscriptionData && lineItemSubscriptionData.subscriptions.length > 0) {
+        var customerTokenResponseData = callKlarnaCreateCustomerTokenAPI(order, localeObject, kpAuthorizationToken);
+        if (!customerTokenResponseData) {
+            return generateErrorAuthResult();
+        }
+        if (lineItemSubscriptionData.hasTrialSubscriptionOnly) {
+            return handleKlarnaCustomerTokenCreated(order, paymentInstrument, customerTokenResponseData);
+        }
+        session.privacy.customer_token = customerTokenResponseData.token_id;
+    }
+    return null;
 }
 
 /**
@@ -474,21 +506,30 @@ function authorize(order, orderNo, paymentInstrument, isRecurringOrder) {
     }
 
     var localeObject = klarnaSessionManager.getLocale();
-    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
     var subscriptionData = SubscriptionHelper.getSubscriptionData(order);
     var apiResponseData;
+    var customerTokenResponseData;
+    // Start: Create customer token for existing basket subscription. To be removed when basket subscription feature deprecate
     if (subscriptionData && !isRecurringOrder) {
-        var customerTokenResponseData = callKlarnaCreateCustomerTokenAPI(order, localeObject);
+        customerTokenResponseData = callKlarnaCreateCustomerTokenAPI(order, localeObject);
         if (!customerTokenResponseData) {
             return generateErrorAuthResult();
         }
 
         if (subscriptionData.subscriptionTrialPeriod) {
             return handleKlarnaCustomerTokenCreated(order, paymentInstrument, customerTokenResponseData);
-        } else {
-            session.privacy.customer_token = customerTokenResponseData.token_id;
         }
+        session.privacy.customer_token = customerTokenResponseData.token_id;
     }
+    // End: Create customer token for existing basket subscription
+
+    // Start: Create customer token for new lineitem basket subscription
+    var result = createCustomerTokenForLineItemSubscription(order, localeObject, paymentInstrument);
+    if (result) {
+        return result;
+    }
+    // End: Create customer token for new lineitem basket subscription
+
     if (isRecurringOrder) {
         apiResponseData = callKlarnaCreateRecurringOrderAPI(order, localeObject);
     } else {
@@ -550,11 +591,13 @@ function bankTransferPlaceOrder(order, kpSessionId, kpAuthorizationToken) {
     var paymentInstrument = order.getPaymentInstruments(PAYMENT_METHOD)[0];
     var localeObject = klarnaSessionManager.getLocale();
     var result = null;
+    var customerTokenResponseData;
 
-    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
     var subscriptionData = SubscriptionHelper.getSubscriptionData(order);
+    
+    // Start: Create customer token for existing basket subscription. To be removed when basket subscription feature deprecate
     if (subscriptionData) {
-        var customerTokenResponseData = callKlarnaCreateCustomerTokenAPI(order, localeObject, kpAuthorizationToken);
+        customerTokenResponseData = callKlarnaCreateCustomerTokenAPI(order, localeObject, kpAuthorizationToken);
         if (!customerTokenResponseData) {
             return generateErrorAuthResult();
         }
@@ -565,6 +608,13 @@ function bankTransferPlaceOrder(order, kpSessionId, kpAuthorizationToken) {
             session.privacy.customer_token = customerTokenResponseData.token_id;
         }
     }
+    // End: Create customer token for existing basket subscription
+
+    // Start: Create customer token for new lineitem basket subscription
+    if (result === null) {
+        result = createCustomerTokenForLineItemSubscription(order, localeObject, paymentInstrument, kpAuthorizationToken);
+    }
+    // End: Create customer token for new lineitem basket subscription
 
     if (result === null) {
         var createOrderHelper = require('*/cartridge/scripts/order/klarnaPaymentsCreateOrder');

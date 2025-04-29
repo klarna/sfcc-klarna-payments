@@ -77,7 +77,8 @@ superMdl.getKlarnaResources = function () {
         handleExpressCheckoutAuth: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_EXPRESS_CHECKOUT_AUTH).toString(),
         expressCheckoutAuthCallback: URLUtils.https(KLARNA_PAYMENT_URLS.EXPRESS_CHECKOUT_AUTH_CALLBACK).toString(),
         generateExpressCheckoutPayload: URLUtils.https(KLARNA_PAYMENT_URLS.GENERATE_EXPRESS_CHECKOUT_PAYLOAD).toString(),
-        handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString()
+        handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString(),
+        saveInteroperabilityToken: URLUtils.https(KLARNA_PAYMENT_URLS.SAVE_INTEROPERABILITY_TOKEN).toString()
     };
 
     // klarna payments objects
@@ -124,7 +125,8 @@ superMdl.getKlarnaResources = function () {
         kpSignInButtonShape: KlarnaOSM.getKlarnaSignInButtonShape(),
         kpSignInButtonTheme: KlarnaOSM.getKlarnaSignInButtonTheme(),
         kpSignInButtonLogoAlignment: KlarnaOSM.getKlarnaSignInButtonLogoAlignment(),
-        kpSignInRedirectUri: KlarnaOSM.getKlarnaSignInRedirectURL()
+        kpSignInRedirectUri: KlarnaOSM.getKlarnaSignInRedirectURL(),
+        isKlarnaIntegratedViaPSP: currentSite.getCustomPreferenceValue('kpIntegrationViaPSP')
     };
 
     return {
@@ -216,5 +218,16 @@ superMdl.revertCurrentBasketProductData = function (currentBasket) {
 }
 
 superMdl.filterApplicableShippingMethods = filterApplicableShippingMethods;
+
+// Retrieves the Klarna Client ID for interoperability from the site preferences
+superMdl.getKlarnaClientIdForInteroperability = function () {
+    return currentSite.getCustomPreferenceValue('KP_client_id');
+};
+
+// Retrieves Klarna web sdk url
+superMdl.getKlarnaScriptURL = function () {
+    var KlarnaConstants = require('*/cartridge/scripts/util/klarnaPaymentsConstants');
+    return KlarnaConstants.KLARNA_LIBS_URLS.KLARNA_SCRIPT_URL;
+};
 
 module.exports = superMdl;

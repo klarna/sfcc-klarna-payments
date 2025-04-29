@@ -1,6 +1,7 @@
 'use strict';
 
 var DATE_PATTERN = 'yyyy-MM-dd';
+var Logger = require( 'dw/system/Logger' );
 
 /**
  * Build subscription data for checkout page
@@ -156,7 +157,6 @@ function isSubscriptionBasket(currentBasket) {
  */
 function calculateNextChargeDate(trialPeriod, subscriptionPeriod, subscriptionFrequency) {
     var Calendar = require('dw/util/Calendar');
-    var Logger = require('dw/system/Logger');
 
     var nextDate = new Calendar();
     try {
@@ -331,7 +331,6 @@ function createRecurringOrder(orderNo) {
     var HttpClient = require('dw/net/HTTPClient');
     var URLUtils = require('dw/web/URLUtils');
     var URLAction = require('dw/web/URLAction');
-    var Logger = require('dw/system/Logger');
 
     var httpClient = new HttpClient();
 
@@ -420,7 +419,6 @@ function payRecurringOrder(orderNo) {
     var HttpClient = require('dw/net/HTTPClient');
     var URLUtils = require('dw/web/URLUtils');
     var URLAction = require('dw/web/URLAction');
-    var Logger = require('dw/system/Logger');
 
     var httpClient = new HttpClient();
 

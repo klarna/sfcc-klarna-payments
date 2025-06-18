@@ -78,7 +78,7 @@
                         <isinclude template="cart/cartShippingMethodSelection" />
                     </div>
                     <isinclude template="cart/cartTotals" />
-                    <div class="row-12">
+                    <div class="row">
                         <isinclude template="klarnapayments/modules.isml" />
                         <div class="col-12 checkout-continue">
                             <div class="row-6">

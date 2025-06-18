@@ -290,6 +290,9 @@ var KlarnaOSM = {
         return !empty(currentSite.getCustomPreferenceValue('kec_enable')) ? (this.isKlarnaEnabled() && currentSite.getCustomPreferenceValue('kec_enable')) :
             (currentSite.getCustomPreferenceValue('kpECEnabled') || false);
     },
+    isKECSingleStepEnabled: function () {
+        return (this.isKlarnaEnabled() && currentSite.getCustomPreferenceValue('kec_enable') && currentSite.getCustomPreferenceValue('kpIntegrationViaPSP')) || false;
+    },
     showExpressCheckoutButton: function () {
         var showECButton = currentSite.getCustomPreferenceValue('kec_placement');
         var showECButtonObj = {

@@ -62,7 +62,10 @@ function buildItems( items, subscription, context, thisObj ) {
 
         // Handle subscription for the line item
         var subscriptionObj = subscriptionHelperExtension.handleSubscription( lineItem, subscription, hasLineItemSubscription );
-        builtItem.subscription = subscriptionObj.subscription;
+        
+        if ( subscriptionObj && subscriptionObj.subscription ) { 
+            builtItem.subscription = subscriptionObj.subscription;
+        }
         hasLineItemSubscription = subscriptionObj.hasLineItemSubscription;
 
         // Push each line item to unsorted line item list

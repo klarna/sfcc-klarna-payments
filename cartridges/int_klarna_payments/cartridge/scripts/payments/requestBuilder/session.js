@@ -472,7 +472,6 @@
         var basket = this.params.basket;
         var kpIsExpressCheckout = this.params.kpIsExpressCheckout || false;
         var preAssement = isEnabledPreassessmentForCountry( this.getLocaleObject().country );
-        var kpAttachmentsPreferenceValue = Site.getCurrent().getCustomPreferenceValue( 'kpEMD' ) ? Site.getCurrent().getCustomPreferenceValue( 'kpEMD' ) : Site.getCurrent().getCustomPreferenceValue( 'kpAttachments' );
 
         this.init( preAssement, kpIsExpressCheckout );
 
@@ -485,10 +484,6 @@
         if ( preAssement || kpIsExpressCheckout) {
             this.buildBilling( basket );
             this.buildShipping( basket );
-
-            if ( kpAttachmentsPreferenceValue ) {
-                this.buildAdditionalCustomerInfo( basket );
-            }
         }
 
         this.buildOrderLines( basket );

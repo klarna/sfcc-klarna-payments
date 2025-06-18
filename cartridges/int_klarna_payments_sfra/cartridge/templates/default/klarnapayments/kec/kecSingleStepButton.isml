@@ -1,0 +1,17 @@
+<!--- TEMPLATENAME: klarnapayments/kec/kecSingleStepButton.isml --->
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+
+<isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.isKECSingleStepEnabled()}">
+    <script type="module">
+        const { KlarnaSDK } = await import('https://js.klarna.com/web-sdk/v2/klarna.mjs'); 
+        var klarnaPreferences = window.KPPreferences;
+        var klarnaPaymentsUrls = window.KlarnaPaymentsUrls;
+        var klarnaPaymentsResources = window.KPResources;
+        var klarnaPaymentsConstants = window.KPConstants;
+        var kecPageName ='${kecPageName}';
+
+        const klarna = await KlarnaSDK({ clientId: klarnaPreferences.kpExpressCheckoutClientKey, locale: klarnaPreferences.kpLocale });
+        
+        document.body.dispatchEvent(new CustomEvent('init:KECSingleStep', { detail: { klarnaSDK: klarna, kecPageName: kecPageName }}));
+    </script>
+</isif>

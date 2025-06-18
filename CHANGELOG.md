@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 25.2.0
+* Added support for single-step Klarna Express Checkout using the new API version v2.
+* Send extra merchant data in the authorization request to Klarna.
+
 ## 25.1.0
 * This release includes improvements to subscription handling, Klarna Express Checkout (KEC), bug fixes, and technical updates to enhance stability and performance.
 ### Improvements

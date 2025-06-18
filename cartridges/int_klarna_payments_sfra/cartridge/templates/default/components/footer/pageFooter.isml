@@ -50,9 +50,15 @@
         <iskecminicart />
     </div>
     <script>
-            <isinclude template="/resources/klarnapaymentsresources.isml"/>
-        </script>
-    <script src="${URLUtils.staticURL('/js/klarnaExpressCheckout.js')}"></script>
+        <isinclude template="/resources/klarnapaymentsresources.isml"/>
+    </script>
+
+    <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.isKECSingleStepEnabled()}">
+        <script src="${URLUtils.staticURL('/js/kecSingleStep.js')}"></script>
+    <iselseif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && !KlarnaOSM.isKECSingleStepEnabled()}" />
+        <script src="${URLUtils.staticURL('/js/klarnaExpressCheckout.js')}"></script>
+    </isif>
+    
     <link rel="stylesheet" href="${URLUtils.staticURL('/css/klarnaExpress.css')}" />
     <script async src="${KlarnaOSM.getKlarnExpressCheckoutScriptURL()}"></script>
 </isif>

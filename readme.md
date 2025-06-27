@@ -5,8 +5,8 @@
 ## The latest version
 The latest version of this cartridge is 25.2.0.
 
-* Added support for single-step Klarna Express Checkout using the new API version v2.
-* Send extra merchant data in the authorization request to Klarna.
+* Updated EMD handling to support the Klarna Deals feature. The payment_history_full object is sent in the Authorization call. This moves EMD data from session/order creation to the Authorization phase.
+* Minor updates to Klarna Express Checkout to support broader API compatibility.
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/

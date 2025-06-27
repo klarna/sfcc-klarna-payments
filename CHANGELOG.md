@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 25.2.0
+* Updated EMD handling to support the Klarna Deals feature. The payment_history_full object is sent in the Authorization call. This moves EMD data from session/order creation to the Authorization phase.
+* Minor updates to Klarna Express Checkout to support broader API compatibility.
+
 ## 25.1.0
 * This release includes improvements to subscription handling, Klarna Express Checkout (KEC), bug fixes, and technical updates to enhance stability and performance.
 ### Improvements

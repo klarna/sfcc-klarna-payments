@@ -419,7 +419,6 @@
                 .buildOrderLines(order)
                 .buildTotalAmount(order)
                 .buildTotalTax(order)
-                .buildAdditionalCustomerInfo(order)
                 .buildOptions()
                 .buildMerchantInformation(order);
         }

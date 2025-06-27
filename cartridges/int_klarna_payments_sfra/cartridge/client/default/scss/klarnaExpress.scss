@@ -1,11 +1,13 @@
 klarna-express-button.klarna-express-btn-cart,
-.klarna-express-checkout-cart {
+.klarna-express-checkout-cart,
+.klarna-express-checkout-cart klarna-payment-button {
   width: 100% !important;
   height: 2.5rem !important;
   margin-bottom: 5px !important;
 }
 
-.klarna-express-checkout-pdp {
+.klarna-express-checkout-pdp,
+.klarna-express-checkout-pdp klarna-payment-button {
   width: 100% !important;
   height: 2.5rem !important;
   margin-top: 5px !important;

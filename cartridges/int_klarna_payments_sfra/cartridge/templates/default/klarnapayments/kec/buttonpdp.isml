@@ -4,6 +4,8 @@
 <isset name="product" value="${pdict.p_product}" scope="page" />
 
 <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.showExpressCheckoutButton().pdp}">
+<isset name="kecPageName" value="pdp" scope="page" />
+
     <isscript>
         var assets = require('*/cartridge/scripts/assets');
         assets.addJs('/js/klarnaExpressCheckoutPDP.js');
@@ -13,5 +15,6 @@
         <div id="klarnaExpressCheckoutPDP" data-subscriptiononly="${product.isSubscriptionOnly}"
             class="klarna-express-checkout-pdp" ${(!product.readyToOrder || !product.available) ? "disabled" : ""}>
         </div>
+        <isinclude template="klarnapayments/kec/kecSingleStepButton" />
     </div>
 </isif>

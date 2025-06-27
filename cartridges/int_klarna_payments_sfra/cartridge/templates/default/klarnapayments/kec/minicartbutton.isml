@@ -2,5 +2,7 @@
 <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
 <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled()}">
+    <isset name="kecPageName" value="minicart" scope="page" />
     <div id="klarnaExpressCheckoutMC" class="klarna-express-mini-cart"></div>
+    <isinclude template="klarnapayments/kec/kecSingleStepButton" />
 </isif>

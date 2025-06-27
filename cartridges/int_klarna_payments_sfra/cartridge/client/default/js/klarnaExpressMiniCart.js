@@ -14,6 +14,10 @@ var miniCartKEC = document.querySelector("#slotMiniCartKEC");
 if (miniCartKEC) {
     var originalKEC = document.querySelector("#miniCartKEC .klarna-express-mini-cart");
 
+    if (originalKEC && !originalKEC.shadowRoot) {
+        // KEC single step button is added as a child of klarna-express-mini-cart element
+        originalKEC = originalKEC.firstChild;
+    }
     if (originalKEC && originalKEC.shadowRoot) {
         var clonedKEC = cloneShadow(originalKEC.shadowRoot);
         var clonedButton = clonedKEC.querySelector("button");

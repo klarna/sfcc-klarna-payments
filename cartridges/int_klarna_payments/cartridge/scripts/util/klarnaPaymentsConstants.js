@@ -111,7 +111,7 @@ var KLARNA_EXPRESS_CATEGORY_CONTENT = {
 
 var SIGN_IN_DEFAULT_SCOPE = 'openid offline_access customer:login ';
 
-var SERVICE_HEADER = 'SFCC SG Version: ' + dw.web.Resource.msg('revisioninfo.revisionnumber', 'revisioninfo', 'Not found') + ' | Klarna Payments 25.1.0';
+var SERVICE_HEADER = 'SFCC SG Version: ' + dw.web.Resource.msg('revisioninfo.revisionnumber', 'revisioninfo', 'Not found') + ' | Klarna Payments 25.2.0';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.PAYMENT_METHOD = PAYMENT_METHOD;

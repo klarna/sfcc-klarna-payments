@@ -662,7 +662,9 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
     var URLUtils = require('dw/web/URLUtils');
     var localeObject = KlarnaHelper.getLocale();
     var isPDP = request.httpParameterMap.isPDP.value === 'true';
+    var isKECSingleStep = request.httpParameterMap.isKECSingleStep.value === 'true';
     var currentBasket;
+    var form;
 
     if (isPDP) {
         currentBasket = BasketMgr.getCurrentOrNewBasket();
@@ -675,16 +677,30 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
             });
         }
 
-        var form = req.form;
-        var productId = req.form.pid;
-        var childProducts = Object.hasOwnProperty.call(req.form, 'childProducts')
-            ? JSON.parse(req.form.childProducts)
-            : [];
-        var options = req.form.options ? JSON.parse(req.form.options) : [];
-        var quantity = parseInt(req.form.quantity, 10);
+        try {
+            if (isKECSingleStep) {
+                form = JSON.parse(req.body);
+            } else {
+                form = req.form;
+            }
+
+            var productId = form.pid;
+            var childProducts = Object.hasOwnProperty.call(form, 'childProducts')
+                ? JSON.parse(form.childProducts)
+                : [];
+            var options = form.options ? JSON.parse(form.options) : [];
+            var quantity = parseInt(form.quantity, 10);
+        } catch (e) {
+            log.error('Error parsing form data: ' + e.message);
+            res.json({
+                success: false
+            });
+
+            return next();
+        }
 
         Transaction.wrap(function () {
-            if (!req.form.pidsObj) {
+            if (!form.pidsObj) {
                 var result = cartHelper.addProductToCart(
                     currentBasket,
                     productId,
@@ -694,7 +710,7 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
                 );
             } else {
                 // product set
-                pidsObj = JSON.parse(req.form.pidsObj);
+                pidsObj = JSON.parse(form.pidsObj);
                 result = {
                     error: false,
                     message: Resource.msg('text.alert.addedtobasket', 'product', null)
@@ -754,7 +770,12 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
         return next();
     }
 
-    var sessionBuilder = require('*/cartridge/scripts/payments/requestBuilder/session');
+    var sessionBuilder;
+    if (isKECSingleStep) {
+        sessionBuilder = require('*/cartridge/scripts/payments/requestBuilder/kec');
+    } else {
+        sessionBuilder = require('*/cartridge/scripts/payments/requestBuilder/session');
+    }
     var sessionRequestBuilder = new sessionBuilder();
     var populateAddress = request.httpParameterMap.populateAddress.value || 'false';
 
@@ -765,6 +786,19 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
     });
 
     var requestBody = sessionRequestBuilder.build();
+
+    // Klarna customer information
+    var kpCustomerInfo = null;
+    try {
+        kpCustomerInfo = JSON.parse(KlarnaHelper.getKlarnaResources().KPCustomerInfo);
+    } catch (e) {
+        log.error('Error parsing KPCustomerInfo: ' + e);
+    }
+
+    if (kpCustomerInfo && kpCustomerInfo.attachment) {
+        requestBody.attachment = kpCustomerInfo.attachment;
+    }
+
     res.json({
         success: true,
         payload: requestBody

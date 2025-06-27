@@ -90,9 +90,10 @@ superMdl.getKlarnaResources = function () {
     };
 
     // klarna customer information
-    var KPCustomerInfo = {
-        attachment: currentBasket ? additionalCustomerInfoRequestBuilder.build(currentBasket) : {}
-    };
+    var KPCustomerInfo = {};
+    if (currentSite.getCustomPreferenceValue('kpEMD')) {
+        KPCustomerInfo.attachment = currentBasket ? additionalCustomerInfoRequestBuilder.build(currentBasket) : {};
+    }
 
     //klarna payment resource messages
     var KPResources = {

@@ -9,6 +9,10 @@ var CONTENT_TYPE = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' )
 var SHIPPING_METHOD_TYPE = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).SHIPPING_METHOD_TYPE;
 var SHIPPING_TYPE = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).SHIPPING_TYPE;
 
+var OrderMgr = require( 'dw/order/OrderMgr' );
+var Order = require( 'dw/order/Order' );
+var Logger = require( 'dw/system/Logger' ).getLogger( 'KlarnaPayments' );
+
 /**
  * KP Order Line Item Builder
  * @returns {void}
@@ -37,6 +41,18 @@ AdditionalCustomerInfo.prototype.buildAdditionalCustomerPaymentHistory = functio
         if (!empty(customer.activeData.lastOrderDate)) {
             paymentHistoryFull[0].date_of_last_paid_purchase = customer.activeData.lastOrderDate.toISOString().slice( 0, -5 ) + 'Z';
         }
+    }
+
+    try {
+        if ( customer && customer.profile ) {
+            var searchOrderQuery = 'customerNo = {0} AND custom.klarna_oms__kpOrderID != {1} AND (status = {2} or status = {3}) AND confirmationStatus = {4}';
+            var order = OrderMgr.searchOrders( searchOrderQuery, 'creationDate', customer.profile.customerNo, null, Order.ORDER_STATUS_NEW, Order.ORDER_STATUS_OPEN, Order.CONFIRMATION_STATUS_CONFIRMED ).first();
+            if ( order ) {
+                paymentHistoryFull[0].date_of_first_paid_purchase = order.creationDate.toISOString().slice( 0, -5 ) + 'Z';
+            }
+        }
+    } catch ( e ) {
+        Logger.error( e );
     }
 
     return paymentHistoryFull;

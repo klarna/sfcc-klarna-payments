@@ -3,7 +3,9 @@
 <isset name="contId" value="${!empty(pdict.container_id) ? pdict.container_id : 'klarnaExpressCheckout'}"
     scope="page" />
 <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.showExpressCheckoutButton().cart}">
+    <isset name="kecPageName" value="cart" scope="page" />
     <div class="kec-cart kec-container-cart" data-cont-id="${contId}">
         <div id="${contId}" class="klarna-express-checkout-cart"></div>
     </div>
+    <isinclude template="klarnapayments/kec/kecSingleStepButton" />
 </isif>

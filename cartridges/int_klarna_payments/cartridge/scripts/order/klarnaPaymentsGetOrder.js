@@ -47,13 +47,14 @@ function getKlarnaOrder( klarnaPaymentsOrderID , localeObject ) {
     var klarnaApiContext = {};
     var klarnaOrderID = klarnaPaymentsOrderID;
     var requestUrl = '';
+    var serviceID;
 
     try {
         klarnaHttpService = new KlarnaPayments.httpService();
         klarnaApiContext = new KlarnaPayments.apiContext();
         requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'getOrder' ), klarnaOrderID );
-
-        return klarnaHttpService.call( requestUrl, 'GET', localeObject.custom.credentialID );
+        serviceID = klarnaApiContext.getFlowApiIds().get( 'getOrder' );
+        return klarnaHttpService.call( serviceID, requestUrl, 'GET', localeObject.custom.credentialID );
     } catch( e ) {
         logger.error( 'Error while retrieving order: {0}', e );
     }

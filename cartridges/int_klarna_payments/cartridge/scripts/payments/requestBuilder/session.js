@@ -6,6 +6,7 @@
     var Site = require( 'dw/system/Site' );
     var Logger = require( 'dw/system/Logger' );
     var log = Logger.getLogger( 'KlarnaPayments' );
+    var Money = require( 'dw/value/Money' );
 
     var Builder = require( '*/cartridge/scripts/payments/builder' );
     var KlarnaPaymentsSessionModel = require( '*/cartridge/scripts/payments/model/request/session' ).KlarnaPaymentsSessionModel;
@@ -268,24 +269,26 @@
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.getGiftCertificateAmount = function( basket ) {
+        var currencyCode = basket.getCurrencyCode();
         var giftCertificatePIs = basket.getGiftCertificatePaymentInstruments().toArray();
-        var gcTotalAmount = 0;
+        var gcTotalAmount = new Money( 0, currencyCode );
 
         if ( giftCertificatePIs.length > 0 ) {
             for ( var i = 0; i < giftCertificatePIs.length; i++ ) {
-                gcTotalAmount += giftCertificatePIs[i].getPaymentTransaction().getAmount() * 100;
+                gcTotalAmount = gcTotalAmount.add( new Money( giftCertificatePIs[i].getPaymentTransaction().getAmount() * 100, currencyCode ) );
             }
         }
 
-        return gcTotalAmount;
+        return gcTotalAmount.getValue();
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildTotalAmount = function( basket ) {
-        var orderAmount = this.getOrderAmount( basket );
-        var giftCertificateAmount = this.getGiftCertificateAmount( basket );
-        var totalAmount = orderAmount - giftCertificateAmount;
+        var currencyCode = basket.getCurrencyCode();
+        var orderAmount = new Money( this.getOrderAmount( basket ), currencyCode );
+        var giftCertificateAmount = new Money( this.getGiftCertificateAmount( basket ), currencyCode );
+        var totalAmount = orderAmount.subtract( giftCertificateAmount ).getValue();
 
-        this.context.order_amount = Math.round( totalAmount );
+        this.context.order_amount = totalAmount;
 
         // Set order discount line items
         if ( !isOMSEnabled && ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' ) ) ) {
@@ -299,7 +302,7 @@
         var totalTax = basket.totalTax.value * 100;
         var salesTaxItem = {};
 
-        this.context.order_tax_amount = Math.round( totalTax );
+        this.context.order_tax_amount = totalTax;
 
         if ( isTaxationPolicyNet() ) {
             salesTaxItem = this.getSalesTaxRequestBuilder().build( basket );
@@ -341,22 +344,28 @@
         return this;
     };
 
-    KlarnaPaymentsSessionRequestBuilder.prototype.validateBuildAmounts = function() {
-        var orderAmount = this.context.order_amount;
-        var orderTaxAmount = this.context.order_tax_amount;
+    KlarnaPaymentsSessionRequestBuilder.prototype.validateBuildAmounts = function( basket ) {
+        var currencyCode = basket.getCurrencyCode();
+        var orderAmount = new Money( this.context.order_amount, currencyCode );
+        var orderTaxAmount = new Money( this.context.order_tax_amount, currencyCode );
         var orderLines = this.context.order_lines;
-        var orderLinesTotals = 0;
+        var orderLinesTotals = new Money( 0, currencyCode );
         // Calculate total amount without tax
         for ( var i = 0; i < orderLines.length; i++ ) {
-            orderLinesTotals += orderLines[i].total_amount;
+            orderLinesTotals = orderLinesTotals.add( new Money( orderLines[i].total_amount, currencyCode ) );
         }
 
         // Check if total amount is equal to order amount incl. tax
-        if ( orderAmount !== orderLinesTotals ) {
+        if ( orderAmount.getValue() !== orderLinesTotals.getValue() ) {
             Logger.error( 'KlarnaPaymentsSessionRequestBuilder.validateBuildAmounts: Order amount or tax amount DO NOT match.' );
             // Otherwise, adjust order amount and tax amount
-            this.context.order_tax_amount = this.context.order_tax_amount + ( orderAmount - orderLinesTotals );
-            this.context.order_amount = orderLinesTotals;
+            this.context.order_tax_amount = orderTaxAmount.add( orderAmount.subtract( orderLinesTotals ) ).getValue();
+            this.context.order_amount = orderLinesTotals.getValue();
+        }
+
+        if ( this.context.order_tax_amount < 0 ) {
+            Logger.info( 'Adjusting the tax amount to 0 as the calculated tax is negative' );
+            this.context.order_tax_amount = 0;
         }
     };
 
@@ -374,7 +383,10 @@
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildItems = function( items, subscription ) {
         var requestBuilderHelper = require( '*/cartridge/scripts/util/requestBuilderHelper' );
-        this.context.order_lines = requestBuilderHelper.buildItems( items, subscription, null, this );
+        var builtItems = requestBuilderHelper.buildItems( items, subscription, null, this );
+        Object.keys( builtItems ).forEach( function( key ) {
+            this.context.order_lines.push( builtItems[key] );
+        }, this );
     };
 
     KlarnaPaymentsSessionRequestBuilder.prototype.buildGCPaymentItems = function( items ) {
@@ -492,7 +504,7 @@
         this.buildOptions();
 
         // Validate the built data using the context and line items
-        this.validateBuildAmounts();
+        this.validateBuildAmounts( basket );
 
         return this.context;
     };

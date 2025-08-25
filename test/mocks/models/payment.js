@@ -19,6 +19,14 @@ function proxyModel() {
                     {
                         ID: 'CREDIT_CARD',
                         name: 'Credit Card'
+                    },
+                    {
+                        ID: 'KLARNA_PAYMENTS',
+                        name: 'Klarna Payments'
+                    },
+                    {
+                        ID: 'NOT_APPLICABLE_KLARNA_PAYMENTS',
+                        name: 'Not Applicable Klarna Payments'
                     }
                 ]);
             },

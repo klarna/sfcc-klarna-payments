@@ -62,11 +62,11 @@ PriceAdjustment.prototype.getPriceAdjustmentMerchantData = function( adj ) {
 };
 
 PriceAdjustment.prototype.getPriceAdjustmentTaxRate = function( adj ) {
-    return ( isTaxationPolicyNet() ) ? 0 : Math.round( adj.taxRate * 10000 );
+    return isTaxationPolicyNet() ? 0 : adj.taxRate * 10000;
 };
 
 PriceAdjustment.prototype.getPriceAdjustmentTotalTaxAmount = function( adj ) {
-    return ( isTaxationPolicyNet() ) ? 0 : Math.round( adj.tax.value * 100 );
+    return isTaxationPolicyNet() ? 0 : adj.tax.value * 100;
 };
 
 PriceAdjustment.prototype.getPriceAdjustmentUnitPrice = function( adj ) {
@@ -74,7 +74,7 @@ PriceAdjustment.prototype.getPriceAdjustmentUnitPrice = function( adj ) {
 };
 
 PriceAdjustment.prototype.build = function( adj ) {
-    var adjusmentPrice = Math.round( this.getPriceAdjustmentUnitPrice( adj ) );
+    var adjusmentPrice = this.getPriceAdjustmentUnitPrice( adj );
 
     this.adjustment = new LineItem();
     this.adjustment.quantity = 1;

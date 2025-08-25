@@ -96,4 +96,8 @@ common.subscriptionPayload = {
 };
 common.customerToken = '0a65cbb6-abaf-4c34-8bf0-d0dca0ca6061';
 
+common.klarnaOrderId = '03975aa5-51c0-4718-9913-04611e474ea8';
+common.subscriptionField = 'kpSubscriptionFrequency';
+common.subscriptionFieldValue = '1';
+
 module.exports = common;

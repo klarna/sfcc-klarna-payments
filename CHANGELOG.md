@@ -1,5 +1,10 @@
 # CHANGELOG
 
+## 25.3.0
+* Updated sales tax amount to be zero if the tax mount results in a negative value in the API request payload. Negative salesTax values only arise from discount or credit adjustments, never from system errors.
+* Updates based on review comments from last release. Mainly to remove the usage of Maths.round fuction which rounded of some amounts, renamed some fucntions for better clarity etc.
+* Updates on some unit and integration test suites.
+
 ## 25.2.0
 * Updated EMD handling to support the Klarna Deals feature. The payment_history_full object is sent in the Authorization call. This moves EMD data from session/order creation to the Authorization phase.
 * Minor updates to Klarna Express Checkout to support broader API compatibility.

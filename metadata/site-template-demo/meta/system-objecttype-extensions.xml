@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<metadata xmlns="http://www.demandware.com/xml/impex/metadata/2006-10-31">
+    <type-extension type-id="ProductLineItem">
+        <custom-attribute-definitions>
+            <attribute-definition attribute-id="kpSubscriptionDemo">
+                <display-name xml:lang="x-default">Klarna Subscription Demo</display-name>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>true</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSubscriptionFrequencyDemo">
+                <display-name xml:lang="x-default">Klarna Subscription Frequency Demo</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpSubscriptionPeriodDemo">
+                <display-name xml:lang="x-default">Klarna Subscription Period Demo</display-name>
+                <type>string</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="kpTrialDaysUsageDemo">
+                <display-name xml:lang="x-default">Klarna Trial Days Usage Demo</display-name>
+                <type>int</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </custom-attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="custom">
+                <display-name xml:lang="x-default">Custom</display-name>
+                <attribute attribute-id="klarna_oms__lineItemJSON"/>
+				<attribute attribute-id="kpSubscription"/>
+				<attribute attribute-id="kpSubscriptionDemo"/>
+            </attribute-group>
+        </group-definitions>
+    </type-extension>
+</metadata>

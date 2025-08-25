@@ -1,7 +1,7 @@
 {
   "init": [],
   "name": "klarna",
-  "version": "25.2.0",
+  "version": "25.3.0",
   "description": "Salesforce Commerce Cloud | Klarna Payment Integration",
   "main": "Gruntfile.js",
   "dependencies": {
@@ -29,6 +29,7 @@
   },
   "scripts": {
     "test": "sgmf-scripts --test test/unit/**/*.js",
+    "cover": "sgmf-scripts --cover 'test/unit'",
     "test:integration": "sgmf-scripts --integration 'test/integration/**/*.js'",
     "compile:scss": "sgmf-scripts --compile css",
     "compile:js": "sgmf-scripts --compile js",
@@ -70,5 +71,8 @@
   "packageName": "int_klarna_payments_sfra",
   "paths": {
     "base": "../storefront-reference-architecture/cartridges/app_storefront_base/"
+  },
+  "devDependencies": {
+    "sinon": "^21.0.0"
   }
 }

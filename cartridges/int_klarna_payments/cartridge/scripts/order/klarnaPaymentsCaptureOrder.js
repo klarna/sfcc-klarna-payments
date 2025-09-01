@@ -79,8 +79,10 @@ function getPaymentInstrumentAmount( dwOrder ) {
  * @returns {void}
  */
 function handleAutoCapture( dwOrder, kpOrderId, localeObject ) {
+    var Money = require( 'dw/value/Money' );
+    var currencyCode = dwOrder.getCurrencyCode();
     var captureData = {
-        amount: Math.round( getPaymentInstrumentAmount( dwOrder ).getValue() * 100 )
+        amount: new Money( ( getPaymentInstrumentAmount( dwOrder ).getValue() * 100 ), currencyCode ).getValue()
     };
 
     try {

@@ -25,11 +25,11 @@ GiftCertificateLineItem.prototype.getItemPrice = function( li ) {
 };
 
 GiftCertificateLineItem.prototype.getItemTaxRate = function( li ) {
-    return ( isTaxationPolicyNet() ) ? 0 : Math.round( li.taxRate * 10000 );
+    return isTaxationPolicyNet() ? 0 : li.taxRate * 10000;
 };
 
 GiftCertificateLineItem.prototype.getItemTaxAmount = function( li ) {
-    return ( isTaxationPolicyNet() ) ? 0 : Math.round( li.tax.value * 100 );
+    return isTaxationPolicyNet() ? 0 : li.tax.value * 100;
 };
 
 GiftCertificateLineItem.prototype.build = function( li ) {
@@ -41,9 +41,9 @@ GiftCertificateLineItem.prototype.build = function( li ) {
     this.item.reference = li.getGiftCertificateID();
     this.item.quantity = quantity;
     this.item.name = 'Gift Certificate';
-    this.item.unit_price = Math.round( itemPrice );
+    this.item.unit_price = itemPrice;
     this.item.tax_rate = this.getItemTaxRate( li );
-    this.item.total_amount = Math.round( itemPrice );
+    this.item.total_amount = itemPrice;
     this.item.total_tax_amount = this.getItemTaxAmount( li );
 
     return this.item;

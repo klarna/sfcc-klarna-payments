@@ -5,6 +5,7 @@ var Transaction = require( 'dw/system/Transaction' );
 
 var TaxMgr = require( 'dw/order/TaxMgr' );
 var ShippingLocation = require( 'dw/order/ShippingLocation' );
+var Money = require( 'dw/value/Money' );
 
 var Builder = require( '*/cartridge/scripts/payments/builder' );
 var LineItem = require( '*/cartridge/scripts/payments/model/request/session' ).LineItem;
@@ -37,7 +38,7 @@ ShipmentItem.prototype.getAddressRequestBuilder = function() {
     return this.addressRequestBuilder;
 };
 ShipmentItem.prototype.calculateShippingTotalTaxAmount = function( shipment ) {
-    return ( isTaxationPolicyNet() ) ? 0 : Math.round( shipment.shippingTotalTax.value * 100 );
+    return isTaxationPolicyNet() ? 0 : shipment.shippingTotalTax.value * 100;
 };
 
 ShipmentItem.prototype.getShipmentTaxRate = function( shipment ) {
@@ -100,8 +101,8 @@ ShipmentItem.prototype.buildMerchantData = function( shipment ) {
 
 ShipmentItem.prototype.build = function( shipment ) {
     var shipmentTaxRate = this.getShipmentTaxRate( shipment );
-    var shipmentUnitPrice = Math.round( this.getShipmentUnitPrice( shipment ) );
-    var shipmentAdjustedPrice = Math.round( this.getShipmentAdjustedPrice( shipment ) );
+    var shipmentUnitPrice = this.getShipmentUnitPrice( shipment );
+    var shipmentAdjustedPrice = this.getShipmentAdjustedPrice( shipment );
 
     this.item = new LineItem();
     this.item.quantity = 1;
@@ -109,12 +110,14 @@ ShipmentItem.prototype.build = function( shipment ) {
     this.item.name = shipment.shippingMethod.displayName;
     this.item.reference = shipment.shippingMethod.ID;
     this.item.unit_price = shipmentUnitPrice;
-    this.item.tax_rate = Math.round( shipmentTaxRate );
+    this.item.tax_rate = shipmentTaxRate;
     this.item.total_amount = isOMSEnabled || ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' ) ? shipmentAdjustedPrice : shipmentUnitPrice;
 
     if ( isOMSEnabled || ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' && shipmentUnitPrice !== shipmentAdjustedPrice ) ) {
-        var discountAmount = shipmentUnitPrice - shipmentAdjustedPrice;
-        this.item.total_discount_amount = Math.round( discountAmount );
+        var currencyCode = shipment.getShippingTotalPrice().getCurrencyCode();
+        var shipmentUnitPriceMoney = new Money( shipmentUnitPrice, currencyCode );
+        var shipmentAdjustedPriceMoney = new Money( shipmentAdjustedPrice, currencyCode );
+        this.item.total_discount_amount = ( shipmentUnitPriceMoney.subtract( shipmentAdjustedPriceMoney ).getValue() );
     }
 
     if ( this.isMerchantDataAvailable && !empty( shipment.shippingAddress ) ) {

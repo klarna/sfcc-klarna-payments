@@ -22,7 +22,7 @@ SalesTax.prototype = new Builder();
  * @return {dw.order.LineItem} Sales tax line item
  */
 SalesTax.prototype.build = function( lineItemCtnr ) {
-    var usTotalTax = Math.round( ( lineItemCtnr.totalTax.available ) ? lineItemCtnr.totalTax.value * 100 : 0 );
+    var usTotalTax = lineItemCtnr.totalTax.available ? lineItemCtnr.totalTax.value * 100 : 0;
 
     this.item = new LineItem();
     this.item.quantity = 1;

@@ -232,7 +232,7 @@ var KlarnaOSM = {
      * @return {number} formatted amount
      */
     formatPurchaseAmount: function (price) {
-        var formattedAmount = Math.round(price.value * 100);
+        var formattedAmount = price.value * 100;
 
         return formattedAmount;
     },

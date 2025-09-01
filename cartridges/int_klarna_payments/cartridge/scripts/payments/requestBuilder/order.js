@@ -6,6 +6,7 @@
     var URLUtils = require( 'dw/web/URLUtils' );
     var Site = require( 'dw/system/Site' );
     var Logger = require( 'dw/system/Logger' );
+    var Money = require( 'dw/value/Money' );
 
     var log = Logger.getLogger( 'KlarnaPayments' );
 
@@ -227,24 +228,26 @@
     };
 
     KlarnaPaymentsOrderRequestBuilder.prototype.getGiftCertificateAmount = function( order ) {
+        var currencyCode = order.getCurrencyCode();
         var giftCertificatePIs = order.getGiftCertificatePaymentInstruments().toArray();
-        var gcTotalAmount = 0;
+        var gcTotalAmount = new Money( 0, currencyCode );
 
         if ( giftCertificatePIs.length > 0 ) {
             for ( var i = 0; i < giftCertificatePIs.length; i++ ) {
-                gcTotalAmount += giftCertificatePIs[i].getPaymentTransaction().getAmount() * 100;
+                gcTotalAmount = gcTotalAmount.add( new Money( giftCertificatePIs[i].getPaymentTransaction().getAmount() * 100, currencyCode ) );
             }
         }
 
-        return gcTotalAmount;
+        return gcTotalAmount.getValue();
     };
 
     KlarnaPaymentsOrderRequestBuilder.prototype.buildTotalAmount = function( order ) {
-        var orderAmount = this.getOrderAmount( order );
-        var giftCertificateAmount = this.getGiftCertificateAmount( order );
-        var totalAmount = orderAmount - giftCertificateAmount;
+        var currencyCode = order.getCurrencyCode();
+        var orderAmount = new Money( this.getOrderAmount( order ), currencyCode );
+        var giftCertificateAmount = new Money( this.getGiftCertificateAmount( order ), currencyCode );
+        var totalAmount = orderAmount.subtract( giftCertificateAmount ).getValue();
 
-        this.context.order_amount = Math.round( totalAmount );
+        this.context.order_amount = totalAmount;
 
         // Set order discount line items
         if ( !isOMSEnabled && ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' )) ) {
@@ -258,7 +261,7 @@
         var totalTax = order.totalTax.value * 100;
         var salesTaxItem = {};
 
-        this.context.order_tax_amount = Math.round( totalTax );
+        this.context.order_tax_amount = totalTax;
 
         if ( isTaxationPolicyNet() ) {
             salesTaxItem = this.getSalesTaxRequestBuilder().build( order );
@@ -326,7 +329,10 @@
 
     KlarnaPaymentsOrderRequestBuilder.prototype.buildItems = function( items, context, subscription ) {
         var requestBuilderHelper = require( '*/cartridge/scripts/util/requestBuilderHelper' );
-        context.order_lines = requestBuilderHelper.buildItems( items, subscription, context, this );
+        var builtItems = requestBuilderHelper.buildItems( items, subscription, context, this );
+        Object.keys( builtItems ).forEach( function( key ) {
+            context.order_lines.push( builtItems[key] );
+        }, this );
     };
 
     KlarnaPaymentsOrderRequestBuilder.prototype.buildGCPaymentItems = function( items, context ) {

@@ -3,9 +3,9 @@
 'use strict';
 
 var URLUtils = require( 'dw/web/URLUtils' );
-var Site = require( 'dw/system/Site' );
 var ArrayList = require( 'dw/util/ArrayList' );
 var Transaction = require( 'dw/system/Transaction' );
+var Money = require( 'dw/value/Money' );
 
 var Builder = require( '*/cartridge/scripts/payments/builder' );
 var LineItem = require( '*/cartridge/scripts/payments/model/request/kec' ).LineItem;
@@ -35,7 +35,7 @@ KECOrderLineItem.prototype.getItemProratedPrice = function( li ) {
 };
 
 KECOrderLineItem.prototype.getItemTaxAmount = function( li ) {
-    return ( isTaxationPolicyNet() ) ? 0 : Math.round( li.tax.value * 100 );
+    return ( isTaxationPolicyNet() ) ? 0 : ( li.tax.value * 100 );
 };
 
 KECOrderLineItem.prototype.getItemId = function( li ) {
@@ -54,9 +54,9 @@ KECOrderLineItem.prototype.generateItemProductURL = function( li ) {
     var url = '';
 
     if ( li.optionProductLineItem ) {
-        url = ( URLUtils.http( 'Product-Show', 'pid', li.parent.productID ).toString() );
+        url = ( URLUtils.https( 'Product-Show', 'pid', li.parent.productID ).toString() );
     } else {
-        url = ( URLUtils.http( 'Product-Show', 'pid', li.productID ).toString() );
+        url = ( URLUtils.https( 'Product-Show', 'pid', li.productID ).toString() );
     }
 
     return url;
@@ -87,13 +87,15 @@ KECOrderLineItem.prototype.build = function( li ) {
     var itemPrice = this.getItemPrice( li );
     var itemProratedPrice = this.getItemProratedPrice( li );
     var quantity = li.quantityValue;
+    var currencyCode = li.getPrice().getCurrencyCode();
+    var itemPriceMoney = new Money( itemPrice, currencyCode );
 
     this.item = new LineItem();
     this.item.lineItemReference = this.getItemId( li );
     this.item.quantity = quantity;
     this.item.name = this.getItemName( li );
-    this.item.unitPrice = Math.round( itemPrice / quantity );
-    this.item.totalAmount = isOMSEnabled || ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' ) ? Math.round( itemProratedPrice ) : Math.round( itemPrice );
+    this.item.unitPrice = itemPriceMoney.divide( quantity ).getValue();
+    this.item.totalAmount = isOMSEnabled || ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' ) ? itemProratedPrice : itemPrice;
     this.item.totalTaxAmount = this.getItemTaxAmount( li );
     this.buildItemProductAndImageUrls( li );
 

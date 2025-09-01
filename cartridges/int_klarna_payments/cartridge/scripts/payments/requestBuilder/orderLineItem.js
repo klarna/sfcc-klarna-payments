@@ -6,6 +6,7 @@ var URLUtils = require( 'dw/web/URLUtils' );
 var Site = require( 'dw/system/Site' );
 var ArrayList = require( 'dw/util/ArrayList' );
 var Transaction = require( 'dw/system/Transaction' );
+var Money = require( 'dw/value/Money' );
 
 var Builder = require( '*/cartridge/scripts/payments/builder' );
 var LineItem = require( '*/cartridge/scripts/payments/model/request/session' ).LineItem;
@@ -35,11 +36,11 @@ OrderLineItem.prototype.getItemProratedPrice = function( li ) {
 };
 
 OrderLineItem.prototype.getItemTaxRate = function( li ) {
-    return ( isTaxationPolicyNet() ) ? 0 : Math.round( li.taxRate * 10000 );
+    return isTaxationPolicyNet() ? 0 : li.taxRate * 10000;
 };
 
 OrderLineItem.prototype.getItemTaxAmount = function( li ) {
-    return ( isTaxationPolicyNet() ) ? 0 : Math.round( li.tax.value * 100 );
+    return isTaxationPolicyNet() ? 0 : li.tax.value * 100;
 };
 
 OrderLineItem.prototype.getItemType = function( li ) {
@@ -154,20 +155,22 @@ OrderLineItem.prototype.build = function( li ) {
     var quantity = li.quantityValue;
     var brand = this.getItemBrand( li );
     var categoryPath = this.getItemCategoryPath( li );
+    var currencyCode = li.getPrice().getCurrencyCode();
+    var itemPriceMoney = new Money( itemPrice, currencyCode );
+    var itemProratedPriceMoney = new Money( itemProratedPrice, currencyCode );
 
     this.item = new LineItem();
     this.item.type = this.getItemType( li );
     this.item.reference = this.getItemId( li );
     this.item.quantity = quantity;
     this.item.name = this.getItemName( li );
-    this.item.unit_price = Math.round( itemPrice / quantity );
+    this.item.unit_price = itemPriceMoney.divide( quantity ).getValue();
     this.item.tax_rate = this.getItemTaxRate( li );
-    this.item.total_amount = isOMSEnabled || ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' ) ? Math.round( itemProratedPrice ) : Math.round( itemPrice );
+    this.item.total_amount = isOMSEnabled || ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' ) ? itemProratedPrice : itemPrice;
     this.item.total_tax_amount = this.getItemTaxAmount( li );
 
     if ( isOMSEnabled || ( !isTaxationPolicyNet() && discountTaxationMethod === 'adjustment' && itemProratedPrice !== itemPrice ) ) {
-        var discountAmount = itemPrice - itemProratedPrice;
-        this.item.total_discount_amount = Math.round( discountAmount );
+        this.item.total_discount_amount = itemPriceMoney.subtract( itemProratedPriceMoney ).getValue();
     }
 
     if ( !empty( brand ) ) {

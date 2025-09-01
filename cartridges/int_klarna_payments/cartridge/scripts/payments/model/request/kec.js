@@ -3,10 +3,9 @@
 
     /**
      * KEC single step request model
-     * @param {boolean} preAssement If locale country is preassessed
      * @returns {void}
      */
-    function KlarnaPaymentsSessionModel( preAssement ) {
+    function klarnaExpressCheckoutModel() {
         this.amount = '';
         this.currency = '';
         this.customerInteractionConfig = {};
@@ -28,6 +27,6 @@
         this.imageUrl = null;
     }
 
-    module.exports.KlarnaPaymentsSessionModel = KlarnaPaymentsSessionModel;
+    module.exports.klarnaExpressCheckoutModel = klarnaExpressCheckoutModel;
     module.exports.LineItem = LineItem;
 }());

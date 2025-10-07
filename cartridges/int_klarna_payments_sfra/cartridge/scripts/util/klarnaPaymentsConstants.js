@@ -30,10 +30,11 @@ var KLARNA_PAYMENT_URLS = {
     HANDLE_AUTH_FAILURE_PDP: 'KlarnaPayments-HandleAuthFailure',
     KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SFRA: 'Checkout-Begin',
     KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SG: 'COCustomer-Start',
-    SAVE_INTEROPERABILITY_TOKEN: 'KlarnaPayments-SaveInteroperabilityToken'
+    SAVE_INTEROPERABILITY_TOKEN: 'KlarnaPayments-SaveInteroperabilityToken',
+    SINGLE_STEP_CHECKOUT: 'KlarnaPayments-SingleStepCheckout'
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 25.3.0';
+var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 25.4.0';
 
 superMdl.PAYMENT_METHOD = PAYMENT_METHOD;
 superMdl.KLARNA_PAYMENT_URLS = KLARNA_PAYMENT_URLS;

@@ -87,9 +87,9 @@ function initKlarnaExpressButton(containerId, isPDP, klarna) {
                 }
             }
             form.kecSingleStep = true;
-            var url = window.KlarnaPaymentsUrls.generateExpressCheckoutPayload;
-            url+= (url.indexOf('?') !== -1 ? '&' : '?') + 'populateAddress=false&isKECSingleStep=true&isPDP=' + isPDP;
-            
+            var url = window.KlarnaPaymentsUrls.singleStepCheckout;
+            url+= (url.indexOf('?') !== -1 ? '&' : '?') + 'populateAddress=false&isPDP=' + isPDP;
+
             const response = await fetch(url, {
                 method: 'POST',
                 headers: {
@@ -98,7 +98,8 @@ function initKlarnaExpressButton(containerId, isPDP, klarna) {
                 body: JSON.stringify(form)
             });
             const responseJson = await response.json();
-            return responseJson.payload;
+            var paymentRequestId = { paymentRequestId: responseJson.paymentRequestId }
+            return paymentRequestId;
         },
     }).mount(containerId);
 

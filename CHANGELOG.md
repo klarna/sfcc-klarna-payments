@@ -1,5 +1,9 @@
 # CHANGELOG
 
+## 25.4.0
+* Added webhook subscription for KEC one-step checkout via PSP. A storefront site can now subscribe to webhook and receive notifications for subscribed payment events. These notifications are stored in a custom object for further processing.
+* Fixed unnecessary error logging during checkout, where subscription-related errors were being logged even when no subscription products were present in the cart. 
+
 ## 25.3.0
 * Updated sales tax amount to be zero if the tax mount results in a negative value in the API request payload. Negative salesTax values only arise from discount or credit adjustments, never from system errors.
 * Updates based on review comments from last release. Mainly to remove the usage of Maths.round fuction which rounded of some amounts, renamed some fucntions for better clarity etc.

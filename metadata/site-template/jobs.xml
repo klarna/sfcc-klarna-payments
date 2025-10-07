@@ -41,4 +41,47 @@
             </run-once>
         </triggers>
     </job>
+
+	<job job-id="DeleteWebhookNotification">
+        <description>Deletes the Klarna webhook notifications</description>
+        <parameters/>
+        <flow>
+            <context site-id="RefArch"/>
+            <step step-id="deleteWebhookNotification" type="custom.deleteWebhookNotification" enforce-restart="false">
+                <description>Deletes the Klarna webhook notification</description>
+                <parameters>
+                    <parameter name="ExpiryDays">30</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2025-09-22Z</date>
+                <time>12:49:00.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
+	<job job-id="CreateWebhook">
+        <description>Creates Klarna Webhook for the site.</description>
+        <parameters/>
+        <flow>
+            <context site-id="RefArch"/>
+            <step step-id="CreateWebhook" type="custom.CreateWebhook" enforce-restart="false">
+                <description>Retrieves/Creates a signing key and activates the Klarna webhook notification</description>
+                <parameters>
+                    <parameter name="EventTypes">payment.request.state-change.completed</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2025-09-17Z</date>
+                <time>06:16:00.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
 </jobs>

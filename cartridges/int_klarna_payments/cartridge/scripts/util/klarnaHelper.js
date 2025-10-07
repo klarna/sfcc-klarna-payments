@@ -771,6 +771,37 @@ function getKlarnaServiceCredentials() {
     };
 }
 
+function getKlarnaWebhookServiceCredentials() {
+    var countryCode = Locale.getLocale( request.locale ).country;
+    var kpAcativationSource = session.privacy['kpActivationSource_' + countryCode];
+    if ( kpAcativationSource === 'KlarnaActivation_CO' ) {
+        var attrValues = getActivationObjectAttrValue( 'KP_API_Username_countries', 'KP_API_Password_countries', 'kp_region_countries' );
+        return {
+            useServiceCredentials: false,
+            apiUsername: attrValues.KP_API_Username_countries,
+            apiPassword: attrValues.KP_API_Password_countries,
+            apiURL: getServiceURL( 'WEBHOOK' )
+        }
+    } else if ( kpAcativationSource === 'KlarnaActivation_SP' ) {
+        var apiUsername = currentSite.getCustomPreferenceValue( 'KP_API_Username' );
+        var apiPassword = currentSite.getCustomPreferenceValue( 'KP_API_Password' );
+        if ( !apiUsername || !apiPassword ) {
+            return {
+                useServiceCredentials: true
+            };
+        }
+        return {
+            useServiceCredentials: false,
+            apiUsername: apiUsername,
+            apiPassword: apiPassword,
+            apiURL: getServiceURL( 'WEBHOOK' )
+        }
+    }
+    return {
+        useServiceCredentials: true
+    };
+}
+
 // retrieve the Klarna SignIn service url
 // dynamically if activation entry found
 // if not found - service credentials should be used
@@ -940,3 +971,4 @@ exports.getRegionCode = getRegionCode;
 exports.checkIfAddrFoundInAddrBook = checkIfAddrFoundInAddrBook;
 exports.getKlarnaSignInServiceCredentials = getKlarnaSignInServiceCredentials;
 exports.getAuthTokenFromKlarnaSession = getAuthTokenFromKlarnaSession;
+exports.getKlarnaWebhookServiceCredentials = getKlarnaWebhookServiceCredentials;

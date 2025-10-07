@@ -704,4 +704,98 @@
             </attribute-group>
         </group-definitions>
     </custom-type>
+
+	<custom-type type-id="KlarnaSigningKey">
+        <display-name xml:lang="x-default">Klarna Signing Key</display-name>
+        <description xml:lang="x-default">Signing Key to create Klarna Webhook notification.</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <key-definition attribute-id="signingKeyId">
+            <display-name xml:lang="x-default">Signing Key Id</display-name>
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="createdDate">
+                <display-name xml:lang="x-default">Created Date</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="signingKey">
+                <display-name xml:lang="x-default">Signing Key</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="signingKey">
+                <display-name xml:lang="x-default">Signing Key</display-name>
+                <attribute attribute-id="signingKeyId"/>
+                <attribute attribute-id="signingKey"/>
+                <attribute attribute-id="createdDate"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+
+	<custom-type type-id="KlarnaWebhookNotification">
+        <display-name xml:lang="x-default">Klarna Webhook Notification</display-name>
+        <description xml:lang="x-default">Webhook notification received</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <key-definition attribute-id="paymentRequestId">
+            <display-name xml:lang="x-default">Payment Request ID</display-name>
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="notificationLog">
+                <display-name xml:lang="x-default">Notification Log</display-name>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+            <attribute-definition attribute-id="notificationStatus">
+                <display-name xml:lang="x-default">Notification Status</display-name>
+                <type>enum-of-string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <value-definitions>
+                    <value-definition>
+                        <display xml:lang="x-default">SUCCESS</display>
+                        <value>SUCCESS</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PROCESS</display>
+                        <value>PROCESS</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">PROCESSED</display>
+                        <value>PROCESSED</value>
+                    </value-definition>
+                    <value-definition>
+                        <display xml:lang="x-default">RETRY</display>
+                        <value>RETRY</value>
+                    </value-definition>
+                </value-definitions>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="KlarnaWebhookNotification">
+                <display-name xml:lang="x-default">Klarna Webhook Notification</display-name>
+                <attribute attribute-id="paymentRequestId"/>
+                <attribute attribute-id="notificationLog"/>
+                <attribute attribute-id="notificationStatus"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+
 </metadata>

@@ -164,9 +164,13 @@ function handleSubscription( li, subscription, hasLineItemSubscription ) {
         subscription.name = li.productName;
         liSubscription = subscription;
     } else {
+        /*
+        // Start: Add your custom logic to handle line item subscription data
         // Create line item subscription object if basket subscription does not exist
-        liSubscription = this.buildItemSubscriptionObj( li );
-        hasLineItemSubscription = liSubscription ? true : hasLineItemSubscription; // eslint-disable-line no-param-reassign
+        // liSubscription = this.buildItemSubscriptionObj( li );
+        // hasLineItemSubscription = liSubscription ? true : hasLineItemSubscription; // eslint-disable-line no-param-reassign
+        // End: Add your custom logic to handle line item subscription data
+        */
     }
 
     return { 

@@ -29,6 +29,10 @@ KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function()
         this._flowApiUrls.put( 'createRecurringOrder', 'customer-token/v1/tokens/{0}/order' );
         this._flowApiUrls.put( 'refreshSignInToken', '{0}/lp/idp/oauth2/token' );
         this._flowApiUrls.put( 'getKlarnaJWKS', '{0}/lp/idp/.well-known/jwks.json' );
+        this._flowApiUrls.put( 'createSigningKey', 'v2/notification/signing-keys' );
+        this._flowApiUrls.put( 'klarnaWebhook', 'v2/notification/webhooks' );
+        this._flowApiUrls.put( 'updateKlarnaWebhook', 'v2/notification/webhooks/{0}' );
+        this._flowApiUrls.put( 'singleStepPayment', '/v2/payment/requests' );
     }
 
     return this._flowApiUrls;
@@ -59,6 +63,7 @@ KlarnaPaymentsApiContext.prototype.getFlowApiUrls = function()
          this._flowApiIds.put( 'createRecurringOrder', 'klarna.http.createRecurringOrder' );
          this._flowApiIds.put( 'refreshSignInToken', 'klarna.http.signIn' );
          this._flowApiIds.put( 'getKlarnaJWKS', 'klarna.http.signIn' );
+         this._flowApiIds.put( 'klarnaWebhook', 'klarna.http.webhook' );
      }
  
      return this._flowApiIds;

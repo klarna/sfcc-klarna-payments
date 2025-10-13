@@ -33,7 +33,7 @@ function getPaymentIntent( subscriptionData ) {
 function buildItemSubscriptionObj( li ) {
     var subscriptionObj = null;
     try {
-        var isSubscriptionProduct = li.subscriptionPeriod && li.subscriptionFrequency;
+        var isSubscriptionProduct = li.custom.kpSubscriptionDemo && li.kpSubscriptionFrequencyDemo;
         if ( !isSubscriptionProduct ) {
             // return null if the product is not a subscription product
             return subscriptionObj;

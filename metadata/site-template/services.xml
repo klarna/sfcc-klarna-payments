@@ -71,6 +71,12 @@
         <password encrypted="true" encryption-type="common.export"></password>
     </service-credential>
 
+	<service-credential service-credential-id="klarna.http.webhook">
+        <url>https://api-global.test.klarna.com/</url>
+        <user-id/>
+        <password encrypted="true" encryption-type="common.export"></password>
+    </service-credential>
+
     <service-profile service-profile-id="klarna.http.service">
         <timeout-millis>20000</timeout-millis>
         <rate-limit-enabled>false</rate-limit-enabled>
@@ -198,6 +204,17 @@
         <cb-calls>0</cb-calls>
         <cb-millis>0</cb-millis>
     </service-profile>
+
+	<service-profile service-profile-id="klarna.http.webhook">
+        <timeout-millis>30000</timeout-millis>
+        <rate-limit-enabled>false</rate-limit-enabled>
+        <rate-limit-calls>0</rate-limit-calls>
+        <rate-limit-millis>0</rate-limit-millis>
+        <cb-enabled>false</cb-enabled>
+        <cb-calls>0</cb-calls>
+        <cb-millis>0</cb-millis>
+    </service-profile>
+
 
     <service service-id="klarna.http.createSession">
         <service-type>HTTP</service-type>
@@ -338,4 +355,16 @@
         <profile-id>klarna.http.signIn</profile-id>
         <credential-id>klarna.signin.credentials</credential-id>
     </service>
+	<service service-id="klarna.http.webhook">
+        <service-type>HTTP</service-type>
+        <enabled>true</enabled>
+        <log-prefix>klarna_webhook</log-prefix>
+        <comm-log-enabled>true</comm-log-enabled>
+        <force-prd-enabled>true</force-prd-enabled>
+        <mock-mode-enabled>false</mock-mode-enabled>
+        <profile-id>klarna.http.webhook</profile-id>
+        <credential-id>klarna.http.webhook</credential-id>
+    </service>
+
+
 </services>

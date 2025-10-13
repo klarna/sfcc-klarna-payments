@@ -662,7 +662,6 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
     var URLUtils = require('dw/web/URLUtils');
     var localeObject = KlarnaHelper.getLocale();
     var isPDP = request.httpParameterMap.isPDP.value === 'true';
-    var isKECSingleStep = request.httpParameterMap.isKECSingleStep.value === 'true';
     var currentBasket;
     var form;
 
@@ -678,11 +677,7 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
         }
 
         try {
-            if (isKECSingleStep) {
-                form = JSON.parse(req.body);
-            } else {
-                form = req.form;
-            }
+            form = req.form;
 
             var productId = form.pid;
             var childProducts = Object.hasOwnProperty.call(form, 'childProducts')
@@ -770,12 +765,8 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
         return next();
     }
 
-    var sessionBuilder;
-    if (isKECSingleStep) {
-        sessionBuilder = require('*/cartridge/scripts/payments/requestBuilder/kec');
-    } else {
-        sessionBuilder = require('*/cartridge/scripts/payments/requestBuilder/session');
-    }
+    var sessionBuilder = require('*/cartridge/scripts/payments/requestBuilder/session');
+
     var sessionRequestBuilder = new sessionBuilder();
     var populateAddress = request.httpParameterMap.populateAddress.value || 'false';
 
@@ -889,6 +880,195 @@ server.post('SaveInteroperabilityToken', function (req, res, next) {
     }
 
     return next();
+});
+
+/**
+ * Single step checkout - create payment request
+ */
+server.post('SingleStepCheckout', function (req, res, next) {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+    var Transaction = require('dw/system/Transaction');
+    var cartHelper = require('*/cartridge/scripts/cart/cartHelpers');
+    var validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
+    var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+    var WebhookHelper = require( '*/cartridge/scripts/webhook/webhookHelper' );
+    var URLUtils = require('dw/web/URLUtils');
+    var Resource = require('dw/web/Resource');
+    var localeObject = KlarnaHelper.getLocale();
+    var isPDP = request.httpParameterMap.isPDP.value === 'true';
+    var currentBasket;
+    var form;
+
+    if (isPDP) {
+        currentBasket = BasketMgr.getCurrentOrNewBasket();
+        var currentBasketData = null;
+
+        if (currentBasket) {
+            Transaction.wrap(function () {
+                currentBasketData = KlarnaHelper.getCurrentBasketProductData(currentBasket);
+                session.privacy.kpCustomerProductData = JSON.stringify(currentBasketData);
+            });
+        }
+
+        try {
+            form = JSON.parse(req.body);
+
+            var productId = form.pid;
+            var childProducts = Object.hasOwnProperty.call(form, 'childProducts')
+                ? JSON.parse(form.childProducts)
+                : [];
+            var options = form.options ? JSON.parse(form.options) : [];
+            var quantity = parseInt(form.quantity, 10);
+        } catch (e) {
+            log.error('Error parsing form data: ' + e.message);
+            res.json({
+                success: false
+            });
+
+            return next();
+        }
+
+        Transaction.wrap(function () {
+            if (!form.pidsObj) {
+                var result = cartHelper.addProductToCart(
+                    currentBasket,
+                    productId,
+                    quantity,
+                    childProducts,
+                    options
+                );
+            } else {
+                // product set
+                pidsObj = JSON.parse(form.pidsObj);
+                result = {
+                    error: false,
+                    message: Resource.msg('text.alert.addedtobasket', 'product', null)
+                };
+
+                pidsObj.forEach(function (PIDObj) {
+                    quantity = parseInt(PIDObj.qty, 10);
+                    var pidOptions = PIDObj.options ? JSON.parse(PIDObj.options) : {};
+                    var PIDObjResult = cartHelper.addProductToCart(
+                        currentBasket,
+                        PIDObj.pid,
+                        quantity,
+                        childProducts,
+                        pidOptions
+                    );
+                    if (PIDObjResult.error) {
+                        result.error = PIDObjResult.error;
+                        result.message = PIDObjResult.message;
+                    }
+                });
+            }
+            if (!result.error) {
+                cartHelper.ensureAllShipmentsHaveMethods(currentBasket);
+            }
+        });
+    } else {
+        currentBasket = BasketMgr.getCurrentBasket();
+
+        if (!currentBasket) {
+            res.json({
+                success: false,
+                redirectUrl: URLUtils.url('Cart-Show').toString()
+
+            });
+            return next();
+        }
+    }
+
+    if (currentBasket && currentBasket.defaultShipment.shippingMethod === null) {
+        res.json({
+            success: false,
+            redirectUrl: URLUtils.url('Cart-Show').toString()
+
+        });
+        return next();
+    }
+
+    COHelpers.recalculateBasket(currentBasket);
+
+    var validatedProducts = validationHelpers.validateProducts(currentBasket);
+    if (validatedProducts.error || !validatedProducts.hasInventory) {
+        res.json({
+            success: false,
+            redirectUrl: URLUtils.url('Cart-Show').toString()
+
+        });
+        return next();
+    }
+
+    var sessionBuilder = require('*/cartridge/scripts/payments/requestBuilder/singleStepKec');
+    var sessionRequestBuilder = new sessionBuilder();
+    var populateAddress = request.httpParameterMap.populateAddress.value || 'false';
+
+    sessionRequestBuilder.setParams({
+        basket: currentBasket,
+        localeObject: localeObject,
+        kpIsExpressCheckout: populateAddress === 'true'
+    });
+
+    var requestBody = sessionRequestBuilder.build();
+
+    // Klarna customer information
+    var kpCustomerInfo = null;
+    try {
+        kpCustomerInfo = JSON.parse(KlarnaHelper.getKlarnaResources().KPCustomerInfo);
+    } catch (e) {
+        log.error('Error parsing KPCustomerInfo: ' + e);
+    }
+
+    if (kpCustomerInfo && kpCustomerInfo.attachment) {
+        requestBody.attachment = kpCustomerInfo.attachment;
+    }
+
+    var klarnaResp = WebhookHelper.createPaymentRequest(requestBody);
+    var requestId = klarnaResp ? klarnaResp.payment_request_id : null;
+    session.privacy.paymentRequestId = requestId;
+
+    res.json({
+        paymentRequestId: requestId
+    });
+
+    return next();
+});
+
+/**
+ * Webhook endpoint to receive Klarna notifications
+ */
+server.post('WebhookNotification', function (req, res) {
+    try {
+        var WebhookHelper = require('*/cartridge/scripts/webhook/webhookHelper');
+        var requestBody = req ? req.body : null;
+        var requestData = requestBody ? JSON.parse(requestBody) : null;
+        Logger.info(JSON.stringify(requestData));
+
+        var payload = requestData ? requestData.payload : null;
+        var paymentRequestId = payload ? payload.payment_request_id : null;
+
+        var signatureHeader = req.httpHeaders['klarna-signature'];
+        var isNotificationValid = WebhookHelper.validateWebhookSignature({ requestBody: requestBody, klarnaSignature: signatureHeader });
+
+        if (isNotificationValid) {
+            var notificationObj = WebhookHelper.saveWebhookNotification({ requestData: requestData });
+            if (!notificationObj) {
+                res.setStatusCode(400);
+                return;
+            }
+        }
+
+        if (!isNotificationValid || !payload || !paymentRequestId) {
+            res.setStatusCode(400);
+            return;
+        }
+
+        res.setStatusCode(200);
+    } catch (e) {
+        Logger.error('Error in Webhook Notification: ' + e.message);
+        res.setStatusCode(400);
+    }
 });
 
 module.exports = server.exports();

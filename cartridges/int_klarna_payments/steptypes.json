@@ -54,6 +54,80 @@
 						}
 					]
 				}
+			},
+			{
+				"@type-id": "custom.CreateWebhook",
+				"@supports-parallel-execution": "true",
+				"@supports-site-context": "true",
+				"@supports-organization-context": "false",
+				"description": "Creates a signing key and activates the Klarna webhook notification",
+				"module": "int_klarna_payments/cartridge/scripts/job/CreateWebhookJob.js",
+				"function": "createWebhook",
+				"transactional": "false",
+				"timeout-in-seconds": "900",
+				"parameters": {
+				"parameter": [
+					{
+					"@name": "EventTypes",
+					"@type": "string",
+					"@required": "true",
+					"description": "Comma or newline separated event types to register in the webhook"
+					}
+				]
+				},
+				"status-codes": {
+				"status": [
+					{
+					"@code": "ERROR",
+					"description": "Error"
+					},
+					{
+					"@code": "WARN",
+					"description": "Warning"
+					},
+					{
+					"@code": "OK",
+					"description": "Ok"
+					}
+					]
+        		}
+			},
+			{
+				"@type-id": "custom.deleteWebhookNotification",
+				"@supports-parallel-execution": "true",
+				"@supports-site-context": "true",
+				"@supports-organization-context": "false",
+				"description": "Deletes the Klarna webhook notification",
+				"module": "int_klarna_payments/cartridge/scripts/job/deleteWebhookNotification.js",
+				"function": "deleteWebhookNotification",
+				"transactional": "false",
+				"timeout-in-seconds": "900",
+				"parameters": {
+				"parameter": [
+					{
+					"@name": "ExpiryDays",
+					"@type": "long",
+					"@required": "true",
+					"description": "Number of days after which the webhook notification will be deleted"
+					}
+				]
+				},
+				"status-codes": {
+				"status": [
+					{
+					"@code": "ERROR",
+					"description": "Error"
+					},
+					{
+					"@code": "WARN",
+					"description": "Warning"
+					},
+					{
+					"@code": "OK",
+					"description": "Ok"
+					}
+					]
+        		}
 			}
 		]
 	}

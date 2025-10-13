@@ -78,7 +78,8 @@ superMdl.getKlarnaResources = function () {
         expressCheckoutAuthCallback: URLUtils.https(KLARNA_PAYMENT_URLS.EXPRESS_CHECKOUT_AUTH_CALLBACK).toString(),
         generateExpressCheckoutPayload: URLUtils.https(KLARNA_PAYMENT_URLS.GENERATE_EXPRESS_CHECKOUT_PAYLOAD).toString(),
         handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString(),
-        saveInteroperabilityToken: URLUtils.https(KLARNA_PAYMENT_URLS.SAVE_INTEROPERABILITY_TOKEN).toString()
+        saveInteroperabilityToken: URLUtils.https(KLARNA_PAYMENT_URLS.SAVE_INTEROPERABILITY_TOKEN).toString(),
+        singleStepCheckout: URLUtils.https(KLARNA_PAYMENT_URLS.SINGLE_STEP_CHECKOUT).toString()
     };
 
     // klarna payments objects

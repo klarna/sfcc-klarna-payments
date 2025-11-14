@@ -15,7 +15,7 @@ function postAuthorization(result) { // eslint-disable-line no-unused-vars
         return { error: true };
     }
 
-    return; // eslint-disable-line consistent-return
+    return; // eslint-disable-line no-useless-return, consistent-return
 }
 
 exports.postAuthorization = postAuthorization;

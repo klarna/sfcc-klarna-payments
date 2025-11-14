@@ -1,4 +1,4 @@
-(function () {
+( function() {
     'use strict';
 
     /**
@@ -29,4 +29,4 @@
 
     module.exports.singleStepKECModel = singleStepKECModel;
     module.exports.LineItem = LineItem;
-}());
+}() );

@@ -1,15 +1,16 @@
+/* globals $ */
+
 'use strict';
 
 var base = require('base/product/base');
 
 /**
  * build and display error message overlay
- * @param {string} message 
+ * @param {string} message  message
  */
 function generateErrorAuthMessage(message) {
     setTimeout(function () {
-
-        var msg = message ? message : window.KPResources.kpExpressCheckoutAuthFailure;
+        var msg = message || window.KPResources.kpExpressCheckoutAuthFailure;
         if ($('.ec-payment-failure').length === 0) {
             $('body').append(
                 '<div class="ec-payment-failure add-to-cart-messages"></div>'
@@ -25,12 +26,13 @@ function generateErrorAuthMessage(message) {
         setTimeout(function () {
             $('.ec-payment-failure-alert').remove();
         }, window.KPConstants.ERROR_MSG_ALERT_TIMEOUT);
-
     }, window.KPConstants.KEC_EEROR_WAITTIME);
 }
 
 /**
  * get add to cart product data
+ * @param {string} containerId id of the container element
+ * @returns {Object} form data
  */
 function getAddToCartData(containerId) {
     var form = {
@@ -49,7 +51,7 @@ function getAddToCartData(containerId) {
                 setPids.push({
                     pid: $(this).find('.product-id').text(),
                     qty: $(this).find('.quantity-select').val(),
-                    options: getOptions($(this))
+                    options: getOptions($(this)) // eslint-disable-line
                 });
             }
         });
@@ -61,9 +63,9 @@ function getAddToCartData(containerId) {
 
 /**
  * Initialize Klarna Express Checkout button
- * @param {Object} container div container element
- * @param {Boolean} isPDP flag for pdp call
- * @param {String} containerId id of the container element
+ * @param {Object} containerId div container element
+ * @param {boolean} isPDP flag for pdp call
+ * @param {Object} klarna klarna sdk object
  */
 function initKlarnaExpressButton(containerId, isPDP, klarna) {
     if (!klarna) {
@@ -74,7 +76,7 @@ function initKlarnaExpressButton(containerId, isPDP, klarna) {
         theme: window.KPPreferences.kpExpressCheckoutTheme,
         shape: window.KPPreferences.kpExpressCheckoutShape,
         locale: window.KPPreferences.kpLocale,
-        intents: ["PAY"],
+        intents: ['PAY'],
         initiationMode: 'DEVICE_BEST',
         initiate: async () => {
             var form = {};
@@ -88,7 +90,7 @@ function initKlarnaExpressButton(containerId, isPDP, klarna) {
             }
             form.kecSingleStep = true;
             var url = window.KlarnaPaymentsUrls.singleStepCheckout;
-            url+= (url.indexOf('?') !== -1 ? '&' : '?') + 'populateAddress=false&isPDP=' + isPDP;
+            url += (url.indexOf('?') !== -1 ? '&' : '?') + 'populateAddress=false&isPDP=' + isPDP;
 
             const response = await fetch(url, {
                 method: 'POST',
@@ -98,9 +100,9 @@ function initKlarnaExpressButton(containerId, isPDP, klarna) {
                 body: JSON.stringify(form)
             });
             const responseJson = await response.json();
-            var paymentRequestId = { paymentRequestId: responseJson.paymentRequestId }
-            return paymentRequestId;
-        },
+            var paymentRequestId = { paymentRequestId: responseJson.paymentRequestId };
+            return paymentRequestId; // eslint-disable-line
+        }
     }).mount(containerId);
 
     klarna.Payment.on('complete', (paymentRequest) => {
@@ -108,17 +110,17 @@ function initKlarnaExpressButton(containerId, isPDP, klarna) {
             // Save the interoperability token and notify PSPs so they can use the token
             fetch(window.KlarnaPaymentsUrls.saveInteroperabilityToken, {
                 method: 'POST',
-                body: new URLSearchParams({ interoperabilityToken: paymentRequest.stateContext.interoperabilityToken})
+                body: new URLSearchParams({ interoperabilityToken: paymentRequest.stateContext.interoperabilityToken })
             });
         }
         // Return a boolean to skip redirection.
         return false;
     });
 
-    klarna.Payment.on('error', (error, paymentRequest) => { 
+    klarna.Payment.on('error', (error, paymentRequest) => { // eslint-disable-line
         generateErrorAuthMessage(error);
-        return false; 
-     }); 
+        return false;
+    });
 }
 
 document.body.addEventListener('init:KECSingleStep', function (e) {
@@ -130,7 +132,7 @@ document.body.addEventListener('init:KECSingleStep', function (e) {
     var klarnaExpressCheckoutPDP = document.querySelector('#klarnaExpressCheckoutPDP');
 
     if (data.kecPageName === 'cart' && klarnaExpressCheckoutCart.length > 0) {
-        klarnaExpressCheckoutCart.forEach(function (element, index) {
+        klarnaExpressCheckoutCart.forEach(function (element, index) { // eslint-disable-line
             initKlarnaExpressButton('#' + element.dataset.contId, false, klarna);
         });
     }
@@ -139,5 +141,5 @@ document.body.addEventListener('init:KECSingleStep', function (e) {
     }
     if (data.kecPageName === 'pdp' && klarnaExpressCheckoutPDP) {
         initKlarnaExpressButton('#klarnaExpressCheckoutPDP', true, klarna);
-    }    
+    }
 });

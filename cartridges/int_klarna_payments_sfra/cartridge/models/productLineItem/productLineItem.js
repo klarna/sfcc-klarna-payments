@@ -19,14 +19,11 @@ var baseProductLineItemModel = module.superModule;
 module.exports = function productLineItem(product, apiProduct, options) {
     baseProductLineItemModel.call(this, product, apiProduct, options);
 
-    product.kpSubscription = options.lineItem.custom.kpSubscription;
+    product.kpSubscription = options.lineItem.custom.kpSubscription; // eslint-disable-line no-param-reassign
 
-    product.showSubscription = apiProduct.custom.kpIsSubscriptionProduct;
-    var isStandardProduct = !empty(apiProduct.custom.kpIsStandardProduct) ? apiProduct.custom.kpIsStandardProduct : true;
-    product.disableSubscribe = apiProduct.custom.kpIsSubscriptionProduct && !isStandardProduct;
-    product.kpTrialDaysUsage = apiProduct.custom.kpTrialDaysUsage;
-
-
+    product.showSubscription = apiProduct.custom.kpIsSubscriptionProduct; // eslint-disable-line no-param-reassign
+    var isStandardProduct = !empty(apiProduct.custom.kpIsStandardProduct) ? apiProduct.custom.kpIsStandardProduct : true; // eslint-disable-line no-undef
+    product.disableSubscribe = apiProduct.custom.kpIsSubscriptionProduct && !isStandardProduct; // eslint-disable-line no-param-reassign
+    product.kpTrialDaysUsage = apiProduct.custom.kpTrialDaysUsage; // eslint-disable-line no-param-reassign
     return product;
 };
-

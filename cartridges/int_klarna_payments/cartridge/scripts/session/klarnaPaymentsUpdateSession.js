@@ -16,7 +16,7 @@ var KlarnaPayments = {
 };
 var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
 var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
-var KlarnaOSM = require('*/cartridge/scripts/marketing/klarnaOSM');
+var KlarnaOSM = require( '*/cartridge/scripts/marketing/klarnaOSM' );
 
 /**
  * Function that can be called by pipelines
@@ -64,6 +64,7 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
     var requestBuilderHelper = require( '*/cartridge/scripts/util/requestBuilderHelper' );
     var response = null;
     var requestUrl = null;
+    var serviceID = '';
     var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
 
     try {
@@ -74,13 +75,13 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
         requestBuilderHelper.buildCustomerForSIWKUsers( basket, requestBody );
 
         requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'updateSession' ), klarnaSessionID );
-        var serviceID = klarnaApiContext.getFlowApiIds().get( 'updateSession' );
+        serviceID = klarnaApiContext.getFlowApiIds().get( 'updateSession' );
         // Update session
         klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody, klarnaSessionID );
     } catch ( e ) {
         var errorMsg = e.message;
         var errorMsgObj = JSON.parse( errorMsg );
-        KlarnaAdditionalLogging.writeLog(basket, basket.custom.kpSessionId, 'klarnaPaymentsUpdateSession.updateSession()', 'Error Updating Klarna session. Error:' + JSON.stringify( e ) );
+        KlarnaAdditionalLogging.writeLog( basket, basket.custom.kpSessionId, 'klarnaPaymentsUpdateSession.updateSession()', 'Error Updating Klarna session. Error:' + JSON.stringify( e ) );
 
         return require( '*/cartridge/scripts/session/klarnaPaymentsCreateSession' ).createSession( basket, localeObject );
     }
@@ -97,7 +98,7 @@ function updateSession( klarnaSessionID, basket, localeObject ) {
         } );
     } catch ( e ) {
         dw.system.Logger.error( 'Error in updating Klarna Payments Session: {0}', e.message + e.stack );
-        KlarnaAdditionalLogging.writeLog(basket, basket.custom.kpSessionId, 'klarnaPaymentsUpdateSession.updateSession()', 'Error reading updated Klarna session. Error:' + JSON.stringify( e ) );
+        KlarnaAdditionalLogging.writeLog( basket, basket.custom.kpSessionId, 'klarnaPaymentsUpdateSession.updateSession()', 'Error reading updated Klarna session. Error:' + JSON.stringify( e ) );
 
         KlarnaHelper.clearSessionRef( basket );
         return {

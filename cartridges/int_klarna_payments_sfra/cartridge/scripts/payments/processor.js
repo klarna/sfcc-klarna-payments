@@ -46,12 +46,12 @@ function callKlarnaCreateOrderAPI(order, localeObject) {
  *
  * @param {dw.order.Order} order SCC order object
  * @param {dw.object.CustomObject} localeObject corresponding to the locale Custom Object from KlarnaCountries
- *
+ * @param {string} kpAuthorizationToken Klarna Payments Authorization Token
  * @return {Object|null} Klarna Payments create customer token response data on success, null on failure.
  */
 function callKlarnaCreateCustomerTokenAPI(order, localeObject, kpAuthorizationToken) {
     var klarnaAuthorizationToken = kpAuthorizationToken || session.privacy.KlarnaPaymentsAuthorizationToken;
-    var customer = order.customer.authenticated;
+    var customer = order.customer.authenticated; // eslint-disable-line no-unused-vars
     var createCustomerTokenHelper = require('*/cartridge/scripts/order/klarnaPaymentsCreateCustomerToken');
     var klarnaCreateCustomerTokenResponse = createCustomerTokenHelper.createCustomerToken(order, localeObject, klarnaAuthorizationToken);
     return klarnaCreateCustomerTokenResponse.response;
@@ -137,7 +137,6 @@ function placeOrder(order, klarnaPaymentsOrderID, localeObject) {
 
             var KlarnaAdditionalLogging = require('*/cartridge/scripts/util/klarnaAdditionalLogging');
             KlarnaAdditionalLogging.writeLog(order, order.custom.kpSessionId, 'processor.js:placeOrder()', 'Order could not be placed. Error:' + JSON.stringify(e));
-
         }
     }
 }
@@ -236,7 +235,7 @@ function attemptAuthorizeVCNSettlement(order) {
  * @param {Object} localeObject locale info
  * @returns {boolean} true if successfully handled
  */
-function handleVCNOrder(order, klarna_oms__kpOrderID, localeObject) {
+function handleVCNOrder(order, klarna_oms__kpOrderID, localeObject) { // eslint-disable-line camelcase
     try {
         var isSettlementCreated = handleVCNSettlement(order, klarna_oms__kpOrderID, localeObject);
 
@@ -310,7 +309,7 @@ function updateOrderWithKlarnaOrderInfo(order, paymentInstrument, kpOrderId) {
  *
  * @param {dw.order.order} order DW order
  * @param {dw.order.paymentInstrument} paymentInstrument DW payment instrument
- * @param {string} kpOrderId Klarna Order Id.
+ * @param {string} customerToken customer token
  */
 function updateOrderAndCustomerInfo(order, paymentInstrument, customerToken) {
     var kpVCNEnabledPreferenceValue = KlarnaHelper.isVCNEnabled();
@@ -332,7 +331,7 @@ function updateOrderAndCustomerInfo(order, paymentInstrument, customerToken) {
  *
  * @return {AuthorizationResult} authorization result
  */
-function authorizeAcceptedOrder(order, klarna_oms__kpOrderID, localeObject) {
+function authorizeAcceptedOrder(order, klarna_oms__kpOrderID, localeObject) { // eslint-disable-line camelcase
     var autoCaptureEnabled = Site.getCurrent().getCustomPreferenceValue('kpAutoCapture');
     var kpVCNEnabledPreferenceValue = KlarnaHelper.isVCNEnabled();
     var authResult = {};
@@ -428,7 +427,7 @@ function handleKlarnaOrderCreated(order, paymentInstrument, kpOrderInfo) {
 function handleKlarnaCustomerTokenCreated(order, paymentInstrument, kpOrderInfo) {
     var URLUtils = require('dw/web/URLUtils');
     var authorizationResult = {};
-    var localeObject = klarnaSessionManager.getLocale();
+    var localeObject = klarnaSessionManager.getLocale(); // eslint-disable-line no-unused-vars
     var customerToken = kpOrderInfo.token_id;
 
     klarnaSessionManager.removeSession();
@@ -441,7 +440,7 @@ function handleKlarnaCustomerTokenCreated(order, paymentInstrument, kpOrderInfo)
         session.privacy.KlarnaPaymentsAuthorizationToken = '';
         session.privacy.KPAuthInfo = null;
         Transaction.wrap(function () {
-            order.custom.kpRedirectURL = URLUtils.url('KlarnaPayments-ShowConfirmation', 'ID', order.orderNo, 'token', order.orderToken).toString();
+            order.custom.kpRedirectURL = URLUtils.url('KlarnaPayments-ShowConfirmation', 'ID', order.orderNo, 'token', order.orderToken).toString(); // eslint-disable-line no-param-reassign
         });
     }
 
@@ -455,7 +454,6 @@ function handleKlarnaCustomerTokenCreated(order, paymentInstrument, kpOrderInfo)
  * If the subscription is a trial, it immediately handles the customer token creation; otherwise,
  * it stores the token in the session for future use.
  * @param {Object} order - The order object containing details about the customer’s purchase.
- * @param {Object} subscriptionData - The subscription data for the order, which provides details about the subscription type.
  * @param {Object} localeObject - An object containing locale information for the current order, used for localization.
  * @param {Object} paymentInstrument - The payment instrument used for the transaction, which is needed for handling the customer token.
  * @param {string} kpAuthorizationToken - The authorization token required for authenticating the Klarna API request.
@@ -484,6 +482,7 @@ function createCustomerTokenForLineItemSubscription(order, localeObject, payment
  * @param {dw.order.LineItemCtnr} order - Order object
  * @param {string} orderNo - Order Number
  * @param {dw.order.OrderPaymentInstrument} paymentInstrument - current payment instrument
+ * @param {boolean} isRecurringOrder - is recurring order flag
  * @returns {Object} Processor authorizing result
  */
 function authorize(order, orderNo, paymentInstrument, isRecurringOrder) {
@@ -539,7 +538,6 @@ function authorize(order, orderNo, paymentInstrument, isRecurringOrder) {
         return generateErrorAuthResult();
     }
     return handleKlarnaOrderCreated(order, paymentInstrument, apiResponseData);
-
 }
 
 /**
@@ -564,7 +562,7 @@ function saveFraudStatus(order, kpFraudStatus) {
  * @param {string} klarna_oms__kpOrderID KP Order ID
  * @param {string} kpEventType event type
  */
-function notify(order, klarna_oms__kpOrderID, kpEventType) {
+function notify(order, klarna_oms__kpOrderID, kpEventType) { // eslint-disable-line camelcase
     var localeObject = klarnaSessionManager.getLocale();
 
     saveFraudStatus(order, kpEventType);
@@ -594,7 +592,7 @@ function bankTransferPlaceOrder(order, kpSessionId, kpAuthorizationToken) {
     var customerTokenResponseData;
 
     var subscriptionData = SubscriptionHelper.getSubscriptionData(order);
-    
+
     // Start: Create customer token for existing basket subscription. To be removed when basket subscription feature deprecate
     if (subscriptionData) {
         customerTokenResponseData = callKlarnaCreateCustomerTokenAPI(order, localeObject, kpAuthorizationToken);
@@ -637,7 +635,7 @@ function bankTransferPlaceOrder(order, kpSessionId, kpAuthorizationToken) {
         }
 
         if (subscriptionData && customerTokenResponseData.token_id) {
-            dw.system.Logger.error('updateCustomerSubscriptionData - ');
+            Logger.error('updateCustomerSubscriptionData - ');
             SubscriptionHelper.updateCustomerSubscriptionData(order);
         }
 
@@ -686,4 +684,3 @@ module.exports.notify = notify;
 module.exports.cancelAuthorization = cancelAuthorization;
 module.exports.getKlarnaOrder = getKlarnaOrder;
 module.exports.bankTransferPlaceOrder = bankTransferPlaceOrder;
-

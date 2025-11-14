@@ -12,9 +12,9 @@
 
 
 var KlarnaPayments = {
-    httpService: require('*/cartridge/scripts/common/klarnaPaymentsHttpService'),
-    apiContext: require('*/cartridge/scripts/common/klarnaPaymentsApiContext'),
-    cancelCustomerTokenRequestBuilder: require('*/cartridge/scripts/payments/requestBuilder/cancelCustomerToken')
+    httpService: require( '*/cartridge/scripts/common/klarnaPaymentsHttpService' ),
+    apiContext: require( '*/cartridge/scripts/common/klarnaPaymentsApiContext' ),
+    cancelCustomerTokenRequestBuilder: require( '*/cartridge/scripts/payments/requestBuilder/cancelCustomerToken' )
 };
 
 /**
@@ -23,11 +23,11 @@ var KlarnaPayments = {
  * @param {Object} args Object parameters
  * @return {number} status
  */
-function execute(args) {
+function execute( args ) {
     var localeObject = args.LocaleObject;
     var customerToken = args.customerToken;
-    var result = cancelCustomerToken(localeObject, customerToken);
-    if (!result.success) {
+    var result = cancelCustomerToken( localeObject, customerToken );
+    if ( !result.success ) {
         return PIPELET_ERROR;
     }
 
@@ -40,7 +40,7 @@ function execute(args) {
  * @param {Object} localeObject locale object
  * @returns {Object} request object
  */
-function _getRequestBody(localeObject) {
+function _getRequestBody( localeObject ) {
     var customerTokenRequestBuilder = new KlarnaPayments.cancelCustomerTokenRequestBuilder();
     return customerTokenRequestBuilder.build();
 }
@@ -52,25 +52,25 @@ function _getRequestBody(localeObject) {
  * @param {string} customerToken Customer token to be cancelled
  * @return {Object} status and fraud status
  */
-function cancelCustomerToken(localeObject, customerToken) {
-    var logger = dw.system.Logger.getLogger('klarnaPaymentsCancelCustomerToken.js');
-    var KlarnaAdditionalLogging = require('*/cartridge/scripts/util/klarnaAdditionalLogging');
+function cancelCustomerToken( localeObject, customerToken ) {
+    var logger = dw.system.Logger.getLogger( 'klarnaPaymentsCancelCustomerToken.js' );
+    var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
 
     try {
         var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
-        var requestBody = _getRequestBody(localeObject);
-        var requestUrl = dw.util.StringUtils.format(klarnaApiContext.getFlowApiUrls().get('cancelCustomerToken'), customerToken);
-        var serviceID = klarnaApiContext.getFlowApiIds().get('cancelCustomerToken');
-        var response = klarnaPaymentsHttpService.call(serviceID, requestUrl, 'PATCH', localeObject.custom.credentialID, requestBody, customerToken);
+        var requestBody = _getRequestBody( localeObject );
+        var requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'cancelCustomerToken' ), customerToken );
+        var serviceID = klarnaApiContext.getFlowApiIds().get( 'cancelCustomerToken' );
+        var response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'PATCH', localeObject.custom.credentialID, requestBody, customerToken );
 
         return {
             success: true,
             response: response
         };
 
-    } catch (e) {
-        logger.error('Error in cancelling Klarna Payments Customer Token: {0}', e.message + e.stack);
+    } catch ( e ) {
+        logger.error( 'Error in cancelling Klarna Payments Customer Token: {0}', e.message + e.stack );
 
         return {
             success: false,

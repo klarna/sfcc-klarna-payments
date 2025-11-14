@@ -5,7 +5,7 @@ var base = module.superModule;
 /**
  * Get customer subscriptions from his profile
  * @param {Object} profile customer profile
- * @returns available Klarna subscriptions
+ * @returns {Array} available Klarna subscriptions
  */
 function getSubscriptions(profile) {
     var subscriptions = [];
@@ -17,8 +17,9 @@ function getSubscriptions(profile) {
 
 /**
  * Order class that represents the current order
- * @param {dw.order.LineItemCtnr} lineItemContainer - Current users's basket/order
- * @param {Object} options - The current order's line items
+ * @param {dw.customer.Customer} currentCustomer - The current logged-in customer object.
+ * @param {Object} addressModel - The address model associated with the customer account.
+ * @param {Object} orderModel - The order model representing the customer's order history.
  * @constructor
  */
 function account(currentCustomer, addressModel, orderModel) {

@@ -38,7 +38,7 @@ function buildItemSubscriptionObj( li ) {
             // return null if the product is not a subscription product
             return subscriptionObj;
         }
-    
+
         subscriptionObj = {
             name: li.productName, // product name
             interval: li.subscriptionPeriod, // product subscription period in uppercase (DAY, WEEK, MONTH, YEAR etc)
@@ -63,26 +63,6 @@ function getLineItemSubscriptionData( currentBasket ) {
 
     var subscriptionItems = [];
     var hasTrialSubscriptionOnly = false;
-
-    /* 
-    // Start: Add your custom logic to handle line item subscription data
-
-    var productLineItems = currentBasket.productLineItems.toArray();
-    for ( var li of productLineItems ) {
-        var subscriptionObj = this.buildItemSubscriptionObj( li );
-        if ( subscriptionObj ) {
-            subscriptionItems.push( subscriptionObj );
-            if ( !li.custom.kpTrialDaysUsage ) {
-                hasTrialSubscriptionOnly = false;
-                break;
-            } else {
-                hasTrialSubscriptionOnly = true;
-            }
-        }
-    }
-
-    // End: Add your custom logic to handle line item subscription data
-    */
 
     var subscriptionData = {
         subscriptions: subscriptionItems, // subscription items array
@@ -121,10 +101,10 @@ function sortSubscriptionItems( items, hasLineItemSubscription ) {
         }
 
         var List = require( 'dw/util/ArrayList' );
-    
+
         // Convert lineItems to a List to sort based on subscription frequency
         var lineItemsList = new List( items );
-        
+
         // Sort the line items based on subscription frequency and price
         lineItemsList.sort( function( firstItem, secondItem ) {
             var firstItemIntervalCount = getSubscriptionIntervalCount( firstItem );
@@ -138,7 +118,7 @@ function sortSubscriptionItems( items, hasLineItemSubscription ) {
             // If intervals are the same, sort by price (total_amount) in descending order
             return secondItem.total_amount - firstItem.total_amount;
         } );
-    
+
         // return sorted line items
         return lineItemsList.toArray();
     } catch ( e ) {
@@ -163,17 +143,9 @@ function handleSubscription( li, subscription, hasLineItemSubscription ) {
         // Return the basket subscription if it exists
         subscription.name = li.productName;
         liSubscription = subscription;
-    } else {
-        /*
-        // Start: Add your custom logic to handle line item subscription data
-        // Create line item subscription object if basket subscription does not exist
-        // liSubscription = this.buildItemSubscriptionObj( li );
-        // hasLineItemSubscription = liSubscription ? true : hasLineItemSubscription; // eslint-disable-line no-param-reassign
-        // End: Add your custom logic to handle line item subscription data
-        */
     }
 
-    return { 
+    return {
         subscription: liSubscription,
         hasLineItemSubscription: hasLineItemSubscription
     };

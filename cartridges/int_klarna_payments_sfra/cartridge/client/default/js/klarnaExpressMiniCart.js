@@ -1,4 +1,13 @@
-// Clone all children of the Custom Element
+/* global $ */
+
+'use strict';
+
+/**
+ * Clones all child nodes of a given shadow root or element.
+ *
+ * @param {ShadowRoot|HTMLElement} shadow - The shadow root or element whose child nodes should be cloned.
+ * @returns {DocumentFragment} A document fragment containing the cloned nodes.
+ */
 function cloneShadow(shadow) {
     var frag = document.createDocumentFragment();
     var nodes = [...shadow.childNodes];
@@ -9,10 +18,10 @@ function cloneShadow(shadow) {
 }
 
 // Clone Original KEC and add to MiniCart
-var miniCartKEC = document.querySelector("#slotMiniCartKEC");
+var miniCartKEC = document.querySelector('#slotMiniCartKEC');
 
 if (miniCartKEC) {
-    var originalKEC = document.querySelector("#miniCartKEC .klarna-express-mini-cart");
+    var originalKEC = document.querySelector('#miniCartKEC .klarna-express-mini-cart');
 
     if (originalKEC && !originalKEC.shadowRoot) {
         // KEC single step button is added as a child of klarna-express-mini-cart element
@@ -20,11 +29,11 @@ if (miniCartKEC) {
     }
     if (originalKEC && originalKEC.shadowRoot) {
         var clonedKEC = cloneShadow(originalKEC.shadowRoot);
-        var clonedButton = clonedKEC.querySelector("button");
-        var originalButton = originalKEC.shadowRoot.querySelector("button");
+        var clonedButton = clonedKEC.querySelector('button');
+        var originalButton = originalKEC.shadowRoot.querySelector('button');
 
         if (originalButton) {
-            clonedButton.addEventListener("click", function (e) {
+            clonedButton.addEventListener('click', function () {
                 originalButton.click();
             });
         }
@@ -35,8 +44,8 @@ if (miniCartKEC) {
 
 $(function () {
     $('body').on('cart:update', function (e, data) {
-        if (data && (data.hasOwnProperty('basket') || data.hasOwnProperty('valid'))) {
-            var cartObj = data.hasOwnProperty('basket') ? data.basket : data;
+        if (data && (data.hasOwnProperty('basket') || data.hasOwnProperty('valid'))) { // eslint-disable-line no-prototype-builtins
+            var cartObj = data.hasOwnProperty('basket') ? data.basket : data; // eslint-disable-line no-prototype-builtins
             if (cartObj.hasSubscriptionOnlyProduct) {
                 $(miniCartKEC).parent().addClass('d-none');
             } else {

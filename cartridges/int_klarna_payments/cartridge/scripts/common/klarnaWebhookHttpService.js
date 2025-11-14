@@ -2,7 +2,7 @@
 var Logger = require( 'dw/system/Logger' );
 var LocalServiceRegistry = require( 'dw/svc/LocalServiceRegistry' );
 var StringUtils = require( 'dw/util/StringUtils' );
-var Resource = require('dw/web/Resource');
+var Resource = require( 'dw/web/Resource' );
 var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
 var SERVICE_HEADER = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).SERVICE_HEADER;
 
@@ -56,13 +56,13 @@ KlarnaWebhookHttpService.prototype.call = function( serviceId, urlPath, httpVerb
     service.URL += urlPath;
     service.addHeader( 'Content-Type', 'application/json' );
     service.addHeader( 'Accept', 'application/json' );
-    service.addHeader('User-Agent', SERVICE_HEADER);
+    service.addHeader( 'User-Agent', SERVICE_HEADER );
 
     if ( !empty( httpVerb ) && this.isValidHttpVerb( httpVerb ) ) {
         service.setRequestMethod( httpVerb );
     }
 
-    var result;
+    var result = {};
     try {
         if ( empty( requestBody ) ) {
             result = service.call();
@@ -111,20 +111,23 @@ KlarnaWebhookHttpService.prototype.getErrorResponse = function() {
  * @returns {void}
  */
 KlarnaWebhookHttpService.prototype.logErrorResponse = function( result, requestUrl, requestBody ) {
-    var content = 'result.error=[' + result.error;
-    content += '], result.status=[' + result.status;
-    content += '], result.errorMessage=[' + result.errorMessage + ']';
+    var content = StringUtils.format(
+        'result.error=[{0}], result.status=[{1}], result.errorMessage=[{2}]',
+        result.error,
+        result.status,
+        result.errorMessage
+    );
 
     if ( !empty( result.object ) && !empty( result.object.text ) ) {
-        content += '], result.object.text=[' + result.object.text + ']';
+        content += StringUtils.format( ', result.object.text=[{0}]', result.object.text );
     }
 
     if ( !empty( requestUrl ) ) {
-        content += ', requestUrl=[' + requestUrl + ']';
+        content += StringUtils.format( ', requestUrl=[{0}]', requestUrl );
     }
 
     if ( !empty( requestBody ) ) {
-        content += ', requestBody=[' + JSON.stringify( requestBody ) + ']';
+        content += StringUtils.format( ', requestBody=[{0}]', JSON.stringify( requestBody ) );
     }
 
     this.logger.error( content );
@@ -150,7 +153,7 @@ KlarnaWebhookHttpService.prototype.detectErrorResponse = function( result, httpV
         //log error response for all 5xx status codes but not fail order
     } else if ( result.error > 499 && result.error < 600 ) {
         this.logErrorResponse( result, requestUrl, requestBody );
-        if ( serviceID && serviceID.indexOf( 'createOrder' ) != -1 ) {
+        if ( serviceID && serviceID.indexOf( 'createOrder' ) !== -1 ) {
             throw new Error( result );
         }
     } else if ( result.error !== 0 || result.status === 'ERROR' || result.status === 'SERVICE_UNAVAILABLE' ) {

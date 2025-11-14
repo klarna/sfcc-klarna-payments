@@ -18,7 +18,6 @@ function CartModel(basket) {
         this.hasSubscriptionOnlyProduct = SubscriptionHelper.hasSubscriptionOnly();
         this.isSubscriptionBasket = SubscriptionHelper.isSubscriptionBasket(basket);
     }
-
 }
 
 CartModel.prototype = Object.create(base.prototype);

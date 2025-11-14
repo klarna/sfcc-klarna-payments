@@ -1,4 +1,4 @@
-(function () {
+( function() {
     'use strict';
 
     /**
@@ -29,4 +29,4 @@
 
     module.exports.klarnaExpressCheckoutModel = klarnaExpressCheckoutModel;
     module.exports.LineItem = LineItem;
-}());
+}() );

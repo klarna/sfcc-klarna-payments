@@ -72,10 +72,10 @@
                         if ( xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 ) {
                             $placeOrderBtn.removeEventListener( "click", placeOrderBtnClickEventListener );
 
-                             //DE banktransfer two-step confirmation
-                             if (res.finalize_required) {
+                            //DE banktransfer two-step confirmation
+                            if ( res.finalize_required ) {
                                 // Place Order
-                                 if ($form && !klarnaPaymentsObjects.kpIsExpressCheckout) {
+                                if ( $form && !klarnaPaymentsObjects.kpIsExpressCheckout ) {
                                     var action = $form.action;
                                     var csrfToken = $form.csrf_token.value;
 
@@ -95,14 +95,14 @@
                                 }
                                 Klarna.Payments.finalize( {
                                     payment_method_category: paymentMethodCategoryId
-                                }, {}, function( res ) {
-                                    if ( res.approved ) {
+                                }, {}, function( resp ) {
+                                    if ( resp.approved ) {
                                         if ( klarnaPaymentsObjects.kpIsExpressCheckout ) {
                                             xhr = new XMLHttpRequest();
                                             xhr.open( "GET", klarnaPaymentsUrls.saveAuth, true );
                             
                                             xhr.setRequestHeader( "Content-type", "application/json; charset=utf-8" );
-                                            xhr.setRequestHeader( "X-Auth", res.authorization_token );
+                                            xhr.setRequestHeader( "X-Auth", resp.authorization_token );
                             
                                             xhr.onreadystatechange = function() {
                                                 if ( xhr.readyState === XMLHttpRequest.DONE && xhr.status === 200 ) {
@@ -113,10 +113,10 @@
                                             xhr.send();
                                         } else {                                        
                                             // Await for a redirect for 20 seconds
-                                            var $loader = document.createElement('div');
+                                            var $loader = document.createElement( 'div' );
                                             $loader.className = 'loader';
                                             $loader.innerHTML = '<div class="loader-indicator"></div><div class="loader-bg"></div>';
-                                            document.body.append($loader);
+                                            document.body.append( $loader );
                                             
                                             var numOfTries = 11;
                                             var currentUrl = location.href;
@@ -125,17 +125,17 @@
                                                 if ( numOfTries === 0 ) {
                                                     clearInterval( interval );
                                                     $errorBlock.style.display = 'block';
-                                                    $($loader).hide();
+                                                    $( $loader ).hide();
                                                     return;
                                                 }
                                                 numOfTries--;
                                                 xhr.open( "GET", klarnaPaymentsUrls.bankTransferAwaitCallback + '?session_id=' + klarnaPaymentsObjects.sessionID, true );
                                                 xhr.setRequestHeader( "Content-type", "application/json; charset=utf-8" );
-                                                xhr.setRequestHeader( "X-Auth", res.authorization_token );
+                                                xhr.setRequestHeader( "X-Auth", resp.authorization_token );
                                                 xhr.onreadystatechange = function() {
                                                     var response = xhr.response;
                                                     try {
-                                                        if (response) {
+                                                        if ( response ) {
                                                             var jsonResponse = JSON.parse( response );
                                                             if ( jsonResponse.redirectUrl && jsonResponse.redirectUrl !== currentUrl && jsonResponse.redirectUrl !== newUrl && jsonResponse.redirectUrl !== 'undefined' ) {
                                                                 clearInterval( interval );
@@ -297,19 +297,19 @@
         } );
     }
 
-    function writeAdditionalLog ( res, action, msg ) {
+    function writeAdditionalLog( res, action, msg ) {
         if ( klarnaPaymentsPreferences.kpAdditionalLogging ) {
-            $.ajax({
+            $.ajax( {
                 url: klarnaPaymentsUrls.writeLog,
                 method: 'POST',
                 data: {
-                    responseFromKlarna: JSON.stringify(res),
+                    responseFromKlarna: JSON.stringify( res ),
                     actionName: action,
                     message: msg
                 }
-            })
+            } );
         }    
-    };
+    }
 
     $placeOrderBtn.addEventListener( "click", placeOrderBtnClickEventListener );
     

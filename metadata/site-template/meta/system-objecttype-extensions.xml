@@ -738,7 +738,15 @@
                 <externally-managed-flag>false</externally-managed-flag>
                 <default-value>false</default-value>
             </attribute-definition>
-            <attribute-definition attribute-id="kp_enable">
+            <attribute-definition attribute-id="KP_shareShoppingData">
+                <display-name xml:lang="x-default">Share shopping data with Klarna</display-name>
+                <description xml:lang="x-default">This option is applicable exclusively in PSP-based Klarna integrations.</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>true</default-value>
+            </attribute-definition>
+			<attribute-definition attribute-id="kp_enable">
                 <display-name xml:lang="x-default">Enable Klarna Payments</display-name>
                 <description xml:lang="x-default">Give your customers the ability to pay in flexible ways such as Buy now, Pay Later, Invoicing, Instalments and Financing.&#13;
 &#13;
@@ -837,6 +845,7 @@ Klarna payments is required to enable the additional solutions.</description>
                 <attribute attribute-id="KP_Market"/>
                 <attribute attribute-id="KP_environment"/>
                 <attribute attribute-id="kpIntegrationViaPSP"/>
+				<attribute attribute-id="KP_shareShoppingData"/>
             </attribute-group>
             <attribute-group group-id="Klarna_KP">
                 <display-name xml:lang="x-default">Klarna Payments</display-name>

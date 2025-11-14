@@ -3,10 +3,9 @@
 # Klarna Payments 2017-2025 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 25.4.0.
+The latest version of this cartridge is 25.5.0.
 
-* Added webhook subscription for KEC one-step checkout via PSP. A storefront site can now subscribe to webhook and receive notifications for subscribed payment events. These notifications are stored in a custom object for further processing.
-* Fixed unnecessary error logging during checkout, where subscription-related errors were being logged even when no subscription products were present in the cart. 
+* When Klarna payments are integrated through a PSP, the interoperability_data is required by the PSP for payment processing and order finalization. As part of this release, we have added interoperability_data to the session. This data includes the order amount and the order lines for which the payment was initiated. The PSP will be able to retrieve this information from the session for further processing. 
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/

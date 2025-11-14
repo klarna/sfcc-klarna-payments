@@ -15,7 +15,7 @@
     <body>
         ${dw.system.HookMgr.callHook('app.template.beforeHeader', 'beforeHeader', pdict) || ''}
 
-        <div class="page">
+        <div class="page" data-klarna-interop-status="${pdict.klarnaInteroperabilityDataStatus || ''}">
             <isinclude template="/components/header/pageHeaderNomenu" />
             <div role="main" id="maincontent">
                 <isreplace/>

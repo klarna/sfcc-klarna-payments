@@ -1,4 +1,5 @@
 /* globals $, Klarna */
+/* eslint-disable operator-linebreak */
 
 var summaryHelpers = require('base/checkout/summary');
 var scrollAnimate = require('base/components/scrollAnimate');
@@ -389,7 +390,7 @@ KlarnaCheckout.handleFinalizeRequired = function (defer, sessionPayload) {
                         $('body').spinner().stop();
                         return;
                     }
-                    numOfTries--;
+                    numOfTries--; // eslint-disable-line no-plusplus
                     $.ajax({
                         url: this.klarnaPaymentsUrls.bankTransferAwaitCallback + '?session_id=' + window.KlarnaPaymentsObjects.sessionID
                     }).done(function (response) {
@@ -410,7 +411,6 @@ KlarnaCheckout.handleFinalizeRequired = function (defer, sessionPayload) {
                                 }).join('&');
                             window.location.href = continueUrl;
                         }
-
                     });
                 }.bind(this), 2000);
             }
@@ -444,7 +444,6 @@ KlarnaCheckout.handleLoadAuthResponse = function (res, defer, sessionPayload) {
             $placeOrderBtn.click();
         }
         this.handleFinalizeRequired(defer, sessionPayload);
-
     } else {
         $('body').trigger('checkout:disableButton', '.next-step-button button');
         $.ajax({
@@ -616,6 +615,7 @@ KlarnaCheckout.getKlarnaSubmitPaymentBtn = function () {
  * The default submit payment button will be hidden and the user is going to click
  * on a duplicate Klarna submit payment button, which makes a Klarna authorize call.
  *
+ * @param {Object} defer - A deferred object controlling Klarna button initialization flow.
  */
 KlarnaCheckout.initKlarnaSubmitPaymentButton = function (defer) {
     var $submitPaymentBtn = $('.submit-payment');
@@ -658,7 +658,7 @@ KlarnaCheckout.handlePaymentNeedsPreassesment = function () {
 
             if ($el.attr('aria-invalid') === 'true' || ($el.attr('aria-required') === 'true' && $el.val().length === 0)) {
                 formValid = false;
-                return;
+                return; // eslint-disable-line no-useless-return
             }
         });
 
@@ -1140,7 +1140,7 @@ KlarnaCheckout.writeAdditionalLog = function (res, action, msg) {
                 actionName: action,
                 message: msg
             }
-        })
+        });
     }
 };
 
@@ -1168,7 +1168,7 @@ window.klarnaAsyncCallback = function () {
 /**
  * In case of error fields in the inoput form,
  * the form is displayed for correction
- * @param {object} $form checkout form to check for errors
+ * @param {Object} $form checkout form to check for errors
  */
 function checkFormErrors($form) {
     var numOfTries = KlarnaCheckout.klarnaPaymentsConstants.FORM_VALIDATION_NUM_RETRIES;
@@ -1177,7 +1177,7 @@ function checkFormErrors($form) {
             clearInterval(interval);
             return;
         }
-        numOfTries--;
+        numOfTries--; // eslint-disable-line no-plusplus
         var errors = $form.find('.form-control.is-invalid');
         if (errors.length) {
             $('.btn-show-details').trigger('click');
@@ -1191,11 +1191,11 @@ function checkFormErrors($form) {
  */
 $('body').on('checkout:enableButton', function (e, button) {
     $(button).each(function () {
-        var button = $(this);
-        if (button.is(":visible")) {
-            if (button.hasClass('submit-shipping')) {
+        var checkoutButton = $(this);
+        if (checkoutButton.is(':visible')) {
+            if (checkoutButton.hasClass('submit-shipping')) {
                 checkFormErrors($('.single-shipping'));
-            } else if (button.hasClass('submit-payment') || button.hasClass('klarna-submit-payment')) {
+            } else if (checkoutButton.hasClass('submit-payment') || checkoutButton.hasClass('klarna-submit-payment')) {
                 checkFormErrors($('.payment-form'));
             }
         }

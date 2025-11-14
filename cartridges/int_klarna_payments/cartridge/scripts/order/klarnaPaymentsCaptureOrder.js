@@ -26,7 +26,7 @@ var PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
  */
 function _createCapture( klarnaOrderID, localeObject, captureData ) {
     var StringUtils = require( 'dw/util/StringUtils' );
-    var UUIDUtils = require('dw/util/UUIDUtils');
+    var UUIDUtils = require( 'dw/util/UUIDUtils' );
     var klarnaIdempotencyKey = UUIDUtils.createUUID();
     var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
     var klarnaApiContext = new KlarnaPayments.apiContext();

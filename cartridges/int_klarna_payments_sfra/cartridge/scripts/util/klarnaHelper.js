@@ -16,7 +16,7 @@ superMdl.getShippment = function (lineItemCtnr) {
     var shipments = lineItemCtnr.getShipments();
 
     if (shipments.length > 1) {
-        for (var i = 0; i < shipments.length; i++) {
+        for (var i = 0; i < shipments.length; i++) { // eslint-disable-line no-plusplus
             var shipment = shipments[i];
 
             // return the first home delivery address that can be found
@@ -30,6 +30,35 @@ superMdl.getShippment = function (lineItemCtnr) {
 };
 
 /**
+ * Returns interoperability data
+ *
+ * @param {dw.order.Basket} basket basket
+ * @returns {Object} interoperability data object
+ */
+superMdl.getInteroperabilityData = function (basket) {
+    var CONTENT_TYPE = require('*/cartridge/scripts/util/klarnaPaymentsConstants').INTEROPERABILITY_DATA_CONTENT_TYPE;
+    var rawAmount = basket.totalGrossPrice.available ? basket.totalGrossPrice.value : basket.totalNetPrice.value;
+    var formattedAmount = Math.round(parseFloat(rawAmount.toFixed(2)) * 100);
+    var interoperabilityData = {
+        'content-type': CONTENT_TYPE,
+        content: {
+            operation: 'payment_request',
+            request: {
+                amount: formattedAmount
+            }
+        }
+    };
+    var shareShoppingData = JSON.parse(superMdl.getKlarnaResources().KPPreferences).kpShareShoppingData;
+    if (shareShoppingData) {
+        var SupplementaryDataRequestBuilder = require('*/cartridge/scripts/payments/requestBuilder/supplementaryPurchaseData');
+        var builder = new SupplementaryDataRequestBuilder();
+        var supplementaryData = builder.build(basket);
+        interoperabilityData.content.request.supplementary_purchase_data = supplementaryData;
+    }
+    return interoperabilityData;
+};
+
+/**
  * Clear klarna session and basket attribute
  * @param  {dw.order.LineItemCtnr} lineItemCtnr basket or order
  */
@@ -40,8 +69,8 @@ superMdl.clearSessionRef = function (lineItemCtnr) {
         session.privacy.KlarnaPaymentMethods = null;
         session.privacy.SelectedKlarnaPaymentMethod = null;
         session.privacy.KlarnaExpressCategory = null;
-        lineItemCtnr.custom.kpSessionId = null;
-        lineItemCtnr.custom.kpClientToken = null;
+        lineItemCtnr.custom.kpSessionId = null; // eslint-disable-line no-param-reassign
+        lineItemCtnr.custom.kpClientToken = null; // eslint-disable-line no-param-reassign
     });
 };
 
@@ -83,12 +112,14 @@ superMdl.getKlarnaResources = function () {
     };
 
     // klarna payments objects
+    /* eslint-disable no-nested-ternary */
     var KPObjects = {
         sessionID: currentBasket ? (currentBasket.custom.kpSessionId ? currentBasket.custom.kpSessionId : null) : null,
         clientToken: currentBasket ? (currentBasket.custom.kpClientToken ? currentBasket.custom.kpClientToken : null) : null,
         preassesment: preassess,
         kpIsExpressCheckout: currentBasket ? (currentBasket.custom.kpIsExpressCheckout ? currentBasket.custom.kpIsExpressCheckout : false) : false
     };
+    /* eslint-enable no-nested-ternary */
 
     // klarna customer information
     var KPCustomerInfo = {};
@@ -96,7 +127,7 @@ superMdl.getKlarnaResources = function () {
         KPCustomerInfo.attachment = currentBasket ? additionalCustomerInfoRequestBuilder.build(currentBasket) : {};
     }
 
-    //klarna payment resource messages
+    // klarna payment resource messages
     var KPResources = {
         kpExpressCheckoutAuthFailure: Resource.msg('klarna.express.payment.error', 'klarnapayments', null),
         kpExpressSelectStyles: Resource.msg('klarna.express.select.styles', 'klarnapayments', null)
@@ -128,7 +159,8 @@ superMdl.getKlarnaResources = function () {
         kpSignInButtonTheme: KlarnaOSM.getKlarnaSignInButtonTheme(),
         kpSignInButtonLogoAlignment: KlarnaOSM.getKlarnaSignInButtonLogoAlignment(),
         kpSignInRedirectUri: KlarnaOSM.getKlarnaSignInRedirectURL(),
-        isKlarnaIntegratedViaPSP: currentSite.getCustomPreferenceValue('kpIntegrationViaPSP')
+        isKlarnaIntegratedViaPSP: currentSite.getCustomPreferenceValue('kpIntegrationViaPSP'),
+        kpShareShoppingData: currentSite.getCustomPreferenceValue('KP_shareShoppingData')
     };
 
     return {
@@ -170,7 +202,7 @@ function filterApplicableShippingMethods(shipment, address) {
  * Restore previous customer basket based
  * on the session JSON attribute in case of pay now
  * from PDP
- * @param {object} currentBasket 
+ * @param {Object} currentBasket current basket
  */
 superMdl.revertCurrentBasketProductData = function (currentBasket) {
     var Transaction = require('dw/system/Transaction');
@@ -193,15 +225,14 @@ superMdl.revertCurrentBasketProductData = function (currentBasket) {
             if (products) {
                 products.forEach(function (product) {
                     Transaction.wrap(function () {
-                        var result = cartHelper.addProductToCart(
+                        var result = cartHelper.addProductToCart( // eslint-disable-line no-unused-vars
                             currentBasket,
                             product.productId,
                             product.qtyValue,
                             [],
                             []
                         );
-                    })
-
+                    });
                 });
             }
 
@@ -209,15 +240,13 @@ superMdl.revertCurrentBasketProductData = function (currentBasket) {
             basketCalculationHelpers.calculateTotals(currentBasket);
 
             session.privacy.kpCustomerProductData = null;
-
         }
         Transaction.commit();
     } catch (e) {
         Transaction.rollback();
         Logger.error("Couldn't restore customer basket");
     }
-
-}
+};
 
 superMdl.filterApplicableShippingMethods = filterApplicableShippingMethods;
 

@@ -7,7 +7,10 @@ var log = Logger.getLogger( 'KlarnaAdditionalLog', 'KlarnaAdditionalLog' );
 /**
  * Writing additional logs
  *
+ * @param  {Object} lineItemCntr current basket's lineItemContainer
+ * @param  {string} KlarnaSessionID Klarna Session ID
  * @param  {string} actionName place where call performed
+ * @param  {string} message    message to log
  * @returns {void}
  */
 function writeLog( lineItemCntr, KlarnaSessionID, actionName, message ) {
@@ -66,7 +69,7 @@ function writeLog( lineItemCntr, KlarnaSessionID, actionName, message ) {
                 UUID: item.UUID
             };
             
-            if (item.constructor.name === 'dw.order.ProductLineItem') {
+            if ( item.constructor.name === 'dw.order.ProductLineItem' ) {
                 itemObj.adjustedGrossPrice = item.adjustedGrossPrice.value;
                 itemObj.adjustedNetPrice = item.adjustedNetPrice.value;
                 itemObj.adjustedPrice = item.adjustedPrice.value;
@@ -76,18 +79,18 @@ function writeLog( lineItemCntr, KlarnaSessionID, actionName, message ) {
                 itemObj.productName = item.productName;
                 itemObj.proratedPrice = item.proratedPrice.value;
                 itemObj.quantity = item.quantity.value;
-            } else if (item.constructor.name === 'dw.order.ShippingLineItem') {
+            } else if ( item.constructor.name === 'dw.order.ShippingLineItem' ) {
                 itemObj.adjustedGrossPrice = item.adjustedGrossPrice.value;
                 itemObj.adjustedNetPrice = item.adjustedNetPrice.value;
                 itemObj.adjustedPrice = item.adjustedPrice.value;
                 itemObj.adjustedTax = item.adjustedTax.value;
                 itemObj.ID = item.ID;
-            } else if (item.constructor.name === 'dw.order.GiftCertificateLineItem') {
+            } else if ( item.constructor.name === 'dw.order.GiftCertificateLineItem' ) {
                 itemObj.giftCertificateID = item.giftCertificateID;
-            } else if (item.constructor.name === 'dw.order.PriceAdjustment') {
+            } else if ( item.constructor.name === 'dw.order.PriceAdjustment' ) {
                 itemObj.campaignID = item.campaignID;
                 itemObj.promotionID = item.promotionID;
-            } else if (item.constructor.name === 'dw.order.ProductShippingLineItem') {
+            } else if ( item.constructor.name === 'dw.order.ProductShippingLineItem' ) {
                 itemObj.surcharge = item.surcharge;
             }
 
@@ -96,20 +99,20 @@ function writeLog( lineItemCntr, KlarnaSessionID, actionName, message ) {
 
         log.info( JSON.stringify( logObj ) );
     }
- }
+}
 
 /**
  * Writing Klarna SitePreference to additional logs
  *
  * @returns {void}
  */
-function writeSitePreferencesToLog () {
-    if (kpAdditionalLogging) {
+function writeSitePreferencesToLog() {
+    if ( kpAdditionalLogging ) {
         var logObj = {
             kpAutoCapture: currentSite.getCustomPreferenceValue( 'kpAutoCapture' ) || false,
             kpAttachments: currentSite.getCustomPreferenceValue( 'kpEMD' ) ? currentSite.getCustomPreferenceValue( 'kpEMD' ) : currentSite.getCustomPreferenceValue( 'kpAttachments' ) || false,
             kpVCNEnabled: currentSite.getCustomPreferenceValue( 'kpVCNEnabled' ) || false,
-            kpVCNRetryEnabled:  currentSite.getCustomPreferenceValue( 'kpVCNRetry' ) ?  currentSite.getCustomPreferenceValue( 'kpVCNRetry' ) : currentSite.getCustomPreferenceValue( 'kpVCNRetryEnabled' ) || false,
+            kpVCNRetryEnabled:  currentSite.getCustomPreferenceValue( 'kpVCNRetry' ) ? currentSite.getCustomPreferenceValue( 'kpVCNRetry' ) : currentSite.getCustomPreferenceValue( 'kpVCNRetryEnabled' ) || false,
             kpPromoTaxation: currentSite.getCustomPreferenceValue( 'kpPromoTaxation' ).value || false,
             kpUseAlternativePaymentFlow: currentSite.getCustomPreferenceValue( 'kpUseAlternativePaymentFlow' ).value || false
         }

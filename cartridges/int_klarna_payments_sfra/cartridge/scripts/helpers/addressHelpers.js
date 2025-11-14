@@ -30,6 +30,13 @@ superMdl.generateAddressName = function (address) {
     return [(address.city || ''), (address.postalCode || '')].join(' - ');
 };
 
+/**
+ * Saves or updates an external address in the customer's address book.
+ *
+ * @param {Object} address - The address object containing address details to be saved.
+ * @param {dw.customer.Customer} customer - The customer object whose address book will be updated.
+ * @param {string} addressId - The unique identifier for the address to create or update.
+ */
 function saveExtAddress(address, customer, addressId) {
     var Transaction = require('dw/system/Transaction');
 
@@ -41,9 +48,7 @@ function saveExtAddress(address, customer, addressId) {
             newAddress.setCountryCode(address.countryCode.value);
         }
     });
-
 }
 
 superMdl.saveExtAddress = saveExtAddress;
 module.exports = superMdl;
-

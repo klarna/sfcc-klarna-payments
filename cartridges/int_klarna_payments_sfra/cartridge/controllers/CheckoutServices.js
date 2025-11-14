@@ -1,4 +1,5 @@
 /* globals session, empty */
+/* eslint-disable sitegenesis/no-global-require */
 
 'use strict';
 
@@ -35,11 +36,13 @@ server.prepend('Get', server.middleware.https, function (req, res, next) {
             && req.currentCustomer.addressBook.preferredAddress) {
             // Copy over preferredAddress (use addressUUID for matching)
             COHelpers.copyBillingAddressToBasket(
-                req.currentCustomer.addressBook.preferredAddress, currentBasket);
+                req.currentCustomer.addressBook.preferredAddress, currentBasket
+            );
         } else {
             // Copy over first shipping address (use shipmentUUID for matching)
             COHelpers.copyBillingAddressToBasket(
-                currentBasket.defaultShipment.shippingAddress, currentBasket);
+                currentBasket.defaultShipment.shippingAddress, currentBasket
+            );
         }
     }
 
@@ -152,7 +155,7 @@ server.append('PlaceOrder', function (req, res, next) {
     var URLUtils = require('dw/web/URLUtils');
     var KLARNA_PAYMENT_URLS = require('*/cartridge/scripts/util/klarnaPaymentsConstants').KLARNA_PAYMENT_URLS;
 
-    //remove kpClientToken from order
+    // remove kpClientToken from order
     var OrderMgr = require('dw/order/OrderMgr');
     var order = OrderMgr.getOrder(res.viewData.orderID);
 
@@ -160,7 +163,7 @@ server.append('PlaceOrder', function (req, res, next) {
         var Transaction = require('dw/system/Transaction');
         Transaction.wrap(function () {
             order.custom.kpClientToken = null;
-        })
+        });
     }
 
     // set KlarnaPayments-ShowConfirmation endpoint as the continue url to display order confirmation page

@@ -23,7 +23,7 @@ var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
  * @param {Object} localeObject Klarna locale object
  * @return {Object} success status, response
  */
- function getSession( klarnaSessionID, basket, localeObject ) {
+function getSession( klarnaSessionID, basket, localeObject ) {
     var Transaction = require( 'dw/system/Transaction' );
     var response = null;
     var klarnaPaymentsHttpService = new KlarnaPayments.httpService();

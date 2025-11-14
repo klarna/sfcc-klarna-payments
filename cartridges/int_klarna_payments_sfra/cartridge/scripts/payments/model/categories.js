@@ -20,7 +20,7 @@ KlarnaPaymentsCategories.prototype.findCategoryById = function (categoryId) {
     this.categories.forEach(function (item) {
         if (item.identifier === categoryId) {
             cat = item;
-            return;
+            return; // eslint-disable-line no-useless-return
         }
     });
 

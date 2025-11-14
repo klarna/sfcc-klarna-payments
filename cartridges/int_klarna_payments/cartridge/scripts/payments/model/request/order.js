@@ -29,13 +29,14 @@ function MerchantUrls() {
 
 /**
  * KP Order Request Model
+ * @param {boolean} isRecurringOrder - is recurring order
  * @returns {void}
  */
-function KlarnaPaymentsOrderModel(isRecurringOrder) {
+function KlarnaPaymentsOrderModel( isRecurringOrder ) {
     this.purchase_country = '';
     this.purchase_currency = '';
     this.locale = '';
-    if (!isRecurringOrder) {
+    if ( !isRecurringOrder ) {
         this.billing_address = new Address();
     }
     this.shipping_address = new Address();

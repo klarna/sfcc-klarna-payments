@@ -1,3 +1,8 @@
+/* eslint-disable sitegenesis/no-global-require */
+/* globals session */
+
+'use strict';
+
 var page = module.superModule; // inherits functionality
 var server = require('server');
 var URLUtils = require('dw/web/URLUtils');
@@ -17,6 +22,7 @@ server.append('Confirm', server.middleware.https, function (req, res, next) {
     }
     var OrderMgr = require('dw/order/OrderMgr');
     var BasketMgr = require('dw/order/BasketMgr');
+    var Logger = require('dw/system/Logger');
 
     var order = OrderMgr.getOrder(req.form.orderID, req.form.orderToken);
 
@@ -36,12 +42,12 @@ server.append('Confirm', server.middleware.https, function (req, res, next) {
         }
     }
 
-    //revert cart data in case of klarna buy now pdp
+    // revert cart data in case of klarna buy now pdp
     var currentBasket = BasketMgr.getCurrentOrNewBasket();
     try {
         KlarnaHelper.revertCurrentBasketProductData(currentBasket);
     } catch (e) {
-        dw.system.Logger.error("Couldn't revert basket data - " + e);
+        Logger.error("Couldn't revert basket data - " + e);
     }
     session.privacy.kpCustomerProductData = null;
 
@@ -63,7 +69,7 @@ server.get('Subscriptions', server.middleware.https, userLoggedIn.validateLogged
 
     var subscriptions = customer.profile.custom.kpSubscriptions ? JSON.parse(customer.profile.custom.kpSubscriptions) : [];
 
-    res.render("account/subscriptionHistory", {
+    res.render('account/subscriptionHistory', {
         subscriptions: subscriptions,
         breadcrumbs: breadcrumbs,
         accountlanding: false

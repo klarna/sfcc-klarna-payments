@@ -1,4 +1,8 @@
-/* globals session */
+/* globals session, request, customer */
+/* eslint-disable sitegenesis/no-global-require */
+
+'use strict';
+
 var page = module.superModule; // inherits functionality
 var server = require('server');
 
@@ -8,6 +12,8 @@ var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionH
 var URLUtils = require('dw/web/URLUtils');
 var BasketMgr = require('dw/order/BasketMgr');
 var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+var Logger = require('dw/system/Logger');
+var log = Logger.getLogger('KlarnaPayments');
 
 server.prepend('Begin', function (req, res, next) {
     if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
@@ -18,8 +24,6 @@ server.prepend('Begin', function (req, res, next) {
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var collections = require('*/cartridge/scripts/util/collections');
     var Transaction = require('dw/system/Transaction');
-    var currentBasket = BasketMgr.getCurrentBasket();
-
     var currentBasket = BasketMgr.getCurrentBasket();
     if (!currentBasket) {
         res.redirect(URLUtils.url('Cart-Show'));
@@ -33,8 +37,7 @@ server.prepend('Begin', function (req, res, next) {
 
     SubscriptionHelper.updateCartSubscriptionDetails(currentBasket);
 
-    var currentCustomer = req.currentCustomer.raw;
-    //preset customer address from Klarna SignIn
+    // preset customer address from Klarna SignIn
     var kpCustomerAddress = session.privacy.kpCustomerAddress ? JSON.parse(session.privacy.kpCustomerAddress) : null;
     if (kpCustomerAddress && customer.externallyAuthenticated) {
         var billingAddress = currentBasket.billingAddress;
@@ -61,18 +64,32 @@ server.prepend('Begin', function (req, res, next) {
     var klarnaSessionManager = new KlarnaSessionManager();
     klarnaSessionManager.createOrUpdateSession();
 
+    // Update the interoperability data in the session if integrated via PSP
+    var resultStatus = '';
+    try {
+        var isPSPIntegrated = JSON.parse(KlarnaHelper.getKlarnaResources().KPPreferences).isKlarnaIntegratedViaPSP;
+        if (isPSPIntegrated) {
+            var interoperabilityData = KlarnaHelper.getInteroperabilityData(currentBasket);
+            session.privacy.klarna_interoperability_data = JSON.stringify(interoperabilityData);
+            log.debug('Klarna Interoperability Data: ' + session.privacy.klarna_interoperability_data);
+            resultStatus = 'DataIsSetInSession';
+        } else {
+            resultStatus = 'PSPFlagDisabledAndDataNotSet';
+        }
+    } catch (e) {
+        log.error('Error processing Klarna interoperability data: ' + e);
+    }
+    var viewData = res.getViewData();
+    viewData.klarnaInteroperabilityDataStatus = resultStatus;
+    res.setViewData(viewData);
+
     // If BT callback required and Finalization required, review Orders
     // If Basket empty, fail Order because user refreshed the page
-    var Site = require('dw/system/Site');
     if (!currentBasket.custom.kpIsExpressCheckout) {
-        var Logger = require('dw/system/Logger');
-        var log = Logger.getLogger('KlarnaPayments');
         var Order = require('dw/order/Order');
         var OrderMgr = require('dw/order/OrderMgr');
-        var Transaction = require('dw/system/Transaction');
-
         var isBasketPending = session.privacy.isBasketPending;
-        var currentBasket = BasketMgr.getCurrentBasket();
+        currentBasket = BasketMgr.getCurrentBasket();
         if (isBasketPending === 'true' && !currentBasket) {
             session.privacy.isBasketPending = null;
             try {
@@ -114,7 +131,7 @@ server.append('Begin', function (req, res, next) {
         res.redirect(URLUtils.url('Cart-Show'));
         return next();
     }
-    //swik redirect
+    // swik redirect
     session.custom.siwk_locale = request.locale;
     var siwkError = request.httpParameterMap.siwkError.booleanValue;
     viewData.siwkError = siwkError;

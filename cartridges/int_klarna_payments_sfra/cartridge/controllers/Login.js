@@ -1,4 +1,8 @@
+/* eslint-disable sitegenesis/no-global-require */
+/* globals session, request */
+
 'use strict';
+
 /**
  * @namespace Login
  */
@@ -55,7 +59,7 @@ server.post('KlarnaSignIn', server.middleware.https, consentTracking.consent, fu
         return next();
     }
     var customerData = idTokenValidationResult.payload;
-    //check for SFCC customer not linked to Klarna
+    // check for SFCC customer not linked to Klarna
     var noKlarnaCustomerFound = signInHelper.checkCustomerExists(customerData.email);
 
     if (noKlarnaCustomerFound) {

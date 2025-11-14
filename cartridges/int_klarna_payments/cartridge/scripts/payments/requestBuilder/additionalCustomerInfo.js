@@ -38,7 +38,7 @@ AdditionalCustomerInfo.prototype.buildAdditionalCustomerPaymentHistory = functio
         paymentHistoryFull[0].number_paid_purchases = !empty( customer.activeData.orders ) ? customer.activeData.orders : 0;
         paymentHistoryFull[0].total_amount_paid_purchases = !empty( customer.activeData.orderValue ) ? customer.activeData.orderValue : 0;
 
-        if (!empty(customer.activeData.lastOrderDate)) {
+        if ( !empty( customer.activeData.lastOrderDate ) ) {
             paymentHistoryFull[0].date_of_last_paid_purchase = customer.activeData.lastOrderDate.toISOString().slice( 0, -5 ) + 'Z';
         }
     }

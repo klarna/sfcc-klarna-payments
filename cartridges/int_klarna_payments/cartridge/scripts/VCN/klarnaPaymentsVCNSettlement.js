@@ -11,9 +11,8 @@
 
 'use strict';
 
-var Site = require( 'dw/system/Site' );
 var Logger = require( 'dw/system/Logger' );
-var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
 
 /* Script Modules */
 var log = Logger.getLogger( 'klarnaPaymentsVCNSettlement.js' );
@@ -114,7 +113,7 @@ function createVCNSettlement( order, klarnaPaymentsOrderID, localeObject ) {
         log.error( 'Error in creating Klarna Payments VCN Settlement: {0}', e );
 
         var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
-        KlarnaAdditionalLogging.writeLog(order, order.custom.kpSessionId, 'klarnaPaymentsVCNSettlement.createVCNSettlement()', 'Error in creating Klarna Payments VCN Settlement. Error:' + JSON.stringify( e ) );
+        KlarnaAdditionalLogging.writeLog( order, order.custom.kpSessionId, 'klarnaPaymentsVCNSettlement.createVCNSettlement()', 'Error in creating Klarna Payments VCN Settlement. Error:' + JSON.stringify( e ) );
 
         return false;
     }

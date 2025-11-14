@@ -18,6 +18,8 @@ function Handle(basket) {
  * Authorize entry point for SG integration
  * @param {Object} orderNumber order numebr
  * @param {Object} paymentInstrument payment intrument
+ * @param {Object} paymentProcessor payment processor
+ * @param {boolean} isReccuringOrder is recurring order
  * @returns {Object} processor result
  */
 function Authorize(orderNumber, paymentInstrument, paymentProcessor, isReccuringOrder) {

@@ -1,6 +1,7 @@
 'use strict';
 
 var superMdl = module.superModule;
+var Resource = require('dw/web/Resource');
 
 var NOTIFY_EVENT_TYPES = {
     FRAUD_RISK_ACCEPTED: 'FRAUD_RISK_ACCEPTED'
@@ -34,7 +35,7 @@ var KLARNA_PAYMENT_URLS = {
     SINGLE_STEP_CHECKOUT: 'KlarnaPayments-SingleStepCheckout'
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Version: ' + dw.web.Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 25.4.0';
+var SERVICE_HEADER = 'SFCC SFRA Version: ' + Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 25.5.0';
 
 superMdl.PAYMENT_METHOD = PAYMENT_METHOD;
 superMdl.KLARNA_PAYMENT_URLS = KLARNA_PAYMENT_URLS;

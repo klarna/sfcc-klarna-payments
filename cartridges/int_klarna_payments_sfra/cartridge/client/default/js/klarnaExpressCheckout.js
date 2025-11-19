@@ -1,3 +1,5 @@
+/* globals $ */
+
 'use strict';
 
 var klarnaPreferences = window.KPPreferences;
@@ -9,12 +11,11 @@ var base = require('base/product/base');
 
 /**
  * build and display error message overlay
- * @param {string} message 
+ * @param {string} message message
  */
 function generateErrorAuthMessage(message) {
     setTimeout(function () {
-
-        var msg = message ? message : klarnaPaymentsResources.kpExpressCheckoutAuthFailure;
+        var msg = message || klarnaPaymentsResources.kpExpressCheckoutAuthFailure;
         if ($('.ec-payment-failure').length === 0) {
             $('body').append(
                 '<div class="ec-payment-failure add-to-cart-messages"></div>'
@@ -23,7 +24,7 @@ function generateErrorAuthMessage(message) {
 
         if ($('.ec-payment-failure-alert').length === 0) {
             $('.ec-payment-failure').append(
-                '<div class="alert ' + 'alert-danger' + ' ec-payment-failure-alert add-to-basket-alert text-center" role="alert">'
+                '<div class="alert alert-danger ec-payment-failure-alert add-to-basket-alert text-center" role="alert">'
                 + msg + '</div>'
             );
         }
@@ -31,12 +32,13 @@ function generateErrorAuthMessage(message) {
         setTimeout(function () {
             $('.ec-payment-failure-alert').remove();
         }, klarnaPaymentsConstants.ERROR_MSG_ALERT_TIMEOUT);
-
     }, klarnaPaymentsConstants.KEC_EEROR_WAITTIME);
 }
 
 /**
  * get add to cart product data
+ * @param {string} containerId id of the container element
+ * @returns {Object} form data
  */
 function getAddToCartData(containerId) {
     var form = {
@@ -55,7 +57,7 @@ function getAddToCartData(containerId) {
                 setPids.push({
                     pid: $(this).find('.product-id').text(),
                     qty: $(this).find('.quantity-select').val(),
-                    options: getOptions($(this))
+                    options: getOptions($(this)) // eslint-disable-line
                 });
             }
         });
@@ -67,9 +69,8 @@ function getAddToCartData(containerId) {
 
 /**
  * Initialize Klarna Express Checkout button
- * @param {Object} container div container element
- * @param {Boolean} isPDP flag for pdp call
- * @param {String} containerId id of the container element
+ * @param {Object} containerId div container element
+ * @param {boolean} isPDP flag for pdp call
  */
 function initKlarnaExpressButton(containerId, isPDP) {
     window.Klarna.Payments.Buttons.init({
@@ -91,7 +92,7 @@ function initKlarnaExpressButton(containerId, isPDP) {
                 }
             }
             var url = klarnaPaymentsUrls.generateExpressCheckoutPayload;
-            url+= (url.indexOf('?') !== -1 ? '&' : '?') + 'populateAddress=false&isPDP=' + isPDP;
+            url += (url.indexOf('?') !== -1 ? '&' : '?') + 'populateAddress=false&isPDP=' + isPDP;
             $.ajax({
                 url: url,
                 type: 'POST',
@@ -99,8 +100,9 @@ function initKlarnaExpressButton(containerId, isPDP) {
                 dataType: 'json',
                 success: function (data) {
                     if (data.success) {
+                        // eslint-disable-next-line no-param-reassign
                         data.payload.merchant_urls = {
-                            'authorization': klarnaPaymentsUrls.expressCheckoutAuthCallback
+                            authorization: klarnaPaymentsUrls.expressCheckoutAuthCallback
                         };
                         authorize(
                             { collect_shipping_address: true, auto_finalize: false },
@@ -114,14 +116,14 @@ function initKlarnaExpressButton(containerId, isPDP) {
                                         dataType: 'json',
                                         contentType: 'application/json',
                                         data: JSON.stringify(result),
-                                        success: function (data) {
-                                            if (data.redirectUrl) {
-                                                window.location.href = data.redirectUrl;
+                                        success: function (response) {
+                                            if (response.redirectUrl) {
+                                                window.location.href = response.redirectUrl;
                                             }
                                         }
                                     });
                                 } else {
-                                    //revert original basket
+                                    // revert original basket
                                     if (isPDP) {
                                         $.ajax({
                                             url: klarnaPaymentsUrls.handleAuthFailurePDP,
@@ -135,22 +137,19 @@ function initKlarnaExpressButton(containerId, isPDP) {
                                 }
                             },
                         );
-                    } else {
-                        if (!data.success && data.redirectUrl) {
-                            window.location.href = data.redirectUrl;
-                        }
+                    } else if (!data.success && data.redirectUrl) {
+                        window.location.href = data.redirectUrl;
                     }
                 },
                 error: function (err) {
-                    console.log(err);
+                    console.log(err); // eslint-disable-line
                 }
             });
-        },
+        }
     },
-        function load_callback(loadResult) {
-            // Here you can handle the result of loading the button
-        },
-    );
+    function load_callback(loadResult) { // eslint-disable-line
+        // Here you can handle the result of loading the button
+    });
 }
 
 
@@ -160,7 +159,7 @@ window.klarnaAsyncCallback = function () {
     var klarnaExpressCheckoutPDP = document.querySelector('#klarnaExpressCheckoutPDP');
 
     if (klarnaExpressCheckoutCart.length > 0) {
-        klarnaExpressCheckoutCart.forEach(function (element, index) {
+        klarnaExpressCheckoutCart.forEach(function (element, index) { // eslint-disable-line
             initKlarnaExpressButton('#' + element.dataset.contId, false);
         });
     }

@@ -1,3 +1,5 @@
+/* globals session */
+
 'use strict';
 
 /**
@@ -109,7 +111,7 @@ server.append('Show', server.middleware.https, consentTracking.consent, csrfProt
 });
 
 /**
- * Cart-UpdateSubscriptionPeriod : The Cart-UpdateSubscriptionPeriod endpoint handles updating the subscription 
+ * Cart-UpdateSubscriptionPeriod : The Cart-UpdateSubscriptionPeriod endpoint handles updating the subscription
  * period in the basket
  * @name Cart-UpdateSubscriptionPeriod
  * @function
@@ -136,15 +138,14 @@ server.get('UpdateSubscriptionDetails', function (req, res, next) {
     }
 
     var selectedValue = req.querystring.selectedValue;
-    var subscriptionField = req.querystring.subscriptionField
+    var subscriptionField = req.querystring.subscriptionField;
     var updated = SubscriptionHelper.updateSubscriptionAttribute(currentBasket, subscriptionField, selectedValue);
 
     if (updated) {
         res.json({
             error: false
         });
-    }
-    else {
+    } else {
         res.json({
             error: true,
             errorMessage: subscriptionField + ' value - ' + selectedValue + ' not found in' + subscriptionField + ' configurarion.'

@@ -7,8 +7,6 @@
 var server = require('server');
 
 var csrfProtection = require('*/cartridge/scripts/middleware/csrf');
-var userLoggedIn = require('*/cartridge/scripts/middleware/userLoggedIn');
-var consentTracking = require('*/cartridge/scripts/middleware/consentTracking');
 
 var page = module.superModule; // inherits functionality
 server.extend(page);
@@ -44,7 +42,6 @@ server.prepend(
             return next();
         }
 
-        var CustomerMgr = require('dw/customer/CustomerMgr');
         var Resource = require('dw/web/Resource');
         var signInHelper = require('*/cartridge/scripts/signin/klarnaSignIn');
 
@@ -58,8 +55,7 @@ server.prepend(
         ) {
             registrationForm.customer.email.valid = false;
             registrationForm.customer.emailconfirm.valid = false;
-            registrationForm.customer.emailconfirm.error =
-                Resource.msg('error.message.mismatch.email', 'forms', null);
+            registrationForm.customer.emailconfirm.error = Resource.msg('error.message.mismatch.email', 'forms', null);
             registrationForm.valid = false;
         }
 
@@ -76,7 +72,7 @@ server.prepend(
                 fields: formErrors.getFormErrors(registrationForm)
             });
             this.emit('route:Complete', req, res);
-            return;
+            return; // eslint-disable-line consistent-return
         }
 
         return next();

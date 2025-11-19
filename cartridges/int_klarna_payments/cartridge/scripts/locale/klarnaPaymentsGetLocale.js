@@ -53,7 +53,7 @@ function getLocaleObject( currentCountry ) {
         } else {
             Object.keys( customlocaleObject.custom ).forEach( function( key ) {
                 localeObject.custom[key] = customlocaleObject.custom[key];
-            });
+            } );
         }
         if ( countryCode !== 'default' ) {
             localeObject.custom.klarnaLocale = buildKlarnaCompatibleLocale();

@@ -103,7 +103,7 @@ KECOrderLineItem.prototype.build = function( li ) {
         var itemObj = this.item;
         Transaction.wrap( function() {
             li.custom.klarna_oms__lineItemJSON = JSON.stringify( itemObj );
-        });
+        } );
     }
 
     return this.item;

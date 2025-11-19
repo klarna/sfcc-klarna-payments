@@ -1,7 +1,8 @@
+/* globals $, Klarna */
+
 'use strict';
 
 var klarnaPreferences = window.KPPreferences;
-var klarnaUrls = window.KlarnaPaymentsUrls;
 
 var redirectUri = klarnaPreferences.kpSignInRedirectUri;
 
@@ -15,18 +16,18 @@ window.onload = async function () {
     const siwkButton = klarna.Identity.button({
         scope: klarnaPreferences.kpSignInScope,
         redirectUri: redirectUri,
-        interactionMode: "DEVICE_BEST",
+        interactionMode: 'DEVICE_BEST',
         hideOverlay: false,
         shape: klarnaPreferences.kpSignInButtonShape,
         theme: klarnaPreferences.kpSignInButtonTheme,
         logoAlignment: klarnaPreferences.kpSignInButtonLogoAlignment
-    })
-    siwkButton.mount(".klarna-signin-button #container");
+    });
+    siwkButton.mount('.klarna-signin-button #container');
 
-    sessionStorage.setItem("siwkRedirectError", window.location.href);
-    sessionStorage.setItem("siwkRedirect", $('.klarna-signin-button').attr('action-url'));
+    sessionStorage.setItem('siwkRedirectError', window.location.href);
+    sessionStorage.setItem('siwkRedirect', $('.klarna-signin-button').attr('action-url'));
 
-    klarna.Identity.on("signin", (data) => {
+    klarna.Identity.on('signin', (data) => {
         var url = $('.klarna-signin-button').attr('action-url');
         $.ajax({
             url: url,
@@ -34,9 +35,9 @@ window.onload = async function () {
             data: { data: JSON.stringify(data) },
             context: this,
             dataType: 'json',
-            success: function (data) {
-                if (data.success) {
-                    location.href = data.redirectUrl;
+            success: function (response) {
+                if (response.success) {
+                    location.href = response.redirectUrl; // eslint-disable-line no-restricted-globals
                 } else {
                     $('.klarna-login-error').removeClass('d-none');
                 }
@@ -47,7 +48,7 @@ window.onload = async function () {
         });
     });
 
-    klarna.Identity.on("error", (data) => {
+    klarna.Identity.on('error', (data) => { // eslint-disable-line no-unused-vars
         $('.klarna-login-error').removeClass('d-none');
     });
-}
+};

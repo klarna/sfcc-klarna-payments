@@ -1,8 +1,9 @@
+/* globals $ */
 
 'use strict';
 
 $(function () {
-    //handle express checkout button on variation change
+    // handle express checkout button on variation change
     $('body').on('product:afterAttributeSelect', function (e, response) {
         $('#klarnaExpressCheckoutPDP').show();
         if (!response.data.product.readyToOrder || !response.data.product.available) {
@@ -12,7 +13,7 @@ $(function () {
         }
     });
 
-    //handle express checkout button on pdp load, hide it for subscription only products
+    // handle express checkout button on pdp load, hide it for subscription only products
     if ($('#klarnaExpressCheckoutPDP').data('subscriptiononly')) {
         $('#klarnaExpressCheckoutPDP').hide();
     }

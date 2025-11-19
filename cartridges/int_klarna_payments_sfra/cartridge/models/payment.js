@@ -23,8 +23,7 @@ function applicablePaymentMethods(paymentMethods) {
     var isKlarnaIntegratedViaPSP = JSON.parse(KlarnaHelper.getKlarnaResources().KPPreferences).isKlarnaIntegratedViaPSP;
     while (iterator.hasNext()) {
         method = iterator.next();
-        if (method.ID.indexOf(KLARNA_PAYMENT_DEFAULT) === -1 ||
-            (method.ID.indexOf(KLARNA_PAYMENT_DEFAULT) >= 0 && method.ID === KLARNA_PAYMENT_METHOD && !isKlarnaIntegratedViaPSP)) {
+        if (method.ID.indexOf(KLARNA_PAYMENT_DEFAULT) === -1 || (method.ID.indexOf(KLARNA_PAYMENT_DEFAULT) >= 0 && method.ID === KLARNA_PAYMENT_METHOD && !isKlarnaIntegratedViaPSP)) {
             result.add({
                 ID: method.ID,
                 name: method.name
@@ -54,6 +53,7 @@ function applicablePaymentCards(paymentCards) {
  * Creates an array of objects containing selected payment information
  * @param {dw.util.ArrayList<dw.order.PaymentInstrument>} selectedPaymentInstruments - ArrayList
  *      of payment instruments that the user is using to pay for the current basket
+ * @param {string} currencyCode - The currency code of the current basket
  * @returns {Array} Array of objects that contain information about the selected payment instruments
  */
 function getSelectedPaymentInstruments(selectedPaymentInstruments, currencyCode) {
@@ -96,20 +96,16 @@ function Payment(currentBasket, currentCustomer, countryCode) {
         currentCustomer,
         countryCode,
         paymentAmount.value
-	);
+    );
 
-    var paymentCards = PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD)
-	.getApplicablePaymentCards(currentCustomer, countryCode, paymentAmount.value);
+    var paymentCards = PaymentMgr.getPaymentMethod(PaymentInstrument.METHOD_CREDIT_CARD).getApplicablePaymentCards(currentCustomer, countryCode, paymentAmount.value);
     var paymentInstruments = currentBasket.paymentInstruments;
 
-    this.applicablePaymentMethods =
-	paymentMethods ? applicablePaymentMethods(paymentMethods) : null;
+    this.applicablePaymentMethods = paymentMethods ? applicablePaymentMethods(paymentMethods) : null;
 
-    this.applicablePaymentCards =
-	paymentCards ? applicablePaymentCards(paymentCards) : null;
+    this.applicablePaymentCards = paymentCards ? applicablePaymentCards(paymentCards) : null;
 
-    this.selectedPaymentInstruments = paymentInstruments ?
-	getSelectedPaymentInstruments(paymentInstruments, currentBasket.currencyCode) : null;
+    this.selectedPaymentInstruments = paymentInstruments ? getSelectedPaymentInstruments(paymentInstruments, currentBasket.currencyCode) : null;
 }
 
 module.exports = Payment;

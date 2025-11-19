@@ -7,7 +7,6 @@ var collections = require('*/cartridge/scripts/util/collections');
 var ProductInventoryMgr = require('dw/catalog/ProductInventoryMgr');
 var StoreMgr = require('dw/catalog/StoreMgr');
 
-var Resource = require('dw/web/Resource');
 var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
 
 /**
@@ -16,7 +15,6 @@ var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionH
  * @returns {Object} an error object
  */
 superMdl.validateProducts = function (basket) {
-
     var result = {
         error: false,
         hasInventory: true

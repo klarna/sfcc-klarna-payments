@@ -15,9 +15,9 @@
 
 
 var KlarnaPayments = {
-    httpService: require('*/cartridge/scripts/common/klarnaPaymentsHttpService'),
-    apiContext: require('*/cartridge/scripts/common/klarnaPaymentsApiContext'),
-    customerTokenRequestBuilder: require('*/cartridge/scripts/payments/requestBuilder/customerToken')
+    httpService: require( '*/cartridge/scripts/common/klarnaPaymentsHttpService' ),
+    apiContext: require( '*/cartridge/scripts/common/klarnaPaymentsApiContext' ),
+    customerTokenRequestBuilder: require( '*/cartridge/scripts/payments/requestBuilder/customerToken' )
 };
 
 /**
@@ -26,12 +26,12 @@ var KlarnaPayments = {
  * @param {Object} args Object parameters
  * @return {number} status
  */
-function execute(args) {
+function execute( args ) {
     var order = args.Order;
     var localeObject = args.LocaleObject;
     var klarnaAuthorizationToken = args.KlarnaAuthorizationToken;
-    var result = createCustomerToken(order, localeObject, klarnaAuthorizationToken);
-    if (!result.success) {
+    var result = createCustomerToken( order, localeObject, klarnaAuthorizationToken );
+    if ( !result.success ) {
         return PIPELET_ERROR;
     }
     args.order_id = result.order_id;
@@ -47,36 +47,35 @@ function execute(args) {
  * @param {Object} localeObject locale object
  * @returns {Object} request object
  */
-function _getRequestBody(order, localeObject) {
+function _getRequestBody( order, localeObject ) {
     var customerTokenRequestBuilder = new KlarnaPayments.customerTokenRequestBuilder();
 
-    customerTokenRequestBuilder.setParams({
+    customerTokenRequestBuilder.setParams( {
         order: order,
         localeObject: localeObject
-    });
+    } );
 
     return customerTokenRequestBuilder.build();
 }
 
 /**
  * Function to create Klarna Order
- * 
  * @param {dw.order.Order} order SFCC order object
  * @param {Object} localeObject locale object
  * @param {string} klarnaAuthorizationToken Authentication token to be used in Klarna API
  * @return {Object} status, order id, redirect url and fraud status
  */
-function createCustomerToken(order, localeObject, klarnaAuthorizationToken) {
-    var logger = dw.system.Logger.getLogger('klarnaPaymentsCreateCustomerToken.js');
-    var KlarnaAdditionalLogging = require('*/cartridge/scripts/util/klarnaAdditionalLogging');
+function createCustomerToken( order, localeObject, klarnaAuthorizationToken ) {
+    var logger = dw.system.Logger.getLogger( 'klarnaPaymentsCreateCustomerToken.js' );
+    var KlarnaAdditionalLogging = require( '*/cartridge/scripts/util/klarnaAdditionalLogging' );
 
     try {
         var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
-        var requestBody = _getRequestBody(order, localeObject);
-        var requestUrl = dw.util.StringUtils.format(klarnaApiContext.getFlowApiUrls().get('createCustomerToken'), klarnaAuthorizationToken);
-        var serviceID = klarnaApiContext.getFlowApiIds().get('createCustomerToken');
-        var response = klarnaPaymentsHttpService.call(serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody);
+        var requestBody = _getRequestBody( order, localeObject );
+        var requestUrl = dw.util.StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'createCustomerToken' ), klarnaAuthorizationToken );
+        var serviceID = klarnaApiContext.getFlowApiIds().get( 'createCustomerToken' );
+        var response = klarnaPaymentsHttpService.call( serviceID, requestUrl, 'POST', localeObject.custom.credentialID, requestBody );
 
         return {
             success: true,
@@ -85,10 +84,10 @@ function createCustomerToken(order, localeObject, klarnaAuthorizationToken) {
             response: response
         };
 
-    } catch (e) {
-        logger.error('Error in creating Klarna Payments Customer Token: {0}', e.message + e.stack);
+    } catch ( e ) {
+        logger.error( 'Error in creating Klarna Payments Customer Token: {0}', e.message + e.stack );
 
-        KlarnaAdditionalLogging.writeLog(order, order.custom.kpSessionId, 'klarnaPaymentsCreateCustomerToken.createCustomerToken()', 'Error in creating Klarna Payments Order. Error:' + JSON.stringify(e));
+        KlarnaAdditionalLogging.writeLog( order, order.custom.kpSessionId, 'klarnaPaymentsCreateCustomerToken.createCustomerToken()', 'Error in creating Klarna Payments Order. Error:' + JSON.stringify( e ) );
 
         return {
             success: false,

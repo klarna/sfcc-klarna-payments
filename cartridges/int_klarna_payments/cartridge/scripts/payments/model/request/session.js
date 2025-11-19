@@ -1,4 +1,4 @@
-(function () {
+( function() {
     'use strict';
 
     /**
@@ -22,13 +22,14 @@
     /**
      * KP session request model
      * @param {boolean} preAssement If locale country is preassessed
+     * @param {boolean} kpIsExpressCheckout If Klarna Pay is in express checkout mode
      * @returns {void}
      */
-    function KlarnaPaymentsSessionModel(preAssement, kpIsExpressCheckout) {
+    function KlarnaPaymentsSessionModel( preAssement, kpIsExpressCheckout ) {
         this.purchase_country = '';
         this.purchase_currency = '';
         this.locale = '';
-        if (preAssement || kpIsExpressCheckout) {
+        if ( preAssement || kpIsExpressCheckout ) {
             this.billing_address = new Address();
             this.shipping_address = new Address();
         }
@@ -62,4 +63,4 @@
     module.exports.KlarnaPaymentsSessionModel = KlarnaPaymentsSessionModel;
     module.exports.LineItem = LineItem;
     module.exports.Address = Address;
-}());
+}() );

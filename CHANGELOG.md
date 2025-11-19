@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 25.5.0
+* When Klarna payments are integrated through a PSP, the interoperability_data is required by the PSP for payment processing and order finalization. As part of this release, we have added interoperability_data to the session. This data includes the order amount and the order lines for which the payment was initiated. The PSP will be able to retrieve this information from the session for further processing.
+
 ## 25.4.0
 * Added webhook subscription for KEC one-step checkout via PSP. A storefront site can now subscribe to webhook and receive notifications for subscribed payment events. These notifications are stored in a custom object for further processing.
 * Fixed unnecessary error logging during checkout, where subscription-related errors were being logged even when no subscription products were present in the cart. 

@@ -1,3 +1,5 @@
+/* globals session */
+
 'use strict';
 
 var server = require('server');

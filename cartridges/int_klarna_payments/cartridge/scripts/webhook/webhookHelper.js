@@ -46,9 +46,12 @@ function getExistingSigningKey() {
  * @returns {(dw.object.CustomObject|null)} The created custom object, or null if input is invalid.
  */
 function saveSigningKey( signingKeyObj ) {
-    var signingKeyId = signingKeyObj ? signingKeyObj.signing_key_id : null;
-    var signingKey = signingKeyObj ? signingKeyObj.signing_key : null;
-    var createdDate = signingKeyObj ? signingKeyObj.created_at : null;
+    if ( !signingKeyObj ) {
+        return null;
+    }
+    var signingKeyId = signingKeyObj.signing_key_id;
+    var signingKey = signingKeyObj.signing_key;
+    var createdDate = signingKeyObj.created_at;
     if ( !signingKeyId || !signingKey || !createdDate ) {
         return null;
     }
@@ -228,10 +231,7 @@ function validateWebhookSignature( data ) {
     var hmacBytes = mac.digest( requestBody, signingKey );
     var computedSignature = Encoding.toHex( hmacBytes );
 
-    if ( computedSignature === klarnaSignature ) {
-        return true;
-    }
-    return false;
+    return computedSignature === klarnaSignature;
 }
 
 /**

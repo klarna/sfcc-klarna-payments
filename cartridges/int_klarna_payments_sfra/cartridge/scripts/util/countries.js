@@ -13,8 +13,8 @@ function getCountries() {
     var allowedLocales = site.getAllowedLocales();
     var allowedCountries = countriesData.filter(function (country) {
         var hasAllowedLocale = false;
-		// loop over allowed locales
-        for (var i = 0; i < allowedLocales.length; i++) {
+        // loop over allowed locales
+        for (var i = 0; i < allowedLocales.length; i++) { // eslint-disable-line no-plusplus
             var locale = Locale.getLocale(allowedLocales[i]);
             if (country.id === locale.ID) {
                 hasAllowedLocale = true;
@@ -42,14 +42,14 @@ function getCurrent(requestObj) {
     if (!currentLocale) {
         return countriesData[0]; // return the first in the list if the requested one is not available
     }
-    for (var i = 0; i < countriesData.length; i++) {
+    for (var i = 0; i < countriesData.length; i++) { // eslint-disable-line no-plusplus
         var country = countriesData[i];
         if (country.id === currentLocale) {
             selectedCountry = country;
             break;
         }
     }
-    return selectedCountry || countriesData[0];  // return the first in the list if the requested one is not available
+    return selectedCountry || countriesData[0]; // return the first in the list if the requested one is not available
 }
 
 exports.getCountries = getCountries;

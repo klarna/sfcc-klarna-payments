@@ -7,14 +7,32 @@ var productHelper = require('*/cartridge/scripts/helpers/productHelpers');
 var ProductMgr = require('dw/catalog/ProductMgr');
 var Resource = require('dw/web/Resource');
 
+/**
+ * Sets the Klarna subscription flag on a product line item if the product is a subscription product.
+ *
+ * @param {dw.order.ProductLineItem} productLineItem - The product line item to update.
+ * @param {dw.catalog.Product} product - The product object containing subscription-related custom attributes.
+ */
 function setSubscriptionValue(productLineItem, product) {
     var isSubscriptionProduct = product.custom.kpIsSubscriptionProduct;
-    var isStandardProduct = !empty(product.custom.kpIsStandardProduct) ? product.custom.kpIsStandardProduct : true;
+    var isStandardProduct = !empty(product.custom.kpIsStandardProduct) ? product.custom.kpIsStandardProduct : true; // eslint-disable-line no-undef
     if (isSubscriptionProduct && !isStandardProduct) {
-        productLineItem.custom.kpSubscription = true;
+        productLineItem.custom.kpSubscription = true; // eslint-disable-line no-param-reassign
     }
 }
 
+/**
+ * Adds a product line item to the current basket with optional child products and options.
+ * Also sets Klarna subscription flags where applicable.
+ *
+ * @param {dw.order.Basket} currentBasket - The current basket to which the product will be added.
+ * @param {dw.catalog.Product} product - The product to add as a line item.
+ * @param {number} quantity - The quantity of the product to add.
+ * @param {dw.catalog.Product[]} childProducts - The list of child products (if the main product is a bundle).
+ * @param {dw.catalog.ProductOptionModel} optionModel - The product option model, if applicable.
+ * @param {dw.order.Shipment} defaultShipment - The shipment to which the product line item will be assigned.
+ * @returns {dw.order.ProductLineItem} The created product line item.
+ */
 function addLineItem(currentBasket, product, quantity, childProducts, optionModel, defaultShipment) {
     var productLineItem = currentBasket.createProductLineItem(
         product,
@@ -31,9 +49,7 @@ function addLineItem(currentBasket, product, quantity, childProducts, optionMode
     setSubscriptionValue(productLineItem, product);
 
     return productLineItem;
-
-
-};
+}
 
 /**
  * Adds a product to the cart. If the product is already in the cart it increases the quantity of
@@ -68,8 +84,7 @@ superMdl.addProductToCart = function (currentBasket, productId, quantity, childP
     } else {
         totalQtyRequested = quantity + superMdl.getQtyAlreadyInCart(productId, productLineItems);
         perpetual = product.availabilityModel.inventoryRecord.perpetual;
-        canBeAdded =
-            (perpetual
+        canBeAdded = (perpetual
                 || totalQtyRequested <= product.availabilityModel.inventoryRecord.ATS.value);
     }
 
@@ -85,8 +100,7 @@ superMdl.addProductToCart = function (currentBasket, productId, quantity, childP
         return result;
     }
 
-    productInCart = superMdl.getExistingProductLineItemInCart(
-        product, productId, productLineItems, childProducts, options);
+    productInCart = superMdl.getExistingProductLineItemInCart(product, productId, productLineItems, childProducts, options);
 
     if (productInCart) {
         productQuantityInCart = productInCart.quantity.value;
@@ -117,6 +131,6 @@ superMdl.addProductToCart = function (currentBasket, productId, quantity, childP
     }
 
     return result;
-}
+};
 
 module.exports = superMdl;

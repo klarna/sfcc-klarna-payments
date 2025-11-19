@@ -860,3 +860,194 @@ describe('POST Login-KlarnaSignIn Integration Test', function () {
   });
 
 });
+
+describe('KlarnaPayments-SingleStepCheckout Integration Tests', function () {
+    this.timeout(20000);
+
+    const jar = request.jar();
+    const variantId = testData.variantId;
+
+    // SETUP: Simulate a user visiting the Product Detail Page (PDP).
+    before(async function() {
+        var myRequest = {
+            url: config.baseUrl + '/Product-Show?pid=' + variantId,
+            method: 'GET',
+            rejectUnauthorized: false,
+            resolveWithFullResponse: true,
+            jar: jar
+        };
+        await requestPromise(myRequest);
+    });
+
+    it('should return a payment request ID for a valid PDP request', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-SingleStepCheckout?isPDP=true',
+            body: {
+                pid: testData.variantId,
+                quantity: '1',
+                options: JSON.stringify([]),
+                childProducts: JSON.stringify([])
+            },
+            jar: jar, // Use the session from the PDP visit.
+            json: true,
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const responseBody = response.body;
+
+        expect(response.statusCode).to.equal(200);
+        expect(responseBody).to.have.property('paymentRequestId');
+    });
+
+    it('should correctly set or skip interoperability data based on PSP integration', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-SingleStepCheckout?isPDP=true',
+            body: {
+                pid: testData.variantId,
+                quantity: '1',
+                options: JSON.stringify([]),
+                childProducts: JSON.stringify([])
+            },
+            jar: jar,
+            json: true,
+            resolveWithFullResponse: true
+        };
+        const response = await requestPromise(options);
+        const body = response.body;
+        expect(response.statusCode).to.equal(200);
+        expect(body).to.have.property('klarnaInteroperabilityDataStatus');
+        const allowedStatuses = ['DataIsSetInSession', 'PSPFlagDisabledAndDataNotSet'];
+        const actualStatus = body.klarnaInteroperabilityDataStatus;
+        expect(allowedStatuses).to.include(
+            actualStatus,
+            `Expected interoperability data status to be one of ${allowedStatuses.join(', ')}, but got ${actualStatus}`
+        );
+    });
+
+    it('should return an error when no basket exists for a non-PDP request', async function () {
+        const newJar = requestPromise.jar();
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-SingleStepCheckout?isPDP=false',
+            jar: newJar,
+            json: true,
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        expect(response.statusCode).to.equal(200);
+        expect(response.body.success).to.be.false;
+        expect(response.body).to.have.property('redirectUrl');
+    });
+
+    it('should return a success:false response for a malformed request body', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-SingleStepCheckout?isPDP=true',
+            body: '{ "pid": "some-id", "quantity": 1, ...this is not valid json', // Malformed body
+            headers: { 'Content-Type': 'application/json' },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const responseBody = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(responseBody.success).to.be.false;
+    });
+
+});
+
+describe('KlarnaPayments-WebhookNotification Integration Tests', function () {
+    this.timeout(20000);
+    it('should respond with 400 for a notification with an invalid signature', async function () {
+        const notificationPayload = {
+            payload: {
+                payment_request_id: 'some-request-id-12345'
+            }
+        };
+
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-WebhookNotification',
+            body: JSON.stringify(notificationPayload),
+            headers: {
+                'Content-Type': 'application/json',
+                'klarna-signature': 'this-signature-is-invalid'
+            },
+            simple: false,
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        expect(response.statusCode).to.equal(400);
+    });
+
+    it('should respond with 400 for a notification with a malformed payload', async function () {
+        const malformedPayload = {
+            some_other_key: 'some-value'
+        };
+
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-WebhookNotification',
+            body: JSON.stringify(malformedPayload),
+            headers: {
+                'Content-Type': 'application/json',
+                'klarna-signature': 'any-signature'
+            },
+            simple: false,
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        expect(response.statusCode).to.equal(400);
+    });
+});
+
+describe('GET Checkout-Begin Integration Test', function () {
+    this.timeout(20000);
+    it('should correctly set or skip interoperability data based on PSP integration', async function () {
+        const variantId = testData.variantId;
+        const quantity = '1';
+        const jar = request.jar();
+
+        // Add product to cart
+        let myRequest = {
+            url: config.baseUrl + '/Cart-AddProduct',
+            method: 'POST',
+            rejectUnauthorized: false,
+            resolveWithFullResponse: true,
+            jar: jar,
+            headers: { 'X-Requested-With': 'XMLHttpRequest' },
+            form: { pid: variantId, quantity: quantity }
+        };
+        const addToCartResponse = await requestPromise(myRequest);
+        expect(addToCartResponse.statusCode).to.equal(200);
+
+        // Hit Checkout-Begin
+        myRequest = {
+            url: config.baseUrl + '/Checkout-Begin',
+            method: 'GET',
+            rejectUnauthorized: false,
+            resolveWithFullResponse: true,
+            jar: jar
+        };
+        const checkoutResponse = await requestPromise(myRequest);
+        expect(checkoutResponse.statusCode).to.equal(200);
+
+        // Parse the HTML string
+        const regex = /\sdata-klarna-interop-status\s*=\s*"([^"]*)"/;
+        const match = checkoutResponse.body.match(regex);
+        expect(match).to.not.be.null;
+        expect(match).to.have.lengthOf(2);
+        const status = match[1];
+        expect(status).to.be.oneOf([
+            'DataIsSetInSession',
+            'PSPFlagDisabledAndDataNotSet'
+        ]);
+    });
+});

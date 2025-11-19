@@ -135,7 +135,7 @@
         var billingAddress = basket.getBillingAddress();
 
         if ( empty( currentCustomer ) || empty( currentCustomer.profile ) ) {
-            var billingAddress = billingAddress || basket.getShipments().iterator().next().getShippingAddress();
+            billingAddress = billingAddress || basket.getShipments().iterator().next().getShippingAddress();
             if ( empty( billingAddress ) ) {
                 return this;
             }
@@ -148,7 +148,7 @@
 
         if ( billingAddress ) {
             this.context.billing_address = this.getAddressRequestBuilder().build( billingAddress );
-            this.context.billing_address.email =  basket.customerEmail || currentCustomer.profile.email;
+            this.context.billing_address.email = basket.customerEmail || currentCustomer.profile.email;
             return this;
         }
 
@@ -204,7 +204,7 @@
 
         if ( shippingAddress ) {
             this.context.shipping_address = this.getAddressRequestBuilder().build( shippingAddress );
-            this.context.shipping_address.email =  basket.customerEmail || currentCustomer.profile.email || '';
+            this.context.shipping_address.email = basket.customerEmail || currentCustomer.profile.email || '';
             return this;
         }
 
@@ -218,7 +218,7 @@
             this.context.shipping_address = this.getAddressRequestBuilder().build( customerPreferredAddress );
         }
         
-        this.context.shipping_address.email =  basket.customerEmail || currentCustomer.profile.email || '';
+        this.context.shipping_address.email = basket.customerEmail || currentCustomer.profile.email || '';
 
         return this;
     };
@@ -241,7 +241,7 @@
 
         var subscription = null;
         
-        if (basket.custom.kpSubscriptionPeriod.value && basket.custom.kpSubscriptionFrequency.value) {
+        if ( basket.custom.kpSubscriptionPeriod.value && basket.custom.kpSubscriptionFrequency.value ) {
             subscription = {
                 interval: basket.custom.kpSubscriptionPeriod.value.toUpperCase(),
                 interval_count: basket.custom.kpSubscriptionFrequency.value
@@ -336,7 +336,7 @@
             kpColorTextSecondary: currentSite.getCustomPreferenceValue( 'kpColorTextSecondary' ),
             kpRadiusBorder: currentSite.getCustomPreferenceValue( 'kpRadiusBorder' )
         };
-        var kpColorCustomizationConfig =  currentSite.getCustomPreferenceValue( 'kpColorCustomization' );
+        var kpColorCustomizationConfig = currentSite.getCustomPreferenceValue( 'kpColorCustomization' );
         var options = this.getOptionsRequestBuilder().build( preferences );
 
         this.context.options = !empty( kpColorCustomizationConfig ) ? JSON.parse ( kpColorCustomizationConfig ) : options;
@@ -493,7 +493,7 @@
 
         this.setPaymentIntent ( basket );
 
-        if ( preAssement || kpIsExpressCheckout) {
+        if ( preAssement || kpIsExpressCheckout ) {
             this.buildBilling( basket );
             this.buildShipping( basket );
         }

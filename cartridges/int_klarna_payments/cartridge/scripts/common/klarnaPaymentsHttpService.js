@@ -10,14 +10,14 @@
  *
  */
 
-var Logger = require('dw/system/Logger');
-var LocalServiceRegistry = require('dw/svc/LocalServiceRegistry');
-var StringUtils = require('dw/util/StringUtils');
-var Site = require('dw/system/Site');
-var Resource = require('dw/web/Resource');
+var Logger = require( 'dw/system/Logger' );
+var LocalServiceRegistry = require( 'dw/svc/LocalServiceRegistry' );
+var StringUtils = require( 'dw/util/StringUtils' );
+var Site = require( 'dw/system/Site' );
+var Resource = require( 'dw/web/Resource' );
 
 var SERVICE_HEADER = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).SERVICE_HEADER;
-var SERVICE_ID = require('*/cartridge/scripts/util/klarnaPaymentsConstants').KLARNA_SERVICE;
+var SERVICE_ID = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).KLARNA_SERVICE;
 
 /**
  * @constructor
@@ -38,10 +38,13 @@ KlarnaPaymentsHttpService.prototype.getLastStatusCode = function() {
 /**
  * Executes an HTTP request to Klarna API
  *
+ * @param {string} serviceID - Klarna service ID.
  * @param {string} urlPath - URL path.
  * @param {string} httpVerb - a valid HTTP verb.
  * @param {string} credentialID - DW service credentials ID.
  * @param {Object} requestBody - optional, JSON body.
+ * @param {string} klarnaSessionID - Klarna Session ID.
+ * @param {string} klarnaIdempotencyKey - Klarna Idempotency Key.
  * @returns {string} Parsed JSON response; if not available - response status code.
  */
 KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVerb, credentialID, requestBody, klarnaSessionID, klarnaIdempotencyKey ) {
@@ -57,7 +60,7 @@ KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVer
         filterLogMessage: function( msg ) {
             try {
                 return maskPersonalDetails( JSON.parse( msg ) );
-            } catch( e ) {
+            } catch ( e ) {
                 return msg;
             }
         },
@@ -75,13 +78,13 @@ KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVer
     } );
 
     //service.setCredentialID( credentialID );
-    setServiceCredentials(service, credentialID);
+    setServiceCredentials( service, credentialID );
     service.URL += urlPath;
     service.addHeader( 'Content-Type', 'application/json' );
     service.addHeader( 'Accept', 'application/json' );
     service.addHeader( 'User-Agent', SERVICE_HEADER );
 
-    if (!empty(klarnaIdempotencyKey) && klarnaIdempotencyKey !== 'undefined') {
+    if ( !empty( klarnaIdempotencyKey ) && klarnaIdempotencyKey !== 'undefined' ) {
         service.addHeader( 'Klarna-Idempotency-Key', klarnaIdempotencyKey );
     }
 
@@ -89,7 +92,7 @@ KlarnaPaymentsHttpService.prototype.call = function( serviceID, urlPath, httpVer
         service.setRequestMethod( httpVerb );
     }
 
-    var result;
+    var result = null;
     try {
         if ( empty( requestBody ) ) {
             result = service.call();
@@ -143,20 +146,22 @@ KlarnaPaymentsHttpService.prototype.isValidHttpVerb = function( httpVerb ) {
  * @param {string} httpVerb - a valid HTTP verb.
  * @param {string} requestUrl - The URL used to make the request.
  * @param {JSON} requestBody - optional, JSON body.
+ * @param {string} klarnaSessionID - Klarna Session ID.
+ * @param {string} serviceID - Klarna Service ID.
  * @returns {void}
  */
 KlarnaPaymentsHttpService.prototype.detectErrorResponse = function( result, httpVerb, requestUrl, requestBody, klarnaSessionID, serviceID ) {
     if ( empty( result ) ) {
         this.logger.error( 'result was empty' );
         throw new Error( this.getErrorResponse( 'default' ) );
-    } else if ( result.error == 404 ) {
+    } else if ( result.error === 404 ) {
         this.logErrorResponse( result, requestUrl, requestBody, klarnaSessionID );
         throw new Error( result );
         //log error response for all 5xx status codes but not fail order 
     } else if ( result.error > 499 && result.error < 600 ) {
         this.logErrorResponse( result, requestUrl, requestBody, klarnaSessionID );
-        if (serviceID && serviceID.indexOf('createOrder') != -1) {
-            throw new Error(result);
+        if ( serviceID && serviceID.indexOf( 'createOrder' ) !== -1 ) {
+            throw new Error( result );
         }
     } else if ( result.error !== 0 || result.status === 'ERROR' || result.status === 'SERVICE_UNAVAILABLE' ) {
         this.logErrorResponse( result, requestUrl, requestBody, klarnaSessionID );
@@ -179,6 +184,7 @@ KlarnaPaymentsHttpService.prototype.getErrorResponse = function() {
  * @param {string} result - Result from last service call.
  * @param {string} requestUrl - Request URL of the last service call.
  * @param {Object} requestBody - Request body of the last service call.
+ * @param {string} klarnaSessionID - Klarna Session ID.
  * @returns {void}
  */
 KlarnaPaymentsHttpService.prototype.logErrorResponse = function( result, requestUrl, requestBody, klarnaSessionID ) {
@@ -194,7 +200,7 @@ KlarnaPaymentsHttpService.prototype.logErrorResponse = function( result, request
         content += ', requestUrl=[' + requestUrl + ']';
     }
 
-    if ( result.error == 404 && !empty( klarnaSessionID ) ) {
+    if ( result.error === 404 && !empty( klarnaSessionID ) ) {
         this.logger.error( 'Klarna Session Update Or Klarna Session expiration: {0}', klarnaSessionID );
     }
 
@@ -322,20 +328,20 @@ KlarnaPaymentsHttpService.prototype.logResponseData = function( urlPath, httpVer
     }
 };
 
-function setServiceCredentials(service, credentialID) {
-    var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+function setServiceCredentials( service, credentialID ) {
+    var KlarnaHelper = require( '*/cartridge/scripts/util/klarnaHelper' );
     var klarnaConfigs = KlarnaHelper.getKlarnaServiceCredentials();
-    if (!klarnaConfigs.useServiceCredentials) {
-        var Encoding = require('dw/crypto/Encoding');
-        var Bytes = require('dw/util/Bytes');
+    if ( !klarnaConfigs.useServiceCredentials ) {
+        var Encoding = require( 'dw/crypto/Encoding' );
+        var Bytes = require( 'dw/util/Bytes' );
         var password = klarnaConfigs.apiPassword;
         var username = klarnaConfigs.apiUsername;
-        var basicToken = Encoding.toBase64(new Bytes(username + ':' + password));
+        var basicToken = Encoding.toBase64( new Bytes( username + ':' + password ) );
 
-        service.addHeader('Authorization', 'Basic ' + basicToken);
+        service.addHeader( 'Authorization', 'Basic ' + basicToken );
         service.URL = klarnaConfigs.apiURL;
     } else {
-        service.setCredentialID(credentialID);
+        service.setCredentialID( credentialID );
     }
 }
 

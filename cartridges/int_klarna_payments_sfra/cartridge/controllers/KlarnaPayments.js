@@ -1,4 +1,5 @@
 /* globals empty, session, request, dw */
+
 'use strict';
 
 var server = require('server');
@@ -17,7 +18,7 @@ server.post('Notification', function (req, res) {
 
     var klarnaPaymentsFraudDecisionObject = JSON.parse(req.body);
 
-    var klarna_oms__kpOrderID = klarnaPaymentsFraudDecisionObject.order_id;
+    var klarna_oms__kpOrderID = klarnaPaymentsFraudDecisionObject.order_id; // eslint-disable-line camelcase
     var kpEventType = klarnaPaymentsFraudDecisionObject.event_type;
     var currentCountry = requestParams.klarna_country;
 
@@ -121,7 +122,7 @@ server.get('BankTransferAwaitCallback', function (req, res, next) {
 /**
  * Fail current Order using Klarna session_id in order to
  * recreate Basket on Klarna Payments change
- **/
+ */
 server.post('FailOrder', function (req, res, next) {
     var kpSessionId = req.querystring.session_id;
     var OrderMgr = require('dw/order/OrderMgr');
@@ -226,8 +227,7 @@ server.post('SelectPaymentMethod', function (req, res, next) {
                         currentBasket,
                         billingData.paymentInformation,
                         paymentMethodID,
-                        req
-                    );
+                        req);
                 } else {
                     result = HookMgr.callHook('app.payment.processor.default', 'Handle');
                 }
@@ -246,7 +246,7 @@ server.post('SelectPaymentMethod', function (req, res, next) {
             var collections = require('*/cartridge/scripts/util/collections');
 
             Transaction.wrap(function () {
-                var paymentInstruments = currentBasket.getPaymentInstruments(PAYMENT_METHOD);
+                paymentInstruments = currentBasket.getPaymentInstruments(PAYMENT_METHOD);
                 collections.forEach(paymentInstruments, function (item) {
                     currentBasket.removePaymentInstrument(item);
                 });
@@ -404,8 +404,7 @@ server.post('ExpressCheckout', function (req, res, next) {
             currentBasket,
             null,
             PAYMENT_METHOD,
-            req
-        );
+            req);
     } else {
         result = HookMgr.callHook('app.payment.processor.default', 'Handle');
     }
@@ -451,7 +450,6 @@ server.get('CancelSubscription', userLoggedIn.validateLoggedInAjax, function (re
     var klarnaCreateCustomerTokenResponse = SubscriptionHelper.cancelSubscription(subid);
 
     if (klarnaCreateCustomerTokenResponse.response) {
-        var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
         var isDisabled = SubscriptionHelper.disableCustomerSubscription(subid);
 
         res.json({
@@ -474,7 +472,7 @@ server.get('CancelSubscription', userLoggedIn.validateLoggedInAjax, function (re
  * for Klarna express checkout
  */
 server.post('ECAuthorizationCallback', function (req, res, next) {
-    //TODO handle authorization callback if needed
+    // TODO handle authorization callback if needed
     res.json({
         success: true
 
@@ -483,7 +481,7 @@ server.post('ECAuthorizationCallback', function (req, res, next) {
 });
 
 /**
- * Handle authorization result callback, 
+ * Handle authorization result callback,
  * validate basket and redirect customer
  * to the proper checkout page
  */
@@ -501,7 +499,6 @@ server.post('HandleAuthorizationResult', function (req, res, next) {
     var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
     var KlarnaPaymentsConstants = require('*/cartridge/scripts/util/klarnaPaymentsConstants');
     var KlarnaSessionManager = require('*/cartridge/scripts/common/klarnaSessionManager');
-    var Site = require('dw/system/Site');
 
     var klarnaResponse = req.body ? JSON.parse(req.body) : null;
 
@@ -609,8 +606,7 @@ server.post('HandleAuthorizationResult', function (req, res, next) {
             currentBasket,
             null,
             PAYMENT_METHOD,
-            req
-        );
+            req);
     } else {
         result = HookMgr.callHook('app.payment.processor.default', 'Handle');
     }
@@ -630,7 +626,7 @@ server.post('HandleAuthorizationResult', function (req, res, next) {
 
     var stage = 'payment';
     if (!klarnaDetails) {
-        //Redirect to customer section if we don't have the email and the address data
+        // Redirect to customer section if we don't have the email and the address data
         stage = 'customer';
     }
     if (!hasShippingMethod) {
@@ -660,10 +656,17 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
     var validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var URLUtils = require('dw/web/URLUtils');
+    var Resource = require('dw/web/Resource');
     var localeObject = KlarnaHelper.getLocale();
     var isPDP = request.httpParameterMap.isPDP.value === 'true';
     var currentBasket;
     var form;
+    var pidsObj;
+    var result;
+    var quantity;
+    var childProducts;
+    var productId;
+    var options;
 
     if (isPDP) {
         currentBasket = BasketMgr.getCurrentOrNewBasket();
@@ -679,12 +682,12 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
         try {
             form = req.form;
 
-            var productId = form.pid;
-            var childProducts = Object.hasOwnProperty.call(form, 'childProducts')
+            productId = form.pid;
+            childProducts = Object.hasOwnProperty.call(form, 'childProducts')
                 ? JSON.parse(form.childProducts)
                 : [];
-            var options = form.options ? JSON.parse(form.options) : [];
-            var quantity = parseInt(form.quantity, 10);
+            options = form.options ? JSON.parse(form.options) : [];
+            quantity = parseInt(form.quantity, 10);
         } catch (e) {
             log.error('Error parsing form data: ' + e.message);
             res.json({
@@ -696,7 +699,7 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
 
         Transaction.wrap(function () {
             if (!form.pidsObj) {
-                var result = cartHelper.addProductToCart(
+                result = cartHelper.addProductToCart(
                     currentBasket,
                     productId,
                     quantity,
@@ -767,7 +770,7 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
 
     var sessionBuilder = require('*/cartridge/scripts/payments/requestBuilder/session');
 
-    var sessionRequestBuilder = new sessionBuilder();
+    var sessionRequestBuilder = new sessionBuilder(); // eslint-disable-line new-cap
     var populateAddress = request.httpParameterMap.populateAddress.value || 'false';
 
     sessionRequestBuilder.setParams({
@@ -796,7 +799,6 @@ server.post('GenerateExpressCheckoutPayload', function (req, res, next) {
     });
 
     return next();
-
 });
 
 /**
@@ -892,13 +894,19 @@ server.post('SingleStepCheckout', function (req, res, next) {
     var cartHelper = require('*/cartridge/scripts/cart/cartHelpers');
     var validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
-    var WebhookHelper = require( '*/cartridge/scripts/webhook/webhookHelper' );
+    var WebhookHelper = require('*/cartridge/scripts/webhook/webhookHelper');
     var URLUtils = require('dw/web/URLUtils');
     var Resource = require('dw/web/Resource');
     var localeObject = KlarnaHelper.getLocale();
     var isPDP = request.httpParameterMap.isPDP.value === 'true';
     var currentBasket;
     var form;
+    var pidsObj;
+    var result;
+    var quantity;
+    var childProducts;
+    var productId;
+    var options;
 
     if (isPDP) {
         currentBasket = BasketMgr.getCurrentOrNewBasket();
@@ -914,12 +922,12 @@ server.post('SingleStepCheckout', function (req, res, next) {
         try {
             form = JSON.parse(req.body);
 
-            var productId = form.pid;
-            var childProducts = Object.hasOwnProperty.call(form, 'childProducts')
+            productId = form.pid;
+            childProducts = Object.hasOwnProperty.call(form, 'childProducts')
                 ? JSON.parse(form.childProducts)
                 : [];
-            var options = form.options ? JSON.parse(form.options) : [];
-            var quantity = parseInt(form.quantity, 10);
+            options = form.options ? JSON.parse(form.options) : [];
+            quantity = parseInt(form.quantity, 10);
         } catch (e) {
             log.error('Error parsing form data: ' + e.message);
             res.json({
@@ -931,7 +939,7 @@ server.post('SingleStepCheckout', function (req, res, next) {
 
         Transaction.wrap(function () {
             if (!form.pidsObj) {
-                var result = cartHelper.addProductToCart(
+                result = cartHelper.addProductToCart(
                     currentBasket,
                     productId,
                     quantity,
@@ -973,7 +981,6 @@ server.post('SingleStepCheckout', function (req, res, next) {
             res.json({
                 success: false,
                 redirectUrl: URLUtils.url('Cart-Show').toString()
-
             });
             return next();
         }
@@ -983,7 +990,6 @@ server.post('SingleStepCheckout', function (req, res, next) {
         res.json({
             success: false,
             redirectUrl: URLUtils.url('Cart-Show').toString()
-
         });
         return next();
     }
@@ -995,13 +1001,12 @@ server.post('SingleStepCheckout', function (req, res, next) {
         res.json({
             success: false,
             redirectUrl: URLUtils.url('Cart-Show').toString()
-
         });
         return next();
     }
 
     var sessionBuilder = require('*/cartridge/scripts/payments/requestBuilder/singleStepKec');
-    var sessionRequestBuilder = new sessionBuilder();
+    var sessionRequestBuilder = new sessionBuilder(); // eslint-disable-line new-cap
     var populateAddress = request.httpParameterMap.populateAddress.value || 'false';
 
     sessionRequestBuilder.setParams({
@@ -1028,8 +1033,24 @@ server.post('SingleStepCheckout', function (req, res, next) {
     var requestId = klarnaResp ? klarnaResp.payment_request_id : null;
     session.privacy.paymentRequestId = requestId;
 
+    // Update the interoperability data in the session if integrated via PSP
+    var resultStatus = '';
+    try {
+        var isPSPIntegrated = JSON.parse(KlarnaHelper.getKlarnaResources().KPPreferences).isKlarnaIntegratedViaPSP;
+        if (isPSPIntegrated) {
+            var interoperabilityData = KlarnaHelper.getInteroperabilityData(currentBasket);
+            session.privacy.klarna_interoperability_data = JSON.stringify(interoperabilityData);
+            log.debug('Klarna Interoperability Data: ' + session.privacy.klarna_interoperability_data);
+            resultStatus = 'DataIsSetInSession';
+        } else {
+            resultStatus = 'PSPFlagDisabledAndDataNotSet';
+        }
+    } catch (e) {
+        log.error('Error processing Klarna interoperability data: ' + e);
+    }
     res.json({
-        paymentRequestId: requestId
+        paymentRequestId: requestId,
+        klarnaInteroperabilityDataStatus: resultStatus
     });
 
     return next();

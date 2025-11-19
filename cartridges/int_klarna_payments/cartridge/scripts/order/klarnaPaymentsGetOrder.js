@@ -47,7 +47,7 @@ function getKlarnaOrder( klarnaPaymentsOrderID , localeObject ) {
     var klarnaApiContext = {};
     var klarnaOrderID = klarnaPaymentsOrderID;
     var requestUrl = '';
-    var serviceID;
+    var serviceID = '';
 
     try {
         klarnaHttpService = new KlarnaPayments.httpService();

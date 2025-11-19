@@ -1,4 +1,5 @@
 /* global $ */
+/* eslint-disable operator-linebreak */
 
 /**
  * appends params to a url
@@ -49,8 +50,7 @@ function validateBasket(data) {
                 '<div class="col-12 text-center"> ' +
                 '<h1>' + data.resources.emptyCartMsg + '</h1> ' +
                 '</div> ' +
-                '</div>'
-            );
+                '</div>');
             $('.number-of-items').empty().append(data.resources.numberOfItems);
             $('.minicart-quantity').empty().append(data.numItems);
             $('.minicart-link').attr({
@@ -71,7 +71,7 @@ function validateBasket(data) {
 /**
  * replace content of modal
  * @param {string} actionUrl - url to be used to remove product
- * @param {string} productID - pid
+ * @param {string} subid - subid
  * @param {string} productName - product name
  * @param {string} uuid - uuid
  */
@@ -82,6 +82,16 @@ function confirmCancellation(actionUrl, subid) {
     $deleteConfirmBtn.data('subid', subid);
 }
 
+/**
+ * Displays cancellation message on the page.
+ *
+ * Dynamically creates a message container if it does not exist and
+ * appends a styled alert message for subscription cancellation feedback.
+ *
+ * @param {string} messageType - The CSS class representing the message type
+ * @param {string} message - The message text to be displayed to the user.
+ * @returns {void}
+ */
 function generateCancellationMessage(messageType, message) {
     if ($('.cancel-subscription-messages').length === 0) {
         $('body').append(
@@ -102,7 +112,7 @@ function generateCancellationMessage(messageType, message) {
 
 $(function () {
     $('body').on('change', '.kp-subscription', function () {
-        var isSubscribed = $(this).is(":checked");
+        var isSubscribed = $(this).is(':checked');
         var productID = $(this).data('pid');
         var url = $(this).data('action');
         var uuid = $(this).data('uuid');
@@ -165,7 +175,7 @@ $(function () {
             dataType: 'json',
             success: function (data) {
                 if (data.error) {
-                    console.error(data.errorMessage);
+                    console.error(data.errorMessage); // eslint-disable-line no-console
                 }
                 $.spinner().stop();
             },
@@ -235,8 +245,8 @@ $(function () {
     });
 
     $('body').on('cart:update', function (e, data) {
-        if (data && (data.hasOwnProperty('basket') || data.hasOwnProperty('valid'))) {
-            var cartObj = data.hasOwnProperty('basket') ? data.basket : data;
+        if (data && (data.hasOwnProperty('basket') || data.hasOwnProperty('valid'))) { // eslint-disable-line no-prototype-builtins
+            var cartObj = data.hasOwnProperty('basket') ? data.basket : data; // eslint-disable-line no-prototype-builtins
             if (cartObj.isSubscriptionBasket) {
                 $('.subscription-data').show();
             } else {

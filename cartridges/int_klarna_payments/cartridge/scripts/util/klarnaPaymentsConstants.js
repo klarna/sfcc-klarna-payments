@@ -25,6 +25,7 @@ var ORDER_LINE_TYPE = {
 }
 
 var CONTENT_TYPE = 'application/vnd.klarna.internal.emd-v2+json';
+var INTEROPERABILITY_DATA_CONTENT_TYPE = 'vnd.klarna.interoperability-data.v3+json';
 
 var SHIPPING_METHOD_TYPE = {
     STORE: 'store pick-up',
@@ -94,7 +95,7 @@ var KLARNA_ENDPOINTS = {
         "playground": "https://login.playground.klarna.com/",
         "production": "https://login.klarna.com/"
     },
-    WEBHOOK: {
+    SUBSCRIBE_TO_WEBHOOK: {
         "playground": "https://api-global.test.klarna.com/",
         "production": "https://api-global.klarna.com/"
     }
@@ -108,14 +109,14 @@ var KLARNA_EXPRESS_CATEGORY_CONTENT = {
                 "standard": "https://x.klarnacdn.net/payment-method/assets/badges/generic/klarna.svg"
             },
             "identifier": "klarna",
-            "name": dw.web.Resource.msg('klarna.payment.method', 'klarnapayments', null)
+            "name": dw.web.Resource.msg( 'klarna.payment.method', 'klarnapayments', null )
         }
     ]
 }
 
 var SIGN_IN_DEFAULT_SCOPE = 'openid offline_access customer:login ';
 
-var SERVICE_HEADER = 'SFCC SG Version: ' + dw.web.Resource.msg('revisioninfo.revisionnumber', 'revisioninfo', 'Not found') + ' | Klarna Payments 25.4.0';
+var SERVICE_HEADER = 'SFCC SG Version: ' + dw.web.Resource.msg( 'revisioninfo.revisionnumber', 'revisioninfo', 'Not found' ) + ' | Klarna Payments 24.6.0';
 
 module.exports.FRAUD_STATUS = FRAUD_STATUS;
 module.exports.PAYMENT_METHOD = PAYMENT_METHOD;
@@ -133,3 +134,4 @@ module.exports.KLARNA_ENVIRONMENTS = KLARNA_ENVIRONMENTS;
 module.exports.KLARNA_ENDPOINTS = KLARNA_ENDPOINTS;
 module.exports.KLARNA_SERVICE = KLARNA_SERVICE;
 module.exports.SIGN_IN_DEFAULT_SCOPE = SIGN_IN_DEFAULT_SCOPE;
+module.exports.INTEROPERABILITY_DATA_CONTENT_TYPE = INTEROPERABILITY_DATA_CONTENT_TYPE;

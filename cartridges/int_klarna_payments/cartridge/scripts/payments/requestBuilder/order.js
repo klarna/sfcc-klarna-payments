@@ -108,8 +108,8 @@
         return this.localeObject;
     };
 
-    KlarnaPaymentsOrderRequestBuilder.prototype.init = function(isRecurringOrder) {
-        this.context = new KlarnaPaymentsOrderModel(isRecurringOrder);
+    KlarnaPaymentsOrderRequestBuilder.prototype.init = function( isRecurringOrder ) {
+        this.context = new KlarnaPaymentsOrderModel( isRecurringOrder );
 
         return this;
     };
@@ -192,7 +192,7 @@
         var giftCertificatePIs = order.getGiftCertificatePaymentInstruments().toArray();
         var subscription = null;
 
-        if (order.custom.kpSubscriptionPeriod && order.custom.kpSubscriptionFrequency) {
+        if ( order.custom.kpSubscriptionPeriod && order.custom.kpSubscriptionFrequency ) {
             subscription = {
                 interval: order.custom.kpSubscriptionPeriod.toUpperCase(),
                 interval_count: order.custom.kpSubscriptionFrequency
@@ -250,7 +250,7 @@
         this.context.order_amount = totalAmount;
 
         // Set order discount line items
-        if ( !isOMSEnabled && ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' )) ) {
+        if ( !isOMSEnabled && ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' ) ) ) {
             this.addPriceAdjustments( order.priceAdjustments, null, null, this.context );
         }
 
@@ -295,7 +295,7 @@
             kpColorTextSecondary: currentSite.getCustomPreferenceValue( 'kpColorTextSecondary' ),
             kpRadiusBorder: currentSite.getCustomPreferenceValue( 'kpRadiusBorder' )
         };
-        var kpColorCustomizationConfig =  currentSite.getCustomPreferenceValue( 'kpColorCustomization' );
+        var kpColorCustomizationConfig = currentSite.getCustomPreferenceValue( 'kpColorCustomization' );
 
         var options = this.getOptionsRequestBuilder().build( preferences );
 
@@ -365,7 +365,7 @@
             if ( !empty( shipment.shippingMethod ) ) {
                 shippingLineItem = this.getShipmentItemRequestBuilder().build( shipment );
 
-                if ( !isOMSEnabled && (isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' )) ) {
+                if ( !isOMSEnabled && ( isTaxationPolicyNet() || ( !isTaxationPolicyNet() && discountTaxationMethod === 'price' ) ) ) {
                     this.addPriceAdjustments( shipment.shippingPriceAdjustments.toArray(), null, null, context );
                 }
 
@@ -402,31 +402,31 @@
         }
     };
 
-    KlarnaPaymentsOrderRequestBuilder.prototype.build = function () {
+    KlarnaPaymentsOrderRequestBuilder.prototype.build = function() {
         var order = this.params.order;
         var recurringOrder = this.params.recurringOrder;
-        if (recurringOrder) {
-            this.init(true)
-                .setMerchantReference(order)
-                .buildLocale(order)
-                .buildShipping(order)
-                .buildOrderLines(order)
-                .buildTotalAmount(order)
-                .buildTotalTax(order)
+        if ( recurringOrder ) {
+            this.init( true )
+                .setMerchantReference( order )
+                .buildLocale( order )
+                .buildShipping( order )
+                .buildOrderLines( order )
+                .buildTotalAmount( order )
+                .buildTotalTax( order )
                 .buildOptions()
-                .buildMerchantInformation(order);
+                .buildMerchantInformation( order );
         } else {
 
-            this.init(false)
-                .setMerchantReference(order)
-                .buildLocale(order)
-                .buildBilling(order)
-                .buildShipping(order)
-                .buildOrderLines(order)
-                .buildTotalAmount(order)
-                .buildTotalTax(order)
+            this.init( false )
+                .setMerchantReference( order )
+                .buildLocale( order )
+                .buildBilling( order )
+                .buildShipping( order )
+                .buildOrderLines( order )
+                .buildTotalAmount( order )
+                .buildTotalTax( order )
                 .buildOptions()
-                .buildMerchantInformation(order);
+                .buildMerchantInformation( order );
         }
 
         return this.context;

@@ -84,7 +84,7 @@
         } )
     }
 
-    if ( klarnaPaymentsPreferences.kpUseAlternativePaymentFlow || klarnaPaymentsObjects.kpIsExpressCheckout) {
+    if ( klarnaPaymentsPreferences.kpUseAlternativePaymentFlow || klarnaPaymentsObjects.kpIsExpressCheckout ) {
         $continueBtn.addEventListener( 'click' , function( event ) {
             var $selectedPaymentMethod = $selectPaymentMethod.querySelectorAll( ':checked' )[0];
 
@@ -306,17 +306,17 @@
 
     function obtainBillingAddressData() {
         var address = {
-            given_name: !!$firstName ? $firstName.value : '',
-            family_name: !!$lastName ? $lastName.value : '',
-            email: !!$emailAddress ? $emailAddress.value : '',
+            given_name: $firstName ? $firstName.value : '',
+            family_name: $lastName ? $lastName.value : '',
+            email: $emailAddress ? $emailAddress.value : '',
             title: '',
-            street_address: !!$address1 ? $address1.value : '',
-            street_address2: !!$address2 ? $address2.value : '',
-            postal_code: !!$postal ? $postal.value : '',
-            city: !!$city ? $city.value : '',
-            region: !!$state ? $state.value : '',
-            phone: !!$phone ? $phone.value : '',
-            country: !!$country ? $country.value.toUpperCase() : ''
+            street_address: $address1 ? $address1.value : '',
+            street_address2: $address2 ? $address2.value : '',
+            postal_code: $postal ? $postal.value : '',
+            city: $city ? $city.value : '',
+            region: $state ? $state.value : '',
+            phone: $phone ? $phone.value : '',
+            country: $country ? $country.value.toUpperCase() : ''
         };
 
         return address;
@@ -455,18 +455,17 @@
         }
     }
 
-    function writeAdditionalLog ( res, action, msg ) {
+    function writeAdditionalLog( res, action, msg ) {
         if ( klarnaPaymentsPreferences.kpAdditionalLogging ) {
-            $.ajax({
+            $.ajax( {
                 url: klarnaPaymentsUrls.writeLog,
                 method: 'POST',
                 data: {
-                    responseFromKlarna: JSON.stringify(res),
+                    responseFromKlarna: JSON.stringify( res ),
                     actionName: action,
                     message: msg
                 }
-            })
-        }    
-    };
-    
+            } );
+        }
+    }
 }() );

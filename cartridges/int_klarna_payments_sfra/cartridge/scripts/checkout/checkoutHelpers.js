@@ -1,3 +1,5 @@
+/* globals session */
+
 'use strict';
 
 var superMdl = module.superModule;
@@ -10,11 +12,11 @@ var KLARNA_PAYMENT_METHOD = KlarnaHelper.getPaymentMethod();
 var KLARNA_FRAUD_STATUSES = KlarnaPaymentsConstants.FRAUD_STATUS;
 
 var Transaction = require('dw/system/Transaction');
-var Status = require('dw/system/Status');
 var OrderMgr = require('dw/order/OrderMgr');
 var Order = require('dw/order/Order');
 var PaymentMgr = require('dw/order/PaymentMgr');
 var HookMgr = require('dw/system/HookMgr');
+var Logger = require('dw/system/Logger');
 
 /**
  * Find the first klarna payment transaction within the order (if exists).
@@ -74,7 +76,7 @@ superMdl.placeOrder = function (order, fraudDetectionStatus) {
     } catch (e) {
         Transaction.wrap(function () { OrderMgr.failOrder(order); });
         result.error = true;
-        dw.system.Logger.error('Error in place order: ' + e);
+        Logger.error('Error in place order: ' + e);
     }
 
     return result;
@@ -84,6 +86,7 @@ superMdl.placeOrder = function (order, fraudDetectionStatus) {
  * handles the payment authorization for each payment instrument
  * @param {dw.order.Order} order - the order object
  * @param {string} orderNumber - The order number for the order
+ * @param {boolean} isRecurringOrder - indicates whether the order is a recurring order
  * @returns {Object} an error object
  */
 superMdl.handlePayments = function (order, orderNumber, isRecurringOrder) {
@@ -98,7 +101,7 @@ superMdl.handlePayments = function (order, orderNumber, isRecurringOrder) {
         }
 
         if (!result.error) {
-            for (var i = 0; i < paymentInstruments.length; i++) {
+            for (var i = 0; i < paymentInstruments.length; i++) { // eslint-disable-line no-plusplus
                 var paymentInstrument = paymentInstruments[i];
                 var paymentProcessor = PaymentMgr
                     .getPaymentMethod(paymentInstrument.paymentMethod)
@@ -109,8 +112,7 @@ superMdl.handlePayments = function (order, orderNumber, isRecurringOrder) {
                     paymentInstrument.paymentTransaction.setTransactionID(orderNumber);
                     Transaction.commit();
                 } else {
-                    if (HookMgr.hasHook('app.payment.processor.' +
-                        paymentProcessor.ID.toLowerCase())) {
+                    if (HookMgr.hasHook('app.payment.processor.' + paymentProcessor.ID.toLowerCase())) {
                         authorizationResult = HookMgr.callHook(
                             'app.payment.processor.' + paymentProcessor.ID.toLowerCase(),
                             'Authorize',
@@ -137,12 +139,12 @@ superMdl.handlePayments = function (order, orderNumber, isRecurringOrder) {
     }
 
     return result;
-}
+};
 
 /**
  * Attempts to create an order from the current basket
  * @param {dw.order.Basket} currentBasket - The current basket
- * @returns {dw.order.Order} The order object created from the current basket
+ * @returns {dw.order.Order|null} The order object created from the current basket
  */
 superMdl.createOrder = function (currentBasket) {
     var order;
@@ -152,11 +154,11 @@ superMdl.createOrder = function (currentBasket) {
             return OrderMgr.createOrder(currentBasket);
         });
     } catch (error) {
-        dw.system.Logger.error(error);
-        dw.system.Logger.error(error.stack);
+        Logger.error(error);
+        Logger.error(error.stack);
         return null;
     }
     return order;
-}
+};
 
 module.exports = superMdl;

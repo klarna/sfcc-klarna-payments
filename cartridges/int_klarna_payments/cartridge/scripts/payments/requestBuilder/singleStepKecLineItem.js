@@ -17,6 +17,15 @@ var isOMSEnabled = require( '*/cartridge/scripts/util/klarnaHelper' ).isOMSEnabl
 var ORDER_LINE_TYPE = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' ).ORDER_LINE_TYPE;
 
 /**
+ * Convert any amount to minor units safely
+ * @param {number} amount - amount in major units
+ * @return {number} amount in minor units
+ */
+function toMinorUnits( amount ) {
+    return Math.round( parseFloat( amount.toFixed( 2 ) ) * 100 );
+}
+
+/**
  * KP Order Line Item Builder
  * @return {void}
  */
@@ -27,15 +36,16 @@ function KECOrderLineItem() {
 KECOrderLineItem.prototype = new Builder();
 
 KECOrderLineItem.prototype.getItemPrice = function( li ) {
-    return ( li.grossPrice.available && !isTaxationPolicyNet() ? li.grossPrice.value : li.netPrice.value ) * 100;
+    var amount = li.grossPrice.available && !isTaxationPolicyNet() ? li.grossPrice.value : li.netPrice.value;
+    return toMinorUnits( amount );
 };
 
 KECOrderLineItem.prototype.getItemProratedPrice = function( li ) {
-    return li.proratedPrice.available ? li.proratedPrice.value * 100 : 0;
+    return li.proratedPrice.available ? toMinorUnits( li.proratedPrice.value ) : 0;
 };
 
 KECOrderLineItem.prototype.getItemTaxAmount = function( li ) {
-    return ( isTaxationPolicyNet() ) ? 0 : ( li.tax.value * 100 );
+    return isTaxationPolicyNet() ? 0 : toMinorUnits( li.tax.value );
 };
 
 KECOrderLineItem.prototype.getItemId = function( li ) {
@@ -103,7 +113,7 @@ KECOrderLineItem.prototype.build = function( li ) {
         var itemObj = this.item;
         Transaction.wrap( function() {
             li.custom.klarna_oms__lineItemJSON = JSON.stringify( itemObj );
-        });
+        } );
     }
 
     return this.item;

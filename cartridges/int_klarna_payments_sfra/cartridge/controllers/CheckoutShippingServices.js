@@ -1,3 +1,5 @@
+/* eslint-disable sitegenesis/no-global-require */
+
 'use strict';
 
 var page = module.superModule;
@@ -7,7 +9,7 @@ var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
 
 server.extend(page);
 
-server.append('ToggleMultiShip', server.middleware.https, function (req, res, next) {
+server.append('ToggleMultiShip', server.middleware.https, function (req, res, next) { // eslint-disable-line consistent-return
     if (!KlarnaHelper.isCurrentCountryKlarnaEnabled()) {
         return next();
     }
@@ -29,7 +31,7 @@ server.append('ToggleMultiShip', server.middleware.https, function (req, res, ne
             serverErrors: [],
             redirectUrl: URLUtils.url('Cart-Show').toString()
         });
-        return;
+        return; // eslint-disable-line consistent-return
     }
 
     var shipments = currentBasket.shipments;

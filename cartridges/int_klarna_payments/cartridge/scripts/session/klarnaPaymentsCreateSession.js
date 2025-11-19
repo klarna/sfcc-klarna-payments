@@ -59,7 +59,7 @@ function _getRequestBody( basket, localeObject ) {
     if ( !requestBody.merchant_urls ) {
         requestBody.merchant_urls = {};
     }
-    requestBody.merchant_urls.authorization = URLUtils.https(KLARNA_PAYMENT_URLS.BANK_TRANSFER_CALLBACK, 'klarna_country', country).toString();
+    requestBody.merchant_urls.authorization = URLUtils.https( KLARNA_PAYMENT_URLS.BANK_TRANSFER_CALLBACK, 'klarna_country', country ).toString();
 
     return requestBody;
 }

@@ -10,7 +10,6 @@ var BasketMgr = require('dw/order/BasketMgr');
 var Logger = require('dw/system/Logger');
 var log = Logger.getLogger('KlarnaPayments');
 var Transaction = require('dw/system/Transaction');
-var Site = require('dw/system/Site');
 var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
 var KlarnaAdditionalLogging = require('*/cartridge/scripts/util/klarnaAdditionalLogging');
 
@@ -132,7 +131,12 @@ KlarnaSessionManager.prototype.removeSession = function () {
 };
 
 /**
- * Get Klarna Session
+ * Retrieves and validates the Klarna Payments session for the given basket.
+ * If the session is missing or expired, logs an error and returns true to indicate a handled state.
+ *
+ * @param {dw.order.Basket} basket - The current basket containing Klarna session details.
+ * @param {Object} localeObject - The locale information object used for Klarna session retrieval.
+ * @returns {boolean} Always returns true after attempting to validate or retrieve the Klarna session.
  */
 KlarnaSessionManager.prototype.getSession = function (basket, localeObject) {
     var getSessionHelper = require('*/cartridge/scripts/session/klarnaPaymentsGetSession');
@@ -170,7 +174,6 @@ KlarnaSessionManager.prototype.hasValidSession = function () {
  * @returns {Object} Last API call's response; on error - null
  */
 KlarnaSessionManager.prototype.createOrUpdateSession = function () {
-    var Transaction = require('dw/system/Transaction');
     var basket = BasketMgr.getCurrentBasket();
     var localeObject = this.getLocale();
 
@@ -204,6 +207,7 @@ KlarnaSessionManager.prototype.createOrUpdateSession = function () {
         KlarnaHelper.clearSessionRef(basket);
         return null;
     }
+    return null;
 };
 
 module.exports = KlarnaSessionManager;

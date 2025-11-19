@@ -1,3 +1,8 @@
+/* eslint-disable sitegenesis/no-global-require */
+/* globals request */
+
+'use strict';
+
 var server = require('server');
 var Transaction = require('dw/system/Transaction');
 var OrderMgr = require('dw/order/OrderMgr');
@@ -5,8 +10,6 @@ var basketCalculationHelpers = require('*/cartridge/scripts/helpers/basketCalcul
 var hooksHelper = require('*/cartridge/scripts/helpers/hooks');
 var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
 var validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
-var addressHelpers = require('*/cartridge/scripts/helpers/addressHelpers');
-var currentSite = require('dw/system/Site').current;
 var Resource = require('dw/web/Resource');
 var Logger = require('dw/system/Logger');
 var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
@@ -15,7 +18,7 @@ var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
  * Validate basket for order
  * @param {Object} basket customer basket
  * @param {Object} req request
- * @returns result json with error status
+ * @returns {Object} result json with error status
  */
 function validateCart(basket, req) {
     var validatedProducts = validationHelpers.validateProducts(basket);
@@ -56,7 +59,7 @@ function validateCart(basket, req) {
     return {
         error: false
     };
-};
+}
 
 /**
  * Place customer order
@@ -64,7 +67,7 @@ function validateCart(basket, req) {
  * @param {Object} basketRef basket for order creation
  * @param {Object} req request
  * @param {Object} res response
- * @returns result json with error status
+ * @returns {Object} result json with error status
  */
 function placeOrder(order, basketRef, req, res) {
     // Handles payment authorization
@@ -116,14 +119,16 @@ function placeOrder(order, basketRef, req, res) {
 }
 
 /**
- * Create order from order reference
- * @param {Object} orderRef order to use for reference
- * @returns 
+ * Creates a new order from an existing order reference.
+ *
+ * @param {dw.order.Order} orderRef - The order to use as reference for creating a new order.
+ * @param {dw.system.Request} req - The current request object.
+ * @param {dw.system.Response} res - The current response object.
+ * @returns {void} Sends JSON response with order details or error message.
  */
 function createOrder(orderRef, req, res) {
     var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
     var copyOrderToBasket = require('*/cartridge/scripts/subscription/copyOrderToBasket').copyOrderToBasket;
-    var BasketMgr = require('dw/order/BasketMgr');
     var Basket = require('dw/order/Basket');
     var placeOrderResult = {};
 
@@ -177,8 +182,8 @@ function createOrder(orderRef, req, res) {
 
     res.json({
         error: false,
-        orderID: order.orderNo,
-        subscriptionProducts: SubscriptionHelper.getSubscriptionProducts(order)
+        orderID: order.orderNo, // eslint-disable-line block-scoped-var
+        subscriptionProducts: SubscriptionHelper.getSubscriptionProducts(order) // eslint-disable-line block-scoped-var
     });
 }
 
@@ -188,9 +193,6 @@ function createOrder(orderRef, req, res) {
  */
 server.post('Create', function (req, res, next) {
     var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
-    var BasketMgr = require('dw/order/BasketMgr');
-    var Basket = require('dw/order/Basket');
-
     var validationResult = SubscriptionHelper.validateIncomingParams(req.body, req);
     if (validationResult.error) {
         res.json(validationResult);
@@ -209,6 +211,7 @@ server.post('Create', function (req, res, next) {
  */
 server.post('PayOrder', function (req, res, next) {
     var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+    var URLUtils = require('dw/web/URLUtils');
     KlarnaHelper.isCurrentCountryKlarnaEnabled();
 
     var validationResult = SubscriptionHelper.validateIncomingParams(req.body, req);
@@ -223,10 +226,10 @@ server.post('PayOrder', function (req, res, next) {
     if (orderItemsValidation.allNotAvailable) {
         res.json({
             error: true,
-            errorMessage: "All order items are not available - " + orderNo
+            errorMessage: 'All order items are not available - ' + orderNo // eslint-disable-line no-undef
         });
         return next();
-    } else if (orderItemsValidation.allAvailable) {
+    } else if (orderItemsValidation.allAvailable) { // eslint-disable-line no-else-return
         Transaction.begin();
         try {
             // Handles payment authorization
@@ -274,7 +277,6 @@ server.post('PayOrder', function (req, res, next) {
 
             Transaction.commit();
         } catch (e) {
-            var ex = e;
             Transaction.rollback();
             res.json({
                 error: true,
@@ -292,7 +294,6 @@ server.post('PayOrder', function (req, res, next) {
         createOrder(orderRef, req, res);
     }
     return next();
-
 });
 
 module.exports = server.exports();

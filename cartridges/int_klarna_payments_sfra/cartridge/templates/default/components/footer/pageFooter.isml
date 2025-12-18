@@ -44,21 +44,70 @@
 <iskebform />
 <!-- Klarna KEB form -->
 <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
+<isif condition="${KlarnaOSM.isEnabled() || (KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.getKlarnExpressCheckoutClientKey())}">
+    <script>
+        <isinclude template="/resources/klarnapaymentsresources.isml"/>
+    </script>
+</isif>
+
+<isif condition="${KlarnaOSM.isEnabled()}">
+    <script defer="defer" src="${URLUtils.staticURL('js/klarnaOsm.js')}"></script>
+</isif>
 <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.getKlarnExpressCheckoutClientKey()}">
     <div class="keb-hide" id="miniCartKEC">
         <isinclude template="components/modules" />
         <iskecminicart />
     </div>
-    <script>
-        <isinclude template="/resources/klarnapaymentsresources.isml"/>
-    </script>
 
-    <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && KlarnaOSM.isKECSingleStepEnabled()}">
+    <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && (KlarnaOSM.isKECSingeStepWithPSPintegration() || KlarnaOSM.isKECSingleStepForDirectMerchant())}" >
         <script src="${URLUtils.staticURL('/js/kecSingleStep.js')}"></script>
-    <iselseif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && !KlarnaOSM.isKECSingleStepEnabled()}" />
+    <iselseif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled()}" />
         <script src="${URLUtils.staticURL('/js/klarnaExpressCheckout.js')}"></script>
     </isif>
-    
     <link rel="stylesheet" href="${URLUtils.staticURL('/css/klarnaExpress.css')}" />
     <script async src="${KlarnaOSM.getKlarnExpressCheckoutScriptURL()}"></script>
+</isif>
+
+<isif condition="${KlarnaOSM.isEnabled() || (KlarnaOSM.isKlarnExpressCheckoutEnabled() && (KlarnaOSM.isKECSingeStepWithPSPintegration() || KlarnaOSM.isKECSingleStepForDirectMerchant()))}">
+    <isset name="klarnaProducts" value="${KlarnaOSM.isEnabled() ? ['PAYMENT', 'MESSAGING'] : ['PAYMENT']}" scope="page" />
+    <script type="module">
+        const { KlarnaSDK } = await import("${KlarnaOSM.getScriptURL()}");
+
+        const clientIdObj = <isprint value="${JSON.stringify(KlarnaOSM.getKlarnaClientIDForSDK())}" encoding="off"/>;
+        const products = <isprint value="${JSON.stringify(klarnaProducts)}" encoding="off"/>;
+
+        if (clientIdObj.clientId) {
+            window.initializedKlarnaSDK = await KlarnaSDK({
+                clientId: clientIdObj.clientId,
+                products: products,
+                locale: window.KPPreferences.kpLocale,
+                integrator: window.KPPreferences.integrator,
+                originators: window.KPPreferences.originators
+            });
+        } else {
+            // Backward compatibility for previous implementation of client IDs in the custom object
+             <isif condition="${KlarnaOSM.isEnabled()}">
+                if (clientIdObj.osmClientId) {
+                    window.osmSDK = await KlarnaSDK({
+                        clientId: clientIdObj.osmClientId,
+                        locale: window.KPPreferences.kpLocale,
+                        integrator: window.KPPreferences.integrator,
+                        originators: window.KPPreferences.originators
+                    });
+                }
+            </isif>
+            <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && (KlarnaOSM.isKECSingeStepWithPSPintegration() || KlarnaOSM.isKECSingleStepForDirectMerchant())}">
+                if (clientIdObj.expressCheckoutClientId) {
+                    window.kecSDK = await KlarnaSDK({
+                        clientId: clientIdObj.expressCheckoutClientId,
+                        products: products,
+                        locale: window.KPPreferences.kpLocale,
+                        integrator: window.KPPreferences.integrator,
+                        originators: window.KPPreferences.originators
+                    });
+                }
+            </isif>
+        }
+        window.dispatchEvent(new Event("KlarnaSDK:ready"));
+    </script>
 </isif>

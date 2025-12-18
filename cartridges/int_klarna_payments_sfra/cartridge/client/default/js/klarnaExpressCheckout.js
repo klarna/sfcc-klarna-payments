@@ -74,7 +74,9 @@ function getAddToCartData(containerId) {
  */
 function initKlarnaExpressButton(containerId, isPDP) {
     window.Klarna.Payments.Buttons.init({
-        client_id: klarnaPreferences.kpExpressCheckoutClientKey
+        client_id: klarnaPreferences.kpExpressCheckoutClientKey,
+        integrator: klarnaPreferences.integrator,
+        originators: klarnaPreferences.originators
     }).load({
         container: containerId,
         theme: klarnaPreferences.kpExpressCheckoutTheme,

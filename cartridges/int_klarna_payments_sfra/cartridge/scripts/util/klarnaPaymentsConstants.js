@@ -32,14 +32,27 @@ var KLARNA_PAYMENT_URLS = {
     KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SFRA: 'Checkout-Begin',
     KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SG: 'COCustomer-Start',
     SAVE_INTEROPERABILITY_TOKEN: 'KlarnaPayments-SaveInteroperabilityToken',
-    SINGLE_STEP_CHECKOUT: 'KlarnaPayments-SingleStepCheckout'
+    SINGLE_STEP_CHECKOUT: 'KlarnaPayments-SingleStepCheckout',
+    SHIPPING_ADDRESS_CHANGE: 'KlarnaPayments-ShippingAddressChange',
+    SHIPPING_OPTION_SELECT: 'KlarnaPayments-ShippingOptionSelect'
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Version: ' + Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 25.5.0';
+var SERVICE_HEADER = 'SFCC SFRA Version: ' + Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 25.6.0';
 
 superMdl.PAYMENT_METHOD = PAYMENT_METHOD;
 superMdl.KLARNA_PAYMENT_URLS = KLARNA_PAYMENT_URLS;
 superMdl.SERVICE_HEADER = SERVICE_HEADER;
+superMdl.KLARNA_LIBS_URLS.KLARNA_OSM_SCRIPT_URL = 'https://js.klarna.com/web-sdk/v2/klarna.mjs';
+superMdl.integrator = {
+    name: 'KLARNA_SFCC_CARTRIDGE',
+    moduleName: 'KLARNA_SFCC_CARTRIDGE',
+    moduleVersion: Resource.msg('release.version', 'release', 'Not found')
+};
+superMdl.originators = [{
+    name: 'SALESFORCE_COMMERCE_CLOUD',
+    module_name: 'KLARNA_SFCC_CARTRIDGE',
+    module_version: Resource.msg('release.version', 'release', 'Not found')
+}];
 
 module.exports = superMdl;
 

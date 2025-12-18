@@ -291,8 +291,14 @@ var KlarnaOSM = {
         return !empty( currentSite.getCustomPreferenceValue( 'kec_enable' ) ) ? ( this.isKlarnaEnabled() && currentSite.getCustomPreferenceValue( 'kec_enable' ) ) :
             ( currentSite.getCustomPreferenceValue( 'kpECEnabled' ) || false );
     },
-    isKECSingleStepEnabled: function() {
-        return ( this.isKlarnaEnabled() && currentSite.getCustomPreferenceValue( 'kec_enable' ) && currentSite.getCustomPreferenceValue( 'kpIntegrationViaPSP' ) ) || false;
+    isKECSingeStepWithPSPintegration: function() {
+        var isPSPIntegrated = currentSite.getCustomPreferenceValue( 'kpIntegrationViaPSP' );
+        return ( this.isKlarnaEnabled() && currentSite.getCustomPreferenceValue( 'kec_enable' ) && isPSPIntegrated ) || false;
+    },
+    isKECSingleStepForDirectMerchant: function() {
+        var isPSPIntegrated = currentSite.getCustomPreferenceValue( 'kpIntegrationViaPSP' );
+        var isSingleStepMode = currentSite.getCustomPreferenceValue( 'kec_useOneStepCheckout' );
+        return ( this.isKlarnaEnabled() && currentSite.getCustomPreferenceValue( 'kec_enable' ) && isSingleStepMode && !isPSPIntegrated ) || false;
     },
     showExpressCheckoutButton: function() {
         var showECButton = currentSite.getCustomPreferenceValue( 'kec_placement' );
@@ -415,6 +421,18 @@ var KlarnaOSM = {
             } );
         }
         return showSignInButtonObj;
+    },
+    getKlarnaClientIDForSDK : function() {
+        var osmClientId = this.isEnabled() ? this.getUCI() : null;
+        var expressCheckoutClientId = this.isKlarnExpressCheckoutEnabled() && ( this.isKECSingeStepWithPSPintegration() || this.isKECSingleStepForDirectMerchant() ) ? this.getKlarnExpressCheckoutClientKey() : null;
+        var clientId = {};
+        if ( osmClientId === expressCheckoutClientId ) {
+            clientId.clientId = osmClientId;
+        } else {
+            clientId.osmClientId = osmClientId;
+            clientId.expressCheckoutClientId = expressCheckoutClientId;
+        }
+        return clientId;
     }
 };
 

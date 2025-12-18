@@ -108,7 +108,11 @@ superMdl.getKlarnaResources = function () {
         generateExpressCheckoutPayload: URLUtils.https(KLARNA_PAYMENT_URLS.GENERATE_EXPRESS_CHECKOUT_PAYLOAD).toString(),
         handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString(),
         saveInteroperabilityToken: URLUtils.https(KLARNA_PAYMENT_URLS.SAVE_INTEROPERABILITY_TOKEN).toString(),
-        singleStepCheckout: URLUtils.https(KLARNA_PAYMENT_URLS.SINGLE_STEP_CHECKOUT).toString()
+        singleStepCheckout: URLUtils.https(KLARNA_PAYMENT_URLS.SINGLE_STEP_CHECKOUT).toString(),
+        shippingAddressChange: URLUtils.https(KLARNA_PAYMENT_URLS.SHIPPING_ADDRESS_CHANGE).toString(),
+        shippingOptionSelect: URLUtils.https(KLARNA_PAYMENT_URLS.SHIPPING_OPTION_SELECT).toString(),
+        checkWebhookStatus: URLUtils.https('KlarnaPayments-CheckWebhookStatus').toString(),
+        createOrderFromWebhook: URLUtils.https('KlarnaPayments-CreateOrderFromWebhook').toString()
     };
 
     // klarna payments objects
@@ -160,7 +164,10 @@ superMdl.getKlarnaResources = function () {
         kpSignInButtonLogoAlignment: KlarnaOSM.getKlarnaSignInButtonLogoAlignment(),
         kpSignInRedirectUri: KlarnaOSM.getKlarnaSignInRedirectURL(),
         isKlarnaIntegratedViaPSP: currentSite.getCustomPreferenceValue('kpIntegrationViaPSP'),
-        kpShareShoppingData: currentSite.getCustomPreferenceValue('KP_shareShoppingData')
+        kpShareShoppingData: currentSite.getCustomPreferenceValue('KP_shareShoppingData'),
+        kecSingleStepMode: currentSite.getCustomPreferenceValue('kec_useOneStepCheckout') || false,
+        integrator: KlarnaPaymentsConstants.integrator,
+        originators: KlarnaPaymentsConstants.originators
     };
 
     return {

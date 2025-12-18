@@ -520,7 +520,7 @@ function mapKlarnaExpressAddress( collectedAddress ) {
     addressData.address1 = collectedAddress.street_address || '';
     addressData.address2 = collectedAddress.street_address_2 || '';
     addressData.city = collectedAddress.city || '';
-    addressData.postalCode = collectedAddress.postal_code || '';
+    addressData.postalCode = collectedAddress.postal_code || collectedAddress.postalCode || '';
     addressData.stateCode = collectedAddress.region || '';
     addressData.countryCode = { value: collectedAddress.country || '' };
     addressData.phone = collectedAddress.phone || '';

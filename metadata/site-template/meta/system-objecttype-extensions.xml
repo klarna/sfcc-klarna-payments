@@ -491,7 +491,15 @@
                     </value-definition>
                 </value-definitions>
             </attribute-definition>
-            <attribute-definition attribute-id="kec_placement">
+            <attribute-definition attribute-id="kec_useOneStepCheckout">
+                <display-name xml:lang="x-default">Use Klarna One-Step Checkout</display-name>
+                <description xml:lang="x-default">Use Klarna One-Step Checkout</description>
+                <type>boolean</type>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <default-value>false</default-value>
+            </attribute-definition>
+			<attribute-definition attribute-id="kec_placement">
                 <display-name xml:lang="x-default">Placements</display-name>
                 <type>enum-of-string</type>
                 <mandatory-flag>true</mandatory-flag>
@@ -921,6 +929,7 @@ Klarna payments is required to enable the additional solutions.</description>
                 <attribute attribute-id="kec_theme"/>
                 <attribute attribute-id="kec_shape"/>
                 <attribute attribute-id="kec_placement"/>
+				<attribute attribute-id="kec_useOneStepCheckout"/>
             </attribute-group>
             <attribute-group group-id="Klarna_OSM">
                 <display-name xml:lang="x-default">Klarna On-site messaging</display-name>

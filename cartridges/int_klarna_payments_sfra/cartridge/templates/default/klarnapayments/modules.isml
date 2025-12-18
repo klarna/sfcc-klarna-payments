@@ -59,3 +59,9 @@
 	name="klarnasignin"
 	attribute="oauthreentryendpoint"
 />
+
+<ismodule template="klarnapayments/kosm/klarnaOsm.isml"
+	name="klarnaosm"
+	attribute="kosmlocation"
+	attribute="amount"
+/>

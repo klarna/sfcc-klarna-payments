@@ -895,6 +895,7 @@ server.post('SingleStepCheckout', function (req, res, next) {
     var validationHelpers = require('*/cartridge/scripts/helpers/basketValidationHelpers');
     var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
     var WebhookHelper = require('*/cartridge/scripts/webhook/webhookHelper');
+    var KlarnaOSM = require('*/cartridge/scripts/marketing/klarnaOSM');
     var URLUtils = require('dw/web/URLUtils');
     var Resource = require('dw/web/Resource');
     var localeObject = KlarnaHelper.getLocale();
@@ -1036,7 +1037,7 @@ server.post('SingleStepCheckout', function (req, res, next) {
     // Update the interoperability data in the session if integrated via PSP
     var resultStatus = '';
     try {
-        var isPSPIntegrated = JSON.parse(KlarnaHelper.getKlarnaResources().KPPreferences).isKlarnaIntegratedViaPSP;
+        var isPSPIntegrated = KlarnaOSM.isKECSingeStepWithPSPintegration();
         if (isPSPIntegrated) {
             var interoperabilityData = KlarnaHelper.getInteroperabilityData(currentBasket);
             session.privacy.klarna_interoperability_data = JSON.stringify(interoperabilityData);
@@ -1052,6 +1053,269 @@ server.post('SingleStepCheckout', function (req, res, next) {
         paymentRequestId: requestId,
         klarnaInteroperabilityDataStatus: resultStatus
     });
+
+    return next();
+});
+
+/**
+ * Handle shipping address change callback from Klarna Express Checkout
+ */
+server.post('ShippingAddressChange', function (req, res, next) {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
+    var KECHelper = require('*/cartridge/scripts/util/kecOneStepHelper');
+    var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+
+    try {
+        var requestData = req.body ? JSON.parse(req.body) : null;
+        var currentBasket = BasketMgr.getCurrentBasket();
+
+        if (!requestData || !requestData.shippingAddress || !currentBasket) {
+            res.json({
+                success: false,
+                rejectionReason: 'ADDRESS_NOT_SUPPORTED'
+            });
+            return next();
+        }
+
+        var shippingAddress = requestData.shippingAddress;
+
+        // Validate shipping address
+        var validation = KECHelper.validateShippingAddress(shippingAddress, currentBasket);
+        if (!validation.isValid) {
+            res.json({
+                success: false,
+                rejectionReason: validation.rejectionReason
+            });
+            return next();
+        }
+
+        // Update shipping address on basket
+        var mappedAddress = KlarnaHelper.mapKlarnaExpressAddress(shippingAddress);
+        var selectedShippingOption = KECHelper.updateBasketShippingAddress(currentBasket, mappedAddress);
+
+        // Recalculate basket totals
+        COHelpers.recalculateBasket(currentBasket);
+
+        // Build complete updated request for Klarna
+        var updatedRequest = KECHelper.buildKlarnaUpdatedRequest(currentBasket, selectedShippingOption, true);
+
+        res.json({
+            success: true,
+            updatedRequest: updatedRequest
+        });
+    } catch (e) {
+        res.json({
+            success: false,
+            rejectionReason: 'ADDRESS_NOT_SUPPORTED'
+        });
+    }
+
+    return next();
+});
+
+/**
+ * Handle shipping option change callback from Klarna Express Checkout
+ */
+server.post('ShippingOptionSelect', function (req, res, next) {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var Transaction = require('dw/system/Transaction');
+    var KECHelper = require('*/cartridge/scripts/util/kecOneStepHelper');
+    var ShippingHelper = require('*/cartridge/scripts/checkout/shippingHelpers');
+    var COHelpers = require('*/cartridge/scripts/checkout/checkoutHelpers');
+
+    try {
+        var requestData = req.body ? JSON.parse(req.body) : null;
+        var currentBasket = BasketMgr.getCurrentBasket();
+
+        if (!requestData || !requestData.shippingOption || !currentBasket) {
+            log.error('Missing shipping option data in request');
+            res.json({
+                success: false,
+                rejectionReason: 'INVALID_OPTION'
+            });
+            return next();
+        }
+
+        var selectedShippingOptionReference = requestData.shippingOption.shippingOptionReference;
+
+        // Validate shipping option
+        var isShippingMethodValid = KECHelper.validateShippingOption(selectedShippingOptionReference, currentBasket);
+        if (!isShippingMethodValid) {
+            log.error('Invalid shipping option selected: ' + selectedShippingOptionReference);
+            res.json({
+                success: false,
+                rejectionReason: 'INVALID_OPTION'
+            });
+            return next();
+        }
+
+        // Update the shipping method on the basket
+        Transaction.wrap(function () {
+            if (currentBasket.defaultShipment) {
+                ShippingHelper.selectShippingMethod(currentBasket.defaultShipment, selectedShippingOptionReference);
+            }
+        });
+
+        // Recalculate basket totals
+        COHelpers.recalculateBasket(currentBasket);
+
+        // Build complete updated request for Klarna
+        var updatedRequest = KECHelper.buildKlarnaUpdatedRequest(currentBasket, selectedShippingOptionReference, false);
+
+        res.json({
+            success: true,
+            updatedRequest: updatedRequest
+        });
+    } catch (e) {
+        log.error('Error handling shipping option select: ' + e.message);
+        res.json({
+            success: false,
+            rejectionReason: 'INVALID_OPTION'
+        });
+    }
+
+    return next();
+});
+
+/**
+ * Polling endpoint to check for webhook notification availability
+ */
+server.post('CheckWebhookStatus', function (req, res, next) {
+    var KECHelper = require('*/cartridge/scripts/util/kecOneStepHelper');
+
+    try {
+        var requestData = req.body ? JSON.parse(req.body) : null;
+        var paymentRequestId = requestData ? requestData.paymentRequestId : null;
+        if (!paymentRequestId) {
+            res.setStatusCode(400);
+            res.json({
+                error: true,
+                errorType: 'INVALID_REQUEST',
+                message: 'Missing payment request ID'
+            });
+            return next();
+        }
+
+        // Get webhook notification
+        var entry = KECHelper.getWebhookNotification(paymentRequestId);
+        if (!entry) {
+            res.json({
+                error: true,
+                errorType: 'NOT_READY',
+                message: 'Webhook notification not found'
+            });
+            return next();
+        }
+
+        var notificationLog = entry.custom.notificationLog ? JSON.parse(entry.custom.notificationLog) : null;
+        if (!notificationLog || !notificationLog.payload) {
+            res.json({
+                error: true,
+                errorType: 'NOT_READY',
+                message: 'Notification log or payload not yet available'
+            });
+            return next();
+        }
+
+        // Extract customer data from webhook
+        var customerData = KECHelper.extractCustomerDataFromWebhook(notificationLog);
+        if (!customerData) {
+            res.json({
+                error: true,
+                errorType: 'NOT_READY',
+                message: 'Customer data not yet available'
+            });
+            return next();
+        }
+
+        // Update webhook status
+        KECHelper.updateWebhookStatus(entry, 'PROCESSED');
+
+        res.json({
+            success: true,
+            message: 'Webhook notification ready',
+            customerData: customerData
+        });
+    } catch (e) {
+        var errorMessage = e && typeof e === 'object' && 'message' in e ? e.message : String(e);
+        Logger.error('Error in Webhook Check: ' + errorMessage);
+        res.setStatusCode(500);
+        res.json({
+            error: true,
+            errorType: 'SERVER_ERROR',
+            message: errorMessage
+        });
+    }
+
+    return next();
+});
+
+/**
+ * Creates and places order from webhook notification data (Complete one-step checkout)
+ */
+server.post('CreateOrderFromWebhook', server.middleware.https, function (req, res, next) {
+    var BasketMgr = require('dw/order/BasketMgr');
+    var URLUtils = require('dw/web/URLUtils');
+    var KECHelper = require('*/cartridge/scripts/util/kecOneStepHelper');
+    var KLARNA_PAYMENT_URLS = require('*/cartridge/scripts/util/klarnaPaymentsConstants').KLARNA_PAYMENT_URLS;
+
+    try {
+        var requestData = req.body ? JSON.parse(req.body) : null;
+        var customerData = requestData ? requestData.customerData : null;
+        var currentBasket = BasketMgr.getCurrentBasket();
+
+        if (!customerData || !currentBasket) {
+            var errorMsg = !customerData ? 'CreateOrderFromWebhook: Missing customer data' : 'CreateOrderFromWebhook: No basket found';
+            Logger.error(errorMsg);
+            res.json({
+                success: false,
+                error: errorMsg,
+                errorCode: !customerData ? 'MISSING_CUSTOMER_DATA' : 'NO_BASKET'
+            });
+            return next();
+        }
+
+        // Process complete order creation and placement from webhook data
+        var result = KECHelper.processOrderFromWebhook(currentBasket, customerData);
+
+        if (!result.success) {
+            Logger.error('Order creation failed: ' + result.error);
+            res.json({
+                success: false,
+                error: result.error,
+                errorCode: result.error ? result.error.split(':')[0] : 'UNKNOWN_ERROR'
+            });
+            return next();
+        }
+
+        // Clear session data after successful order creation
+        session.privacy.paymentRequestId = null;
+        session.privacy.klarna_interoperability_token = null;
+
+        var order = result.order;
+        var confirmationUrl = URLUtils.url(
+            KLARNA_PAYMENT_URLS.CONFIRMATION,
+            'ID', order.orderNo,
+            'token', order.orderToken
+        ).toString();
+
+        Logger.info('CreateOrderFromWebhook completed successfully - Order: ' + order.orderNo);
+
+        res.json({
+            success: true,
+            orderNo: order.orderNo,
+            orderToken: order.orderToken,
+            orderUUID: order.getUUID(),
+            continueUrl: confirmationUrl
+        });
+    } catch (e) {
+        Logger.error('Error in CreateOrderFromWebhook: ' + e.message);
+        res.json({
+            success: false,
+            error: e.message
+        });
+    }
 
     return next();
 });

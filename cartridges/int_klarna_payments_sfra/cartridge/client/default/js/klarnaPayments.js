@@ -141,7 +141,9 @@ KlarnaCheckout.initShippingStage = function (defer) {
 
 KlarnaCheckout.initPaymentStage = function (defer) {
     Klarna.Payments.init({
-        client_token: this.klarnaPaymentsObjects.clientToken
+        client_token: this.klarnaPaymentsObjects.clientToken,
+        integrator: this.klarnaPaymentsPreferences.integrator,
+        originators: this.klarnaPaymentsPreferences.originators
     });
 
     this.initPaymentOptionsTabs();
@@ -165,7 +167,9 @@ KlarnaCheckout.initPaymentStage = function (defer) {
 
 KlarnaCheckout.initPlaceOrderStage = function (defer) {
     Klarna.Payments.init({
-        client_token: this.klarnaPaymentsObjects.clientToken
+        client_token: this.klarnaPaymentsObjects.clientToken,
+        integrator: this.klarnaPaymentsPreferences.integrator,
+        originators: this.klarnaPaymentsPreferences.originators
     });
 
     this.initKlarnaPlaceOrderButton(defer);
@@ -1104,7 +1108,9 @@ KlarnaCheckout.submitPaymentMethod = function ($tabContent, callback) {
         data: paymentFormData
     }).done(function (data) {
         Klarna.Payments.init({
-            client_token: this.klarnaPaymentsObjects.clientToken
+            client_token: this.klarnaPaymentsObjects.clientToken,
+            integrator: this.klarnaPaymentsPreferences.integrator,
+            originators: this.klarnaPaymentsPreferences.originators
         });
         if (data.cartError && data.redirectUrl) {
             window.location.href = data.redirectUrl;

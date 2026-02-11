@@ -21,6 +21,7 @@ module.exports = [{
 		'klarnaExpressCheckoutPDP': path.join(__dirname, cartridgePath + '/client/default/js/klarnaExpressCheckoutPDP.js'),
 		'klarnaExpressMiniCart': path.join(__dirname, cartridgePath + '/client/default/js/klarnaExpressMiniCart.js'),
 		'klarnaSignIn': path.join(__dirname, cartridgePath + '/client/default/js/klarnaSignIn.js'),
+		'klarnaSignInLogout': path.join(__dirname, cartridgePath + '/client/default/js/klarnaSignInLogout.js'),
 		'klarnaInteroperability': path.join(__dirname, cartridgePath + '/client/default/js/klarnaInteroperability.js'),
 		'kecSingleStep': path.join(__dirname, cartridgePath + '/client/default/js/kecSingleStep.js')
 	},

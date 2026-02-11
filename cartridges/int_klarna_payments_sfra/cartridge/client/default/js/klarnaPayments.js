@@ -141,7 +141,9 @@ KlarnaCheckout.initShippingStage = function (defer) {
 
 KlarnaCheckout.initPaymentStage = function (defer) {
     Klarna.Payments.init({
-        client_token: this.klarnaPaymentsObjects.clientToken
+        client_token: this.klarnaPaymentsObjects.clientToken,
+        integrator: this.klarnaPaymentsPreferences.integrator,
+        originators: this.klarnaPaymentsPreferences.originators
     });
 
     this.initPaymentOptionsTabs();
@@ -165,7 +167,9 @@ KlarnaCheckout.initPaymentStage = function (defer) {
 
 KlarnaCheckout.initPlaceOrderStage = function (defer) {
     Klarna.Payments.init({
-        client_token: this.klarnaPaymentsObjects.clientToken
+        client_token: this.klarnaPaymentsObjects.clientToken,
+        integrator: this.klarnaPaymentsPreferences.integrator,
+        originators: this.klarnaPaymentsPreferences.originators
     });
 
     this.initKlarnaPlaceOrderButton(defer);
@@ -1014,6 +1018,29 @@ KlarnaCheckout.useMultiShipping = function () {
 };
 
 /**
+ * Get the current purchase amount in minor units (cents).
+ *
+ * Extracts the grand total from the order summary and converts it to minor units
+ * (multiply by 100) as required by Klarna API for the purchase_amount parameter.
+ *
+ * @returns {number|null} The purchase amount in minor units, or null if not found.
+ */
+KlarnaCheckout.getPurchaseAmount = function () {
+    var $grandTotal = $('.grand-total-sum');
+    if ($grandTotal.length) {
+        var grandTotalText = $grandTotal.text().trim();
+        // Remove currency symbols and parse
+        var amountStr = grandTotalText.replace(/[^\d.,]/g, '').replace(',', '.');
+        var amount = parseFloat(amountStr);
+        if (!isNaN(amount)) {
+            return Math.round(amount * 100);
+        }
+    }
+
+    return null;
+};
+
+/**
  * Execute a Klarna API call to Load payment data for a specified Klarna payment category.
  *
  * Note: Klarna JS client automatically refreshes the contents of the passed container.
@@ -1038,9 +1065,12 @@ KlarnaCheckout.loadPaymentData = function (paymentCategory) {
         updateData.shipping_address = this.obtainShippingAddressData(updateData.billing_address);
     }
 
+    var purchaseAmount = this.getPurchaseAmount();
+
     Klarna.Payments.load({
         container: containerName,
-        payment_method_category: klarnaPaymentMethod
+        payment_method_category: klarnaPaymentMethod,
+        purchase_amount: purchaseAmount
     }, updateData, function (res) {
         var $klarnaSubmitPaymentBtn = this.getKlarnaSubmitPaymentBtn();
         var disableCheckoutBtn = !res.show_form;
@@ -1104,7 +1134,9 @@ KlarnaCheckout.submitPaymentMethod = function ($tabContent, callback) {
         data: paymentFormData
     }).done(function (data) {
         Klarna.Payments.init({
-            client_token: this.klarnaPaymentsObjects.clientToken
+            client_token: this.klarnaPaymentsObjects.clientToken,
+            integrator: this.klarnaPaymentsPreferences.integrator,
+            originators: this.klarnaPaymentsPreferences.originators
         });
         if (data.cartError && data.redirectUrl) {
             window.location.href = data.redirectUrl;

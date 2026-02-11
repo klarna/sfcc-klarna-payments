@@ -58,6 +58,16 @@ KlarnaWebhookHttpService.prototype.call = function( serviceId, urlPath, httpVerb
     service.addHeader( 'Accept', 'application/json' );
     service.addHeader( 'User-Agent', SERVICE_HEADER );
 
+    // Add X-Klarna-Integration-Metadata header
+    var KlarnaConstants = require( '*/cartridge/scripts/util/klarnaPaymentsConstants' );
+    if ( KlarnaConstants.integrator && KlarnaConstants.originators ) {
+        var integrationMetadata = {
+            integrator: KlarnaConstants.integrator,
+            originators: KlarnaConstants.originators
+        };
+        service.addHeader( 'X-Klarna-Integration-Metadata', JSON.stringify( integrationMetadata ) );
+    }
+
     if ( !empty( httpVerb ) && this.isValidHttpVerb( httpVerb ) ) {
         service.setRequestMethod( httpVerb );
     }

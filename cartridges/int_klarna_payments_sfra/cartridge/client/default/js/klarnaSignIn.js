@@ -2,17 +2,28 @@
 
 'use strict';
 
-var klarnaPreferences = window.KPPreferences;
-
-var redirectUri = klarnaPreferences.kpSignInRedirectUri;
-
-window.onload = async function () {
-    const klarna = await Klarna.init({
-        clientId: klarnaPreferences.kpSignInClientID,
-        environment: klarnaPreferences.kpSignInEnvironment,
-        locale: klarnaPreferences.kpSignInLocale
+/**
+ * Initialize SIWK button using the v2 SDK loaded in pageFooter.isml
+ */
+async function initializeSignIn() {
+    // Wait for the KlarnaSDK to be ready from pageFooter
+    await new Promise((resolve) => {
+        if (window.initializedKlarnaSDK || window.siwkSDK) {
+            resolve();
+        } else {
+            window.addEventListener('KlarnaSDK:ready', resolve, { once: true });
+        }
     });
-    // if (!klarnaSDK.Identity.canMakeLogin('DE')) return;
+
+    const klarna = window.getKlarnaSDK('siwk');
+    if (!klarna || !klarna.Identity) {
+        console.error('Klarna SDK Identity not available'); // eslint-disable-line no-console
+        return;
+    }
+
+    const klarnaPreferences = window.KPPreferences;
+    const redirectUri = klarnaPreferences.kpSignInRedirectUri;
+
     const siwkButton = klarna.Identity.button({
         scope: klarnaPreferences.kpSignInScope,
         redirectUri: redirectUri,
@@ -51,4 +62,11 @@ window.onload = async function () {
     klarna.Identity.on('error', (data) => { // eslint-disable-line no-unused-vars
         $('.klarna-login-error').removeClass('d-none');
     });
-};
+}
+
+// Initialize on DOM ready
+$(document).ready(function () {
+    if (document.querySelector('.klarna-signin-button')) {
+        initializeSignIn();
+    }
+});

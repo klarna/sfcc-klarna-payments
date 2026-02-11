@@ -1,5 +1,13 @@
 # CHANGELOG
 
+## 26.1.0
+* Upgraded Onsite Messaging (OSM) to use Klarna Web SDK version 2.
+* Added Klarna Express Checkout (KEC) one-step payments for direct merchants.
+* Added metadata (integrator and originator) in every request sent to Klarna both in Web SDK initialization and also in API calls.
+* Upgraded Sign In With Klarna (SIWK) to use Klarna Web SDK v2.
+* Updated interoperability data storage to use a custom object instead of session storage.
+* Enhanced OSM installment messaging to dynamically refresh on the checkout page when the purchase amount changes.
+
 ## 25.5.0
 * When Klarna payments are integrated through a PSP, the interoperability_data is required by the PSP for payment processing and order finalization. As part of this release, we have added interoperability_data to the session. This data includes the order amount and the order lines for which the payment was initiated. The PSP will be able to retrieve this information from the session for further processing.
 

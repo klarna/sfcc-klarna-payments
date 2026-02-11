@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<slot-configurations xmlns="http://www.demandware.com/xml/impex/slot/2008-09-08">
+   <slot-configuration slot-id="home-featured-products-m" context="global" configuration-id="home-featured-products" default="true" assigned-to-site="false">
+        <description>Featured product tiles slot on the home page</description>
+        <template>slots/product/homePageFeaturedProductSlot.isml</template>
+        <enabled-flag>true</enabled-flag>
+        <content>
+            <products>
+                <product product-id="750518699578M"/>
+                <product product-id="25519318M"/>
+                <product product-id="013742003154M"/>
+            </products>
+        </content>
+    </slot-configuration>
+</slot-configurations>

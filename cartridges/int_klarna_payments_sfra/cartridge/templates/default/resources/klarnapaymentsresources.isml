@@ -1,5 +1,6 @@
 <iscontent type="text/javascript" charset="UTF-8" compact="true"/>
 <isset name="KlarnaResources" value="${require('*/cartridge/scripts/util/klarnaHelper').getKlarnaResources()}" scope="page" />
+<isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 <isset name="serverErrorMessage" value="${Resource.msg('error.technical', 'checkout', null)}" scope="page" />
 
 (function(app){
@@ -10,4 +11,13 @@
     window.KPResources = <isprint value="${KlarnaResources.KPResources}" encoding="on"/>;
     window.serverErrorMessage = "<isprint value="${serverErrorMessage}" encoding="on"/>";
     window.KPPreferences = <isprint value="${KlarnaResources.KPPreferences}" encoding="on"/>;
+    window.getKlarnaSDK = (params) => {
+        if(params === 'kec') {
+            return window.kecSDK ? window.kecSDK : window.initializedKlarnaSDK;
+        }
+        if(params === 'siwk') {
+            return window.siwkSDK ? window.siwkSDK : window.initializedKlarnaSDK;
+        }
+        return window.osmSDK ? window.osmSDK : window.initializedKlarnaSDK;
+    };
 }(window.app = window.app || {}));

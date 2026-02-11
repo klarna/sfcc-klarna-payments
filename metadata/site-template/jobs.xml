@@ -84,4 +84,23 @@
         </triggers>
     </job>
 
+    <job job-id="CleanupKlarnaInteroperabilityData">
+        <description>Cleans up expired Klarna interoperability data from custom objects</description>
+        <parameters/>
+        <flow>
+            <context site-id="RefArch"/>
+            <step step-id="cleanupInteroperabilityData" type="custom.CleanupKlarnaInteroperabilityData" enforce-restart="false">
+                <description>Removes expired interoperability data records (older than 24 hours)</description>
+                <parameters/>
+            </step>
+        </flow>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2025-02-12Z</date>
+                <time>02:00:00.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
+
 </jobs>

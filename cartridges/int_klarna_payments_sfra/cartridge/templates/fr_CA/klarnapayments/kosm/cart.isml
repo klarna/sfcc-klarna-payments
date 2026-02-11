@@ -4,10 +4,6 @@
 
     <isif condition="${KlarnaOSM.isEnabledCartPage()}">
         <isprint value="${KlarnaOSM.getCartPlacementCustomStyling()}" encoding="off" />
-
-        <klarna-placement id="osm-cart-placement" data-key="${KlarnaOSM.getCartPagePlacementTagId()}" data-locale="${KlarnaOSM.getLocale()}" 
-        data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(totalGrossPrice)}" data-theme="${KlarnaOSM.getOSMCartTheme()}"></klarna-placement>
-
-        <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
+        <isklarnaosm kosmlocation="kosm-cart" amount="${totalGrossPrice}"/>
     </isif>
 </div>

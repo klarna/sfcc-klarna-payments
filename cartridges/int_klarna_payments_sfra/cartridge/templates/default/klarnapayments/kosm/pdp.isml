@@ -5,18 +5,6 @@
     <isprint value="${KlarnaOSM.getPDPPlacementCustomStyling()}" encoding="off" />
 
     <div class="kosm-pdp">
-        <klarna-placement id="osm-pdp-placement" data-key="${KlarnaOSM.getPDPPagePlacementTagId()}"
-            data-locale="${KlarnaOSM.getLocale()}"
-            data-purchase-amount="${KlarnaOSM.formatPurchaseAmount(ProductPrice)}"
-            data-theme="${KlarnaOSM.getOSMPDPTheme()}"></klarna-placement>
+        <isklarnaosm kosmlocation="kosm-pdp" amount="${ProductPrice}"/>
     </div>
-    <isscript>
-        var assets = require('*/cartridge/scripts/assets.js');
-
-        if (!klarnaOSMJsAdded) {
-            assets.addJs('js/klarnaOsm.js');
-        }
-    </isscript>
-
-    <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
 </isif>

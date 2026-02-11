@@ -4,16 +4,7 @@
     <isprint value="${KlarnaOSM.getInfoPagePlacementCustomStyling()}" encoding="off" />
 
     <div class="kosm-info">
-        <klarna-placement id="osm-info-page-placement" data-key="${KlarnaOSM.getInfoPagePlacementTagId()}"
-            data-locale="${KlarnaOSM.getLocale()}" data-theme="${KlarnaOSM.getOSMInfoPageTheme()}"></klarna-placement>
+        <isinclude template="klarnapayments/modules.isml" />
+        <isklarnaosm kosmlocation="kosm-info" />
     </div>
-    <isscript>
-        var assets = require('*/cartridge/scripts/assets.js');
-
-        if (!klarnaOSMJsAdded) {
-            assets.addJs('js/klarnaOsm.js');
-        }
-    </isscript>
-
-    <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
 </isif>

@@ -40,6 +40,7 @@ function execute( args )
 function cancelAuthorization( klarnaAuthorizationToken, localeObject ) {
     if ( klarnaAuthorizationToken ) {
         var StringUtils = require( 'dw/util/StringUtils' );
+        var Logger = require('dw/system/Logger');
         var klarnaPaymentsHttpService = new KlarnaPayments.httpService();
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestUrl = StringUtils.format( klarnaApiContext.getFlowApiUrls().get( 'cancelAuthorization' ), klarnaAuthorizationToken );
@@ -50,7 +51,7 @@ function cancelAuthorization( klarnaAuthorizationToken, localeObject ) {
             session.privacy.KlarnaPaymentsFinalizeRequired = null;
             return response;
         } catch ( e ) {
-            logger.error( 'Error in canceling Klarna Payments Authorization: {0}', e.message + e.stack );
+            Logger.error( 'Error in canceling Klarna Payments Authorization: {0}', e.message + e.stack );
         }
     }
     return null;

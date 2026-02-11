@@ -47,18 +47,8 @@ server.post('KlarnaSignIn', server.middleware.https, consentTracking.consent, fu
         return next();
     }
 
-    var idToken = klarnaResponse.user_account_linking ? klarnaResponse.user_account_linking.user_account_linking_id_token : null;
-    var refreshToken = klarnaResponse.user_account_linking ? klarnaResponse.user_account_linking.user_account_linking_refresh_token : null;
-
-    var idTokenValidationResult = signInHelper.validateKlarnaToken(idToken);
-    if (idTokenValidationResult.error) {
-        res.json({
-            success: false,
-            error: [idTokenValidationResult.errorMessage || klarnaSignInErrorMsg]
-        });
-        return next();
-    }
-    var customerData = idTokenValidationResult.payload;
+    var customerData = klarnaResponse.customerProfile;
+    var refreshToken = null;
     // check for SFCC customer not linked to Klarna
     var noKlarnaCustomerFound = signInHelper.checkCustomerExists(customerData.email);
 

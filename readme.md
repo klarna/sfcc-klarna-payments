@@ -1,10 +1,13 @@
 [<img src="https://cdn.klarna.com/1.0/shared/image/generic/logo/global/basic/logo_black.png" alt="Klarna" width="200">](https://klarna.com)
 
-# Klarna Payments 2017-2025 Salesforce Commerce Cloud Cartridge
+# Klarna Payments 2017-2026 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
 The latest version of this cartridge is 26.1.0.
 
+* Upgraded Onsite Messaging (OSM) to use Klarna Web SDK version 2.
+* Added Klarna Express Checkout (KEC) one-step payments for direct merchants.
+* Added metadata (integrator and originator) in every request sent to Klarna both in Web SDK initialization and also in API calls.
 * Upgraded Sign In With Klarna (SIWK) to use Klarna Web SDK v2.
 * Updated interoperability data storage to use a custom object instead of session storage.
 * Enhanced OSM installment messaging to dynamically refresh on the checkout page when the purchase amount changes.

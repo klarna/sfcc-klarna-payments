@@ -59,7 +59,7 @@
         <iskecminicart />
     </div>
 
-    <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && (KlarnaOSM.isKECSingeStepWithPSPintegration() || KlarnaOSM.isKECSingleStepForDirectMerchant())}" >
+    <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && (KlarnaOSM.isKECSingleStepWithPSPIntegration() || KlarnaOSM.isKECSingleStepForDirectMerchant())}" >
         <script src="${URLUtils.staticURL('/js/kecSingleStep.js')}"></script>
     <iselseif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled()}" />
         <script src="${URLUtils.staticURL('/js/klarnaExpressCheckout.js')}"></script>
@@ -68,7 +68,7 @@
     <script async src="${KlarnaOSM.getKlarnExpressCheckoutScriptURL()}"></script>
 </isif>
 
-<isif condition="${KlarnaOSM.isEnabled() || (KlarnaOSM.isKlarnExpressCheckoutEnabled() && (KlarnaOSM.isKECSingeStepWithPSPintegration() || KlarnaOSM.isKECSingleStepForDirectMerchant())) || KlarnaOSM.isKlarnaSignInEnabled()}">
+<isif condition="${KlarnaOSM.isEnabled() || (KlarnaOSM.isKlarnExpressCheckoutEnabled() && (KlarnaOSM.isKECSingleStepWithPSPIntegration() || KlarnaOSM.isKECSingleStepForDirectMerchant())) || KlarnaOSM.isKlarnaSignInEnabled()}">
     <isset name="klarnaProducts" value="${KlarnaOSM.isEnabled() ? ['PAYMENT', 'MESSAGING'] : ['PAYMENT']}" scope="page" />
     <script type="module">
         const { KlarnaSDK } = await import("${KlarnaOSM.getScriptURL()}");
@@ -100,7 +100,7 @@
                     });
                 }
             </isif>
-            <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && (KlarnaOSM.isKECSingeStepWithPSPintegration() || KlarnaOSM.isKECSingleStepForDirectMerchant())}">
+            <isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && (KlarnaOSM.isKECSingleStepWithPSPIntegration() || KlarnaOSM.isKECSingleStepForDirectMerchant())}">
                 if (clientIdObj.expressCheckoutClientId) {
                     window.kecSDK = await KlarnaSDK({
                         clientId: clientIdObj.expressCheckoutClientId,

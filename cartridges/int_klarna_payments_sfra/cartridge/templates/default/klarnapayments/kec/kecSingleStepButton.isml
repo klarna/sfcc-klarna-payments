@@ -1,7 +1,7 @@
 <!--- TEMPLATENAME: klarnapayments/kec/kecSingleStepButton.isml --->
 <isset name="KlarnaOSM" value="${require('*/cartridge/scripts/marketing/klarnaOSM')}" scope="page" />
 
-<isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && (KlarnaOSM.isKECSingeStepWithPSPintegration() || KlarnaOSM.isKECSingleStepForDirectMerchant())}">
+<isif condition="${KlarnaOSM.isKlarnExpressCheckoutEnabled() && (KlarnaOSM.isKECSingleStepWithPSPIntegration() || KlarnaOSM.isKECSingleStepForDirectMerchant())}">
     <script type="module">
         const klarna = window.getKlarnaSDK('kec');
         var kecPageName ='${kecPageName}';

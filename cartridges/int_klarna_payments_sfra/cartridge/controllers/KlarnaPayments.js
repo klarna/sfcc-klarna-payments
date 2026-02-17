@@ -1037,7 +1037,7 @@ server.post('SingleStepCheckout', function (req, res, next) {
     // Update the interoperability data in custom object if integrated via PSP
     var resultStatus = '';
     try {
-        var isPSPIntegrated = KlarnaOSM.isKECSingeStepWithPSPintegration();
+        var isPSPIntegrated = KlarnaOSM.isKECSingleStepWithPSPIntegration();
         if (isPSPIntegrated) {
             var KlarnaInteroperabilityDataManager = require('*/cartridge/scripts/common/klarnaInteroperabilityDataManager');
             var interoperabilityData = KlarnaHelper.getInteroperabilityData(currentBasket);

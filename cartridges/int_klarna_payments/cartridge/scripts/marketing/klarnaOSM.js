@@ -291,7 +291,7 @@ var KlarnaOSM = {
         return !empty( currentSite.getCustomPreferenceValue( 'kec_enable' ) ) ? ( this.isKlarnaEnabled() && currentSite.getCustomPreferenceValue( 'kec_enable' ) ) :
             ( currentSite.getCustomPreferenceValue( 'kpECEnabled' ) || false );
     },
-    isKECSingeStepWithPSPintegration: function() {
+    isKECSingleStepWithPSPIntegration: function() {
         var isPSPIntegrated = currentSite.getCustomPreferenceValue( 'kpIntegrationViaPSP' );
         return ( this.isKlarnaEnabled() && currentSite.getCustomPreferenceValue( 'kec_enable' ) && isPSPIntegrated ) || false;
     },
@@ -424,7 +424,7 @@ var KlarnaOSM = {
     },
     getKlarnaClientIDForSDK : function() {
         var osmClientId = this.isEnabled() ? this.getUCI() : null;
-        var expressCheckoutClientId = this.isKlarnExpressCheckoutEnabled() && ( this.isKECSingeStepWithPSPintegration() || this.isKECSingleStepForDirectMerchant() ) ? this.getKlarnExpressCheckoutClientKey() : null;
+        var expressCheckoutClientId = this.isKlarnExpressCheckoutEnabled() && ( this.isKECSingleStepWithPSPIntegration() || this.isKECSingleStepForDirectMerchant() ) ? this.getKlarnExpressCheckoutClientKey() : null;
         var clientId = {};
         if ( osmClientId === expressCheckoutClientId ) {
             clientId.clientId = osmClientId;

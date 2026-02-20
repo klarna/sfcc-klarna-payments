@@ -2,6 +2,10 @@
 
 <isif condition="${KlarnaOSM.isKlarnaSignInEnabled() && ((KlarnaOSM.showKlarnaSigninButton().loginPage && pdict.oauthreentryendpoint ===
                  1) || (KlarnaOSM.showKlarnaSigninButton().checkoutPage && pdict.oauthreentryendpoint === 2))}">
+    <script defer src="${KlarnaOSM.getKlarnaSignInScriptURL()}"></script>
+    <script>
+        <isinclude template="/resources/klarnapaymentsresources.isml"/>
+    </script>
     <script defer src="${URLUtils.staticURL('/js/klarnaSignIn.js')}"></script>
     <link rel="stylesheet" href="${URLUtils.staticURL('/css/klarnaSignIn.css')}" />
 

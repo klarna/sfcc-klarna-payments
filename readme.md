@@ -8,7 +8,6 @@ The latest version of this cartridge is 26.1.0.
 * Upgraded Onsite Messaging (OSM) to use Klarna Web SDK version 2.
 * Added Klarna Express Checkout (KEC) one-step payments for direct merchants.
 * Added metadata (integrator and originator) in every request sent to Klarna both in Web SDK initialization and also in API calls.
-* Upgraded Sign In With Klarna (SIWK) to use Klarna Web SDK v2.
 * Updated interoperability data storage to use a custom object instead of session storage.
 * Enhanced OSM installment messaging to dynamically refresh on the checkout page when the purchase amount changes.
 

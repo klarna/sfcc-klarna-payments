@@ -425,12 +425,14 @@ var KlarnaOSM = {
     getKlarnaClientIDForSDK : function() {
         var osmClientId = this.isEnabled() ? this.getUCI() : null;
         var expressCheckoutClientId = this.isKlarnExpressCheckoutEnabled() && ( this.isKECSingleStepWithPSPIntegration() || this.isKECSingleStepForDirectMerchant() ) ? this.getKlarnExpressCheckoutClientKey() : null;
+        var signInClientId = this.isKlarnaSignInEnabled() ? this.getKlarnaSignInClientId() : null;
         var clientId = {};
-        if ( osmClientId === expressCheckoutClientId ) {
+        if ( osmClientId === expressCheckoutClientId && osmClientId === signInClientId) {
             clientId.clientId = osmClientId;
         } else {
             clientId.osmClientId = osmClientId;
             clientId.expressCheckoutClientId = expressCheckoutClientId;
+            clientId.signInClientId = signInClientId;
         }
         return clientId;
     }

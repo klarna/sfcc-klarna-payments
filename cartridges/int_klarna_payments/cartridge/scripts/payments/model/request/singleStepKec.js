@@ -8,6 +8,8 @@
     function singleStepKECModel() {
         this.amount = '';
         this.currency = '';
+        this.shipping_config = {};
+        this.collect_customer_profile = [];
         this.customer_interaction_config = {};
         this.supplementary_purchase_data = {};
     }

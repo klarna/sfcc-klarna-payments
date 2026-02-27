@@ -3,16 +3,17 @@
 'use strict';
 
 var klarnaPreferences = window.KPPreferences;
-
 var redirectUri = klarnaPreferences.kpSignInRedirectUri;
 
 window.onload = async function () {
     const klarna = await Klarna.init({
         clientId: klarnaPreferences.kpSignInClientID,
         environment: klarnaPreferences.kpSignInEnvironment,
-        locale: klarnaPreferences.kpSignInLocale
+        locale: klarnaPreferences.kpSignInLocale,
+        integrator: klarnaPreferences.integrator,
+        originators: klarnaPreferences.originators
     });
-    // if (!klarnaSDK.Identity.canMakeLogin('DE')) return;
+
     const siwkButton = klarna.Identity.button({
         scope: klarnaPreferences.kpSignInScope,
         redirectUri: redirectUri,

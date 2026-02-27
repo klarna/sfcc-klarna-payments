@@ -798,4 +798,43 @@
         </group-definitions>
     </custom-type>
 
+    <custom-type type-id="KlarnaInteroperabilityData">
+        <display-name xml:lang="x-default">Klarna Interoperability Data</display-name>
+        <description xml:lang="x-default">Stores Klarna interoperability data for PSP integration</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <key-definition attribute-id="basketId">
+            <display-name xml:lang="x-default">Basket ID</display-name>
+            <description xml:lang="x-default">The basket ID used to retrieve interoperability data</description>
+            <type>string</type>
+            <min-length>0</min-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="interoperabilityData">
+                <display-name xml:lang="x-default">Interoperability Data</display-name>
+                <description xml:lang="x-default">JSON payload containing interoperability data</description>
+                <type>text</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+            <attribute-definition attribute-id="expiryTime">
+                <display-name xml:lang="x-default">Expiry Time</display-name>
+                <description xml:lang="x-default">Timestamp when this data expires (24 hours from creation)</description>
+                <type>datetime</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>true</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="KlarnaInteroperabilityData">
+                <display-name xml:lang="x-default">Klarna Interoperability Data</display-name>
+                <attribute attribute-id="basketId"/>
+                <attribute attribute-id="interoperabilityData"/>
+                <attribute attribute-id="expiryTime"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+
 </metadata>

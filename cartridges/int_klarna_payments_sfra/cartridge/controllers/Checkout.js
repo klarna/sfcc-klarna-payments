@@ -64,15 +64,22 @@ server.prepend('Begin', function (req, res, next) {
     var klarnaSessionManager = new KlarnaSessionManager();
     klarnaSessionManager.createOrUpdateSession();
 
-    // Update the interoperability data in the session if integrated via PSP
+    // Update the interoperability data in custom object if integrated via PSP
     var resultStatus = '';
     try {
         var isPSPIntegrated = JSON.parse(KlarnaHelper.getKlarnaResources().KPPreferences).isKlarnaIntegratedViaPSP;
         if (isPSPIntegrated) {
+            var KlarnaInteroperabilityDataManager = require('*/cartridge/scripts/common/klarnaInteroperabilityDataManager');
             var interoperabilityData = KlarnaHelper.getInteroperabilityData(currentBasket);
-            session.privacy.klarna_interoperability_data = JSON.stringify(interoperabilityData);
-            log.debug('Klarna Interoperability Data: ' + session.privacy.klarna_interoperability_data);
-            resultStatus = 'DataIsSetInSession';
+            var basketId = currentBasket.UUID;
+            var saved = KlarnaInteroperabilityDataManager.saveInteroperabilityData(basketId, interoperabilityData);
+            if (saved) {
+                log.debug('Klarna Interoperability Data saved to custom object for basketId: ' + basketId);
+                resultStatus = 'DataIsSetInCustomObject';
+            } else {
+                log.error('Failed to save Klarna Interoperability Data to custom object');
+                resultStatus = 'DataSaveFailed';
+            }
         } else {
             resultStatus = 'PSPFlagDisabledAndDataNotSet';
         }

@@ -267,6 +267,30 @@
         return this;
     };
 
+    KlarnaSingleStepCheckoutRequestBuilder.prototype.buildShippingConfigs = function() {
+        var localeObject = this.getLocaleObject();
+        var supportedCountries = [];
+
+        if ( !empty( localeObject ) && !empty( localeObject.country ) ) {
+            supportedCountries.push( localeObject.country );
+        }
+
+        this.context.shipping_config = {
+            mode: "EDITABLE",
+            supported_countries: supportedCountries
+        };
+        return this;
+    };
+
+    KlarnaSingleStepCheckoutRequestBuilder.prototype.collectCustomerProfile = function( basket ) {
+        this.context.collect_customer_profile = [
+            "profile:email",
+            "profile:phone",
+            "profile:billing_address"
+        ];
+        return this;
+    };
+
     KlarnaSingleStepCheckoutRequestBuilder.prototype.build = function() {
         var basket = this.params.basket;
         var kpAttachmentsPreferenceValue = Site.getCurrent().getCustomPreferenceValue( 'kpEMD' ) || null;
@@ -282,6 +306,8 @@
         this.buildOrderLines( basket );
         this.buildTotalAmount( basket );
         this.buildReturnUrl( basket );
+        this.buildShippingConfigs();
+        this.collectCustomerProfile();
         
         // Validate the built data using the context and line items
         this.validateBuildAmounts( basket );

@@ -919,7 +919,7 @@ describe('KlarnaPayments-SingleStepCheckout Integration Tests', function () {
         const body = response.body;
         expect(response.statusCode).to.equal(200);
         expect(body).to.have.property('klarnaInteroperabilityDataStatus');
-        const allowedStatuses = ['DataIsSetInSession', 'PSPFlagDisabledAndDataNotSet'];
+        const allowedStatuses = ['DataIsSetInCustomObject', 'PSPFlagDisabledAndDataNotSet'];
         const actualStatus = body.klarnaInteroperabilityDataStatus;
         expect(allowedStatuses).to.include(
             actualStatus,
@@ -1046,8 +1046,422 @@ describe('GET Checkout-Begin Integration Test', function () {
         expect(match).to.have.lengthOf(2);
         const status = match[1];
         expect(status).to.be.oneOf([
-            'DataIsSetInSession',
+            'DataIsSetInCustomObject',
             'PSPFlagDisabledAndDataNotSet'
         ]);
+    });
+});
+
+describe('KlarnaPayments-ShippingAddressChange Integration Tests', function () {
+    this.timeout(20000);
+
+    const jar = request.jar();
+    const variantId = testData.variantId;
+
+    const validAddress = {
+        city: 'San Francisco',
+        postalCode: '94107',
+        region: 'CA',
+        country: 'US'
+    };
+
+    // SETUP: Create basket by visiting PDP and adding item
+    before(async function () {
+        await requestPromise({
+            url: config.baseUrl + '/Product-Show?pid=' + variantId,
+            method: 'GET',
+            rejectUnauthorized: false,
+            jar: jar,
+            resolveWithFullResponse: true
+        });
+
+        await requestPromise({
+            method: 'POST',
+            uri: config.baseUrl + '/Cart-AddProduct',
+            form: {
+                pid: variantId,
+                quantity: '1',
+                options: '[]'
+            },
+            jar: jar,
+            resolveWithFullResponse: true
+        });
+    });
+
+
+    /**
+     * TEST 1: Should successfully update shipping address
+     */
+    it('should return success:true and updatedRequest for valid shipping address', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-ShippingAddressChange',
+            body: JSON.stringify({
+                shippingAddress: validAddress
+            }),
+            jar: jar,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body.success).to.be.true;
+        expect(body).to.have.property('updatedRequest');
+    });
+
+    /**
+     * TEST 2: Should fail when no basket exists
+     */
+    it('should return success:false when no basket exists', async function () {
+        const newJar = requestPromise.jar();
+
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-ShippingAddressChange',
+            body: JSON.stringify({
+                shippingAddress: validAddress
+            }),
+            jar: newJar,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body.success).to.be.false;
+        const errorValue = body.rejectionReason || body.error;
+        expect(errorValue).to.exist;
+    });
+
+
+    it('should return success:false for malformed JSON body', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-ShippingAddressChange',
+            body: '{ "shippingAddress": { "city": "San Francisco" ',
+            jar: jar,
+            headers: { 'Content-Type': 'application/json' },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body.success).to.be.false;
+        const errorValue = body.rejectionReason || body.error;
+        expect(errorValue).to.exist;
+    });
+
+});
+
+describe('KlarnaPayments-ShippingOptionSelect Integration Tests', function () {
+    this.timeout(20000);
+
+    const jar = request.jar();
+    const variantId = testData.variantId;
+
+    // Example shipping option reference used by your site
+    const validShippingOption = {
+        shippingOptionReference: '001'
+    };
+
+    // SETUP – create a basket
+    before(async function () {
+        // Visit PDP to create session
+        await requestPromise({
+            url: config.baseUrl + '/Product-Show?pid=' + variantId,
+            method: 'GET',
+            rejectUnauthorized: false,
+            jar: jar,
+            resolveWithFullResponse: true
+        });
+
+        // Add product to basket
+        await requestPromise({
+            method: 'POST',
+            uri: config.baseUrl + '/Cart-AddProduct',
+            form: {
+                pid: variantId,
+                quantity: '1',
+                options: '[]'
+            },
+            jar: jar,
+            resolveWithFullResponse: true
+        });
+    });
+
+    /**
+     * TEST 1: Should succeed with valid shipping option
+     */
+    it('should return success:true and updatedRequest for valid shipping option', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-ShippingOptionSelect',
+            body: JSON.stringify({
+                shippingOption: validShippingOption
+            }),
+            jar: jar,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body.success).to.be.true;
+        expect(body).to.have.property('updatedRequest');
+    });
+
+    /**
+     * TEST 2: Should fail when no basket exists
+     */
+    it('should return success:false when no basket exists', async function () {
+        const newJar = requestPromise.jar();
+
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-ShippingOptionSelect',
+            body: JSON.stringify({
+                shippingOption: validShippingOption
+            }),
+            jar: newJar,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body.success).to.be.false;
+
+        const errorValue = body.rejectionReason || body.error;
+        expect(errorValue).to.exist;
+    });
+
+    /**
+     * TEST 3: Should fail for malformed JSON body
+     */
+    it('should return success:false for malformed JSON body', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-ShippingOptionSelect',
+            body: '{ "shippingOption": { "shippingOptionReference": "standard" ',
+            jar: jar,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body.success).to.be.false;
+
+        const errorValue = body.rejectionReason || body.error;
+        expect(errorValue).to.exist;
+    });
+});
+
+describe('KlarnaPayments-CheckWebhookStatus Integration Tests', function () {
+    this.timeout(20000);
+
+    const jar = request.jar();
+
+    /**
+     * TEST 1: Should return success:false when paymentRequestId is missing
+     */
+    it('should return success:false when paymentRequestId is not provided', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-CheckWebhookStatus',
+            body: JSON.stringify({}),
+            jar: jar,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body.success).to.be.false;
+    });
+
+    /**
+     * TEST 2: Should return success:false when no webhook entry exists
+     */
+    it('should return success:false when webhook entry is not found', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-CheckWebhookStatus',
+            body: JSON.stringify({
+                paymentRequestId: 'non_existing_payment_id_123'
+            }),
+            jar: jar,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body.success).to.be.false;
+    });
+
+    /**
+     * TEST 3: Should gracefully handle malformed JSON body
+     */
+    it('should return error:true when request body is malformed', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-CheckWebhookStatus',
+            body: '{ "paymentRequestId": ',
+            jar: jar,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body).to.have.property('error');
+        expect(body.error).to.be.true;
+    });
+});
+
+describe('KlarnaPayments-CreateOrderFromWebhook Integration Tests', function () {
+    this.timeout(20000);
+
+    const jar = request.jar();
+    const variantId = testData.variantId;
+
+    const validCustomerData = {
+        email: 'test@example.com',
+        firstName: 'John',
+        lastName: 'Doe'
+    };
+
+    // SETUP: create basket
+    before(async function () {
+        // Visit PDP to create session
+        await requestPromise({
+            url: config.baseUrl + '/Product-Show?pid=' + variantId,
+            method: 'GET',
+            rejectUnauthorized: false,
+            jar: jar,
+            resolveWithFullResponse: true
+        });
+
+        // Add product to basket
+        await requestPromise({
+            method: 'POST',
+            uri: config.baseUrl + '/Cart-AddProduct',
+            form: {
+                pid: variantId,
+                quantity: '1',
+                options: '[]'
+            },
+            jar: jar,
+            resolveWithFullResponse: true
+        });
+    });
+
+    /**
+     * TEST 1: Should return success:false when customerData is missing
+     */
+    it('should return success:false when customer data is missing', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-CreateOrderFromWebhook',
+            body: JSON.stringify({}),
+            jar: jar,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body.success).to.be.false;
+        expect(body.error).to.exist;
+    });
+
+    /**
+     * TEST 2: Should return success:false when no basket exists
+     */
+    it('should return success:false when no basket exists', async function () {
+        const newJar = requestPromise.jar();
+
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-CreateOrderFromWebhook',
+            body: JSON.stringify({
+                customerData: validCustomerData
+            }),
+            jar: newJar,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body.success).to.be.false;
+        expect(body.error).to.exist;
+    });
+
+    /**
+     * TEST 3: Should gracefully handle malformed JSON body
+     */
+    it('should return success:false for malformed JSON body', async function () {
+        const options = {
+            method: 'POST',
+            uri: config.baseUrl + '/KlarnaPayments-CreateOrderFromWebhook',
+            body: '{ "customerData": ',
+            jar: jar,
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            resolveWithFullResponse: true
+        };
+
+        const response = await requestPromise(options);
+        const body = JSON.parse(response.body);
+
+        expect(response.statusCode).to.equal(200);
+        expect(body.success).to.be.false;
+        expect(body.error).to.exist;
     });
 });

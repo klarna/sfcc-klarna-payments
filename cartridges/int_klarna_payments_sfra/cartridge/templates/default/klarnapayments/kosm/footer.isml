@@ -4,17 +4,6 @@
     <isprint value="${KlarnaOSM.getFooterPlacementCustomStyling()}" encoding="off" />
 
     <div class="kosm-footer">
-        <klarna-placement id="osm-footer-placement" data-key="${KlarnaOSM.getFooterPlacementTagId()}"
-            data-locale="${KlarnaOSM.getLocale()}" data-theme="${KlarnaOSM.getOSMFooterTheme()}">
-        </klarna-placement>
+        <isklarnaosm kosmlocation="kosm-footer" />
     </div>
-    <isscript>
-        var assets = require('*/cartridge/scripts/assets.js');
-
-        if (!klarnaOSMJsAdded) {
-            assets.addJs('js/klarnaOsm.js');
-        }
-    </isscript>
-
-    <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
 </isif>

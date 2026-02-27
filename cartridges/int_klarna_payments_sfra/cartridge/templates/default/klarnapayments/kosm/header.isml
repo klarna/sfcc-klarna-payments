@@ -3,18 +3,7 @@
 <isif condition="${KlarnaOSM.isEnabledHeader()}">
     <isprint value="${KlarnaOSM.getHeaderPlacementCustomStyling()}" encoding="off" />
 
-    <div class="kosm-header">
-        <klarna-placement id="osm-header-placement" data-key="${KlarnaOSM.getHeaderPlacementTagId()}"
-            data-locale="${KlarnaOSM.getLocale()}" data-theme="${KlarnaOSM.getOSMHeaderTheme()}">
-        </klarna-placement>
+    <div class="kosm-header" >
+        <isklarnaosm kosmlocation="kosm-header" />
     </div>
-    <isscript>
-        var assets = require('*/cartridge/scripts/assets.js');
-
-        if (!klarnaOSMJsAdded) {
-            assets.addJs('js/klarnaOsm.js');
-        }
-    </isscript>
-
-    <isset name="klarnaOSMJsAdded" value="${true}" scope="page" />
 </isif>

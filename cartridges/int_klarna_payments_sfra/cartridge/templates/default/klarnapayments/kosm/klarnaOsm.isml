@@ -1,0 +1,44 @@
+<isif condition="${KlarnaOSM.isEnabled()}">
+    <isset name="amount" value="${pdict.amount}" scope="page" />
+    <isset name="osmLocation" value="${pdict.kosmlocation}" scope="page" />
+    <script type="module">
+        const klarna = window.getKlarnaSDK('osm');
+        const location = "${osmLocation}";
+
+        var theme = '';
+        var key = '';
+
+        if( location === 'kosm-header') {
+            theme = "${KlarnaOSM.getOSMHeaderTheme()}";
+            key = "${KlarnaOSM.getHeaderPlacementTagId()}";
+        } else if ( location === 'kosm-pdp') {
+            theme = "${KlarnaOSM.getOSMPDPTheme()}";
+            key = "${KlarnaOSM.getPDPPagePlacementTagId()}";
+        } else if ( location === 'kosm-info') {
+            theme = "${KlarnaOSM.getOSMInfoPageTheme()}";
+            key = "${KlarnaOSM.getInfoPagePlacementTagId()}";
+        } else if ( location === 'kosm-cart') {
+            theme = "${KlarnaOSM.getOSMCartTheme()}";
+            key = "${KlarnaOSM.getCartPagePlacementTagId()}";
+        } else if ( location === 'kosm-footer') {
+            theme = "${KlarnaOSM.getOSMFooterTheme()}";
+            key = "${KlarnaOSM.getFooterPlacementTagId()}";
+        }
+
+        window.addEventListener("KlarnaSDK:ready", () => {
+            const klarna = window.getKlarnaSDK('osm');
+
+            document.body.dispatchEvent(new CustomEvent('init:KlarnaOSM', {
+                detail: {
+                    klarnaSDK: klarna,
+                    osmLocation: "${osmLocation}",
+                    amount: "${amount ? KlarnaOSM.formatPurchaseAmount(amount) : null}",
+                    locale: "${KlarnaOSM.getLocale()}",
+                    theme: theme,
+                    key: key
+                }
+            }));
+        });
+
+    </script>
+</isif>

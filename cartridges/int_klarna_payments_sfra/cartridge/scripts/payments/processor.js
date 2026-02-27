@@ -382,6 +382,12 @@ function handleKlarnaOrderCreated(order, paymentInstrument, kpOrderInfo) {
     var kpOrderId = kpOrderInfo.order_id;
     var redirectURL = kpOrderInfo.redirect_url;
 
+    // For one-step checkout, fraud_status may be undefined - only order id received through create Order API call
+    var isOneStepCheckout = Site.getCurrent().getCustomPreferenceValue('kec_useOneStepCheckout');
+    if (!kpFraudStatus && isOneStepCheckout) {
+        kpFraudStatus = KLARNA_FRAUD_STATUSES.ACCEPTED;
+    }
+
     klarnaSessionManager.removeSession();
 
     Transaction.wrap(function () {

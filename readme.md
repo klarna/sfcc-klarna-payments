@@ -3,13 +3,9 @@
 # Klarna Payments 2017-2026 Salesforce Commerce Cloud Cartridge
 
 ## The latest version
-The latest version of this cartridge is 26.1.0.
+The latest version of this cartridge is 26.1.1.
 
-* Upgraded Onsite Messaging (OSM) to use Klarna Web SDK version 2.
-* Added Klarna Express Checkout (KEC) one-step payments for direct merchants.
-* Added metadata (integrator and originator) in every request sent to Klarna both in Web SDK initialization and also in API calls.
-* Updated interoperability data storage to use a custom object instead of session storage.
-* Enhanced OSM installment messaging to dynamically refresh on the checkout page when the purchase amount changes.
+* Added field validation on the Client ID site preference to ensure only allowed values can be entered.
 
 ## Company Overview
 Klarna Bank AB (publ) is the leading global payments and shopping service, providing smarter and more flexible shopping and purchase experiences to 90 million active consumers across more than 250,000 merchants in 17 countries. Klarna offers direct payments, pay after delivery options and instalment plans in a smooth one-click purchase experience that lets consumers pay when and how they prefer to. Klarna is active in Europe, North America and Oceania, driven by 3500 employees. Read more here: https://www.klarna.com/international/about-us/corporate-governance/

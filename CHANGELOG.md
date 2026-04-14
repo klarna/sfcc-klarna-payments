@@ -1,5 +1,8 @@
 # CHANGELOG
 
+## 26.1.1
+* Added field validation on the Client ID site preference to ensure only allowed values can be entered.
+
 ## 26.1.0
 * Upgraded Onsite Messaging (OSM) to use Klarna Web SDK version 2.
 * Added Klarna Express Checkout (KEC) one-step payments for direct merchants.

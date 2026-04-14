@@ -590,6 +590,7 @@
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
                 <min-length>0</min-length>
+				<regex>^(klarna_test_client|klarna_live_client).*</regex>
             </attribute-definition>
             <attribute-definition attribute-id="KP_API_Username">
                 <display-name xml:lang="x-default">API Username</display-name>

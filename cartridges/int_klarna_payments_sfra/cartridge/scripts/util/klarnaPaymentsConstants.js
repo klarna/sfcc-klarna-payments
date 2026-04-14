@@ -37,7 +37,7 @@ var KLARNA_PAYMENT_URLS = {
     SHIPPING_OPTION_SELECT: 'KlarnaPayments-ShippingOptionSelect'
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Version: ' + Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 26.1.0';
+var SERVICE_HEADER = 'SFCC SFRA Version: ' + Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 26.1.1';
 
 superMdl.PAYMENT_METHOD = PAYMENT_METHOD;
 superMdl.KLARNA_PAYMENT_URLS = KLARNA_PAYMENT_URLS;

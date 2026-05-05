@@ -102,5 +102,26 @@
             </run-once>
         </triggers>
     </job>
+	
+	<job job-id="KlarnaOrderMappingCleanup">
+        <description>Clean up old Klarna order mappings</description>
+        <parameters/>
+        <flow>
+            <context site-id="RefArchGlobal"/>
+            <step step-id="CleanupMappings" type="custom.CleanupKlarnaOrderMappings" enforce-restart="false">
+                <description/>
+                <parameters>
+                    <parameter name="hoursOld">72</parameter>
+                </parameters>
+            </step>
+        </flow>
+        <rules/>
+        <triggers>
+            <run-once enabled="false">
+                <date>2026-03-02Z</date>
+                <time>06:46:00.000Z</time>
+            </run-once>
+        </triggers>
+    </job>
 
 </jobs>

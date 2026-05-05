@@ -435,6 +435,25 @@ var KlarnaOSM = {
             clientId.signInClientId = signInClientId;
         }
         return clientId;
+    },
+    /**
+     * Function that returns the current currency code
+     * @return {string} currency code or null if not available
+     */
+    getCurrency: function() {
+        return request.session.currency ? request.session.currency.currencyCode : null;
+    },
+    /**
+     * Function that normalizes theme value for OSM API
+     * Maps merchant configured theme values to Klarna API expected values
+     * @param {string} themeValue - The theme value from site preferences
+     * @return {string} normalized theme value (dark or light)
+     */
+    normalizeTheme: function( themeValue ) {
+        if ( themeValue && themeValue.toLowerCase().indexOf( 'dark' ) !== -1 ) {
+            return 'dark';
+        }
+        return 'light';
     }
 };
 

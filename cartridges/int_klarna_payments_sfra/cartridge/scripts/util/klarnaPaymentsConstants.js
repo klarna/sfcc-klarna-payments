@@ -21,8 +21,8 @@ var KLARNA_PAYMENT_URLS = {
     CONFIRMATION: 'KlarnaPayments-ShowConfirmation',
     NOTIFICATION: 'KlarnaPayments-Notification',
     MINISUMMARY_UPDATE: '',
-    BANK_TRANSFER_CALLBACK: 'KlarnaPayments-BankTransferCallback',
-    BANK_TRANSFER_AWAIT_CALLBACK: 'KlarnaPayments-BankTransferAwaitCallback',
+    BANK_TRANSFER_CALLBACK: 'KlarnaPayments-AuthorizationCallback',
+    BANK_TRANSFER_AWAIT_CALLBACK: 'KlarnaPayments-AuthorizationAwaitCallback',
     FAIL_ORDER: 'KlarnaPayments-FailOrder',
     WRITE_ADDITIONAL_LOG: 'KlarnaPayments-WriteLog',
     HANDLE_EXPRESS_CHECKOUT_AUTH: 'KlarnaPayments-HandleAuthorizationResult',
@@ -31,13 +31,13 @@ var KLARNA_PAYMENT_URLS = {
     HANDLE_AUTH_FAILURE_PDP: 'KlarnaPayments-HandleAuthFailure',
     KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SFRA: 'Checkout-Begin',
     KLARNA_SIGNIN_CHECKOUT_REDIRECTURL_SG: 'COCustomer-Start',
-    SAVE_INTEROPERABILITY_TOKEN: 'KlarnaPayments-SaveInteroperabilityToken',
+    SAVE_NETWORK_SESSION_TOKEN: 'KlarnaPayments-SaveNetworkSessionToken',
     SINGLE_STEP_CHECKOUT: 'KlarnaPayments-SingleStepCheckout',
     SHIPPING_ADDRESS_CHANGE: 'KlarnaPayments-ShippingAddressChange',
     SHIPPING_OPTION_SELECT: 'KlarnaPayments-ShippingOptionSelect'
 };
 
-var SERVICE_HEADER = 'SFCC SFRA Version: ' + Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 26.1.0';
+var SERVICE_HEADER = 'SFCC SFRA Version: ' + Resource.msg('global.version.number', 'version', 'Not found') + ' | Klarna Payments 26.2.0';
 
 superMdl.PAYMENT_METHOD = PAYMENT_METHOD;
 superMdl.KLARNA_PAYMENT_URLS = KLARNA_PAYMENT_URLS;

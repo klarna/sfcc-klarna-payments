@@ -3,36 +3,6 @@ var subscriptionHelperExtension = require( '*/cartridge/scripts/subscription/sub
 var isTaxationPolicyNet = klarnaHelper.isTaxationPolicyNet;
 var discountTaxationMethod = klarnaHelper.getDiscountsTaxation();
 var isOMSEnabled = klarnaHelper.isOMSEnabled();
-var Transaction = require( 'dw/system/Transaction' );
-var signInHelper = require( '*/cartridge/scripts/signin/klarnaSignIn' );
-var CustomerMgr = require( 'dw/customer/CustomerMgr' );
-var KlarnaOSM = require( '*/cartridge/scripts/marketing/klarnaOSM' );
-
-/**
- * Builds customer object with Klarna SIWK access token to be used in the Klarna session request for customers using SIWK
- *
- * @param {dw.order.Basket} basket cart object
- * @param {Object} requestBody - The session request body to be updated with customer information
- *
- * @return {Object} updated session request body with customer object
- */
-function buildCustomerForSIWKUsers( basket, requestBody ) {
-    if ( KlarnaOSM.isKlarnaSignInEnabled() ) {
-        Transaction.wrap( function() {
-            // update request body with klarna_access_token for customers using SIWK
-            var customerProfile = CustomerMgr.getExternallyAuthenticatedCustomerProfile( 'Klarna', basket.customer && basket.customer.profile && basket.customer.profile.email );
-            if( customerProfile && customerProfile.custom.kpRefreshToken && session.privacy.KlarnaSignedInCustomer ) {
-                var tokenResponse = signInHelper.refreshCustomerSignInToken( customerProfile.custom.kpRefreshToken );
-                var accessToken = tokenResponse && tokenResponse.access_token ? tokenResponse.access_token : '';
-                customerProfile.custom.kpRefreshToken = tokenResponse && tokenResponse.refresh_token;
-                session.privacy.klarnaSignInAccessToken = accessToken;
-                customerProfile.custom.klarnaSignInAccessToken = accessToken;
-                requestBody.customer = { klarna_access_token: accessToken };
-            }
-        } );
-    }
-    return requestBody;
-}
 
 /**
  * Builds order line items for Klarna session and payment requests
@@ -97,6 +67,5 @@ function handlePriceAdjustments( lineItem, thisObj, context ) {
 }
 
 module.exports = {
-    buildCustomerForSIWKUsers: buildCustomerForSIWKUsers,
     buildItems: buildItems
 }

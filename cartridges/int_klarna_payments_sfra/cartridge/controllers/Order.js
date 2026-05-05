@@ -31,16 +31,6 @@ server.append('Confirm', server.middleware.https, function (req, res, next) {
         currency: order.getCurrencyCode()
     };
 
-    // Remove Klarna sign-in access token from the customer profile for customers using SIWK once the order confirmation page is displayed
-    var CustomerMgr = require('dw/customer/CustomerMgr');
-    var KlarnaOSM = require('*/cartridge/scripts/marketing/klarnaOSM');
-    if (KlarnaOSM.isKlarnaSignInEnabled()) {
-        var customer = order.customer;
-        var customerProfile = CustomerMgr.getExternallyAuthenticatedCustomerProfile('Klarna', customer && customer.profile && customer.profile.email);
-        if (customerProfile && customerProfile.custom.klarnaSignInAccessToken) {
-            customerProfile.custom.klarnaSignInAccessToken = '';
-        }
-    }
 
     // revert cart data in case of klarna buy now pdp
     var currentBasket = BasketMgr.getCurrentOrNewBasket();

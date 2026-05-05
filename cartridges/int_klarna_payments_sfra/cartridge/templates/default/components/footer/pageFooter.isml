@@ -126,3 +126,7 @@
         window.dispatchEvent(new Event("KlarnaSDK:ready"));
     </script>
 </isif>
+
+<isif condition="${KlarnaOSM.isKlarnaSignInEnabled()}">
+    <script defer="defer" src="${URLUtils.staticURL('/js/klarnaSignInLogout.js')}"></script>
+</isif>

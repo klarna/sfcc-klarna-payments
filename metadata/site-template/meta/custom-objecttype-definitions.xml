@@ -837,4 +837,37 @@
         </group-definitions>
     </custom-type>
 
+    <custom-type type-id="KlarnaOrderMapping">
+        <display-name xml:lang="x-default">Klarna Order Mapping</display-name>
+        <description xml:lang="x-default">Temporary mapping between Klarna session/order IDs and SFCC order numbers for callback processing with session filtering enabled. One record per SFCC order.</description>
+        <staging-mode>no-staging</staging-mode>
+        <storage-scope>site</storage-scope>
+        <key-definition attribute-id="orderNo">
+            <display-name xml:lang="x-default">SFCC Order Number</display-name>
+            <description xml:lang="x-default">SFCC order number used as the primary key — one record per order</description>
+            <type>string</type>
+            <min-length>0</min-length>
+            <field-length>255</field-length>
+        </key-definition>
+        <attribute-definitions>
+            <attribute-definition attribute-id="sessionId">
+                <display-name xml:lang="x-default">Klarna Session ID</display-name>
+                <description xml:lang="x-default">Klarna session ID used to look up the order in callback endpoints</description>
+                <type>string</type>
+                <localizable-flag>false</localizable-flag>
+                <mandatory-flag>false</mandatory-flag>
+                <externally-managed-flag>false</externally-managed-flag>
+                <min-length>0</min-length>
+            </attribute-definition>
+        </attribute-definitions>
+        <group-definitions>
+            <attribute-group group-id="KlarnaOrderMappingData">
+                <display-name xml:lang="x-default">Klarna Order Mapping Data</display-name>
+                <attribute attribute-id="orderNo"/>
+                <attribute attribute-id="sessionId"/>
+                <attribute attribute-id="creationDate" system="true"/>
+            </attribute-group>
+        </group-definitions>
+    </custom-type>
+
 </metadata>

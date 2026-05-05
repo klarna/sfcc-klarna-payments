@@ -105,10 +105,9 @@ function validateKlarnaToken( klarnaToken ) {
 /**
  * Get or create customer based on the external Klarna profile
  * @param {Object} customerData customer details
- * @param {String} refreshToken refresh token
  * @returns {Object} customer profile
  */
-function getOrCreateCustomer( customerData, refreshToken ) {
+function getOrCreateCustomer( customerData ) {
     var CustomerMgr = require( 'dw/customer/CustomerMgr' );
     var Transaction = require( 'dw/system/Transaction' );
     var customerProfile = null;
@@ -157,8 +156,6 @@ function getOrCreateCustomer( customerData, refreshToken ) {
             };
         }
         session.privacy.KlarnaSignedInCustomer = true;
-
-        customerProfile.custom.kpRefreshToken = refreshToken;
     } );
     return {
         error: false,

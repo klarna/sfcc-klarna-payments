@@ -289,11 +289,11 @@ function initKlarnaExpressButton(containerId, isPDP, klarna) {
     }
 
     klarna.Payment.on('complete', async (paymentRequest) => {
-        if (paymentRequest && paymentRequest.stateContext && paymentRequest.stateContext.interoperabilityToken) {
-            // Save the interoperability token and notify PSPs so they can use the token
-            fetch(window.KlarnaPaymentsUrls.saveInteroperabilityToken, {
+        if (paymentRequest && paymentRequest.stateContext && paymentRequest.stateContext.klarnaNetworkSessionToken) {
+            // Save the network session token and notify PSPs so they can use the token
+            fetch(window.KlarnaPaymentsUrls.saveNetworkSessionToken, {
                 method: 'POST',
-                body: new URLSearchParams({ interoperabilityToken: paymentRequest.stateContext.interoperabilityToken })
+                body: new URLSearchParams({ klarnaNetworkSessionToken: paymentRequest.stateContext.klarnaNetworkSessionToken })
             });
         }
         // Return a boolean to skip redirection.

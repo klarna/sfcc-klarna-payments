@@ -21,13 +21,14 @@ server.post('Notification', function (req, res) {
     var klarna_oms__kpOrderID = klarnaPaymentsFraudDecisionObject.order_id; // eslint-disable-line camelcase
     var kpEventType = klarnaPaymentsFraudDecisionObject.event_type;
     var currentCountry = requestParams.klarna_country;
+    var orderNo = requestParams.orderNo;
 
     res.setStatusCode(200);
 
     try {
         var klarnaOrder = processor.getKlarnaOrder(klarna_oms__kpOrderID);
         if (klarnaOrder && FRAUD_STATUS_MAP[klarnaOrder.fraud_status] && FRAUD_STATUS_MAP[klarnaOrder.fraud_status] === kpEventType) {
-            var order = OrderMgr.queryOrder('custom.klarna_oms__kpOrderID = {0}', klarna_oms__kpOrderID);
+            var order = orderNo ? OrderMgr.getOrder(orderNo) : null;
             if (order) {
                 processor.notify(order, klarna_oms__kpOrderID, kpEventType, currentCountry);
             }
@@ -73,19 +74,28 @@ server.get('LoadAuth', function (req, res) {
     this.emit('route:Complete', req, res);
 });
 
-server.post('BankTransferCallback', function (req, res) {
+server.post('AuthorizationCallback', function (req, res) {
     // Get Order ID from Klarna session_id
     var OrderMgr = require('dw/order/OrderMgr');
     var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
     var processor = require('*/cartridge/scripts/payments/processor');
+    var orderMappingHelper = require('*/cartridge/scripts/util/klarnaOrderMappingHelper');
     var klarnaResponse = JSON.parse(req.body);
     var kpAuthorizationToken = klarnaResponse.authorization_token;
     var kpSessionId = klarnaResponse.session_id;
     KlarnaHelper.isCurrentCountryKlarnaEnabled();
 
-    // Get Order by sessionId with status CREATED and update its status
+    // Get Order by sessionId
     try {
-        var order = OrderMgr.queryOrder('custom.kpSessionId = {0} AND status = {1}', kpSessionId, dw.order.Order.ORDER_STATUS_CREATED);
+        var order = null;
+        var orderNo = orderMappingHelper.getOrderNoBySessionID(kpSessionId);
+        if (orderNo) {
+            order = OrderMgr.getOrder(orderNo);
+            if (order && (order.status.value !== dw.order.Order.ORDER_STATUS_CREATED || order.custom.kpSessionId !== kpSessionId)) {
+                order = null;
+            }
+        }
+
         if (order) {
             processor.bankTransferPlaceOrder(order, kpSessionId, kpAuthorizationToken);
         }
@@ -98,24 +108,42 @@ server.post('BankTransferCallback', function (req, res) {
     res.setStatusCode(200);
 });
 
-server.get('BankTransferAwaitCallback', function (req, res, next) {
+server.get('AuthorizationAwaitCallback', function (req, res, next) {
     var kpSessionId = req.querystring.session_id;
     var OrderMgr = require('dw/order/OrderMgr');
-    var order = OrderMgr.queryOrder('custom.kpSessionId = {0}', kpSessionId);
-    var isSubscriptionOrder = false;
+    var orderMappingHelper = require('*/cartridge/scripts/util/klarnaOrderMappingHelper');
+    var order = null;
 
-    var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
-    var subscriptionData = SubscriptionHelper.getSubscriptionData(order);
-    if (subscriptionData && subscriptionData.subscriptionTrialPeriod) {
-        isSubscriptionOrder = true;
+    var orderNo = orderMappingHelper.getOrderNoBySessionID(kpSessionId);
+    if (orderNo) {
+        order = OrderMgr.getOrder(orderNo);
+        if (order && order.custom.kpSessionId !== kpSessionId) {
+            order = null;
+        }
     }
 
-    res.json({
-        redirectUrl: order.custom.kpRedirectURL,
-        orderID: order.orderNo,
-        orderToken: order.orderToken,
-        isSubscriptionOrder: isSubscriptionOrder
-    });
+    var isSubscriptionOrder = false;
+
+    if (order) {
+        var SubscriptionHelper = require('*/cartridge/scripts/subscription/subscriptionHelper');
+        var subscriptionData = SubscriptionHelper.getSubscriptionData(order);
+        if (subscriptionData && subscriptionData.subscriptionTrialPeriod) {
+            isSubscriptionOrder = true;
+        }
+
+        res.json({
+            redirectUrl: order.custom.kpRedirectURL,
+            orderID: order.orderNo,
+            orderToken: order.orderToken,
+            isSubscriptionOrder: isSubscriptionOrder
+        });
+    } else {
+        res.json({
+            error: true,
+            message: 'Order not found'
+        });
+    }
+
     return next();
 });
 
@@ -128,13 +156,25 @@ server.post('FailOrder', function (req, res, next) {
     var OrderMgr = require('dw/order/OrderMgr');
     var BasketMgr = require('dw/order/BasketMgr');
     var Transaction = require('dw/system/Transaction');
+    var orderMappingHelper = require('*/cartridge/scripts/util/klarnaOrderMappingHelper');
 
-    var order = OrderMgr.queryOrder('custom.kpSessionId = {0} AND status = {1}', kpSessionId, dw.order.Order.ORDER_STATUS_CREATED);
+    var order = null;
+
+    var orderNo = orderMappingHelper.getOrderNoBySessionID(kpSessionId);
+    if (orderNo) {
+        order = OrderMgr.getOrder(orderNo);
+        if (order && (order.status.value !== dw.order.Order.ORDER_STATUS_CREATED || order.custom.kpSessionId !== kpSessionId)) {
+            order = null;
+        }
+    }
+
     var result = true;
     // Fail Order and recreate Basket
-    Transaction.wrap(function () {
-        result = OrderMgr.failOrder(order, true);
-    });
+    if (order) {
+        Transaction.wrap(function () {
+            result = OrderMgr.failOrder(order, true);
+        });
+    }
 
     res.json({ success: true });
     var currentBasket = BasketMgr.getCurrentBasket();
@@ -846,9 +886,9 @@ server.get('ShowConfirmation', server.middleware.https, function (req, res, next
 });
 
 /**
- * Save interoperability token in plugin session
+ * Save network session token in plugin session
  */
-server.post('SaveInteroperabilityToken', function (req, res, next) {
+server.post('SaveNetworkSessionToken', function (req, res, next) {
     var Resource = require('dw/web/Resource');
     var KlarnaHelper = require('*/cartridge/scripts/util/klarnaHelper');
 
@@ -856,24 +896,24 @@ server.post('SaveInteroperabilityToken', function (req, res, next) {
         var isKlarnaIntegratedViaPSP = JSON.parse(KlarnaHelper.getKlarnaResources().KPPreferences).isKlarnaIntegratedViaPSP;
 
         if (isKlarnaIntegratedViaPSP) {
-            var interoperabilityToken = req.httpParameterMap.interoperabilityToken;
-            var interoperabilityTokenValue = interoperabilityToken ? interoperabilityToken.value : null;
+            var networkSessionToken = req.httpParameterMap.klarnaNetworkSessionToken;
+            var networkSessionTokenValue = networkSessionToken ? networkSessionToken.value : null;
 
-            if (interoperabilityTokenValue) {
-                session.privacy.klarna_interoperability_token = interoperabilityTokenValue;
-                log.debug(Resource.msg('klarna.interoperability.token.saved', 'interoperability', null));
+            if (networkSessionTokenValue) {
+                session.privacy.klarna_network_session_token = networkSessionTokenValue;
+                log.debug(Resource.msg('klarna.network.session.token.saved', 'interoperability', null));
                 res.json({
                     success: true,
-                    message: Resource.msg('klarna.interoperability.token.saved', 'interoperability', null)
+                    message: Resource.msg('klarna.network.session.token.saved', 'interoperability', null)
                 });
             } else {
-                throw new Error(Resource.msg('klarna.interoperability.token.missing', 'interoperability', null));
+                throw new Error(Resource.msg('klarna.network.session.token.missing', 'interoperability', null));
             }
         } else {
-            throw new Error(Resource.msg('klarna.interoperability.token.disabled', 'interoperability', null));
+            throw new Error(Resource.msg('klarna.network.session.token.disabled', 'interoperability', null));
         }
     } catch (error) {
-        log.error('Error while saving interoperability token: ' + error.message);
+        log.error('Error while saving network session token: ' + error.message);
         res.setStatusCode(500);
         res.json({
             success: false,
@@ -1298,7 +1338,7 @@ server.post('CreateOrderFromWebhook', server.middleware.https, function (req, re
 
         // Clear session data after successful order creation
         session.privacy.paymentRequestId = null;
-        session.privacy.klarna_interoperability_token = null;
+        session.privacy.klarna_network_session_token = null;
 
         var order = result.order;
         var confirmationUrl = URLUtils.url(

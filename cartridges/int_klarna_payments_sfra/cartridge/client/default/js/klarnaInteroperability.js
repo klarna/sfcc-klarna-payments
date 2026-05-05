@@ -10,29 +10,29 @@ $(function () {
      * @returns {void}
      */
     function initInteroperabilityCallback() {
-        if (window.KPPreferences.isKlarnaIntegratedViaPSP) {
-            if (typeof Klarna !== 'undefined' && Klarna.Interoperability) {
-                // If Klarna.Interoperability is available, listen for the 'tokenupdate' event
-                Klarna.Interoperability.on('tokenupdate', (interoperabilityToken) => {
-                    // When the token update event is fired, send the updated token to the server via an AJAX POST request to save in sfcc session
+        if (!window.KPPreferences.isKlarnaIntegratedViaPSP) return;
+
+        var sdkInstances = [window.initializedKlarnaSDK, window.kecSDK, window.osmSDK, window.siwkSDK];
+        var attached = false;
+
+        sdkInstances.forEach(function (instance) {
+            if (instance && instance.Network && instance.Network.Session) {
+                instance.Network.Session.on('tokenupdate', function (klarnaNetworkSessionToken) {
                     $.ajax({
-                        url: window.KlarnaPaymentsUrls.saveInteroperabilityToken,
+                        url: window.KlarnaPaymentsUrls.saveNetworkSessionToken,
                         type: 'POST',
-                        data: {
-                            interoperabilityToken: interoperabilityToken
-                        }
+                        data: { klarnaNetworkSessionToken: klarnaNetworkSessionToken }
                     });
                 });
-
-                // Reset the retry count after successful initialization
-                retryCount = 0;
-            } else {
-                // Retry initializing token update callback if Klarna.Interoperability event is not yet available and if the retry count is less than or equal to 10
-                retryCount++; // eslint-disable-line no-plusplus
-                if (retryCount <= 10) {
-                    setTimeout(initInteroperabilityCallback, 500);
-                }
+                attached = true;
             }
+        });
+
+        if (attached) return;
+
+        // Retry initializing token update callback if Klarna.Network event is not yet available and if the retry count is less than or equal to 10
+        if (retryCount++ < 10) {
+            setTimeout(initInteroperabilityCallback, 500);
         }
     }
 

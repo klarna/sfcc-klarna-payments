@@ -212,16 +212,16 @@ describe('KlarnaPayments-CancelSubscription', function () {
     });
 });
 
-describe('KlarnaPayments-SaveInteroperabilityToken', function () {
+describe('KlarnaPayments-SaveNetworkSessionToken', function () {
     this.timeout(10000);
-    var interoperabilityToken = 'sample token';
-    
-    it('should save interoperability token in sfcc session', function () {
-        var  myRequest = {
-            url: config.baseUrl + '/KlarnaPayments-SaveInteroperabilityToken',
+    var networkSessionToken = 'sample token';
+
+    it('should save network session token in sfcc session', function () {
+        var myRequest = {
+            url: config.baseUrl + '/KlarnaPayments-SaveNetworkSessionToken',
             method: 'POST',
             form: {
-                interoperabilityToken: interoperabilityToken
+                klarnaNetworkSessionToken: networkSessionToken
             },
             rejectUnauthorized: false,
             resolveWithFullResponse: true
@@ -229,7 +229,7 @@ describe('KlarnaPayments-SaveInteroperabilityToken', function () {
 
         return requestPromise(myRequest)
             .then(function (response) {
-                assert.equal(response.statusCode, 200, 'Interoperability token saved successfully');
+                assert.equal(response.statusCode, 200, 'Network session token saved successfully');
             });
     });
 });
@@ -837,10 +837,7 @@ describe('POST Login-KlarnaSignIn Integration Test', function () {
 
   it('should fail with invalid Klarna sign-in data', async function () {
     const klarnaSignInData = {
-      user_account_linking: {
-        user_account_linking_id_token: 'invalidIdTokenHere',
-        user_account_linking_refresh_token: 'invalidRefreshTokenHere'
-      }
+      idToken: 'invalidIdTokenHere'
     };
 
     const options = {

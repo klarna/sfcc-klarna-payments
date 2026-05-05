@@ -73,7 +73,6 @@ function _getRequestBody( basket, localeObject ) {
  */
 function createSession( basket, localeObject ) {
     var Transaction = require( 'dw/system/Transaction' );
-    var requestBuilderHelper = require( '*/cartridge/scripts/util/requestBuilderHelper' );
 
     var response = null;
 
@@ -82,8 +81,6 @@ function createSession( basket, localeObject ) {
         var klarnaApiContext = new KlarnaPayments.apiContext();
         var requestBody = _getRequestBody( basket, localeObject );
 
-        // update session request with customer access token for customers using SIWK
-        requestBuilderHelper.buildCustomerForSIWKUsers( basket, requestBody );
 
         var requestUrl = klarnaApiContext.getFlowApiUrls().get( 'createSession' );
         var serviceID = klarnaApiContext.getFlowApiIds().get( 'createSession' );

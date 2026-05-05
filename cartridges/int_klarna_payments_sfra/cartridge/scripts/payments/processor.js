@@ -492,6 +492,17 @@ function createCustomerTokenForLineItemSubscription(order, localeObject, payment
  * @returns {Object} Processor authorizing result
  */
 function authorize(order, orderNo, paymentInstrument, isRecurringOrder) {
+    // Create mapping 
+    try {
+        var orderMappingHelper = require('*/cartridge/scripts/util/klarnaOrderMappingHelper');
+        var kpSessionId = order.custom.kpSessionId;
+        if (kpSessionId) {
+            orderMappingHelper.saveMapping(kpSessionId, order.orderNo);
+        }
+    } catch (e) {
+        log.warn('Failed to save order mapping in authorize: {0}', e.message);
+    }
+
     var klarnaAuthorizationToken = session.privacy.KlarnaPaymentsAuthorizationToken;
     var finalizeRequired = false;
     try {

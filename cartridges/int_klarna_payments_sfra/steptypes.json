@@ -1,0 +1,43 @@
+{
+	"step-types": {
+		"script-module-step": [
+			{
+				"@type-id": "custom.CleanupKlarnaOrderMappings",
+				"@supports-parallel-execution": "true",
+				"@supports-site-context": "true",
+				"@supports-organization-context": "false",
+				"description": "Cleans up old KlarnaOrderMapping custom objects used to bypass session filtering in callback endpoints",
+				"module": "int_klarna_payments_sfra/cartridge/scripts/jobs/cleanupKlarnaOrderMappings.js",
+				"function": "execute",
+				"transactional": "false",
+				"timeout-in-seconds": "900",
+				"parameters": {
+					"parameter": [
+						{
+							"@name": "hoursOld",
+							"@type": "long",
+							"@required": "false",
+							"description": "Age threshold in hours for mappings to be deleted. Defaults to 72 hours."
+						}
+					]
+				},
+				"status-codes": {
+					"status": [
+						{
+							"@code": "ERROR",
+							"description": "Error"
+						},
+						{
+							"@code": "WARN",
+							"description": "Warning"
+						},
+						{
+							"@code": "OK",
+							"description": "Ok"
+						}
+					]
+				}
+			}
+		]
+	}
+}

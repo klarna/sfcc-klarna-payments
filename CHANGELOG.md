@@ -1,5 +1,12 @@
 # CHANGELOG
 
+## 26.2.0
+* Added support for passing currency and correctly mapped theme parameters in Klarna OSM API requests.
+* Introduced Sign in with Klarna Web SDK v2, restoring updated SIWK flow and replacing refresh token usage with ID token authentication.
+* Removed legacy Klarna Web SDK v1 script and ensured only v2 SDK is loaded across all pages to improve performance.
+* Updated Klarna integration to replace deprecated interoperability_token with klarna_network_session_token across KEC and standard checkout flows.
+* Fixed Klarna callback failures with SFCC session filtering enabled by replacing queryOrder() with direct order lookup and introducing custom object mapping for reliable server-to-server processing.
+
 ## 26.1.1
 * Added field validation on the Client ID site preference to ensure only allowed values can be entered.
 

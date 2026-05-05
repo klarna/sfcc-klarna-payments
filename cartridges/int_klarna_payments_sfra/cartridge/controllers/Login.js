@@ -47,9 +47,7 @@ server.post('KlarnaSignIn', server.middleware.https, consentTracking.consent, fu
         return next();
     }
 
-    var idToken = klarnaResponse.user_account_linking ? klarnaResponse.user_account_linking.user_account_linking_id_token : null;
-    var refreshToken = klarnaResponse.user_account_linking ? klarnaResponse.user_account_linking.user_account_linking_refresh_token : null;
-
+    var idToken = klarnaResponse.idToken ? klarnaResponse.idToken : null;
     var idTokenValidationResult = signInHelper.validateKlarnaToken(idToken);
     if (idTokenValidationResult.error) {
         res.json({
@@ -74,7 +72,7 @@ server.post('KlarnaSignIn', server.middleware.https, consentTracking.consent, fu
         }
     }
 
-    var createCustomerResult = signInHelper.getOrCreateCustomer(customerData, refreshToken);
+    var createCustomerResult = signInHelper.getOrCreateCustomer(customerData);
     if (createCustomerResult.error) {
         res.json({
             success: false,

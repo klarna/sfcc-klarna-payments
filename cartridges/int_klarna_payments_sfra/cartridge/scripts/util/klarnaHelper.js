@@ -107,7 +107,7 @@ superMdl.getKlarnaResources = function () {
         expressCheckoutAuthCallback: URLUtils.https(KLARNA_PAYMENT_URLS.EXPRESS_CHECKOUT_AUTH_CALLBACK).toString(),
         generateExpressCheckoutPayload: URLUtils.https(KLARNA_PAYMENT_URLS.GENERATE_EXPRESS_CHECKOUT_PAYLOAD).toString(),
         handleAuthFailurePDP: URLUtils.https(KLARNA_PAYMENT_URLS.HANDLE_AUTH_FAILURE_PDP).toString(),
-        saveInteroperabilityToken: URLUtils.https(KLARNA_PAYMENT_URLS.SAVE_INTEROPERABILITY_TOKEN).toString(),
+        saveNetworkSessionToken: URLUtils.https(KLARNA_PAYMENT_URLS.SAVE_NETWORK_SESSION_TOKEN).toString(),
         singleStepCheckout: URLUtils.https(KLARNA_PAYMENT_URLS.SINGLE_STEP_CHECKOUT).toString(),
         shippingAddressChange: URLUtils.https(KLARNA_PAYMENT_URLS.SHIPPING_ADDRESS_CHANGE).toString(),
         shippingOptionSelect: URLUtils.https(KLARNA_PAYMENT_URLS.SHIPPING_OPTION_SELECT).toString(),

@@ -59,5 +59,8 @@ document.body.addEventListener('init:KlarnaOSM', function (e) {
     if (purchaseAmount) {
         osmPayload.amount = purchaseAmount;
     }
+    if (data.currency) {
+        osmPayload.currency = data.currency;
+    }
     initOSMDisplay(klarna, osmLocation, osmPayload);
 });

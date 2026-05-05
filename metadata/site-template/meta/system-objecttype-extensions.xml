@@ -1281,20 +1281,8 @@ Klarna payments is required to enable the additional solutions.</description>
 
     <type-extension type-id="Profile">
         <custom-attribute-definitions>
-            <attribute-definition attribute-id="klarnaSignInAccessToken">
-                <display-name xml:lang="x-default">klarna signin access token</display-name>
-                <type>password</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
             <attribute-definition attribute-id="kpSubscriptions">
                 <display-name xml:lang="x-default">Klarna Subscriptions</display-name>
-                <type>text</type>
-                <mandatory-flag>false</mandatory-flag>
-                <externally-managed-flag>false</externally-managed-flag>
-            </attribute-definition>
-            <attribute-definition attribute-id="kpRefreshToken">
-                <display-name xml:lang="x-default">Klarna SignIn Refresh Token</display-name>
                 <type>text</type>
                 <mandatory-flag>false</mandatory-flag>
                 <externally-managed-flag>false</externally-managed-flag>
@@ -1304,7 +1292,6 @@ Klarna payments is required to enable the additional solutions.</description>
             <attribute-group group-id="Klarna">
                 <display-name xml:lang="x-default">Klarna</display-name>
                 <attribute attribute-id="kpSubscriptions"/>
-                <attribute attribute-id="kpRefreshToken"/>
             </attribute-group>
         </group-definitions>
     </type-extension>
